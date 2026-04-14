@@ -38,19 +38,22 @@ Populate local raw data from public Google Maps lists:
 pnpm run sync:sources
 ```
 
-This re-scrapes configured source lists if needed and then rebuilds generated site data.
+This refreshes every configured source and then rebuilds generated site data.
+Public Google Maps URLs are always re-scraped. Local Google export CSV files are re-imported only when their
+contents or config change.
 
-Force-refresh raw list scrapes even if the saved snapshot is still fresh:
+Force-refresh raw source imports even if a CSV input is unchanged:
 
 ```bash
 pnpm run sync:sources:force
 ```
 
-Force-refresh one configured raw list by slug or source URL:
+Refresh one configured source by slug, source URL, or source path:
 
 ```bash
 pnpm run sync:source -- tokyo-japan
 pnpm run sync:source -- https://maps.app.goo.gl/your-public-list
+pnpm run sync:source -- data/imports/taipei-taiwan.csv
 ```
 
 Build generated site data from local raw JSON:
@@ -94,12 +97,12 @@ This repo can commit raw scraped list snapshots in `data/raw/` and reproducible 
 enrichment cache files in `data/cache/google-places/` when you want stable source data in git.
 It still does not commit generated build data.
 
-1. Add your public Google Maps list URLs to `scripts/config/list_sources.json`.
+1. Add your source definitions to `scripts/config/list_sources.json`.
 
-Only `slug` and `url` are required. `title` is optional and acts as a fallback if the
-scraper cannot recover the list title.
-`refresh_days` is optional and controls how long a raw scrape stays fresh before `pnpm run sync:sources`
-tries to scrape it again. The default is 14 days.
+Every source needs a `slug` and a `type`.
+- `google_list_url` sources require `url`
+- `google_export_csv` sources require `path`
+- `title` is optional and acts as a fallback list title
 
 Example:
 
@@ -107,8 +110,14 @@ Example:
 [
   {
     "slug": "tokyo-japan",
-    "url": "https://maps.app.goo.gl/your-public-list",
-    "refresh_days": 14
+    "type": "google_list_url",
+    "url": "https://maps.app.goo.gl/your-public-list"
+  },
+  {
+    "slug": "taipei-taiwan",
+    "type": "google_export_csv",
+    "path": "data/imports/taipei-taiwan.csv",
+    "title": "Taipei, Taiwan 🇹🇼"
   }
 ]
 ```
@@ -119,6 +128,7 @@ Optional fallback title example:
 [
   {
     "slug": "tokyo-japan",
+    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/your-public-list",
     "title": "Tokyo, Japan 🇯🇵"
   }
@@ -131,9 +141,9 @@ Optional fallback title example:
 pnpm run sync:sources
 ```
 
-This writes local JSON files into `data/raw/`, including scrape metadata like `fetched_at`,
-`refresh_after`, and a source signature so future refreshes can skip fresh lists. It also rebuilds
-the generated site JSON afterward.
+This writes local JSON files into `data/raw/`, including refresh metadata like `fetched_at`
+and a source signature. CSV-backed sources skip rewrites when the input file hash is unchanged.
+It also rebuilds the generated site JSON afterward.
 
 3. Add manual curation files in `src/data/overrides/`.
 
@@ -183,10 +193,9 @@ This writes local generated JSON into `src/data/generated/` from the current con
 pnpm run dev
 ```
 
-If you already have raw JSON from elsewhere, you can skip the live scrape and place compatible files directly in `data/raw/<slug>.json`, then run `pnpm run build:data`.
-For a full raw re-scrape even within the freshness window, run
-`pnpm run sync:sources:force`.
-For a targeted forced re-scrape, run `pnpm run sync:source -- <slug-or-url>`.
+If you already have raw JSON from elsewhere, you can skip source refresh and place compatible files directly in `data/raw/<slug>.json`, then run `pnpm run build:data`.
+For a targeted refresh, run `pnpm run sync:source -- <slug-or-url-or-path>`.
+For a full forced refresh, run `pnpm run sync:sources:force`.
 
 Legacy aliases still work:
 - `pnpm run refresh:data`
@@ -218,3 +227,7 @@ The current enrichment pass uses Google Places Text Search with a narrow field m
 location bias around the scraped coordinates. It is meant to fill in useful metadata
 such as category, Maps URI, and business status without turning the site build into a
 runtime dependency on Google.
+
+For CSV imports, the pipeline trusts each place's Google Maps URL more than the exported title.
+It derives stable place IDs from the Maps place token when needed and prefers Google Places display
+names during normalization so mojibake in the export does not leak into the final guide.
