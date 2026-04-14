@@ -25,7 +25,7 @@ class PlacesSettings(BaseSettings):
 
 class SourceConfig(PipelineModel):
     slug: str
-    type: Literal["google_list_url", "google_export_csv"] = "google_list_url"
+    type: Literal["google_list_url", "google_export_csv"]
     url: str | None = None
     path: str | None = None
     title: str | None = None

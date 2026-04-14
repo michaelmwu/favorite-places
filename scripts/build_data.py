@@ -377,9 +377,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
 
     normalized_places: list[NormalizedPlace] = []
     category_counter: Counter[str] = Counter()
+    prefer_enrichment_names = raw.configured_source_type == "google_export_csv"
 
     for place in raw.places:
-        place_id = stable_place_id(place)
+        place_id = stable_place_id(place, source_type=raw.configured_source_type)
         override = place_override_map.get(place_id, {})
         enrichment = coerce_enrichment_place(enrichment_cache.get(place_id))
         primary_category = (
@@ -405,10 +406,13 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             or normalize_business_status(enrichment.business_status)
             or "active"
         )
+        preferred_name = place.name
+        if prefer_enrichment_names and enrichment.display_name:
+            preferred_name = enrichment.display_name
 
         normalized = NormalizedPlace(
             id=place_id,
-            name=as_string(override.get("name")) or enrichment.display_name or place.name,
+            name=as_string(override.get("name")) or preferred_name,
             address=place.address or enrichment.formatted_address,
             lat=place.lat,
             lng=place.lng,
@@ -505,7 +509,7 @@ def enrich_raw_sources(*, force_refresh: bool) -> None:
         cache_payload = load_places_cache(raw_path.stem)
         changed = False
         for place in raw.places:
-            place_id = stable_place_id(place)
+            place_id = stable_place_id(place, source_type=raw.configured_source_type)
             cache_entry = cache_payload.get(place_id)
             refresh_reason = None if force_refresh else cache_refresh_reason(place, cache_entry)
             if not force_refresh and refresh_reason is None:
@@ -522,26 +526,39 @@ def enrich_raw_sources(*, force_refresh: bool) -> None:
             save_places_cache(raw_path.stem, cache_payload)
 
 
-def stable_place_id(place: RawPlace) -> str:
+def stable_place_id(place: RawPlace, *, source_type: str | None = None) -> str:
     cid = place.cid
     if cid:
         return f"cid:{cid}"
-
-    cid_from_url = extract_maps_cid(place.maps_url)
-    if cid_from_url:
-        return f"cid:{cid_from_url}"
 
     google_id = place.google_id
     if google_id:
         normalized = google_id.strip("/").replace("/", "-")
         return f"gid:{normalized}"
 
+    cid_from_url = extract_maps_cid(place.maps_url)
+    if cid_from_url:
+        return f"cid:{cid_from_url}"
+
     maps_place_token = place.maps_place_token or extract_maps_place_token(place.maps_url)
     if maps_place_token:
         return f"gms:{maps_place_token}"
 
+    if source_type == "google_export_csv":
+        maps_url_id = short_maps_url_id(place.maps_url)
+        if maps_url_id:
+            return maps_url_id
+
     fallback = f"{place.name or 'place'}-{place.lat}-{place.lng}"
     return f"slug:{slugify(fallback)}"
+
+
+def short_maps_url_id(maps_url: str | None) -> str | None:
+    normalized_url = as_string(maps_url)
+    if normalized_url is None:
+        return None
+    digest = hashlib.sha256(normalized_url.encode("utf-8")).hexdigest()[:16]
+    return f"url:{digest}"
 
 
 def derive_place_tags(
@@ -1063,7 +1080,7 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    if args.refresh_list and not args.refresh:
+    if (args.refresh_list or args.refresh_force) and not args.refresh:
         args.refresh = True
 
     if args.refresh:
