@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+from typing import Literal
+
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,9 +25,20 @@ class PlacesSettings(BaseSettings):
 
 class SourceConfig(PipelineModel):
     slug: str
-    url: str
+    type: Literal["google_list_url", "google_export_csv"]
+    url: str | None = None
+    path: str | None = None
     title: str | None = None
-    refresh_days: int | None = None
+
+    @model_validator(mode="after")
+    def validate_source_location(self) -> "SourceConfig":
+        if self.type == "google_list_url" and not self.url:
+            raise ValueError("google_list_url sources require `url`")
+        if self.type == "google_export_csv" and not self.path:
+            raise ValueError("google_export_csv sources require `path`")
+        if self.type == "google_export_csv" and not self.title:
+            raise ValueError("google_export_csv sources require `title`")
+        return self
 
 
 class RawPlace(PipelineModel):
@@ -38,13 +51,16 @@ class RawPlace(PipelineModel):
     maps_url: str
     cid: str | None = None
     google_id: str | None = None
+    maps_place_token: str | None = None
 
 
 class RawSavedList(PipelineModel):
     fetched_at: str | None = None
     refresh_after: str | None = None
     source_signature: str | None = None
+    configured_source_type: str | None = None
     configured_source_url: str | None = None
+    configured_source_path: str | None = None
     source_url: str | None = None
     list_id: str | None = None
     title: str | None = None
