@@ -26,7 +26,7 @@ This repo deliberately avoids committing generated build artifacts.
 - `src/data/generated/` is local-only generated site input data.
 - `src/data/overrides/` is the source-controlled layer for handwritten curation.
 - `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
-- In `scripts/config/list_sources.json`, `slug` and `url` are required. `title` is only a fallback if the scraper cannot recover the real title. `refresh_days` is optional.
+- In `scripts/config/list_sources.json`, `slug` and `type` are required. `google_list_url` sources use `url`; `google_export_csv` sources use `path` and `title`. `title` is only optional for `google_list_url` as a fallback if the source data cannot recover the real title.
 
 Merge precedence:
 
@@ -49,15 +49,15 @@ Populate local raw data from public Google Maps lists:
 pnpm run sync:sources
 ```
 
-This refreshes raw sources when needed and then rebuilds generated site data.
+This refreshes every configured source and then rebuilds generated site data. URL sources always re-fetch; CSV sources skip rewrites when their input hash is unchanged.
 
-Force-refresh all configured raw list scrapes:
+Force-refresh all configured raw source imports:
 
 ```bash
 pnpm run sync:sources:force
 ```
 
-Force-refresh one configured raw list by slug or source URL:
+Refresh one configured raw source by slug, source URL, or source path:
 
 ```bash
 pnpm run sync:source -- tokyo-japan
@@ -70,6 +70,7 @@ pnpm run build:data
 ```
 
 Use this when raw snapshots are already current and you only need to regenerate site inputs.
+Configured local CSV sources are auto-imported into `data/raw/<slug>.json` before rebuild. Public URL sources are not refreshed here.
 
 Fill or refresh Google Places enrichment cache:
 
@@ -90,5 +91,5 @@ pnpm run dev
 - Raw place `is_favorite` should flow through as the default top-pick signal.
 - Manual `note` and `top_pick` overrides still win.
 - Google Places cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
-- Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature` so `--refresh` can skip recent scrapes.
+- Raw saved-list snapshots now carry `fetched_at` and `source_signature`; URL sources always re-fetch on `--refresh`, while CSV sources can skip rewrites when the input hash is unchanged.
 - Do not reintroduce tracked generated JSON unless the user explicitly asks for fixture-style examples in git.

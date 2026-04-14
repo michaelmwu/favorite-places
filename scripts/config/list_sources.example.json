@@ -1,7 +1,13 @@
 [
   {
     "slug": "tokyo-japan",
-    "url": "https://maps.app.goo.gl/your-public-list",
-    "refresh_days": 14
+    "type": "google_list_url",
+    "url": "https://maps.app.goo.gl/your-public-list"
+  },
+  {
+    "slug": "taipei-taiwan",
+    "type": "google_export_csv",
+    "path": "data/imports/taipei-taiwan.csv",
+    "title": "Taipei, Taiwan 🇹🇼"
   }
 ]

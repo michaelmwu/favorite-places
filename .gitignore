@@ -7,4 +7,5 @@ dist/
 __pycache__/
 uv.lock
 .env
+.DS_Store
 src/data/generated/

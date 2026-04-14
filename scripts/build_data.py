@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
+import io
 import json
 import math
 import re
@@ -10,6 +12,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -23,7 +26,6 @@ GENERATED_DIR = ROOT / "src" / "data" / "generated"
 GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
-DEFAULT_RAW_REFRESH_TTL = timedelta(days=14)
 DEFAULT_REFRESH_WORKERS = 4
 ERROR_CACHE_TTL = timedelta(days=1)
 UNMATCHED_CACHE_TTL = timedelta(days=3)
@@ -73,7 +75,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--refresh",
         action="store_true",
-        help="Re-scrape configured public Google Maps lists before rebuilding generated JSON.",
+        help="Refresh every configured source before rebuilding generated JSON.",
     )
     parser.add_argument(
         "--headed",
@@ -83,13 +85,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--refresh-force",
         action="store_true",
-        help="Force-refresh raw list scrapes even if the stored list is still within its refresh window.",
+        help="Force-refresh raw sources even if a local file import is unchanged.",
     )
     parser.add_argument(
         "--refresh-list",
         action="append",
         default=[],
-        help="Force-refresh only the configured list matching this slug or source URL. Repeat to target multiple lists.",
+        help="Refresh only the configured source matching this slug, URL, or path. Repeat to target multiple sources.",
     )
     parser.add_argument(
         "--refresh-workers",
@@ -113,7 +115,19 @@ def build_parser() -> argparse.ArgumentParser:
 def load_sources() -> list[SourceConfig]:
     if not CONFIG_PATH.exists():
         return []
-    return TypeAdapter(list[SourceConfig]).validate_json(CONFIG_PATH.read_text(encoding="utf-8"))
+    sources = TypeAdapter(list[SourceConfig]).validate_json(CONFIG_PATH.read_text(encoding="utf-8"))
+    validate_unique_source_slugs(sources)
+    return sources
+
+
+def validate_unique_source_slugs(sources: list[SourceConfig]) -> None:
+    slug_counts = Counter(source.slug for source in sources)
+    duplicate_slugs = sorted(slug for slug, count in slug_counts.items() if count > 1)
+    if not duplicate_slugs:
+        return
+
+    duplicate_text = ", ".join(duplicate_slugs)
+    raise RuntimeError(f"Duplicate source slug(s) in {CONFIG_PATH}: {duplicate_text}")
 
 
 def refresh_raw_sources(
@@ -123,31 +137,33 @@ def refresh_raw_sources(
     refresh_lists: list[str],
     refresh_workers: int,
 ) -> None:
-    if scrape_saved_list is None:
-        raise RuntimeError(
-            "Could not import google_saved_lists. "
-            "Run `uv sync` to install the scraper dependency before using --refresh."
-        )
-
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     sources = load_sources()
     selected_sources = resolve_refresh_sources(sources, refresh_lists)
-    selected_keys = {(source.slug, source.url) for source in selected_sources}
+    selected_slugs = {source.slug for source in selected_sources}
     refresh_jobs: list[tuple[SourceConfig, Path]] = []
 
     for source in sources:
-        if selected_sources and (source.slug, source.url) not in selected_keys:
+        if selected_sources and source.slug not in selected_slugs:
             continue
 
         raw_path = RAW_DIR / f"{source.slug}.json"
         existing_payload = load_raw_saved_list(raw_path)
-        should_force_refresh = force_refresh or bool(selected_sources)
-        skip_reason = None if should_force_refresh else raw_refresh_skip_reason(existing_payload, source)
-        if skip_reason is not None:
-            print(f"Skipping {source.slug} ({skip_reason})")
+
+        if source.type == "google_export_csv":
+            payload = refresh_google_export_csv(
+                source,
+                existing_payload=existing_payload,
+                force_refresh=force_refresh or bool(selected_sources),
+            )
+            if payload is not None:
+                write_json(raw_path, payload)
             continue
 
-        print(f"Refreshing {source.slug} from {source.url}")
+        source_url = source.url
+        if not source_url:
+            raise RuntimeError(f"Configured source {source.slug} is missing a URL.")
+        print(f"Refreshing {source.slug} from {source_url}")
         refresh_jobs.append((source, raw_path))
 
     if not refresh_jobs:
@@ -156,7 +172,7 @@ def refresh_raw_sources(
     max_workers = max(1, refresh_workers)
     if headed or len(refresh_jobs) == 1 or max_workers == 1:
         for source, raw_path in refresh_jobs:
-            write_json(raw_path, scrape_raw_source(source, headed=headed))
+            write_json(raw_path, scrape_google_list_url(source, headed=headed))
         return
 
     max_workers = min(max_workers, len(refresh_jobs))
@@ -166,7 +182,7 @@ def refresh_raw_sources(
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         future_map = {
-            executor.submit(scrape_raw_source, source, headed=False): (source, raw_path)
+            executor.submit(scrape_google_list_url, source, headed=False): (source, raw_path)
             for source, raw_path in refresh_jobs
         }
         for future in as_completed(future_map):
@@ -186,22 +202,46 @@ def refresh_raw_sources(
         raise RuntimeError(f"Raw refresh failed for {len(failures)} source(s):\n{failure_text}")
 
 
-def scrape_raw_source(source: SourceConfig, *, headed: bool) -> RawSavedList:
+def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedList:
     if scrape_saved_list is None:
         raise RuntimeError(
             "Could not import google_saved_lists. "
             "Run `uv sync` to install the scraper dependency before using --refresh."
         )
 
-    result = scrape_saved_list(source.url, headless=not headed)
+    source_url = source.url
+    if not source_url:
+        raise RuntimeError(f"Configured source {source.slug} is missing a URL.")
+
+    result = scrape_saved_list(source_url, headless=not headed)
     payload = RawSavedList.model_validate(result.to_dict())
     if source.title and not payload.title:
         payload.title = source.title
-    stamp_raw_saved_list(payload, source)
+    stamp_raw_saved_list(payload, source, source_signature=raw_source_signature(source))
+    return payload
+
+
+def refresh_google_export_csv(
+    source: SourceConfig,
+    *,
+    existing_payload: RawSavedList | None,
+    force_refresh: bool,
+) -> RawSavedList | None:
+    source_signature = raw_source_signature(source)
+    if not force_refresh and existing_payload is not None and existing_payload.source_signature == source_signature:
+        print(f"Skipping {source.slug} (csv unchanged)")
+        return None
+
+    csv_path = configured_source_path(source)
+    action = "Re-importing" if force_refresh else "Importing"
+    print(f"{action} {source.slug} from {csv_path}")
+    payload = import_saved_list_csv(source)
+    stamp_raw_saved_list(payload, source, source_signature=source_signature)
     return payload
 
 
 def rebuild_generated_data() -> None:
+    sync_local_csv_sources()
     GENERATED_LISTS_DIR.mkdir(parents=True, exist_ok=True)
     guides: list[Guide] = []
     search_index: list[dict[str, Any]] = []
@@ -248,6 +288,127 @@ def rebuild_generated_data() -> None:
     write_json(GENERATED_DIR / "search-index.json", search_index)
 
 
+def sync_local_csv_sources() -> None:
+    for source in load_sources():
+        if source.type != "google_export_csv":
+            continue
+
+        raw_path = RAW_DIR / f"{source.slug}.json"
+        existing_payload = load_raw_saved_list(raw_path)
+        payload = refresh_google_export_csv(
+            source,
+            existing_payload=existing_payload,
+            force_refresh=False,
+        )
+        if payload is None:
+            continue
+
+        write_json(raw_path, payload)
+
+
+def import_saved_list_csv(source: SourceConfig) -> RawSavedList:
+    csv_path = configured_source_path(source)
+    rows = parse_google_export_rows(csv_path)
+    header_index = find_google_export_header_index(rows)
+    if header_index is None:
+        raise RuntimeError(f"Could not find Google export headers in {csv_path}")
+
+    headers = [normalize_csv_header(cell) for cell in rows[header_index]]
+    description = csv_preamble_description(rows[:header_index])
+    places: list[RawPlace] = []
+
+    for row in rows[header_index + 1 :]:
+        if not any(cell.strip() for cell in row):
+            continue
+        row_values = {header: value.strip() for header, value in zip(headers, row, strict=False)}
+        maps_url = as_string(row_values.get("url"))
+        if maps_url is None:
+            continue
+
+        url_name = name_from_maps_url(maps_url)
+        raw_title = as_string(row_values.get("title"))
+        note = combine_place_note(row_values.get("note"), row_values.get("comment"))
+        places.append(
+            RawPlace(
+                name=url_name or raw_title or "Saved place",
+                note=note,
+                maps_url=maps_url,
+                maps_place_token=extract_maps_place_token(maps_url),
+            )
+        )
+
+    return RawSavedList(
+        title=source.title or fallback_source_title(source),
+        description=description,
+        places=places,
+    )
+
+
+def parse_google_export_rows(path: Path) -> list[list[str]]:
+    text = path.read_text(encoding="utf-8-sig", errors="replace")
+    for delimiter in ("\t", ",", ";"):
+        rows = list(csv.reader(io.StringIO(text), delimiter=delimiter))
+        if find_google_export_header_index(rows) is not None:
+            return rows
+    raise RuntimeError(f"Could not detect a supported delimiter for {path}")
+
+
+def find_google_export_header_index(rows: list[list[str]]) -> int | None:
+    for index, row in enumerate(rows):
+        normalized_row = [normalize_csv_header(cell) for cell in row]
+        if normalized_row[:5] == ["title", "note", "url", "tags", "comment"]:
+            return index
+        if normalized_row[:3] == ["title", "note", "url"]:
+            return index
+    return None
+
+
+def normalize_csv_header(value: str) -> str:
+    return value.strip().lower()
+
+
+def csv_preamble_description(rows: list[list[str]]) -> str | None:
+    lines = [" ".join(cell.strip() for cell in row if cell.strip()) for row in rows]
+    lines = [line for line in lines if line]
+    if not lines:
+        return None
+    return "\n".join(lines)
+
+
+def combine_place_note(note: Any, comment: Any) -> str | None:
+    note_parts = [as_string(note), as_string(comment)]
+    combined = [part for part in note_parts if part]
+    if not combined:
+        return None
+    return "\n\n".join(combined)
+
+
+def name_from_maps_url(maps_url: str) -> str | None:
+    match = re.search(r"/place/([^/]+)/data=", maps_url)
+    if not match:
+        return None
+    candidate = unquote(match.group(1).replace("+", " "))
+    return as_string(candidate)
+
+
+def extract_maps_cid(maps_url: str | None) -> str | None:
+    if maps_url is None:
+        return None
+    match = re.search(r"[?&]cid=(\d+)", maps_url)
+    if not match:
+        return None
+    return match.group(1)
+
+
+def extract_maps_place_token(maps_url: str | None) -> str | None:
+    if maps_url is None:
+        return None
+    match = re.search(r"(0x[0-9a-fA-F]+:0x[0-9a-fA-F]+)", maps_url)
+    if not match:
+        return None
+    return match.group(1).lower()
+
+
 def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str, EnrichmentCacheEntry]) -> Guide:
     list_override = read_json(LIST_OVERRIDES_DIR / f"{slug}.json")
     place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
@@ -265,9 +426,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
 
     normalized_places: list[NormalizedPlace] = []
     category_counter: Counter[str] = Counter()
+    prefer_enrichment_names = raw.configured_source_type == "google_export_csv"
 
     for place in raw.places:
-        place_id = stable_place_id(place)
+        place_id = stable_place_id(place, source_type=raw.configured_source_type)
         override = place_override_map.get(place_id, {})
         enrichment = coerce_enrichment_place(enrichment_cache.get(place_id))
         primary_category = (
@@ -293,10 +455,13 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             or normalize_business_status(enrichment.business_status)
             or "active"
         )
+        preferred_name = place.name
+        if prefer_enrichment_names and enrichment.display_name:
+            preferred_name = enrichment.display_name
 
         normalized = NormalizedPlace(
             id=place_id,
-            name=place.name,
+            name=as_string(override.get("name")) or preferred_name,
             address=place.address or enrichment.formatted_address,
             lat=place.lat,
             lng=place.lng,
@@ -393,7 +558,7 @@ def enrich_raw_sources(*, force_refresh: bool) -> None:
         cache_payload = load_places_cache(raw_path.stem)
         changed = False
         for place in raw.places:
-            place_id = stable_place_id(place)
+            place_id = stable_place_id(place, source_type=raw.configured_source_type)
             cache_entry = cache_payload.get(place_id)
             refresh_reason = None if force_refresh else cache_refresh_reason(place, cache_entry)
             if not force_refresh and refresh_reason is None:
@@ -410,7 +575,7 @@ def enrich_raw_sources(*, force_refresh: bool) -> None:
             save_places_cache(raw_path.stem, cache_payload)
 
 
-def stable_place_id(place: RawPlace) -> str:
+def stable_place_id(place: RawPlace, *, source_type: str | None = None) -> str:
     cid = place.cid
     if cid:
         return f"cid:{cid}"
@@ -420,8 +585,29 @@ def stable_place_id(place: RawPlace) -> str:
         normalized = google_id.strip("/").replace("/", "-")
         return f"gid:{normalized}"
 
+    cid_from_url = extract_maps_cid(place.maps_url)
+    if cid_from_url:
+        return f"cid:{cid_from_url}"
+
+    maps_place_token = place.maps_place_token or extract_maps_place_token(place.maps_url)
+    if maps_place_token:
+        return f"gms:{maps_place_token}"
+
+    if source_type == "google_export_csv":
+        maps_url_id = short_maps_url_id(place.maps_url)
+        if maps_url_id:
+            return maps_url_id
+
     fallback = f"{place.name or 'place'}-{place.lat}-{place.lng}"
     return f"slug:{slugify(fallback)}"
+
+
+def short_maps_url_id(maps_url: str | None) -> str | None:
+    normalized_url = as_string(maps_url)
+    if normalized_url is None:
+        return None
+    digest = hashlib.sha256(normalized_url.encode("utf-8")).hexdigest()[:16]
+    return f"url:{digest}"
 
 
 def derive_place_tags(
@@ -571,53 +757,50 @@ def google_places_api_key() -> str | None:
     return PlacesSettings().google_places_api_key
 
 
+def configured_source_path(source: SourceConfig) -> Path:
+    if not source.path:
+        raise RuntimeError(f"Configured source {source.slug} is missing a path.")
+    path = Path(source.path).expanduser()
+    if not path.is_absolute():
+        path = ROOT / path
+    return path
+
+
+def fallback_source_title(source: SourceConfig) -> str:
+    if source.title:
+        return source.title
+    if source.path:
+        stem = Path(source.path).stem
+    elif source.url:
+        stem = source.slug
+    else:
+        stem = "saved-list"
+    return stem.replace("-", " ").replace("_", " ").title()
+
+
 def raw_source_signature(source: SourceConfig) -> str:
     payload = {
         "slug": source.slug,
+        "type": source.type,
         "url": source.url,
+        "path": source.path,
         "title": source.title,
-        "refresh_days": source.refresh_days,
     }
+    if source.type == "google_export_csv":
+        path = configured_source_path(source)
+        payload["content_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
     serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
-def raw_refresh_ttl(source: SourceConfig) -> timedelta:
-    refresh_days = source.refresh_days
-    if isinstance(refresh_days, int) and refresh_days > 0:
-        return timedelta(days=refresh_days)
-    return DEFAULT_RAW_REFRESH_TTL
-
-
-def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig) -> None:
+def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig, *, source_signature: str) -> None:
     fetched_at = datetime.now(UTC)
     payload.fetched_at = fetched_at.isoformat()
-    payload.refresh_after = (fetched_at + raw_refresh_ttl(source)).isoformat()
-    payload.source_signature = raw_source_signature(source)
+    payload.refresh_after = None
+    payload.source_signature = source_signature
+    payload.configured_source_type = source.type
     payload.configured_source_url = source.url
-
-
-def raw_refresh_skip_reason(payload: RawSavedList | None, source: SourceConfig) -> str | None:
-    if payload is None:
-        return None
-    if payload.source_signature != raw_source_signature(source):
-        return None
-    if payload.refresh_after:
-        try:
-            refresh_after_dt = datetime.fromisoformat(payload.refresh_after)
-        except ValueError:
-            return None
-        if datetime.now(UTC) < refresh_after_dt:
-            return f"fresh until {payload.refresh_after}"
-        return None
-    if payload.fetched_at:
-        try:
-            fetched_at_dt = datetime.fromisoformat(payload.fetched_at)
-        except ValueError:
-            return None
-        if datetime.now(UTC) - fetched_at_dt < raw_refresh_ttl(source):
-            return f"fresh from {payload.fetched_at}"
-    return None
+    payload.configured_source_path = source.path
 
 
 def resolve_refresh_sources(sources: list[SourceConfig], selectors: list[str]) -> list[SourceConfig]:
@@ -629,10 +812,15 @@ def resolve_refresh_sources(sources: list[SourceConfig], selectors: list[str]) -
     missing_selectors = set(normalized_selectors)
 
     for source in sources:
-        if source.slug in normalized_selectors or source.url in normalized_selectors:
+        if (
+            source.slug in normalized_selectors
+            or source.url in normalized_selectors
+            or source.path in normalized_selectors
+        ):
             matched_sources.append(source)
             missing_selectors.discard(source.slug)
             missing_selectors.discard(source.url)
+            missing_selectors.discard(source.path)
 
     if missing_selectors:
         missing_text = ", ".join(sorted(missing_selectors))
@@ -675,8 +863,10 @@ def place_input_signature(place: RawPlace) -> str:
         "address": place.address,
         "lat": place.lat,
         "lng": place.lng,
+        "maps_url": place.maps_url,
         "cid": place.cid,
         "google_id": place.google_id,
+        "maps_place_token": place.maps_place_token,
     }
     serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
@@ -939,7 +1129,7 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    if args.refresh_list and not args.refresh:
+    if (args.refresh_list or args.refresh_force) and not args.refresh:
         args.refresh = True
 
     if args.refresh:
@@ -951,6 +1141,7 @@ def main() -> int:
         )
 
     if args.enrich or args.refresh_enrichment:
+        sync_local_csv_sources()
         enrich_raw_sources(force_refresh=args.refresh_enrichment)
 
     rebuild_generated_data()
