@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-14T06:12:03.535852+00:00",
-  "refresh_after": "2026-04-28T06:12:03.535852+00:00",
+  "fetched_at": "2026-04-14T09:00:45.914467+00:00",
+  "refresh_after": "2026-04-28T09:00:45.914467+00:00",
   "source_signature": "f4b311f79f885c89f764821dbd87848f59e1a414bb9f058160f80fcafdb19091",
   "configured_source_url": "https://maps.app.goo.gl/8Z8NbWQEStXEDXzH7",
   "source_url": "https://maps.app.goo.gl/8Z8NbWQEStXEDXzH7",
@@ -526,10 +526,10 @@
       "google_id": "/g/11rqps6rnz"
     },
     {
-      "name": "/m/02w4g7c",
+      "name": "Treasure Hill Artist Village",
       "address": "No. 2, Alley 14, Lane 230, Section 3, Tingzhou Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.010751799999998,
       "lng": 121.53224689999999,
       "maps_url": "https://maps.google.com/?cid=3765758529043306013",
@@ -823,10 +823,10 @@
       "google_id": "/g/1hc21j44g"
     },
     {
-      "name": "104, Taiwan, Taipei City, Zhongshan District, Section 1, Nanjing E Rd, 24號蜀川香 酸菜魚-台北南京店2樓",
+      "name": "蜀川香 酸菜魚-台北南京店",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Section 1, Nanjing E Rd, 24號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0519003,
       "lng": 121.52367459999999,
       "maps_url": "https://maps.google.com/?cid=3765758837290206919",
@@ -878,10 +878,10 @@
       "google_id": "/g/11twngb3th"
     },
     {
-      "name": "104, Taiwan, Taipei City, Zhongshan District, Lane 26, Section 2, Zhongshan N Rd, 18號一時無酉 abvless （預約制 Reservation only）",
+      "name": "一時無酉 abvless （預約制 Reservation only）",
       "address": "No. 18號, Lane 26, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.049375299999998,
       "lng": 121.5211499,
       "maps_url": "https://maps.google.com/?cid=3765758628022679621",
@@ -900,10 +900,10 @@
       "google_id": "/g/11bt_j3kb8"
     },
     {
-      "name": "242, Taiwan, New Taipei City, Xinzhuang District, Zhongzheng Rd, 80-1號新濠食府會館號B1",
+      "name": "新濠食府會館",
       "address": "242, Taiwan, New Taipei City, Xinzhuang District, Zhongzheng Rd, 80-1號號B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.037841099999998,
       "lng": 121.4581747,
       "maps_url": "https://maps.google.com/?cid=3765758407419440521",
@@ -911,10 +911,10 @@
       "google_id": "/g/11mbhr7wqx"
     },
     {
-      "name": "Dong Guan Beef Noodles, No. 15號, Lane 109, Section 3, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Dong Guan Beef Noodles",
       "address": "No. 15號, Lane 109, Section 3, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0530217,
       "lng": 121.5400296,
       "maps_url": "https://maps.google.com/?cid=3765760829668683539",
@@ -922,10 +922,10 @@
       "google_id": "/g/11j0yfkp5l"
     },
     {
-      "name": "Xi Shu Zhuan Beef Noodle Restaurant, No. 78之2號, Lane 120, Dunhua N Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "Xi Shu Zhuan Beef Noodle Restaurant",
       "address": "No. 78之2號, Lane 120, Dunhua N Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0542551,
       "lng": 121.5463286,
       "maps_url": "https://maps.google.com/?cid=3765761249973163319",
@@ -933,10 +933,10 @@
       "google_id": "/g/1tf26c6t"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 3, Zhongxiao E Rd, 268號Bibber Dessert Bar 酒徒的點心店 新光三越Diamond Towers4樓",
+      "name": "Bibber Dessert Bar 酒徒的點心店 新光三越Diamond Towers",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 3, Zhongxiao E Rd, 268號4樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041465499999997,
       "lng": 121.54213969999999,
       "maps_url": "https://maps.google.com/?cid=3765760541840060181",
@@ -944,10 +944,10 @@
       "google_id": "/g/11wbjj95sr"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Section 4, Xinyi Road, 397號Bibber Dessert Bar · 酒徒的點心店 by Vivid Hermit Saloon Co., Ltd",
+      "name": "Bibber Dessert Bar · 酒徒的點心店 by Vivid Hermit Saloon Co., Ltd",
       "address": "No. 397號, Section 4, Xinyi Road, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.033362,
       "lng": 121.5586416,
       "maps_url": "https://maps.google.com/?cid=3765760892885043283",
@@ -977,10 +977,10 @@
       "google_id": "/g/1q62hc65s"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Lane 310, Linsen N Rd, 27號世界豆漿大王",
+      "name": "世界豆漿大王",
       "address": "No. 27號, Lane 310, Linsen N Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0563793,
       "lng": 121.5246887,
       "maps_url": "https://maps.google.com/?cid=3765758503019922117",
@@ -999,10 +999,10 @@
       "google_id": "/g/11wtkpb6lv"
     },
     {
-      "name": "/m/0ynrlrx",
+      "name": "Mongolian and Tibetan Cultural Center",
       "address": "Mongolian and Tibetan Cultural Center, No. 3, Lane 8, Qingtian St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.027723599999998,
       "lng": 121.53131649999999,
       "maps_url": "https://maps.google.com/?cid=3765758634120450271",
@@ -1010,10 +1010,10 @@
       "google_id": null
     },
     {
-      "name": "Chun Mei Ice Shop, No. 54號, Lane 120, Dunhua N Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "Chun Mei Ice Shop",
       "address": "No. 54號, Lane 120, Dunhua N Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.054000799999997,
       "lng": 121.54666119999999,
       "maps_url": "https://maps.google.com/?cid=3765761250036819855",
@@ -1043,10 +1043,10 @@
       "google_id": "/g/11fp53j69k"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 2, Keelung Rd, 134號ND.Official Nadarrach",
+      "name": "ND.Official Nadarrach",
       "address": "No. 134號, Section 2, Keelung Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0286032,
       "lng": 121.5567296,
       "maps_url": "https://maps.google.com/?cid=3765761167946662089",
@@ -1054,10 +1054,10 @@
       "google_id": "/g/11q3n6k4rn"
     },
     {
-      "name": "104008, Taiwan, Taipei City, Zhongshan District, Linsen N Rd, 153號少帥東北麻辣拌-麻辣、滷味、小吃（台北林森店）",
+      "name": "少帥東北麻辣拌-麻辣、滷味、小吃（台北林森店）",
       "address": "No. 153號, Linsen N Rd, Zhongshan District, Taipei City, Taiwan 104008",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0516173,
       "lng": 121.5254021,
       "maps_url": "https://maps.google.com/?cid=3765759121994390443",
@@ -1098,10 +1098,10 @@
       "google_id": "/g/11jq1s_r3s"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Jilin Rd, 79號好記擔仔麵",
+      "name": "好記擔仔麵",
       "address": "No. 79號, Jilin Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0551818,
       "lng": 121.530249,
       "maps_url": "https://maps.google.com/?cid=3765758499815841549",
@@ -1131,10 +1131,10 @@
       "google_id": "/g/11lgkt1wjr"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, Lane 96, Kunming St, 6-1號門前隱味牛肉麵 西門昆明店",
+      "name": "門前隱味牛肉麵 西門昆明店",
       "address": "No. 6-1號, Lane 96, Kunming St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044706299999998,
       "lng": 121.5049166,
       "maps_url": "https://maps.google.com/?cid=3765758057707650323",
@@ -1186,10 +1186,10 @@
       "google_id": "/g/11byxhkn64"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 107, Section 1, Fuxing S Rd, 16號上善豆家 DeliSoys",
+      "name": "上善豆家 DeliSoys",
       "address": "No. 16號, Lane 107, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0434816,
       "lng": 121.545194,
       "maps_url": "https://maps.google.com/?cid=3765761192578305553",
@@ -1197,10 +1197,10 @@
       "google_id": "/g/11f3ckmc7p"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lishui St, 1之3號豐盛食堂",
+      "name": "豐盛食堂",
       "address": "No. 1之3號, Lishui St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0324667,
       "lng": 121.5291407,
       "maps_url": "https://maps.google.com/?cid=3765758615617716215",
@@ -1208,10 +1208,10 @@
       "google_id": "/g/1vq9j_23"
     },
     {
-      "name": "100022, Taiwan, Taipei City, Zhongzheng District, Tai'an St, 8號NOBUO",
+      "name": "NOBUO",
       "address": "No. 8號, Tai'an St, Zhongzheng District, Taipei City, Taiwan 100022",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039964899999998,
       "lng": 121.5279377,
       "maps_url": "https://maps.google.com/?cid=3765759104663122205",
@@ -1241,10 +1241,10 @@
       "google_id": null
     },
     {
-      "name": "一樓 Pàng Taqueria / PÀNG TACO / 胖 塔可利亞, No. 181號, Wenchang St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Pàng Taqueria / PÀNG TACO / 胖 塔可利亞",
       "address": "106, Taiwan, Taipei City, Da’an District, Wenchang St, 181號一樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0325348,
       "lng": 121.5536508,
       "maps_url": "https://maps.google.com/?cid=3765760786493316829",
@@ -1252,10 +1252,10 @@
       "google_id": "/g/11try98lf8"
     },
     {
-      "name": "10091, Taiwan, Taipei City, Zhongzheng District, Lane 104, Section 3, Tingzhou Rd, 9號泰好吃泰國船麵",
+      "name": "泰好吃泰國船麵",
       "address": "No. 9號, Lane 104, Section 3, Tingzhou Rd, Zhongzheng District, Taipei City, Taiwan 10091",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.013834499999998,
       "lng": 121.53333749999999,
       "maps_url": "https://maps.google.com/?cid=3765759067457016901",
@@ -1285,10 +1285,10 @@
       "google_id": "/g/11cmt91fmw"
     },
     {
-      "name": "Remember Me Café, No. 16號, Alley 4, Lane 133, Section 4, Nanjing E Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "Remember Me Café",
       "address": "No. 16號, Alley 4, Lane 133, Section 4, Nanjing E Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.052356999999997,
       "lng": 121.554531,
       "maps_url": "https://maps.google.com/?cid=3765761260693109745",
@@ -1296,10 +1296,10 @@
       "google_id": "/g/11bt_j7q66"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 2, Jinshan S Rd, 25-1號饃饃噠心動肉夾饃（台北永康店）",
+      "name": "饃饃噠心動肉夾饃（台北永康店）",
       "address": "No. 25-1號, Section 2, Jinshan S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0332106,
       "lng": 121.52732189999999,
       "maps_url": "https://maps.google.com/?cid=3765758281073189985",
@@ -1340,10 +1340,10 @@
       "google_id": null
     },
     {
-      "name": "Shih Chia Big Rice Ball, No. 58號, Section 3, Yanping N Rd, Datong District, Taipei City, Taiwan 103",
+      "name": "Shih Chia Big Rice Ball",
       "address": "No. 58號, Section 3, Yanping N Rd, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.065153,
       "lng": 121.5109816,
       "maps_url": "https://maps.google.com/?cid=3765758325745123663",
@@ -1373,7 +1373,7 @@
       "google_id": null
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 25, Lane 300, Section 4, Ren'ai Rd, 6號Lin Restaurant",
+      "name": "Lin Restaurant",
       "address": "No. 6號, Alley 25, Lane 300, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1384,7 +1384,7 @@
       "google_id": "/g/11vljzbqk4"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Lane 26, Songjiang Rd, 36號沐光 Moonlight",
+      "name": "沐光 Moonlight",
       "address": "No. 36號, Lane 26, Songjiang Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
       "is_favorite": true,
@@ -1450,7 +1450,7 @@
       "google_id": "/g/1td78vsc"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Xinyi Road, 175號de nuit",
+      "name": "de nuit",
       "address": "No. 175號, Section 4, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1461,7 +1461,7 @@
       "google_id": "/g/11j029xbgh"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 190, Section 1, Dunhua S Rd, 54號akeruE Dessert",
+      "name": "akeruE Dessert",
       "address": "No. 54號, Lane 190, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1472,7 +1472,7 @@
       "google_id": "/g/11j_2wsxnh"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 160, Section 1, Dunhua S Rd, 56號房間餐酒 The Room Bistro",
+      "name": "房間餐酒 The Room Bistro",
       "address": "No. 56號, Lane 160, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1483,7 +1483,7 @@
       "google_id": "/g/11fr11_tfc"
     },
     {
-      "name": "Mountain & Sea House Restaurant, No. 94號, Section 2, Ren'ai Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Mountain & Sea House Restaurant",
       "address": "No. 94號, Section 2, Ren'ai Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
       "is_favorite": true,
@@ -1494,7 +1494,7 @@
       "google_id": "/g/12m9bs4lr"
     },
     {
-      "name": "Golden Formosa Taiwanese Cuisine, No. 101, Tianmu E Rd, Shilin District, Taipei City, Taiwan 111",
+      "name": "Golden Formosa Taiwanese Cuisine",
       "address": "No. 101, Tianmu E Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
       "is_favorite": true,
@@ -1549,10 +1549,10 @@
       "google_id": "/g/11k6y65h_q"
     },
     {
-      "name": "MUME, No. 28, Siwei Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "MUME",
       "address": "No. 28, Siwei Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.036327999999997,
       "lng": 121.5480721,
       "maps_url": "https://maps.google.com/?cid=3765761156405436839",
@@ -1560,7 +1560,7 @@
       "google_id": "/g/11b6tsn4kq"
     },
     {
-      "name": "ZEA, No. 5號, Alley 20, Lane 300, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "ZEA",
       "address": "No. 5號, Alley 20, Lane 300, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1571,7 +1571,7 @@
       "google_id": "/g/11syzwdjbl"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 190, Section 1, Dunhua S Rd, 31號P.s. I Love You Bar & Bistro1F",
+      "name": "P.s. I Love You Bar & Bistro",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 190, Section 1, Dunhua S Rd, 31號1F",
       "note": null,
       "is_favorite": true,
@@ -1593,7 +1593,7 @@
       "google_id": "/g/11s3vljgpp"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 5, Lane 107, Section 1, Fuxing S Rd, 10號ROOM by Le Kief1樓",
+      "name": "ROOM by Le Kief",
       "address": "106, Taiwan, Taipei City, Da’an District, Alley 5, Lane 107, Section 1, Fuxing S Rd, 10號1樓",
       "note": null,
       "is_favorite": true,
@@ -1604,7 +1604,7 @@
       "google_id": "/g/11f7r5p1h1"
     },
     {
-      "name": "Addiction Aquatic Development, No. 18號, Alley 2, Lane 410, Minzu E Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Addiction Aquatic Development",
       "address": "No. 18號, Alley 2, Lane 410, Minzu E Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
       "is_favorite": true,
@@ -1615,7 +1615,7 @@
       "google_id": "/g/11h01dp79"
     },
     {
-      "name": "Huashan 1914 Creative Park, No. 1, Section 1, Bade Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Huashan 1914 Creative Park",
       "address": "No. 1, Section 1, Bade Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
       "is_favorite": true,
@@ -1626,7 +1626,7 @@
       "google_id": null
     },
     {
-      "name": "Indulge Experimental Bistro, No. 11, Lane 219, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Indulge Experimental Bistro",
       "address": "No. 11, Lane 219, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1637,7 +1637,7 @@
       "google_id": "/g/1tp8xr4b"
     },
     {
-      "name": "2樓 Fuhang Soy Milk, No. 108, Section 1, Zhongxiao E Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Fuhang Soy Milk",
       "address": "100, Taiwan, Taipei City, Zhongzheng District, Section 1, Zhongxiao E Rd, 108號2樓",
       "note": null,
       "is_favorite": true,
@@ -1648,7 +1648,7 @@
       "google_id": "/g/11cjhz0qt7"
     },
     {
-      "name": "The 雞 Spot, No. 7號, Lane 190, Section 1, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "The 雞 Spot",
       "address": "No. 7號, Lane 190, Section 1, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
       "is_favorite": true,
@@ -1681,7 +1681,7 @@
       "google_id": null
     },
     {
-      "name": "1樓 Draft Land, No. 2, Lane 248, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Draft Land",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 248, Section 4, Zhongxiao E Rd, 2號1樓",
       "note": null,
       "is_favorite": true,
@@ -1692,7 +1692,7 @@
       "google_id": "/g/11gfh9z668"
     },
     {
-      "name": "1樓 Book ing bar, No. 10號, Alley 15, Lane 345, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Book ing bar",
       "address": "106, Taiwan, Taipei City, Da’an District, Alley 15, Lane 345, Section 4, Ren'ai Rd, 10號1樓",
       "note": null,
       "is_favorite": true,
@@ -1714,7 +1714,7 @@
       "google_id": "/g/1tdjnvnl"
     },
     {
-      "name": "Jin Feng Braised Pork Rice, No. 10, Section 1, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Jin Feng Braised Pork Rice",
       "address": "No. 10, Section 1, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
       "is_favorite": true,
@@ -1725,7 +1725,7 @@
       "google_id": "/g/1tj98pyk"
     },
     {
-      "name": "Marco Polo Lounge, No. 201, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Marco Polo Lounge",
       "address": "No. 201, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1736,7 +1736,7 @@
       "google_id": "/g/1hhn6j6fy"
     },
     {
-      "name": "天香樓 Tien Hsiang Lo b1 No. 41號, Section 2, Minquan E Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "天香樓 Tien Hsiang Lo",
       "address": "b1 No. 41號, Section 2, Minquan E Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
       "is_favorite": true,
@@ -1747,7 +1747,7 @@
       "google_id": "/g/1tfdb4nk"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Guangfu S Rd, 553號tei by OBOND",
+      "name": "tei by OBOND",
       "address": "No. 553號, Guangfu S Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
       "is_favorite": true,
@@ -1758,7 +1758,7 @@
       "google_id": "/g/11lfqdpf7r"
     },
     {
-      "name": "Ounce Taipei, No. 309號, Section 4, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
+      "name": "Ounce Taipei",
       "address": "No. 309號, Section 4, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1769,7 +1769,7 @@
       "google_id": "/g/11b7cmjknq"
     },
     {
-      "name": "Raohe Street Night Market, Raohe St, Songshan District, Taipei City, Taiwan 105",
+      "name": "Raohe Street Night Market",
       "address": "Raohe St, Songshan District, Taipei City, Taiwan 105",
       "note": null,
       "is_favorite": true,
@@ -1780,10 +1780,10 @@
       "google_id": null
     },
     {
-      "name": "The Master Spicy Noodle Zhongshan Restaurant, No. 36, Lane 42, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "The Master Spicy Noodle Zhongshan Restaurant",
       "address": "No. 36, Lane 42, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.054610999999998,
       "lng": 121.520877,
       "maps_url": "https://maps.google.com/?cid=3765758508777164387",
@@ -1791,7 +1791,7 @@
       "google_id": "/g/11g8k_nd9v"
     },
     {
-      "name": "10F WOOBAR, No. 10號, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "WOOBAR",
       "address": "110, Taiwan, Taipei City, Xinyi District, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, 10號10F",
       "note": null,
       "is_favorite": true,
@@ -1802,10 +1802,10 @@
       "google_id": "/g/1tg4j22f"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Alley 25, Lane 118, Wuxing St, 12號辣王忠麻辣乾麵 KingSpicy J",
+      "name": "辣王忠麻辣乾麵 KingSpicy J",
       "address": "No. 12號, Alley 25, Lane 118, Wuxing St, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0292241,
       "lng": 121.56049809999999,
       "maps_url": "https://maps.google.com/?cid=3765761032489579465",
@@ -1813,7 +1813,7 @@
       "google_id": "/g/1ptygrd8p"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Ren'ai Rd, 409號 Lab",
+      "name": "Lab",
       "address": "No. 409號, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1824,7 +1824,7 @@
       "google_id": "/g/11mvjrcpl5"
     },
     {
-      "name": "B1 Gēn Creative, No. 24號, Lane 63, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Gēn Creative",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 63, Section 2, Dunhua S Rd, 24號B1",
       "note": null,
       "is_favorite": true,
@@ -1835,10 +1835,10 @@
       "google_id": "/g/11b809f5l5"
     },
     {
-      "name": "YEN Bar 紫艷酒吧, No. 10號, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "YEN Bar 紫艷酒吧",
       "address": "No. 10號, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0407999,
       "lng": 121.56556619999999,
       "maps_url": "https://maps.google.com/?cid=3765761186207381161",
@@ -1846,7 +1846,7 @@
       "google_id": "/g/11k16j28_t"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Section 2, Keelung Rd, 12號榕 RON Xinyi",
+      "name": "榕 RON Xinyi",
       "address": "No. 12號, Section 2, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
       "is_favorite": true,
@@ -1857,7 +1857,7 @@
       "google_id": "/g/11f10dzn2f"
     },
     {
-      "name": "VILLA 32, No. 32號, Zhongshan Rd, Beitou District, Taipei City, Taiwan 112",
+      "name": "VILLA 32",
       "address": "No. 32號, Zhongshan Rd, Beitou District, Taipei City, Taiwan 112",
       "note": null,
       "is_favorite": true,
@@ -1868,7 +1868,7 @@
       "google_id": "/g/1tlnb3jx"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Lane 56, Section 1, Xinsheng S Rd, 8號The Primrose(Bar春花)",
+      "name": "The Primrose(Bar春花)",
       "address": "No. 8號, Lane 56, Section 1, Xinsheng S Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
       "is_favorite": true,
@@ -1890,7 +1890,7 @@
       "google_id": "/g/11h074vtwz"
     },
     {
-      "name": "10681, Taiwan, Taipei City, Da’an District, Section 4, Xinyi Road, 143號The Public House一樓",
+      "name": "The Public House",
       "address": "10681, Taiwan, Taipei City, Da’an District, Section 4, Xinyi Road, 143號一樓",
       "note": null,
       "is_favorite": true,
@@ -1901,7 +1901,7 @@
       "google_id": "/g/11kf9tbsjx"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Da'an Rd, 172號Fa Burger",
+      "name": "Fa Burger",
       "address": "No. 172號, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1912,7 +1912,7 @@
       "google_id": "/g/11n5gqkzl6"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Guisui St, 218-1號ASABAN TEA 大稻埕 (預約制 reservation only)4樓",
+      "name": "ASABAN TEA 大稻埕 (預約制 reservation only)",
       "address": "103, Taiwan, Taipei City, Datong District, Guisui St, 218-1號4樓",
       "note": null,
       "is_favorite": true,
@@ -1923,7 +1923,7 @@
       "google_id": "/g/11rk6cw6fd"
     },
     {
-      "name": "Ya Ge, No. 158, DunHua N Rd, Songshan District, Taipei City, Taiwan 10548",
+      "name": "Ya Ge",
       "address": "No. 158, DunHua N Rd, Songshan District, Taipei City, Taiwan 10548",
       "note": null,
       "is_favorite": true,
@@ -1934,7 +1934,7 @@
       "google_id": "/g/11b635d8n8"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 5, Lane 70, Yanji St, 1號Merry Dessert",
+      "name": "Merry Dessert",
       "address": "No. 1號, Alley 5, Lane 70, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1945,7 +1945,7 @@
       "google_id": "/g/11rcwf0wyb"
     },
     {
-      "name": "Potions Magic Bar, No. 55-1號, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106057",
+      "name": "Potions Magic Bar",
       "address": "No. 55-1號, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106057",
       "note": null,
       "is_favorite": true,
@@ -1956,7 +1956,7 @@
       "google_id": "/g/11ns9wggrq"
     },
     {
-      "name": "2樓 Alchemy Speakeasy Bar Taipei, No. 16-1號, Section 5, Xinyi Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Alchemy Speakeasy Bar Taipei",
       "address": "110, Taiwan, Taipei City, Xinyi District, Section 5, Xinyi Rd, 16-1號2樓",
       "note": null,
       "is_favorite": true,
@@ -1967,7 +1967,7 @@
       "google_id": "/g/11b637tc28"
     },
     {
-      "name": "AHA Saloon, No. 138, Section 2, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "AHA Saloon",
       "address": "No. 138, Section 2, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1978,7 +1978,7 @@
       "google_id": "/g/11g9qbzhfg"
     },
     {
-      "name": "Le Blanc Taipei, No. 183, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Le Blanc Taipei",
       "address": "No. 183, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -1989,7 +1989,7 @@
       "google_id": "/g/11cjg4fpzl"
     },
     {
-      "name": "10680, Taiwan, Taipei City, Da’an District, Section 2, Anhe Rd, 27號無向 Bar Without Anhe",
+      "name": "無向 Bar Without Anhe",
       "address": "No. 27號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 10680",
       "note": null,
       "is_favorite": true,
@@ -2000,7 +2000,7 @@
       "google_id": "/g/11h77p5vz3"
     },
     {
-      "name": "Placebo 安慰劑小酒館, No. 83, Section 2, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Placebo 安慰劑小酒館",
       "address": "No. 83, Section 2, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
       "is_favorite": true,
@@ -2011,7 +2011,7 @@
       "google_id": "/g/11crydqv8w"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 3, Xinyi Road, 160號隱城•小城外Hidden City",
+      "name": "隱城•小城外Hidden City",
       "address": "No. 160號, Section 3, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -2022,7 +2022,7 @@
       "google_id": "/g/11j5knzk2g"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 81, Section 2, Dunhua S Rd, 20號燈燈庵 Tou Tou An",
+      "name": "燈燈庵 Tou Tou An",
       "address": "No. 20號, Lane 81, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -2033,7 +2033,7 @@
       "google_id": "/g/1hc10l1qq"
     },
     {
-      "name": "Longtail, No. 174號, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Longtail",
       "address": "No. 174號, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
       "is_favorite": true,
@@ -2055,7 +2055,7 @@
       "google_id": null
     },
     {
-      "name": "3F EAST END, No. 56號, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "EAST END",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 1, Da'an Rd, 56號3F",
       "note": null,
       "is_favorite": true,
@@ -2066,10 +2066,10 @@
       "google_id": "/g/11c3vwfwxb"
     },
     {
-      "name": "2 樓 Tempura Sugimura, No. 199號, Lequn 2nd Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Tempura Sugimura",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Lequn 2nd Rd, 199號2 樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0801955,
       "lng": 121.55913319999999,
       "maps_url": "https://maps.google.com/?cid=3765762454232410521",
@@ -2077,10 +2077,10 @@
       "google_id": "/g/11vs9v9_fz"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Alley 6, Lane 18, Nanjing W Rd, 8之1號川渝小吃坊",
+      "name": "川渝小吃坊",
       "address": "No. 8之1號, Alley 6, Lane 18, Nanjing W Rd, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0520067,
       "lng": 121.51964199999999,
       "maps_url": "https://maps.google.com/?cid=3765758520242729609",
@@ -2088,10 +2088,10 @@
       "google_id": "/g/11ddxrwxph"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Yanji St, 242之1號疆羊大道",
+      "name": "疆羊大道",
       "address": "No. 242之1號, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.035734899999998,
       "lng": 121.5555892,
       "maps_url": "https://maps.google.com/?cid=3765761097202793067",
@@ -2099,10 +2099,10 @@
       "google_id": "/g/1tfb_qmb"
     },
     {
-      "name": "157之1號 Tonight Bistro., Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Tonight Bistro.",
       "address": "106, Taiwan, Taipei City, Da’an District, Yanji St, 157之1號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0396499,
       "lng": 121.55506199999999,
       "maps_url": "https://maps.google.com/?cid=3765760869286666187",
@@ -2110,10 +2110,10 @@
       "google_id": "/g/11s4h3m2_5"
     },
     {
-      "name": "111, Taiwan, Taipei City, Shilin District, Qiangang St, 6號Le Flam 樂芙坊",
+      "name": "Le Flam 樂芙坊",
       "address": "No. 6號, Qiangang St, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0846563,
       "lng": 121.52305679999999,
       "maps_url": "https://maps.google.com/?cid=3765764316293651187",
@@ -2121,10 +2121,10 @@
       "google_id": "/g/11b90kxp9v"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Lane 167, Section 2, Bade Rd, 30號LE PUSS（目前裝修中，暫停營業）",
+      "name": "LE PUSS（目前裝修中，暫停營業）",
       "address": "No. 30號, Lane 167, Section 2, Bade Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.048078999999998,
       "lng": 121.5379026,
       "maps_url": "https://maps.google.com/?cid=3765760770410785423",
@@ -2198,10 +2198,10 @@
       "google_id": null
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Dongfeng St, 67號Monkie",
+      "name": "Monkie",
       "address": "No. 67號, Dongfeng St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.036125499999997,
       "lng": 121.54768299999999,
       "maps_url": "https://maps.google.com/?cid=3765761114616947169",
@@ -2209,10 +2209,10 @@
       "google_id": "/g/11st9z4kfz"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, Section 1, Zhonghua Rd, 88號築間麻辣火鍋",
+      "name": "築間麻辣火鍋",
       "address": "No. 88號, Section 1, Zhonghua Rd, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0450651,
       "lng": 121.50851999999999,
       "maps_url": "https://maps.google.com/?cid=3765758056722090155",
@@ -2220,10 +2220,10 @@
       "google_id": "/g/11ldt824r6"
     },
     {
-      "name": "4樓 Chao Chou Bang Taipei Nanjing East Branch, No. 92號, Section 1, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 10454",
+      "name": "Chao Chou Bang Taipei Nanjing East Branch",
       "address": "10454, Taiwan, Taipei City, Zhongshan District, Section 1, Nanjing E Rd, 92號4樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.051915899999997,
       "lng": 121.5258827,
       "maps_url": "https://maps.google.com/?cid=3765758885850011089",
@@ -2231,10 +2231,10 @@
       "google_id": "/g/11vm9kv3tb"
     },
     {
-      "name": "104011, Taiwan, Taipei City, Zhongshan District, Lane 65, Section 2, Zhongshan N Rd, 19號Bar 澤山",
+      "name": "Bar 澤山",
       "address": "No. 19號, Lane 65, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104011",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0571254,
       "lng": 121.52435059999999,
       "maps_url": "https://maps.google.com/?cid=3765758321225146043",
@@ -2242,10 +2242,10 @@
       "google_id": "/g/11smv6s6jc"
     },
     {
-      "name": "Heyma, No. 71號, Baoqing St, Songshan District, Taipei City, Taiwan 105",
+      "name": "Heyma",
       "address": "No. 71號, Baoqing St, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.051826199999997,
       "lng": 121.56829139999999,
       "maps_url": "https://maps.google.com/?cid=3765760834855017013",
@@ -2253,10 +2253,10 @@
       "google_id": "/g/11ss6rqzs3"
     },
     {
-      "name": "Fubon Art Museum, No. 79號, Songgao Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Fubon Art Museum",
       "address": "No. 79號, Songgao Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039379999999998,
       "lng": 121.5712054,
       "maps_url": "https://maps.google.com/?cid=3765761060083331251",
@@ -2264,10 +2264,10 @@
       "google_id": "/g/11v5x823x1"
     },
     {
-      "name": "Mozi, No. 10號, Alley 32, Lane 216, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Mozi",
       "address": "No. 10號, Alley 32, Lane 216, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039785499999997,
       "lng": 121.5524025,
       "maps_url": "https://maps.google.com/?cid=3765760551883021545",
@@ -2275,10 +2275,10 @@
       "google_id": "/g/11jmysp4zl"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Yumen St, 1號Roos Pizza Bar",
+      "name": "Roos Pizza Bar",
       "address": "No. 1號, Yumen St, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0700938,
       "lng": 121.52204619999999,
       "maps_url": "https://maps.google.com/?cid=3765758775085143851",
@@ -2286,10 +2286,10 @@
       "google_id": "/g/11txpz7xd0"
     },
     {
-      "name": "New Luxe, No, No. 310, Lequn 3rd Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "New Luxe",
       "address": "No, No. 310, Lequn 3rd Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0828073,
       "lng": 121.55982039999999,
       "maps_url": "https://maps.google.com/?cid=3765762455226882437",
@@ -2297,10 +2297,10 @@
       "google_id": "/g/11vz3b77b5"
     },
     {
-      "name": "Hana village kitchen, Alishan Township, Chiayi County, Taiwan 605",
+      "name": "Hana village kitchen",
       "address": "605, Taiwan, Chiayi County, Alishan Township",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 23.5269679,
       "lng": 120.74443389999999,
       "maps_url": "https://maps.google.com/?cid=3778200048335143355",
@@ -2308,10 +2308,10 @@
       "google_id": "/g/11b6yqlkz8"
     },
     {
-      "name": "San Ma Stinky Pot, No. 85號, Kunming St, Wanhua District, Taipei City, Taiwan 108",
+      "name": "San Ma Stinky Pot",
       "address": "No. 85號, Kunming St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0426306,
       "lng": 121.50479539999999,
       "maps_url": "https://maps.google.com/?cid=3765758091768866597",
@@ -2319,10 +2319,10 @@
       "google_id": "/g/1tgw_qjl"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 7, Lane 251, Section 3, Zhongxiao E Rd, 12號九鳥私館 9 BIRDS BISTRO1樓",
+      "name": "九鳥私館 9 BIRDS BISTRO",
       "address": "106, Taiwan, Taipei City, Da’an District, Alley 7, Lane 251, Section 3, Zhongxiao E Rd, 12號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0429113,
       "lng": 121.5423568,
       "maps_url": "https://maps.google.com/?cid=3765760627929849973",
@@ -2330,10 +2330,10 @@
       "google_id": "/g/11kc1_zmn3"
     },
     {
-      "name": "Toasteria Cafe, No. 3號, Lane 169, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Toasteria Cafe",
       "address": "No. 3號, Lane 169, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0433052,
       "lng": 121.54950579999999,
       "maps_url": "https://maps.google.com/?cid=3765761100475545387",
@@ -2341,10 +2341,10 @@
       "google_id": "/g/1hhghvkwg"
     },
     {
-      "name": "4F Blue note, No. 171號, Section 3, Roosevelt Rd, Da’an District, Taipei City, Taiwan 10647",
+      "name": "Blue note",
       "address": "10647, Taiwan, Taipei City, Da’an District, Section 3, Roosevelt Rd, 171號4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.021428,
       "lng": 121.5277327,
       "maps_url": "https://maps.google.com/?cid=3765758667089769959",
@@ -2352,10 +2352,10 @@
       "google_id": "/g/1tczy67w"
     },
     {
-      "name": "EZ5 Live House 音樂餐廳, No. 211號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "EZ5 Live House 音樂餐廳",
       "address": "No. 211號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0260535,
       "lng": 121.55025669999999,
       "maps_url": "https://maps.google.com/?cid=3776270579530125117",
@@ -2363,10 +2363,10 @@
       "google_id": "/g/11b6hsz2nr"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Lane 160, Section 1, Xinsheng S Rd, 22-1號肉球森林1樓",
+      "name": "肉球森林",
       "address": "100, Taiwan, Taipei City, Zhongzheng District, Lane 160, Section 1, Xinsheng S Rd, 22-1號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0345218,
       "lng": 121.53045639999999,
       "maps_url": "https://maps.google.com/?cid=3765759044427071435",
@@ -2374,10 +2374,10 @@
       "google_id": "/g/11j5jmvpfv"
     },
     {
-      "name": "號 Dong Yea, No. 7-1, Section 3, Jinan Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Dong Yea",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 3, Jinan Rd, 7-1號號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040293199999997,
       "lng": 121.5335516,
       "maps_url": "https://maps.google.com/?cid=3765758589414658629",
@@ -2385,10 +2385,10 @@
       "google_id": "/g/1x5f81l4"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 65, Section 1, Jianguo S Rd, 3號二階Nikai2樓",
+      "name": "二階Nikai",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 65, Section 1, Jianguo S Rd, 3號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0442415,
       "lng": 121.5372393,
       "maps_url": "https://maps.google.com/?cid=3765758519370208871",
@@ -2396,10 +2396,10 @@
       "google_id": "/g/11kdjy437d"
     },
     {
-      "name": "Hai Jiu Penghu Seafood Restaurant, No. 170, ChangAn East Rd Section 2, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Hai Jiu Penghu Seafood Restaurant",
       "address": "No. 170, ChangAn East Rd Section 2, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0481756,
       "lng": 121.5399777,
       "maps_url": "https://maps.google.com/?cid=3765761211990721547",
@@ -2407,10 +2407,10 @@
       "google_id": "/g/11b7p_g3kl"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Liaoning St, 11號林記海南雞飯(遼寧店)台北海南雞 中山區美食 中山區小吃 中山美食推薦 忠孝復興美食 忠孝復興小吃",
+      "name": "林記海南雞飯(遼寧店)台北海南雞 中山區美食 中山區小吃 中山美食推薦 忠孝復興美食 忠孝復興小吃",
       "address": "No. 11號, Liaoning St, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.047588599999997,
       "lng": 121.54222619999999,
       "maps_url": "https://maps.google.com/?cid=3765761319005303131",
@@ -2418,10 +2418,10 @@
       "google_id": "/g/11h7d707lc"
     },
     {
-      "name": "2樓 À POINT STEAK & BAR, No. 139號, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "À POINT STEAK & BAR",
       "address": "110, Taiwan, Taipei City, Xinyi District, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, 139號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041282499999998,
       "lng": 121.5678138,
       "maps_url": "https://maps.google.com/?cid=3765761060345360995",
@@ -2429,10 +2429,10 @@
       "google_id": "/g/11gm952zgt"
     },
     {
-      "name": "2樓 Tipsy Garden, No. 16號, Section 2, Yanping N Rd, Datong District, Taipei City, Taiwan 103",
+      "name": "Tipsy Garden",
       "address": "103, Taiwan, Taipei City, Datong District, Section 2, Yanping N Rd, 16號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.054309,
       "lng": 121.511617,
       "maps_url": "https://maps.google.com/?cid=3765758484437807833",
@@ -2440,10 +2440,10 @@
       "google_id": "/g/11rcd8yxkt"
     },
     {
-      "name": "Eggs to cool, No. 26-4號, Xinyang St, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Eggs to cool",
       "address": "No. 26-4號, Xinyang St, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0444547,
       "lng": 121.51546019999999,
       "maps_url": "https://maps.google.com/?cid=3765758550887241377",
@@ -2451,10 +2451,10 @@
       "google_id": "/g/11b77vbxvx"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Zhongxiao E Rd, 128號享鴨 烤鴨與中華料理 台北忠孝東店2樓",
+      "name": "享鴨 烤鴨與中華料理 台北忠孝東店",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 4, Zhongxiao E Rd, 128號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041307,
       "lng": 121.54799,
       "maps_url": "https://maps.google.com/?cid=3765760322527840849",
@@ -2462,10 +2462,10 @@
       "google_id": "/g/11gl0bcg44"
     },
     {
-      "name": "1樓 Ting-Ting Coffee, No. 13號, Lane 313, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Ting-Ting Coffee",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 313, Section 1, Fuxing S Rd, 13號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0343685,
       "lng": 121.54502509999999,
       "maps_url": "https://maps.google.com/?cid=3765761154324573897",
@@ -2473,10 +2473,10 @@
       "google_id": "/g/1tdwbmsx"
     },
     {
-      "name": "Lao Yao Beef Noodle Restaurant, No. 38號, Lane 340, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Lao Yao Beef Noodle Restaurant",
       "address": "No. 38號, Lane 340, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0359889,
       "lng": 121.5423064,
       "maps_url": "https://maps.google.com/?cid=3765761165705396009",
@@ -2484,10 +2484,10 @@
       "google_id": "/g/11c6s58trd"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, 68號微風信義 INPARADISE Breeze Xinyi Branch, 46樓",
+      "name": "INPARADISE Breeze Xinyi Branch",
       "address": "110, Taiwan, Taipei City, Xinyi District, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, 68號微風信義46樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0405099,
       "lng": 121.5671637,
       "maps_url": "https://maps.google.com/?cid=3765761062022867689",
@@ -2495,10 +2495,10 @@
       "google_id": "/g/11g8fl1vjd"
     },
     {
-      "name": "104, Taiwan, Taipei City, Zhongshan District, Section 1, Zhongshan N Rd, 49號THE FLOW",
+      "name": "THE FLOW",
       "address": "No. 49號, Section 1, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0492931,
       "lng": 121.52156149999999,
       "maps_url": "https://maps.google.com/?cid=3765758287757464387",
@@ -2506,10 +2506,10 @@
       "google_id": "/g/11vwm4bdtk"
     },
     {
-      "name": "Fermi Pasta, No. 14號, Alley 5, Lane 107, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Fermi Pasta",
       "address": "No. 14號, Alley 5, Lane 107, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0441297,
       "lng": 121.54498749999999,
       "maps_url": "https://maps.google.com/?cid=3765760904407537591",
@@ -2517,10 +2517,10 @@
       "google_id": "/g/11nmcvjfrl"
     },
     {
-      "name": "4F Hi-Lai Celebrity Cuisine Taipei Dunhua Branch, No. 246號敦化南路1段 Da’an District, Taipei City, Taiwan 106",
+      "name": "Hi-Lai Celebrity Cuisine Taipei Dunhua Branch",
       "address": "106, Taiwan, Taipei City, Da’an District, 敦化南路1段246號4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040283799999997,
       "lng": 121.54841189999999,
       "maps_url": "https://maps.google.com/?cid=3765760398651914775",
@@ -2528,10 +2528,10 @@
       "google_id": "/g/11h3yhhz00"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Lane 66, Section 1, Yanping N Rd, 17號阿洋義式冰淇淋 GELATO ARJAN (原熱那亞義式冰淇淋GELATO GENOVA)1 樓",
+      "name": "阿洋義式冰淇淋 GELATO ARJAN (原熱那亞義式冰淇淋GELATO GENOVA)",
       "address": "103, Taiwan, Taipei City, Datong District, Lane 66, Section 1, Yanping N Rd, 17號1 樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0516018,
       "lng": 121.5112302,
       "maps_url": "https://maps.google.com/?cid=3765758266956849205",
@@ -2583,10 +2583,10 @@
       "google_id": "/g/11t_z36k4n"
     },
     {
-      "name": "111, Taiwan, Taipei City, Shilin District, Lane 235, Zhongzheng Rd, 20號茶茶小王子-士林店",
+      "name": "茶茶小王子-士林店",
       "address": "No. 20號, Lane 235, Zhongzheng Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0945882,
       "lng": 121.5259492,
       "maps_url": "https://maps.google.com/?cid=3765765207559576861",
@@ -2594,10 +2594,10 @@
       "google_id": "/g/11rtdvg4jv"
     },
     {
-      "name": "Toh-A'桌藏, No. 9, Alley 23, Lane 76, Section 2, Heping E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Toh-A'桌藏",
       "address": "No. 9, Alley 23, Lane 76, Section 2, Heping E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.022429799999998,
       "lng": 121.54036199999999,
       "maps_url": "https://maps.google.com/?cid=3765759329562456869",
@@ -2605,10 +2605,10 @@
       "google_id": "/g/11cjkq32ld"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 52, Siwei Rd, 17號牡丹．極上 天ぷら．本店",
+      "name": "牡丹．極上 天ぷら．本店",
       "address": "No. 17號, Lane 52, Siwei Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0351267,
       "lng": 121.5471063,
       "maps_url": "https://maps.google.com/?cid=3765760277445860739",
@@ -2616,10 +2616,10 @@
       "google_id": "/g/11g0ql3lpg"
     },
     {
-      "name": "B1, The Dragon, No. 12號, Section 1, Zhongxiao E Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "The Dragon",
       "address": "B1, No. 12號, Section 1, Zhongxiao E Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0447021,
       "lng": 121.5219894,
       "maps_url": "https://maps.google.com/?cid=3765758544189804581",
@@ -2627,10 +2627,10 @@
       "google_id": "/g/1hc2thzkc"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Zhongshan S Rd, 20號Psalms Cafe詩篇咖啡餐廳B1",
+      "name": "Psalms Cafe詩篇咖啡餐廳",
       "address": "100, Taiwan, Taipei City, Zhongzheng District, Zhongshan S Rd, 20號B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0371454,
       "lng": 121.5166702,
       "maps_url": "https://maps.google.com/?cid=3765758742324573647",
@@ -2638,10 +2638,10 @@
       "google_id": "/g/11bwhb1nh3"
     },
     {
-      "name": "MyCroissant by Guillaume, No. 5號, Lane 35, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "MyCroissant by Guillaume",
       "address": "No. 5號, Lane 35, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0317594,
       "lng": 121.5529038,
       "maps_url": "https://maps.google.com/?cid=3765760820243071147",
@@ -2649,10 +2649,10 @@
       "google_id": "/g/11h1g80ctj"
     },
     {
-      "name": "1樓 SANDO HOUSE(三多 屋), No. 19號, Taiyuan Rd, Datong District, Taipei City, Taiwan 103",
+      "name": "SANDO HOUSE(三多 屋)",
       "address": "103, Taiwan, Taipei City, Datong District, Taiyuan Rd, 19號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.050334499999998,
       "lng": 121.5152487,
       "maps_url": "https://maps.google.com/?cid=3765758525067332417",
@@ -2660,10 +2660,10 @@
       "google_id": "/g/1ptxn23m0"
     },
     {
-      "name": "115, Taiwan, Taipei City, Nangang District, Section 1, Nangang Rd, 255號Bogart's Smokehouse Taipei (美式木柴烤肉屋)",
+      "name": "Bogart's Smokehouse Taipei (美式木柴烤肉屋)",
       "address": "No. 255號, Section 1, Nangang Rd, Nangang District, Taipei City, Taiwan 115",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0547954,
       "lng": 121.6101432,
       "maps_url": "https://maps.google.com/?cid=3765760995719709437",
@@ -2671,10 +2671,10 @@
       "google_id": "/g/11hz0wvry9"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 160, Section 1, Dunhua S Rd, 60號Hook Shisha Lounge",
+      "name": "Hook Shisha Lounge",
       "address": "No. 60號, Lane 160, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.043444599999997,
       "lng": 121.5467219,
       "maps_url": "https://maps.google.com/?cid=3765761282435467737",
@@ -2682,10 +2682,10 @@
       "google_id": "/g/11jg1cqgmr"
     },
     {
-      "name": "MUIM Taipei, No. 3號, Lane 248, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "MUIM Taipei",
       "address": "No. 3號, Lane 248, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
-      "note": null,
-      "is_favorite": true,
+      "note": "Jesse & Ben say only go for shisha",
+      "is_favorite": false,
       "lat": 25.040765699999998,
       "lng": 121.55425029999999,
       "maps_url": "https://maps.google.com/?cid=3765760868064412899",
@@ -2693,10 +2693,10 @@
       "google_id": "/g/11rt_ml9nj"
     },
     {
-      "name": "Museum of Contemporary Art Taipei, No. 39, Chang'an W Rd, Datong District, Taipei City, Taiwan 103",
+      "name": "Museum of Contemporary Art Taipei",
       "address": "No. 39, Chang'an W Rd, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0508047,
       "lng": 121.51897659999999,
       "maps_url": "https://maps.google.com/?cid=3765758520997307507",
@@ -2726,10 +2726,10 @@
       "google_id": null
     },
     {
-      "name": "Fuyuan Pepper Cake, No. 42-19號, Huayin St, Datong District, Taipei City, Taiwan 103",
+      "name": "Fuyuan Pepper Cake",
       "address": "No. 42-19號, Huayin St, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0501297,
       "lng": 121.51558279999999,
       "maps_url": "https://maps.google.com/?cid=3765758525090174163",
@@ -2759,10 +2759,10 @@
       "google_id": "/g/1yglpd_m_"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 8, Section 4, Ren'ai Rd, 18號夙席 — 深夜炭火串燒｜桂丁雞專門店｜YAKITORI｜燒鳥",
+      "name": "夙席 — 深夜炭火串燒｜桂丁雞專門店｜YAKITORI｜燒鳥",
       "address": "No. 18號, Lane 8, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0372217,
       "lng": 121.5443129,
       "maps_url": "https://maps.google.com/?cid=3765760891004918169",
@@ -2770,10 +2770,10 @@
       "google_id": "/g/11scfn6ddq"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Section 3, Roosevelt Rd, 38號老屁股2樓",
+      "name": "老屁股",
       "address": "100, Taiwan, Taipei City, Zhongzheng District, Section 3, Roosevelt Rd, 38號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0229487,
       "lng": 121.52529609999999,
       "maps_url": "https://maps.google.com/?cid=3765758675010971069",
@@ -2781,10 +2781,10 @@
       "google_id": "/g/11c5sx00h1"
     },
     {
-      "name": "104, Taiwan, Taipei City, Zhongshan District, Fuxing N Rd, 370號菠蘿麵包 ぼろパン BOLO PAN 復北店",
+      "name": "菠蘿麵包 ぼろパン BOLO PAN 復北店",
       "address": "No. 370號, Fuxing N Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.060627399999998,
       "lng": 121.543984,
       "maps_url": "https://maps.google.com/?cid=3765760361638185193",
@@ -2792,10 +2792,10 @@
       "google_id": "/g/11sqyh1bwk"
     },
     {
-      "name": "105, Taiwan, Taipei City, Songshan District, Lane 244, Dunhua N Rd, 39號之1號 花敦道鍋物",
+      "name": "花敦道鍋物",
       "address": "No. 39號之1號, Lane 244, Dunhua N Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0610079,
       "lng": 121.54743579999999,
       "maps_url": "https://maps.google.com/?cid=3765761239606376889",
@@ -2803,10 +2803,10 @@
       "google_id": "/g/11bwqn8p7v"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Jinhua St, 12號R8 Metro Bar - R8捷運輕食吧",
+      "name": "R8 Metro Bar - R8捷運輕食吧",
       "address": "No. 12號, Jinhua St, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0322285,
       "lng": 121.51911419999999,
       "maps_url": "https://maps.google.com/?cid=3765758057648429953",
@@ -2814,10 +2814,10 @@
       "google_id": "/g/11vrwswrlc"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Fuxing S Rd, 267號周記切仔麵",
+      "name": "周記切仔麵",
       "address": "No. 267號, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0358655,
       "lng": 121.54385629999999,
       "maps_url": "https://maps.google.com/?cid=3765761165022011975",
@@ -2825,10 +2825,10 @@
       "google_id": "/g/1tgfmtxr"
     },
     {
-      "name": "Two Horse Food, No. 23之1號, Section 3, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
+      "name": "Two Horse Food",
       "address": "No. 23之1號, Section 3, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.033773,
       "lng": 121.5342659,
       "maps_url": "https://maps.google.com/?cid=3765758603534380989",
@@ -2836,10 +2836,10 @@
       "google_id": "/g/1tdcp6wd"
     },
     {
-      "name": "Huang Ji Braised Pork, No. 28號, Lane 183, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Huang Ji Braised Pork",
       "address": "No. 28號, Lane 183, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0636698,
       "lng": 121.524142,
       "maps_url": "https://maps.google.com/?cid=3765758351657202961",
@@ -2847,10 +2847,10 @@
       "google_id": "/g/1td4b7fv"
     },
     {
-      "name": "Tien Hsia San Chueh, No. 3號, Lane 27, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Tien Hsia San Chueh",
       "address": "No. 3號, Lane 27, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.03888,
       "lng": 121.5453168,
       "maps_url": "https://maps.google.com/?cid=3765761152539955689",
@@ -2858,10 +2858,10 @@
       "google_id": "/g/12m8zfqpf"
     },
     {
-      "name": "Solo Pasta, No. 29-1, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Solo Pasta",
       "address": "No. 29-1, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039196099999998,
       "lng": 121.55065409999999,
       "maps_url": "https://maps.google.com/?cid=3765761146563068865",
@@ -2869,10 +2869,10 @@
       "google_id": "/g/1tf_qkx5"
     },
     {
-      "name": "111, Taiwan, Taipei City, Shilin District, Jihe Rd, 100號阿姨鹽水雞",
+      "name": "阿姨鹽水雞",
       "address": "No. 100, Jihe Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0880059,
       "lng": 121.52362149999999,
       "maps_url": "https://maps.google.com/?cid=3765764311131746639",
@@ -2880,10 +2880,10 @@
       "google_id": "/g/1q62bc8yw"
     },
     {
-      "name": "Chung Chia Sheng Jian Bao, No. 38號, Xiaodong St, Shilin District, Taipei City, Taiwan 111",
+      "name": "Chung Chia Sheng Jian Bao",
       "address": "No. 38號, Xiaodong St, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.089446799999997,
       "lng": 121.52633709999999,
       "maps_url": "https://maps.google.com/?cid=3765764263476936783",
@@ -2891,10 +2891,10 @@
       "google_id": "/g/12hmw0qg9"
     },
     {
-      "name": "Hai You Pork Ribs, No. 49, Dadong Rd, Shilin District, Taipei City, Taiwan 111",
+      "name": "Hai You Pork Ribs",
       "address": "No. 49, Dadong Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0896619,
       "lng": 121.5252989,
       "maps_url": "https://maps.google.com/?cid=3765764355343487431",
@@ -2902,10 +2902,10 @@
       "google_id": "/g/1wh4cknj"
     },
     {
-      "name": "家湘 Cold Noodles, Stinky Tofu, No. 46, Danan Rd, Shilin District, Taipei City, Taiwan 111",
+      "name": "家湘 Cold Noodles, Stinky Tofu",
       "address": "No. 46, Danan Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.089340999999997,
       "lng": 121.52504099999999,
       "maps_url": "https://maps.google.com/?cid=3765764355277905375",
@@ -2913,10 +2913,10 @@
       "google_id": "/g/1tm66m_y"
     },
     {
-      "name": "Good Friend Cold Noodles, No. 31號, Danan Rd, Shilin District, Taipei City, Taiwan 111",
+      "name": "Good Friend Cold Noodles",
       "address": "No. 31號, Danan Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0890986,
       "lng": 121.5255399,
       "maps_url": "https://maps.google.com/?cid=3765764355227955819",
@@ -2924,10 +2924,10 @@
       "google_id": "/g/1tfg0sp9"
     },
     {
-      "name": "15F No, Opéra, No. 100, DunHua N Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "Opéra",
       "address": "15F No, No. 100, DunHua N Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0528951,
       "lng": 121.54831929999999,
       "maps_url": "https://maps.google.com/?cid=3765760820373416347",
@@ -2935,10 +2935,10 @@
       "google_id": "/g/11krmv70y8"
     },
     {
-      "name": "111, Taiwan, Taipei City, Shilin District, Section 4, Chengde Rd, 75-1號富樂臺式涮涮鍋",
+      "name": "富樂臺式涮涮鍋",
       "address": "No. 75-1, Section 4, Chengde Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.081999399999997,
       "lng": 121.52346349999999,
       "maps_url": "https://maps.google.com/?cid=3765764319294960037",
@@ -2946,10 +2946,10 @@
       "google_id": "/g/1tk_gdnw"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Jianguo S Rd, 198號蜀魚館",
+      "name": "蜀魚館",
       "address": "No. 198號, Section 1, Jianguo S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0399945,
       "lng": 121.53728819999999,
       "maps_url": "https://maps.google.com/?cid=3765761174684979727",
@@ -2968,10 +2968,10 @@
       "google_id": "/g/12hkg4d04"
     },
     {
-      "name": "Shao Shao Ke (Xiao Xiao Ke) Xinjiang Excellent Restaurant, No. 27號, Section 1, Hangzhou S Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Shao Shao Ke (Xiao Xiao Ke) Xinjiang Excellent Restaurant",
       "address": "No. 27號, Section 1, Hangzhou S Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0419913,
       "lng": 121.5263748,
       "maps_url": "https://maps.google.com/?cid=3765758575591292927",
@@ -2979,10 +2979,10 @@
       "google_id": "/g/11f0krjz0b"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, Section 2, Guiyang St, 32號吃吃看小館 台北老味道餐廳",
+      "name": "吃吃看小館 台北老味道餐廳",
       "address": "No. 32號, Section 2, Guiyang St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039498,
       "lng": 121.50521239999999,
       "maps_url": "https://maps.google.com/?cid=3765758775768455751",
@@ -2990,10 +2990,10 @@
       "google_id": "/g/1vlqmxz1"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, Lane 83, Section 2, Hankou St, 2號大村武串燒居酒屋-西門店（本店）",
+      "name": "大村武串燒居酒屋-西門店（本店）",
       "address": "No. 2號, Lane 83, Section 2, Hankou St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0464554,
       "lng": 121.5049743,
       "maps_url": "https://maps.google.com/?cid=3765758120947668175",
@@ -3001,10 +3001,10 @@
       "google_id": "/g/12hmy9nfr"
     },
     {
-      "name": "105, Taiwan, Taipei City, Songshan District, DunHua N Rd, 166號鮨 增田 Sushi Masuda5樓",
+      "name": "鮨 增田 Sushi Masuda",
       "address": "105, Taiwan, Taipei City, Songshan District, DunHua N Rd, 166號5樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.055636999999997,
       "lng": 121.5484583,
       "maps_url": "https://maps.google.com/?cid=3765761214605796915",
@@ -3012,10 +3012,10 @@
       "google_id": "/g/11j8qs2m6m"
     },
     {
-      "name": "No.102, but. we love butter, No. 102號, Fujin St, Songshan District, Taipei City, Taiwan 105",
+      "name": "but. we love butter",
       "address": "No.102, No. 102號, Fujin St, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.059718399999998,
       "lng": 121.5520347,
       "maps_url": "https://maps.google.com/?cid=3765761278333149603",
@@ -3023,10 +3023,10 @@
       "google_id": "/g/11g9syd1cl"
     },
     {
-      "name": "Meowvelous Inc., No. 218號, DunHua N Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "Meowvelous Inc.",
       "address": "No. 218號, DunHua N Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0584536,
       "lng": 121.54873719999999,
       "maps_url": "https://maps.google.com/?cid=3765761283109870085",
@@ -3034,10 +3034,10 @@
       "google_id": "/g/11c1qln3v_"
     },
     {
-      "name": "Cantina del Gio, No. 5號, Alley 18, Lane 170, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Cantina del Gio",
       "address": "No. 5號, Alley 18, Lane 170, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040014199999998,
       "lng": 121.550399,
       "maps_url": "https://maps.google.com/?cid=3765761146278351137",
@@ -3045,10 +3045,10 @@
       "google_id": "/g/11gfjrlnvc"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 6, Lane 170, Section 4, Zhongxiao E Rd, 14號Muzeo Gastronomy&Draft",
+      "name": "Muzeo Gastronomy&Draft",
       "address": "No. 14號, Alley 6, Lane 170, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040807599999997,
       "lng": 121.5501115,
       "maps_url": "https://maps.google.com/?cid=3765760872167887233",
@@ -3056,10 +3056,10 @@
       "google_id": "/g/11grbtvvpc"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 29, Lane 127, Section 1, Anhe Rd, 17號MONO MONO",
+      "name": "MONO MONO",
       "address": "No. 17號, Alley 29, Lane 127, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.035749199999998,
       "lng": 121.5534387,
       "maps_url": "https://maps.google.com/?cid=3765761143056848397",
@@ -3067,10 +3067,10 @@
       "google_id": "/g/1thsp2f_"
     },
     {
-      "name": "Nomura Sushi, No. 4號, Alley 19, Lane 300, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Nomura Sushi",
       "address": "No. 4號, Alley 19, Lane 300, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0361595,
       "lng": 121.5546605,
       "maps_url": "https://maps.google.com/?cid=3765761118999374403",
@@ -3078,10 +3078,10 @@
       "google_id": "/g/11b7ck5sl2"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Da'an Rd, 192號鮨佐樂",
+      "name": "鮨佐樂",
       "address": "No. 192號, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0356739,
       "lng": 121.54593159999999,
       "maps_url": "https://maps.google.com/?cid=3765761157605430785",
@@ -3089,10 +3089,10 @@
       "google_id": "/g/11b75k9hg5"
     },
     {
-      "name": "Shoraku 匠樂割烹壽司, No. 31號, Lane 52, Siwei Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Shoraku 匠樂割烹壽司",
       "address": "No. 31號, Lane 52, Siwei Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0352046,
       "lng": 121.5464701,
       "maps_url": "https://maps.google.com/?cid=3765761157859177041",
@@ -3100,10 +3100,10 @@
       "google_id": "/g/11h1pps6j"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 53, Lane 63, Section 2, Dunhua S Rd, 7號油花炭火燒肉專門店",
+      "name": "油花炭火燒肉專門店",
       "address": "No. 7號, Alley 53, Lane 63, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0315039,
       "lng": 121.5516454,
       "maps_url": "https://maps.google.com/?cid=3765761134928614885",
@@ -3111,10 +3111,10 @@
       "google_id": "/g/11g_fgkcb"
     },
     {
-      "name": "Yóu Sushi, No. 7, Lane 7, Lishui St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Yóu Sushi",
       "address": "No. 7, Lane 7, Lishui St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0309688,
       "lng": 121.5290958,
       "maps_url": "https://maps.google.com/?cid=3765758621188598731",
@@ -3122,10 +3122,10 @@
       "google_id": "/g/1hc15f_y5"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Heping E Rd, 177號Barcade Taiwan號B1",
+      "name": "Barcade Taiwan",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 1, Heping E Rd, 177號號B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0265223,
       "lng": 121.53221549999999,
       "maps_url": "https://maps.google.com/?cid=3765761200205755665",
@@ -3133,10 +3133,10 @@
       "google_id": "/g/11j31ghmj4"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Section 1, Zhongshan N Rd, 79號樓上見餐酒館",
+      "name": "樓上見餐酒館",
       "address": "No. 79號, Section 1, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.050363899999997,
       "lng": 121.5221519,
       "maps_url": "https://maps.google.com/?cid=3765758665417433173",
@@ -3144,10 +3144,10 @@
       "google_id": "/g/11lh6d5pl7"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Jinhua St, 203號韓記老虎麵食館",
+      "name": "韓記老虎麵食館",
       "address": "No. 203號, Jinhua St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0300224,
       "lng": 121.5282398,
       "maps_url": "https://maps.google.com/?cid=3765758620572598387",
@@ -3155,10 +3155,10 @@
       "google_id": "/g/1tf7_8yy"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Lane 133, Linsen N Rd, 50號臺日交流Cafe & Bar Kiseki",
+      "name": "臺日交流Cafe & Bar Kiseki",
       "address": "No. 50號, Lane 133, Linsen N Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.050676499999998,
       "lng": 121.5267282,
       "maps_url": "https://maps.google.com/?cid=3765758493566601663",
@@ -3166,10 +3166,10 @@
       "google_id": "/g/1pzxwrs9r"
     },
     {
-      "name": "Triangle, No. 1號, Yumen St, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Triangle",
       "address": "No. 1號, Yumen St, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0695619,
       "lng": 121.5221565,
       "maps_url": "https://maps.google.com/?cid=3765758395377427759",
@@ -3177,10 +3177,10 @@
       "google_id": "/g/11b_0054xc"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 26, Lane 300, Section 4, Ren'ai Rd, 13號 nkụ",
+      "name": "nkụ",
       "address": "No. 13, Alley 26, Lane 300, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.035927899999997,
       "lng": 121.5538445,
       "maps_url": "https://maps.google.com/?cid=3765761143139905989",
@@ -3188,10 +3188,10 @@
       "google_id": "/g/11bzz74p9h"
     },
     {
-      "name": "MOD Public Bar, No. 40號, Alley 4, Lane 345, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "MOD Public Bar",
       "address": "No. 40號, Alley 4, Lane 345, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0389122,
       "lng": 121.5513898,
       "maps_url": "https://maps.google.com/?cid=3765761145955608353",
@@ -3199,10 +3199,10 @@
       "google_id": "/g/1tdztdzw"
     },
     {
-      "name": "10694, Taiwan, Taipei City, Da’an District, Lane 280, Guangfu S Rd, 24號GŪLŪ GURU",
+      "name": "GŪLŪ GURU",
       "address": "No. 24號, Lane 280, Guangfu S Rd, Da’an District, Taipei City, Taiwan 10694",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039941499999998,
       "lng": 121.5564297,
       "maps_url": "https://maps.google.com/?cid=3765761309586366985",
@@ -3210,10 +3210,10 @@
       "google_id": "/g/11stjx43lv"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Ren'ai Rd, 371號鮨 天本",
+      "name": "鮨 天本",
       "address": "No. 371號, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0382756,
       "lng": 121.55468069999999,
       "maps_url": "https://maps.google.com/?cid=3765761152572342783",
@@ -3221,10 +3221,10 @@
       "google_id": "/g/11ddzkgcmc"
     },
     {
-      "name": "What Do You Think, No. 45號, Lane 260, Guangfu S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "What Do You Think",
       "address": "No. 45號, Lane 260, Guangfu S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0401866,
       "lng": 121.5553637,
       "maps_url": "https://maps.google.com/?cid=3765761014069473831",
@@ -3232,10 +3232,10 @@
       "google_id": "/g/11h4v8z73d"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Anhe Rd, 65號負壹 -1 Minusone",
+      "name": "負壹 -1 Minusone",
       "address": "No. 65號, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0372785,
       "lng": 121.55178839999999,
       "maps_url": "https://maps.google.com/?cid=3765760732188545693",
@@ -3243,10 +3243,10 @@
       "google_id": "/g/11flwd8y9r"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Songren Rd, 28號aaa WINE CELLAR & OYSTER BARB2",
+      "name": "aaa WINE CELLAR & OYSTER BAR",
       "address": "110, Taiwan, Taipei City, Xinyi District, Songren Rd, 28號B2",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0396219,
       "lng": 121.567641,
       "maps_url": "https://maps.google.com/?cid=3765761060907939079",
@@ -3254,10 +3254,10 @@
       "google_id": "/g/1tv3lcm_"
     },
     {
-      "name": "Bandao Beef Noodle Restaurant, No. 23號, Lane 215, Section 5, Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Bandao Beef Noodle Restaurant",
       "address": "No. 23號, Lane 215, Section 5, Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0419245,
       "lng": 121.57029109999999,
       "maps_url": "https://maps.google.com/?cid=3765761065529414223",
@@ -3265,10 +3265,10 @@
       "google_id": "/g/11g6yj_2bd"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Songxin Rd, 221號喬森西餐Savory Restaurant",
+      "name": "喬森西餐Savory Restaurant",
       "address": "No. 221號, Songxin Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041370099999998,
       "lng": 121.5721458,
       "maps_url": "https://maps.google.com/?cid=3765760956188566989",
@@ -3276,10 +3276,10 @@
       "google_id": "/g/1w9xzt87"
     },
     {
-      "name": "3樓 Mala Hot Pot Xinyi Branch, No. 22號, Songshou Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Mala Hot Pot Xinyi Branch",
       "address": "110, Taiwan, Taipei City, Xinyi District, Songshou Rd, 22號3樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.035573199999998,
       "lng": 121.5678884,
       "maps_url": "https://maps.google.com/?cid=3765761013057570037",
@@ -3287,10 +3287,10 @@
       "google_id": "/g/1v_0ggn4"
     },
     {
-      "name": "7樓 UMAMI 金色三麥, No. 17號, Songzhi Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "UMAMI 金色三麥",
       "address": "110, Taiwan, Taipei City, Xinyi District, Songzhi Rd, 17號7樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.034398499999998,
       "lng": 121.5661798,
       "maps_url": "https://maps.google.com/?cid=3765760687527609129",
@@ -3298,10 +3298,10 @@
       "google_id": "/g/11h0ykl6yk"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 346, Guangfu S Rd, 48號JE Kitchen1樓",
+      "name": "JE Kitchen",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 346, Guangfu S Rd, 48號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.035977,
       "lng": 121.553845,
       "maps_url": "https://maps.google.com/?cid=3765761116527884503",
@@ -3309,10 +3309,10 @@
       "google_id": "/g/11b63567bl"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 240, Guangfu S Rd, 5號火鍋106-粵式豬肚雞煲鍋光復店",
+      "name": "火鍋106-粵式豬肚雞煲鍋光復店",
       "address": "No. 5號, Lane 240, Guangfu S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040588,
       "lng": 121.557057,
       "maps_url": "https://maps.google.com/?cid=3765761112618004937",
@@ -3320,10 +3320,10 @@
       "google_id": "/g/11c2kl82d5"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 20, Lane 300, Section 4, Ren'ai Rd, 16號Sugar Pea1樓",
+      "name": "Sugar Pea",
       "address": "106, Taiwan, Taipei City, Da’an District, Alley 20, Lane 300, Section 4, Ren'ai Rd, 16號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0361153,
       "lng": 121.5536142,
       "maps_url": "https://maps.google.com/?cid=3765761143174363495",
@@ -3331,10 +3331,10 @@
       "google_id": "/g/11c206lnkk"
     },
     {
-      "name": "1F Old Friends Chinese Restaurant 老朋友小酌熱炒, No. 36號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Old Friends Chinese Restaurant 老朋友小酌熱炒",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 2, Anhe Rd, 36號1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.031520099999998,
       "lng": 121.55228559999999,
       "maps_url": "https://maps.google.com/?cid=3765761135144963053",
@@ -3342,10 +3342,10 @@
       "google_id": "/g/1pzslk535"
     },
     {
-      "name": "El MarquesNo. 259, Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "El Marques",
       "address": "No. 259, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.034448899999997,
       "lng": 121.55671559999999,
       "maps_url": "https://maps.google.com/?cid=3765761120202184025",
@@ -3353,10 +3353,10 @@
       "google_id": "/g/11dy_j67fj"
     },
     {
-      "name": "116, Taiwan, Taipei City, Wenshan District, Alley 2, Lane 112, Section 3, Xinglong Rd, 13號福鼎湯包店",
+      "name": "福鼎湯包店",
       "address": "No. 13, Alley 2, Lane 112, Section 3, Xinglong Rd, Wenshan District, Taipei City, Taiwan 116",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 24.9991745,
       "lng": 121.5566894,
       "maps_url": "https://maps.google.com/?cid=3765759239887169393",
@@ -3364,10 +3364,10 @@
       "google_id": "/g/1tfbw4g5"
     },
     {
-      "name": "Beef Father / Daddy, No. 149, Section 6, Minquan E Rd, Neihu District, Taipei City, Taiwan 114",
+      "name": "Beef Father / Daddy",
       "address": "No. 149, Section 6, Minquan E Rd, Neihu District, Taipei City, Taiwan 114",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0690383,
       "lng": 121.594506,
       "maps_url": "https://maps.google.com/?cid=3765761105262841919",
@@ -3375,10 +3375,10 @@
       "google_id": "/g/1hg4z9vyv"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 39, Section 2, Jianguo S Rd, 5號宇宙小艇 Cosmoship大安店",
+      "name": "宇宙小艇 Cosmoship大安店",
       "address": "No. 5號, Lane 39, Section 2, Jianguo S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.032127499999998,
       "lng": 121.53855659999999,
       "maps_url": "https://maps.google.com/?cid=3765758439428697929",
@@ -3386,10 +3386,10 @@
       "google_id": "/g/11gd1wgckw"
     },
     {
-      "name": "Zhe Yuan Restaurant, No. 80, Section 1, Jianguo N Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Zhe Yuan Restaurant",
       "address": "No. 80, Section 1, Jianguo N Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0495567,
       "lng": 121.5362694,
       "maps_url": "https://maps.google.com/?cid=3765758476360045457",
@@ -3397,10 +3397,10 @@
       "google_id": "/g/1tq8g7fw"
     },
     {
-      "name": "Amber Cafe, No. 137, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Amber Cafe",
       "address": "No. 137, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0341088,
       "lng": 121.55273079999999,
       "maps_url": "https://maps.google.com/?cid=3765761131622660983",
@@ -3408,10 +3408,10 @@
       "google_id": "/g/11b6vbt0dp"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Xinyi Road, 307號Bar Digout",
+      "name": "Bar Digout",
       "address": "No. 307, Section 4, Xinyi Road, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.033291799999997,
       "lng": 121.55563799999999,
       "maps_url": "https://maps.google.com/?cid=3765761130523360547",
@@ -3419,10 +3419,10 @@
       "google_id": "/g/11b67n9rk_"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 102, Section 1, Anhe Rd, 4號八和和牛燒肉專門店-安和本店",
+      "name": "八和和牛燒肉專門店-安和本店",
       "address": "No. 4, Lane 102, Section 1, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.034156499999998,
       "lng": 121.5519477,
       "maps_url": "https://maps.google.com/?cid=3765761219592999443",
@@ -3430,10 +3430,10 @@
       "google_id": "/g/11h4d___z4"
     },
     {
-      "name": "Linjiang Night Market, Linjiang St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Linjiang Night Market",
       "address": "Linjiang St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0301412,
       "lng": 121.5542672,
       "maps_url": "https://maps.google.com/?cid=3765761127847987975",
@@ -3441,10 +3441,10 @@
       "google_id": null
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 35, Section 2, Anhe Rd, 1號巷子口食堂",
+      "name": "巷子口食堂",
       "address": "No. 1, Lane 35, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.031806,
       "lng": 121.5527235,
       "maps_url": "https://maps.google.com/?cid=3765761132705504057",
@@ -3452,10 +3452,10 @@
       "google_id": "/g/11b69wl9p8"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 2, Anhe Rd, 40號ICHI Japanese Cuisine & Bar (ICHI居酒屋)",
+      "name": "ICHI Japanese Cuisine & Bar (ICHI居酒屋)",
       "address": "No. 40號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0314341,
       "lng": 121.5522838,
       "maps_url": "https://maps.google.com/?cid=3765761135141616105",
@@ -3463,10 +3463,10 @@
       "google_id": "/g/1v26jtq5"
     },
     {
-      "name": "DiVino Taipei, No. 15, Lane 71, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "DiVino Taipei",
       "address": "No. 15, Lane 71, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.029984,
       "lng": 121.55300469999999,
       "maps_url": "https://maps.google.com/?cid=3765761134206397387",
@@ -3474,10 +3474,10 @@
       "google_id": "/g/11cs03jkbw"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 54, Lane 63, Section 2, Dunhua S Rd, 1號給海 Gethigh Seafood Bistro | 活海鮮 生蠔 餐酒體驗",
+      "name": "給海 Gethigh Seafood Bistro | 活海鮮 生蠔 餐酒體驗",
       "address": "No. 1號, Alley 54, Lane 63, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0210862,
       "lng": 121.5229306,
       "maps_url": "https://maps.google.com/?cid=3765760552204723255",
@@ -3485,10 +3485,10 @@
       "google_id": "/g/11h89f2z8k"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 2, Anhe Rd, 155號鮨処律-大安無菜單料理|精緻日料|板前壽司|人氣日式料理|日式無菜單|熱門日料",
+      "name": "鮨処律-大安無菜單料理|精緻日料|板前壽司|人氣日式料理|日式無菜單|熱門日料",
       "address": "No. 155, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.028432499999997,
       "lng": 121.5504095,
       "maps_url": "https://maps.google.com/?cid=3765759373430844297",
@@ -3496,10 +3496,10 @@
       "google_id": "/g/11fy2ycr13"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Leli Rd, 39-1號Gravity 磁場",
+      "name": "Gravity 磁場",
       "address": "No. 39-1號, Leli Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0269612,
       "lng": 121.5517083,
       "maps_url": "https://maps.google.com/?cid=3765760713173385459",
@@ -3507,10 +3507,10 @@
       "google_id": "/g/11h3g3r094"
     },
     {
-      "name": "231, Taiwan, New Taipei City, Xindian District, Section 1, Ankang Rd, 50號拾松｜新店美食｜新店小吃｜西魯肉｜糕渣",
+      "name": "拾松｜新店美食｜新店小吃｜西魯肉｜糕渣",
       "address": "No. 50號, Section 1, Ankang Rd, Xindian District, New Taipei City, Taiwan 231",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 24.9612296,
       "lng": 121.5302988,
       "maps_url": "https://maps.google.com/?cid=3776270299129180499",
@@ -3518,10 +3518,10 @@
       "google_id": "/g/11fsm8fgp5"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 3, Zhongxiao E Rd, 282號夏花餐室Summer Flowers Dining Room3樓",
+      "name": "夏花餐室Summer Flowers Dining Room",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 3, Zhongxiao E Rd, 282號3樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0414001,
       "lng": 121.5426079,
       "maps_url": "https://maps.google.com/?cid=3765760318817109709",
@@ -3529,10 +3529,10 @@
       "google_id": "/g/11vd9sv1d5"
     },
     {
-      "name": "Tajin Moroccan Cuisine, No. 3號, Ln. 144, Section 2, Keelung Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Tajin Moroccan Cuisine",
       "address": "No. 3號, Ln. 144, Section 2, Keelung Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0283333,
       "lng": 121.55638889999999,
       "maps_url": "https://maps.google.com/?cid=3765761127562546233",
@@ -3540,10 +3540,10 @@
       "google_id": "/g/1tfnqq15"
     },
     {
-      "name": "渣男 Taiwan Bistro, No. 12號, Alley 315, Lane 150, Section 5, Xinyi Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "渣男 Taiwan Bistro",
       "address": "No. 12號, Alley 315, Lane 150, Section 5, Xinyi Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0269951,
       "lng": 121.56876369999999,
       "maps_url": "https://maps.google.com/?cid=3765761023294893427",
@@ -3551,10 +3551,10 @@
       "google_id": "/g/11cmhfdk_l"
     },
     {
-      "name": "ZIGA ZAGA Grand Hyatt Taipei, No. 2, Songshou Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "ZIGA ZAGA Grand Hyatt Taipei",
       "address": "No. 2, Songshou Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0351708,
       "lng": 121.56286689999999,
       "maps_url": "https://maps.google.com/?cid=3765761043710225865",
@@ -3562,10 +3562,10 @@
       "google_id": "/g/1hc34lwvl"
     },
     {
-      "name": "Ephernité, No. 233號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Ephernité",
       "address": "No. 233號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.025154999999998,
       "lng": 121.5503615,
       "maps_url": "https://maps.google.com/?cid=1445047211460401777",
@@ -3573,10 +3573,10 @@
       "google_id": "/g/11b6tqqv3m"
     },
     {
-      "name": "上海邵師傅湯包No. 31-1, Leli Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "上海邵師傅湯包",
       "address": "No. 31-1, Leli Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.027335599999997,
       "lng": 121.55156729999999,
       "maps_url": "https://maps.google.com/?cid=3765759374509947409",
@@ -3584,10 +3584,10 @@
       "google_id": "/g/11b7vjkhzx"
     },
     {
-      "name": "Larriere-cour, No. 4號, Lane 23, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Larriere-cour",
       "address": "No. 4號, Lane 23, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0320094,
       "lng": 121.5528727,
       "maps_url": "https://maps.google.com/?cid=3765761132828266125",
@@ -3595,10 +3595,10 @@
       "google_id": "/g/1td2x4ww"
     },
     {
-      "name": "Eslite Spectrum Songyan, No. 88號, Yanchang Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Eslite Spectrum Songyan",
       "address": "No. 88號, Yanchang Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044545,
       "lng": 121.5614574,
       "maps_url": "https://maps.google.com/?cid=3765761075604151945",
@@ -3606,10 +3606,10 @@
       "google_id": "/g/11b5wndqh_"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Lane 9, Songlong Rd, 32號英雄塚1樓",
+      "name": "英雄塚",
       "address": "110, Taiwan, Taipei City, Xinyi District, Lane 9, Songlong Rd, 32號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044487999999998,
       "lng": 121.5672986,
       "maps_url": "https://maps.google.com/?cid=3765760336668574889",
@@ -3617,10 +3617,10 @@
       "google_id": "/g/11h5rchvnq"
     },
     {
-      "name": "A.I.O餐廳, No. 23號, Lane 101, Section 1, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "A.I.O餐廳",
       "address": "No. 23號, Lane 101, Section 1, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0445644,
       "lng": 121.5681293,
       "maps_url": "https://maps.google.com/?cid=3765761069505394137",
@@ -3628,10 +3628,10 @@
       "google_id": "/g/11b6_x5j70"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Alley 22, Lane 553, Section 4, Zhongxiao E Rd, 4號Hërs biströ她/的餐酒",
+      "name": "Hërs biströ她/的餐酒",
       "address": "No. 4, Alley 22, Lane 553, Section 4, Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0431572,
       "lng": 121.56311489999999,
       "maps_url": "https://maps.google.com/?cid=3765761074469084155",
@@ -3639,10 +3639,10 @@
       "google_id": "/g/11fy4j9lm0"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Alley 46, Lane 553, Section 4, Zhongxiao E Rd, 8號JARANA",
+      "name": "JARANA",
       "address": "No. 8號, Alley 46, Lane 553, Section 4, Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044062699999998,
       "lng": 121.56320129999999,
       "maps_url": "https://maps.google.com/?cid=3765760931779665125",
@@ -3672,10 +3672,10 @@
       "google_id": "/g/11g027g74m"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, Section 1, Xiyuan Rd, 145號10 Basement 1st Floor 地下一樓柳隅茶舍 LiuYu Teahouse （Located in Underground Mall)B1-10",
+      "name": "柳隅茶舍 LiuYu Teahouse （Located in Underground Mall)",
       "address": "108, Taiwan, Taipei City, Wanhua District, Section 1, Xiyuan Rd, 145號10 Basement 1st Floor 地下一樓B1-10",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.036452099999998,
       "lng": 121.49966409999999,
       "maps_url": "https://maps.google.com/?cid=3765758806789122855",
@@ -3683,10 +3683,10 @@
       "google_id": "/g/11b6gp814_"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Alley 46, Lane 553, Section 4, Zhongxiao E Rd, 15號三徑就荒Hermit's Hut1 樓",
+      "name": "三徑就荒Hermit's Hut",
       "address": "110, Taiwan, Taipei City, Xinyi District, Alley 46, Lane 553, Section 4, Zhongxiao E Rd, 15號1 樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0442733,
       "lng": 121.5636048,
       "maps_url": "https://maps.google.com/?cid=3765761074988484341",
@@ -3694,10 +3694,10 @@
       "google_id": "/g/11fxxmp853"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Section 2, Zhongxiao E Rd, 112號御鼎香脆皮烤鴨餐廳1樓",
+      "name": "御鼎香脆皮烤鴨餐廳",
       "address": "100, Taiwan, Taipei City, Zhongzheng District, Section 2, Zhongxiao E Rd, 112號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.042558,
       "lng": 121.53114219999999,
       "maps_url": "https://maps.google.com/?cid=3765761257976719663",
@@ -3705,10 +3705,10 @@
       "google_id": "/g/1hm6jfzvf"
     },
     {
-      "name": "72 Beef Noodles, No. 71, Section 2, Jinan Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "72 Beef Noodles",
       "address": "No. 71, Section 2, Jinan Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040293199999997,
       "lng": 121.53244099999999,
       "maps_url": "https://maps.google.com/?cid=3765758588821428143",
@@ -3716,10 +3716,10 @@
       "google_id": "/g/11c3j5bwlc"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 2, Keelung Rd, 252號Red Room Rendezvous 紅房餐酒館",
+      "name": "Red Room Rendezvous 紅房餐酒館",
       "address": "No. 252號, Section 2, Keelung Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0226258,
       "lng": 121.55031009999999,
       "maps_url": "https://maps.google.com/?cid=3765761062832731005",
@@ -3727,10 +3727,10 @@
       "google_id": "/g/11qpj_z53b"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, Kunming St, 137號湯包樂｜小籠湯包 滷肉飯 蒸餃 乾麵 西門町美食 萬華人氣美食 台北美食特色小吃",
+      "name": "湯包樂｜小籠湯包 滷肉飯 蒸餃 乾麵 西門町美食 萬華人氣美食 台北美食特色小吃",
       "address": "No. 137號, Kunming St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041233599999998,
       "lng": 121.5045351,
       "maps_url": "https://maps.google.com/?cid=3765758489664589015",
@@ -3738,10 +3738,10 @@
       "google_id": "/g/11rb4r32g7"
     },
     {
-      "name": "1樓 Fujin Tree Taiwanese Cuisine & Champagne (Songshan), No. 17號, Lane 199, Dunhua N Rd, Songshan District, Taipei City, Taiwan 10548",
+      "name": "Fujin Tree Taiwanese Cuisine & Champagne (Songshan)",
       "address": "10548, Taiwan, Taipei City, Songshan District, Lane 199, Dunhua N Rd, 17號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.056525999999998,
       "lng": 121.552724,
       "maps_url": "https://maps.google.com/?cid=3765761280226337693",
@@ -3749,10 +3749,10 @@
       "google_id": "/g/11b70kcv5f"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Lane 353, Linsen N Rd, 21號丸滿台灣味手路菜",
+      "name": "丸滿台灣味手路菜",
       "address": "No. 21, Lane 353, Linsen N Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0570725,
       "lng": 121.5263044,
       "maps_url": "https://maps.google.com/?cid=3765759144709285835",
@@ -3760,10 +3760,10 @@
       "google_id": "/g/11gfdch6rp"
     },
     {
-      "name": "Nong Lai Restaurant, No. 86號, Section 2, Minsheng E Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Nong Lai Restaurant",
       "address": "No. 86號, Section 2, Minsheng E Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0578535,
       "lng": 121.53066679999999,
       "maps_url": "https://maps.google.com/?cid=3765758458854727403",
@@ -3771,10 +3771,10 @@
       "google_id": "/g/11bbrgk9_f"
     },
     {
-      "name": "PURE LOVE, No. 9, Lane 104, Section 3, Tingzhou Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "PURE LOVE",
       "address": "No. 9, Lane 104, Section 3, Tingzhou Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0137882,
       "lng": 121.53339989999999,
       "maps_url": "https://maps.google.com/?cid=3765758380427255217",
@@ -3782,10 +3782,10 @@
       "google_id": "/g/11n63w857h"
     },
     {
-      "name": "Prozac Balcony, No. 308號, Section 3, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Prozac Balcony",
       "address": "No. 308號, Section 3, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0161649,
       "lng": 121.5325259,
       "maps_url": "https://maps.google.com/?cid=3765759371148497917",
@@ -3793,10 +3793,10 @@
       "google_id": "/g/1pp2v9_4l"
     },
     {
-      "name": "Ho Tai So Pineapple Buns, No. 167號, Section 3, Tingzhou Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Ho Tai So Pineapple Buns",
       "address": "No. 167號, Section 3, Tingzhou Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.015212599999998,
       "lng": 121.532253,
       "maps_url": "https://maps.google.com/?cid=3765758654881208117",
@@ -3804,10 +3804,10 @@
       "google_id": "/g/11f4r4f7ng"
     },
     {
-      "name": "窖父_Hide Out, No. 13號, Lane 24, Section 4, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "窖父_Hide Out",
       "address": "No. 13號, Lane 24, Section 4, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0150693,
       "lng": 121.532556,
       "maps_url": "https://maps.google.com/?cid=3765758635760697637",
@@ -3815,10 +3815,10 @@
       "google_id": "/g/11cncpgjqh"
     },
     {
-      "name": "Lan Jia Gua Bao Traditional Taiwanese Snack, No. 3號, Alley 8, Ln. 316, Section 3, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Lan Jia Gua Bao Traditional Taiwanese Snack",
       "address": "No. 3號, Alley 8, Ln. 316, Section 3, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0157411,
       "lng": 121.53258079999999,
       "maps_url": "https://maps.google.com/?cid=3765758655450274509",
@@ -3826,10 +3826,10 @@
       "google_id": "/g/1td15jj6"
     },
     {
-      "name": "Chale, No. 16號, Lane 190, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Chale",
       "address": "No. 16號, Lane 190, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0425465,
       "lng": 121.54763659999999,
       "maps_url": "https://maps.google.com/?cid=3765760336173343321",
@@ -3837,10 +3837,10 @@
       "google_id": "/g/11ty715m4r"
     },
     {
-      "name": "1樓 Chandu, No. 6號, Lane 128, Section 3, Shimin Blvd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Chandu",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 128, Section 3, Shimin Blvd, 6號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0445371,
       "lng": 121.5346881,
       "maps_url": "https://maps.google.com/?cid=3765758270899389243",
@@ -3848,10 +3848,10 @@
       "google_id": "/g/11rsd8d70s"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, 新生北路一段62巷16號UNDER THE BRIDGE 橋下披薩（無訂位）",
+      "name": "UNDER THE BRIDGE 橋下披薩（無訂位）",
       "address": "10491, Taiwan, Taipei City, Zhongshan District, 新生北路一段62巷16號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0463164,
       "lng": 121.53065629999999,
       "maps_url": "https://maps.google.com/?cid=3765758652092787485",
@@ -3859,10 +3859,10 @@
       "google_id": "/g/11kpvg4c0h"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 2, Anhe Rd, 83號Orchid Restaurant 蘭",
+      "name": "Orchid Restaurant 蘭",
       "address": "No. 83號, Section 2, Anhe Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0300451,
       "lng": 121.5522005,
       "maps_url": "https://maps.google.com/?cid=3765761134403260267",
@@ -3870,10 +3870,10 @@
       "google_id": "/g/11c51cdfhh"
     },
     {
-      "name": "Trio Original, No. 12號, Alley 54, Lane 63, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Trio Original",
       "address": "No. 12號, Alley 54, Lane 63, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.030544499999998,
       "lng": 121.55140159999999,
       "maps_url": "https://maps.google.com/?cid=3765761136052092783",
@@ -3881,10 +3881,10 @@
       "google_id": "/g/1thvdmph"
     },
     {
-      "name": "Boon Keng Chicken, No. 33號, Section 2, Zhongxiao E Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Boon Keng Chicken",
       "address": "No. 33號, Section 2, Zhongxiao E Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0438729,
       "lng": 121.52796479999999,
       "maps_url": "https://maps.google.com/?cid=3765761180984307117",
@@ -3892,10 +3892,10 @@
       "google_id": "/g/1tjjm1zh"
     },
     {
-      "name": "Safranbolu Turkish Restaurant 蕃紅花城土耳其餐廳, No. 60號, Section 2, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Safranbolu Turkish Restaurant 蕃紅花城土耳其餐廳",
       "address": "No. 60號, Section 2, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.051831,
       "lng": 121.529944,
       "maps_url": "https://maps.google.com/?cid=3765758497689596199",
@@ -3903,10 +3903,10 @@
       "google_id": "/g/11btz10fcc"
     },
     {
-      "name": "Jinan Beef Noodle Restaurant, No. 60之3號, Section 2, Jinan Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Jinan Beef Noodle Restaurant",
       "address": "No. 60之3號, Section 2, Jinan Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040136699999998,
       "lng": 121.53208769999999,
       "maps_url": "https://maps.google.com/?cid=3765758588775105179",
@@ -3914,10 +3914,10 @@
       "google_id": "/g/1td5zf6d"
     },
     {
-      "name": "Yang Shin Vegetarian Restaurant, No. 128號, SongJiang Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Yang Shin Vegetarian Restaurant",
       "address": "No. 128號, SongJiang Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0527859,
       "lng": 121.5327926,
       "maps_url": "https://maps.google.com/?cid=3765758470743707675",
@@ -3925,10 +3925,10 @@
       "google_id": "/g/1ptwhl6hl"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Guide St, 47－2號在她家",
+      "name": "在她家",
       "address": "No. 47－2號, Guide St, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.054685799999998,
       "lng": 121.5083329,
       "maps_url": "https://maps.google.com/?cid=3765758130395607343",
@@ -3936,10 +3936,10 @@
       "google_id": "/g/11dftcbtpz"
     },
     {
-      "name": "3樓 Ginspiration, No. 76號, Section 1, Dihua St, Datong District, Taipei City, Taiwan 103",
+      "name": "Ginspiration",
       "address": "103, Taiwan, Taipei City, Datong District, Section 1, Dihua St, 76號3樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0557438,
       "lng": 121.50989609999999,
       "maps_url": "https://maps.google.com/?cid=3765758143723465867",
@@ -3947,10 +3947,10 @@
       "google_id": "/g/11g6ylv_wh"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Section 2, Yanping N Rd, 79號桃花源緣",
+      "name": "桃花源緣",
       "address": "No. 79號, Section 2, Yanping N Rd, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.056043499999998,
       "lng": 121.51173059999999,
       "maps_url": "https://maps.google.com/?cid=3765758494692823369",
@@ -3958,10 +3958,10 @@
       "google_id": "/g/11gjt8w8fh"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Liangzhou St, 1-5號百年老店柴寮仔鯊魚煙",
+      "name": "百年老店柴寮仔鯊魚煙",
       "address": "No. 1-5號, Liangzhou St, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0746616,
       "lng": 121.5148103,
       "maps_url": "https://maps.google.com/?cid=3765758332690542257",
@@ -3969,10 +3969,10 @@
       "google_id": "/g/11ckvmwmxk"
     },
     {
-      "name": "TankQ Cafe & Bar, No. 3-2號, Lane 90, Songjiang Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "TankQ Cafe & Bar",
       "address": "No. 3-2號, Lane 90, Songjiang Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044054,
       "lng": 121.5503301,
       "maps_url": "https://maps.google.com/?cid=3765758473677029427",
@@ -4013,10 +4013,10 @@
       "google_id": "/g/11bcf0qz5b"
     },
     {
-      "name": "Yao Yue Teahouse, No. 6號, Lane 40, Section 3, Zhinan Rd, Wenshan District, Taipei City, Taiwan 116",
+      "name": "Yao Yue Teahouse",
       "address": "No. 6號, Lane 40, Section 3, Zhinan Rd, Wenshan District, Taipei City, Taiwan 116",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 24.96743,
       "lng": 121.597309,
       "maps_url": "https://maps.google.com/?cid=3776268446981285145",
@@ -4024,10 +4024,10 @@
       "google_id": "/g/11bw2f_g7j"
     },
     {
-      "name": "Yingyue Teahouse, No. 8號, Lane 167, Section 3, Zhinan Rd, Wenshan District, Taipei City, Taiwan 116",
+      "name": "Yingyue Teahouse",
       "address": "No. 8號, Lane 167, Section 3, Zhinan Rd, Wenshan District, Taipei City, Taiwan 116",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 24.9731664,
       "lng": 121.6002213,
       "maps_url": "https://maps.google.com/?cid=3776268428607882629",
@@ -4035,10 +4035,10 @@
       "google_id": "/g/1tfx2n2b"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, 和平東路三段377號雞窩餐廳",
+      "name": "雞窩餐廳",
       "address": "110, Taiwan, Taipei City, Xinyi District, 和平東路三段377號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.020063,
       "lng": 121.5573831,
       "maps_url": "https://maps.google.com/?cid=3765761134719206451",
@@ -4046,10 +4046,10 @@
       "google_id": "/g/1tpb8pfm"
     },
     {
-      "name": "WOK by obond, No. 18號, Long Jiang Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "WOK by obond",
       "address": "No. 18號, Long Jiang Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.047879899999998,
       "lng": 121.54026669999999,
       "maps_url": "https://maps.google.com/?cid=3765761030734358881",
@@ -4057,10 +4057,10 @@
       "google_id": "/g/11t_zkz51z"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 8, Lane 251, Section 3, Zhongxiao E Rd, 3號The Malt 麥村1樓",
+      "name": "The Malt 麥村",
       "address": "106, Taiwan, Taipei City, Da’an District, Alley 8, Lane 251, Section 3, Zhongxiao E Rd, 3號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0430372,
       "lng": 121.5414567,
       "maps_url": "https://maps.google.com/?cid=3765761160539868475",
@@ -4068,10 +4068,10 @@
       "google_id": "/g/11c1wvts3n"
     },
     {
-      "name": "Sidebar, No. 275號, Wenchang St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Sidebar",
       "address": "No. 275號, Wenchang St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.032331799999998,
       "lng": 121.556097,
       "maps_url": "https://maps.google.com/?cid=3765759376660843317",
@@ -4079,10 +4079,10 @@
       "google_id": "/g/11f3yz605q"
     },
     {
-      "name": "MASA Tongan Store, No. 48, Tongan St, Da’an District, Taipei City, Taiwan 106",
+      "name": "MASA Tongan Store",
       "address": "No. 48, Tongan St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0313466,
       "lng": 121.5532188,
       "maps_url": "https://maps.google.com/?cid=3765761323115120125",
@@ -4090,10 +4090,10 @@
       "google_id": "/g/11qn0tnxlb"
     },
     {
-      "name": "Liquid Bread Company, No. 270, Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Liquid Bread Company",
       "address": "No. 270, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0337319,
       "lng": 121.5568986,
       "maps_url": "https://maps.google.com/?cid=3765761120346111647",
@@ -4101,10 +4101,10 @@
       "google_id": "/g/11fxw9y0cz"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Section 2, Keelung Rd, 7號傑克兄弟牛排館臺北信義店 Jack Brothers Steakhouse Taipei",
+      "name": "傑克兄弟牛排館臺北信義店 Jack Brothers Steakhouse Taipei",
       "address": "No. 7號, Section 2, Keelung Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0324249,
       "lng": 121.5594363,
       "maps_url": "https://maps.google.com/?cid=3765761239190348975",
@@ -4112,10 +4112,10 @@
       "google_id": "/g/11gxh5m0d6"
     },
     {
-      "name": "110, Taiwan, Taipei City, Xinyi District, Lane 239, Zhuangjing Rd, 12號Adachi足立壽司",
+      "name": "Adachi足立壽司",
       "address": "No. 12號, Lane 239, Zhuangjing Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.029935,
       "lng": 121.562888,
       "maps_url": "https://maps.google.com/?cid=3765760835396030813",
@@ -4156,10 +4156,10 @@
       "google_id": "/g/1tgcpkqn"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 161, Section 1, Dunhua S Rd, 39-1號vacanza accessory 假期飾品-假期咖啡町 敦南店",
+      "name": "vacanza accessory 假期飾品-假期咖啡町 敦南店",
       "address": "No. 39-1號, Lane 161, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.059494899999997,
       "lng": 121.50953899999999,
       "maps_url": "https://maps.google.com/?cid=3765761100880749639",
@@ -4167,10 +4167,10 @@
       "google_id": "/g/1pzrfjqht"
     },
     {
-      "name": "105049, Taiwan, Taipei City, Songshan District, Section 4, Civic Blvd, 129號COYA TAIPEI2樓",
+      "name": "COYA TAIPEI",
       "address": "105049, Taiwan, Taipei City, Songshan District, Section 4, Civic Blvd, 129號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0449147,
       "lng": 121.55019809999999,
       "maps_url": "https://maps.google.com/?cid=3765760701902126401",
@@ -4178,10 +4178,10 @@
       "google_id": "/g/11rwrdc8qy"
     },
     {
-      "name": "111, Taiwan, Taipei City, Shilin District, Lane 101, Jingshan Rd, 160號松園禪林",
+      "name": "松園禪林",
       "address": "No. 160號, Lane 101, Jingshan Rd, Shilin District, Taipei City, Taiwan 111",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.1586385,
       "lng": 121.56558679999999,
       "maps_url": "https://maps.google.com/?cid=3765768438542600319",
@@ -4189,10 +4189,10 @@
       "google_id": "/g/1v0lhgfm"
     },
     {
-      "name": "Chi Chia Chuang (Changchun Road), No. 55, Changchun Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Chi Chia Chuang (Changchun Road)",
       "address": "No. 55, Changchun Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.055024,
       "lng": 121.52608839999999,
       "maps_url": "https://maps.google.com/?cid=3765758501978744017",
@@ -4200,10 +4200,10 @@
       "google_id": "/g/1vqtdhdh"
     },
     {
-      "name": "Peng Family, No. 60號, Dongfeng St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Peng Family",
       "address": "No. 60號, Dongfeng St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.035923699999998,
       "lng": 121.5476345,
       "maps_url": "https://maps.google.com/?cid=3765761138534275639",
@@ -4211,10 +4211,10 @@
       "google_id": "/g/1tr9l3pf"
     },
     {
-      "name": "3F Mipon, No. 55號, Lequn 2nd Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Mipon",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Lequn 2nd Rd, 55號3F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0804887,
       "lng": 121.5538967,
       "maps_url": "https://maps.google.com/?cid=3765761412051179767",
@@ -4222,10 +4222,10 @@
       "google_id": "/g/11cmzjqpql"
     },
     {
-      "name": "Do It True (Xinyi), No. 506, Section 4, Ren'ai Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "Do It True (Xinyi)",
       "address": "No. 506, Section 4, Ren'ai Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0372424,
       "lng": 121.5610468,
       "maps_url": "https://maps.google.com/?cid=3765761044967836605",
@@ -4233,10 +4233,10 @@
       "google_id": "/g/1tzzs5zn"
     },
     {
-      "name": "A Kuo Lu Wei, No. 759號, Section 4, Bade Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "A Kuo Lu Wei",
       "address": "No. 759號, Section 4, Bade Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0507325,
       "lng": 121.57750929999999,
       "maps_url": "https://maps.google.com/?cid=3765760924795089237",
@@ -4244,10 +4244,10 @@
       "google_id": "/g/1pzrn4kh8"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Jilin Rd, 420號小酌之家",
+      "name": "小酌之家",
       "address": "No. 420號, Jilin Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.065931499999998,
       "lng": 121.5303149,
       "maps_url": "https://maps.google.com/?cid=1445040803805514813",
@@ -4255,10 +4255,10 @@
       "google_id": "/g/11b6dpkrjj"
     },
     {
-      "name": "Tsui Feng Yuan, No. 5號, Lane 8, Section 3, Bade Rd, Songshan District, Taipei City, Taiwan 105",
+      "name": "Tsui Feng Yuan",
       "address": "No. 5號, Lane 8, Section 3, Bade Rd, Songshan District, Taipei City, Taiwan 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0474562,
       "lng": 121.54978009999999,
       "maps_url": "https://maps.google.com/?cid=3765761093475149605",
@@ -4266,10 +4266,10 @@
       "google_id": "/g/1thxhs6d"
     },
     {
-      "name": "Hang Zhou Xiao Long Bao (Da'an), No. 19, Section 2, Hangzhou S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Hang Zhou Xiao Long Bao (Da'an)",
       "address": "No. 19, Section 2, Hangzhou S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0340836,
       "lng": 121.52370049999999,
       "maps_url": "https://maps.google.com/?cid=3765758730493758735",
@@ -4277,10 +4277,10 @@
       "google_id": "/g/11b67r85g7"
     },
     {
-      "name": "Mao Yuan Restaurant, No. 185, ChangAn East Rd Section 2, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Mao Yuan Restaurant",
       "address": "No. 185, ChangAn East Rd Section 2, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.048427999999998,
       "lng": 121.5426365,
       "maps_url": "https://maps.google.com/?cid=3765761200311765105",
@@ -4288,10 +4288,10 @@
       "google_id": "/g/1vvr3yly"
     },
     {
-      "name": "Yuan Wei, No. 227巷2號, Huayin St, Datong District, Taipei City, Taiwan 103",
+      "name": "Yuan Wei",
       "address": "No. 227巷2號, Huayin St, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0507834,
       "lng": 121.5141177,
       "maps_url": "https://maps.google.com/?cid=3765759116591644865",
@@ -4299,10 +4299,10 @@
       "google_id": "/g/11f6k9t0t7"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 290, Guangfu S Rd, 26號Hotties Fried Chicken - 美式辣炸雞",
+      "name": "Hotties Fried Chicken - 美式辣炸雞",
       "address": "No. 26號, Lane 290, Guangfu S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039473299999997,
       "lng": 121.55649199999999,
       "maps_url": "https://maps.google.com/?cid=3765760603914545385",
@@ -4310,10 +4310,10 @@
       "google_id": "/g/11q8txc8lv"
     },
     {
-      "name": "Maryjane Pizza Bar 瑪莉珍披薩吧 大安店, No. 15, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Maryjane Pizza Bar 瑪莉珍披薩吧 大安店",
       "address": "No. 15, Section 1, Da'an Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0445876,
       "lng": 121.5463228,
       "maps_url": "https://maps.google.com/?cid=3765760414420943329",
@@ -4321,10 +4321,10 @@
       "google_id": "/g/11j74gxypn"
     },
     {
-      "name": "Shida Night Market, Lane 39, Shida Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Shida Night Market",
       "address": "Lane 39, Shida Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0245042,
       "lng": 121.5293123,
       "maps_url": "https://maps.google.com/?cid=3765758628274224737",
@@ -4332,10 +4332,10 @@
       "google_id": "/g/11bwc9qf7b"
     },
     {
-      "name": "Ningxia Night Market, Ningxia Rd, Datong District, Taipei City, Taiwan 103",
+      "name": "Ningxia Night Market",
       "address": "Ningxia Rd, Datong District, Taipei City, Taiwan 103",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0566808,
       "lng": 121.5153641,
       "maps_url": "https://maps.google.com/?cid=3765758516918175173",
@@ -4343,10 +4343,10 @@
       "google_id": "/g/11b6z295dn"
     },
     {
-      "name": "Quelques Pâtisseries, No. 7號, Alley 4, Lane 345, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Quelques Pâtisseries",
       "address": "No. 7號, Alley 4, Lane 345, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0390421,
       "lng": 121.55354759999999,
       "maps_url": "https://maps.google.com/?cid=3765761139055830299",
@@ -4365,10 +4365,10 @@
       "google_id": "/g/1tplhfgx"
     },
     {
-      "name": "114, Taiwan, Taipei City, Neihu District, Zhouzi St, 79-1號TAO ART8樓",
+      "name": "TAO ART",
       "address": "114, Taiwan, Taipei City, Neihu District, Zhouzi St, 79-1號8樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0803057,
       "lng": 121.5713148,
       "maps_url": "https://maps.google.com/?cid=3765762982502076343",
@@ -4376,10 +4376,10 @@
       "google_id": "/g/11fpk79080"
     },
     {
-      "name": "3樓 l’idiot Chun Place Dazhi Branch, No. 303號, Lequn 3rd Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "l’idiot Chun Place Dazhi Branch",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Lequn 3rd Rd, 303號3樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.082762199999998,
       "lng": 121.5603354,
       "maps_url": "https://maps.google.com/?cid=3765758456588552767",
@@ -4387,10 +4387,10 @@
       "google_id": "/g/11b5s2dxjf"
     },
     {
-      "name": "5樓 大腕燒肉Da-wan, No. 199號, Jingye 2nd Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "大腕燒肉Da-wan",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Jingye 2nd Rd, 199號5樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0844079,
       "lng": 121.55426279999999,
       "maps_url": "https://maps.google.com/?cid=3765761100529171881",
@@ -4398,10 +4398,10 @@
       "google_id": "/g/11b7vvj54b"
     },
     {
-      "name": "10491, Taiwan, Taipei City, Zhongshan District, Alley 5, Lane 608, Beian Rd, 1號吟翔割烹壽司",
+      "name": "吟翔割烹壽司",
       "address": "No. 1號, Alley 5, Lane 608, Beian Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0820197,
       "lng": 121.5493353,
       "maps_url": "https://maps.google.com/?cid=3765761422871354669",
@@ -4409,10 +4409,10 @@
       "google_id": "/g/1tt0nv14"
     },
     {
-      "name": "Danny's Steakhouse, No. 58, Lequn 3rd Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Danny's Steakhouse",
       "address": "No. 58, Lequn 3rd Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.082436299999998,
       "lng": 121.55292159999999,
       "maps_url": "https://maps.google.com/?cid=3765761433309326299",
@@ -4420,10 +4420,10 @@
       "google_id": "/g/12m99ds42"
     },
     {
-      "name": "Jin Da Braised Pork Rice, No. 40號, Daren St, Sanchong District, New Taipei City, Taiwan 241",
+      "name": "Jin Da Braised Pork Rice",
       "address": "No. 40號, Daren St, Sanchong District, New Taipei City, Taiwan 241",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.064408999999998,
       "lng": 121.49154639999999,
       "maps_url": "https://maps.google.com/?cid=3765758193274985675",
@@ -4431,10 +4431,10 @@
       "google_id": "/g/1tfgm2kz"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 11, Lane 216, Section 4, Zhongxiao E Rd, 21號ON TAP",
+      "name": "ON TAP",
       "address": "No. 21, Alley 11, Lane 216, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0408832,
       "lng": 121.55393749999999,
       "maps_url": "https://maps.google.com/?cid=3765761116595071929",
@@ -4442,10 +4442,10 @@
       "google_id": "/g/1tdc2y35"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Civic Blvd, 110號養心殿精緻鍋物",
+      "name": "養心殿精緻鍋物",
       "address": "No. 110號, Section 4, Civic Blvd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044434,
       "lng": 121.5504658,
       "maps_url": "https://maps.google.com/?cid=3765761099196086347",
@@ -4453,10 +4453,10 @@
       "google_id": "/g/12hpl71zk"
     },
     {
-      "name": "1樓 Kitcho, No. 48號, Lane 181, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Kitcho",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 181, Section 4, Zhongxiao E Rd, 48號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044308899999997,
       "lng": 121.55074809999999,
       "maps_url": "https://maps.google.com/?cid=3765761099109873329",
@@ -4464,10 +4464,10 @@
       "google_id": "/g/1th083zw"
     },
     {
-      "name": "THE BED Shisha Lounge, No. 29號, Alley 35, Lane 181, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "THE BED Shisha Lounge",
       "address": "No. 29號, Alley 35, Lane 181, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0440193,
       "lng": 121.55182839999999,
       "maps_url": "https://maps.google.com/?cid=3765761098476842003",
@@ -4475,10 +4475,10 @@
       "google_id": "/g/1tgcpkrd"
     },
     {
-      "name": "Halal Chinese Beef Noodles (Da'an), No. 1號, Alley 7, Lane 137, Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Halal Chinese Beef Noodles (Da'an)",
       "address": "No. 1號, Alley 7, Lane 137, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0420706,
       "lng": 121.5549566,
       "maps_url": "https://maps.google.com/?cid=3765761107622261975",
@@ -4486,10 +4486,10 @@
       "google_id": "/g/1tfg9yg9"
     },
     {
-      "name": "Sitaiyaki, No. 50號, Alley 1, Lane 131, Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Sitaiyaki",
       "address": "No. 50號, Alley 1, Lane 131, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.043415,
       "lng": 121.55496049999999,
       "maps_url": "https://maps.google.com/?cid=3765761108490689269",
@@ -4497,10 +4497,10 @@
       "google_id": "/g/12jm5jxqh"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 223, Section 4, Zhongxiao E Rd, 69號雨田先生手沖飲品吧 MrRdrinks",
+      "name": "雨田先生手沖飲品吧 MrRdrinks",
       "address": "No. 69, Lane 223, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.043683899999998,
       "lng": 121.5529882,
       "maps_url": "https://maps.google.com/?cid=3765761097100290511",
@@ -4508,10 +4508,10 @@
       "google_id": "/g/11g6x7zqmn"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Alley 5, Lane 70, Yanji St, 8號HOKY's Spirit Bar",
+      "name": "HOKY's Spirit Bar",
       "address": "No. 8號, Alley 5, Lane 70, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.042206,
       "lng": 121.5536173,
       "maps_url": "https://maps.google.com/?cid=3765761104599131917",
@@ -4519,10 +4519,10 @@
       "google_id": "/g/11gzl10fp"
     },
     {
-      "name": "7之1號 Twinkeyz Tacos, Lane 131, Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Twinkeyz Tacos",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 131, Yanji St, 7之1號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0427105,
       "lng": 121.55468669999999,
       "maps_url": "https://maps.google.com/?cid=3765761107927283083",
@@ -4530,10 +4530,10 @@
       "google_id": "/g/11cp676jh0"
     },
     {
-      "name": "The Master Spicy Noodle, No. 6-1, Lane 137, Yanji St, Da’an District, Taipei City, Taiwan 106",
+      "name": "The Master Spicy Noodle",
       "address": "No. 6-1, Lane 137, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0419077,
       "lng": 121.5549338,
       "maps_url": "https://maps.google.com/?cid=3765761107610211099",
@@ -4541,10 +4541,10 @@
       "google_id": "/g/11hb8r55z6"
     },
     {
-      "name": "Ay-Chung Flour-Rice Noodle, No. 8-1號, Emei St, Wanhua District, Taipei City, Taiwan 108",
+      "name": "Ay-Chung Flour-Rice Noodle",
       "address": "No. 8-1號, Emei St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0433424,
       "lng": 121.5077214,
       "maps_url": "https://maps.google.com/?cid=3765758096311680065",
@@ -4552,10 +4552,10 @@
       "google_id": "/g/11bwhb3mmk"
     },
     {
-      "name": "108, Taiwan, Taipei City, Wanhua District, 漢中街32巷1號天天利美食坊",
+      "name": "天天利美食坊",
       "address": "108, Taiwan, Taipei City, Wanhua District, 漢中街32巷1號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0449767,
       "lng": 121.507548,
       "maps_url": "https://maps.google.com/?cid=3765758119030766513",
@@ -4574,10 +4574,10 @@
       "google_id": null
     },
     {
-      "name": "啜飲室Landmark (Taihu Xinyi), No. 68號, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
+      "name": "啜飲室Landmark (Taihu Xinyi)",
       "address": "No. 68號, Section 5 of Zhongxiao East RoadSection 5 of Zhongxiao E Rd, Xinyi District, Taipei City, Taiwan 110",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.040246999999997,
       "lng": 121.566773,
       "maps_url": "https://maps.google.com/?cid=3765761061310115335",
@@ -4585,10 +4585,10 @@
       "google_id": "/g/11cm05ybr4"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Section 1, Zhongxiao E Rd, 108號恩記（華山餐廳）善島寺美食｜牛肉麵2樓",
+      "name": "恩記（華山餐廳）善島寺美食｜牛肉麵",
       "address": "100, Taiwan, Taipei City, Zhongzheng District, Section 1, Zhongxiao E Rd, 108號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0442079,
       "lng": 121.52488059999999,
       "maps_url": "https://maps.google.com/?cid=3765758674192180581",
@@ -4607,10 +4607,10 @@
       "google_id": null
     },
     {
-      "name": "5F, KOR Taipei, No. 201號, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "KOR Taipei",
       "address": "5F, No. 201號, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041676799999998,
       "lng": 121.551655,
       "maps_url": "https://maps.google.com/?cid=3765761103785335703",
@@ -4618,10 +4618,10 @@
       "google_id": "/g/11c2008vp8"
     },
     {
-      "name": "Yu Shan Ge, No. 14號, Beiping E Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Yu Shan Ge",
       "address": "No. 14號, Beiping E Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.045986799999998,
       "lng": 121.524547,
       "maps_url": "https://maps.google.com/?cid=3765758537406875609",
@@ -4629,10 +4629,10 @@
       "google_id": "/g/1tf_qkvx"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Section 1, Roosevelt Rd, 1-2號Revolver",
+      "name": "Revolver",
       "address": "No. 1-2號, Section 1, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.034273799999998,
       "lng": 121.5174268,
       "maps_url": "https://maps.google.com/?cid=3765758738725538857",
@@ -4651,10 +4651,10 @@
       "google_id": null
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Zhongxiao E Rd, 289號Zentopia Taipei B1",
+      "name": "Zentopia Taipei",
       "address": "B1, No. 289號, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041670099999997,
       "lng": 121.5546583,
       "maps_url": "https://maps.google.com/?cid=3765761166051628869",
@@ -4673,10 +4673,10 @@
       "google_id": null
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Yanji St, 239號PIZZAROUND 比薩斜躺 （無提供訂位服務）",
+      "name": "PIZZAROUND 比薩斜躺 （無提供訂位服務）",
       "address": "No. 239號, Yanji St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0362998,
       "lng": 121.5557133,
       "maps_url": "https://maps.google.com/?cid=3765760785585994971",
@@ -4684,10 +4684,10 @@
       "google_id": "/g/11pwpjxcb7"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 3, Civic Blvd, 304號IMBIBE Taipei1 樓",
+      "name": "IMBIBE Taipei",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 3, Civic Blvd, 304號1 樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044547899999998,
       "lng": 121.543195,
       "maps_url": "https://maps.google.com/?cid=3765760798149706133",
@@ -4706,10 +4706,10 @@
       "google_id": null
     },
     {
-      "name": "Yi Jia Zi, No. 79號, Kangding Rd, Wanhua District, Taipei City, Taiwan 108",
+      "name": "Yi Jia Zi",
       "address": "No. 79號, Kangding Rd, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0404022,
       "lng": 121.5021711,
       "maps_url": "https://maps.google.com/?cid=3765758777545706831",
@@ -4717,10 +4717,10 @@
       "google_id": "/g/1tj82k7p"
     },
     {
-      "name": "Niu Dian Beef Noodles, No. 91號, Kunming St, Wanhua District, Taipei City, Taiwan 108",
+      "name": "Niu Dian Beef Noodles",
       "address": "No. 91號, Kunming St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.042553299999998,
       "lng": 121.5047812,
       "maps_url": "https://maps.google.com/?cid=3765758091610766411",
@@ -4728,10 +4728,10 @@
       "google_id": "/g/11b87mcbzy"
     },
     {
-      "name": "Ximen Noodle, No. 35號, Neijiang St, Wanhua District, Taipei City, Taiwan 108",
+      "name": "Ximen Noodle",
       "address": "No. 35號, Neijiang St, Wanhua District, Taipei City, Taiwan 108",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.041694,
       "lng": 121.50558099999999,
       "maps_url": "https://maps.google.com/?cid=3765758097589215701",
@@ -4849,10 +4849,10 @@
       "google_id": null
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 3, Zhongxiao E Rd, 282號Restaurant A4樓",
+      "name": "Restaurant A",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 3, Zhongxiao E Rd, 282號4樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0414216,
       "lng": 121.5426945,
       "maps_url": "https://maps.google.com/?cid=3765760371821995959",
@@ -4959,10 +4959,10 @@
       "google_id": "/g/11tf3xj_v3"
     },
     {
-      "name": "Kanokwan Thai Noodle, No. 24號, Lane 21, Section 2, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Kanokwan Thai Noodle",
       "address": "No. 24號, Lane 21, Section 2, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0537296,
       "lng": 121.5311627,
       "maps_url": "https://maps.google.com/?cid=3765758498168268381",
@@ -4970,10 +4970,10 @@
       "google_id": "/g/11bvcvqcdh"
     },
     {
-      "name": "Hong Kong-style seafood Dragon Master, No. 7號, Lane 93, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Hong Kong-style seafood Dragon Master",
       "address": "No. 7號, Lane 93, Section 2, Zhongshan N Rd, Zhongshan District, Taipei City, Taiwan 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0594476,
       "lng": 121.5237059,
       "maps_url": "https://maps.google.com/?cid=3765758343194118787",
@@ -5058,10 +5058,10 @@
       "google_id": null
     },
     {
-      "name": "VG Encore, No.4, Ln.279, Sec, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "VG Encore",
       "address": "No.4, Ln.279, Sec, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0355314,
       "lng": 121.54416099999999,
       "maps_url": "https://maps.google.com/?cid=3765761250370686365",
@@ -5102,10 +5102,10 @@
       "google_id": "/g/1tfv2v0f"
     },
     {
-      "name": "2樓 Zen Tea Restaurant, No. 182號, Songjiang Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Zen Tea Restaurant",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Songjiang Rd, 182號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.056311599999997,
       "lng": 121.5329008,
       "maps_url": "https://maps.google.com/?cid=3765758459980765895",
@@ -5135,10 +5135,10 @@
       "google_id": "/g/1twyx6v2"
     },
     {
-      "name": "3樓 Chiou Hwa Chun Place Dazhi Branch, No. 303號, Lequn 3rd Rd, Zhongshan District, Taipei City, Taiwan 104",
+      "name": "Chiou Hwa Chun Place Dazhi Branch",
       "address": "104, Taiwan, Taipei City, Zhongshan District, Lequn 3rd Rd, 303號3樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0827515,
       "lng": 121.5599237,
       "maps_url": "https://maps.google.com/?cid=3765758456586451401",
@@ -5190,10 +5190,10 @@
       "google_id": "/g/11n5yzvx05"
     },
     {
-      "name": "Riverside Music Cafe, No. 2號, Lane 244, Section 3, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
+      "name": "Riverside Music Cafe",
       "address": "No. 2號, Lane 244, Section 3, Roosevelt Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0171039,
       "lng": 121.5312562,
       "maps_url": "https://maps.google.com/?cid=3765758657372873253",
@@ -5223,10 +5223,10 @@
       "google_id": "/g/11sh5_h4xt"
     },
     {
-      "name": "100, Taiwan, Taipei City, Zhongzheng District, Section 1, Jinshan S Rd, 19號藍記麻辣鍋",
+      "name": "藍記麻辣鍋",
       "address": "No. 19, Section 1, Jinshan S Rd, Zhongzheng District, Taipei City, Taiwan 100",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0405339,
       "lng": 121.5293653,
       "maps_url": "https://maps.google.com/?cid=3765758587857927985",
@@ -5234,10 +5234,10 @@
       "google_id": "/g/1tf635g1"
     },
     {
-      "name": "Old Sichuan Nanjing Restaurant, No. 45, Section 2, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 10491",
+      "name": "Old Sichuan Nanjing Restaurant",
       "address": "No. 45, Section 2, Nanjing E Rd, Zhongshan District, Taipei City, Taiwan 10491",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.052298699999998,
       "lng": 121.52941779999999,
       "maps_url": "https://maps.google.com/?cid=3765758497994934383",
@@ -5245,10 +5245,10 @@
       "google_id": "/g/11b6c90xr7"
     },
     {
-      "name": "Chan Chi Hotpot, No. 60和平東路三段 Da’an District, Taipei City, Taiwan 106",
+      "name": "Chan Chi Hotpot",
       "address": "106, Taiwan, Taipei City, Da’an District, 和平東路三段60號",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.024357199999997,
       "lng": 121.5490864,
       "maps_url": "https://maps.google.com/?cid=3765758475512143443",
@@ -5256,10 +5256,10 @@
       "google_id": "/g/11xp80vkf"
     },
     {
-      "name": "103, Taiwan, Taipei City, Datong District, Section 1, Dihua St, 248號COFE 喫茶咖啡-大稻埕老宅咖啡|台灣精品咖啡|台灣茶巧克力|葡萄酒巧克力|康普茶2樓",
+      "name": "COFE 喫茶咖啡-大稻埕老宅咖啡|台灣精品咖啡|台灣茶巧克力|葡萄酒巧克力|康普茶",
       "address": "103, Taiwan, Taipei City, Datong District, Section 1, Dihua St, 248號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0601017,
       "lng": 121.5093026,
       "maps_url": "https://maps.google.com/?cid=3765758867935946757",
@@ -5267,10 +5267,10 @@
       "google_id": "/g/11flbf2gh1"
     },
     {
-      "name": "VWI BY CHADWANG, No. 16號, Alley 4, Lane 251, Section 3, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 10682",
+      "name": "VWI BY CHADWANG",
       "address": "No. 16號, Alley 4, Lane 251, Section 3, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 10682",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0423019,
       "lng": 121.5407542,
       "maps_url": "https://maps.google.com/?cid=3765761267187456439",
@@ -5289,10 +5289,10 @@
       "google_id": "/g/1pzxpz9w5"
     },
     {
-      "name": "Unwined Bar & Vintner, No. 148, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106102",
+      "name": "Unwined Bar & Vintner",
       "address": "No. 148, Section 2, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106102",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0254093,
       "lng": 121.5483902,
       "maps_url": "https://maps.google.com/?cid=3765760413414059327",
@@ -5300,10 +5300,10 @@
       "google_id": "/g/11rsp3w1h3"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 236, Section 1, Dunhua S Rd, 18號FINELINE1樓",
+      "name": "FINELINE",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 236, Section 1, Dunhua S Rd, 18號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0404935,
       "lng": 121.5475479,
       "maps_url": "https://maps.google.com/?cid=3765760626784616755",
@@ -5311,10 +5311,10 @@
       "google_id": "/g/11t7dwrh9z"
     },
     {
-      "name": "106075, Taiwan, Taipei City, Da’an District, Lane 190, Section 1, Dunhua S Rd, 49號Arpia Taipei",
+      "name": "Arpia Taipei",
       "address": "No. 49號, Lane 190, Section 1, Dunhua S Rd, Da’an District, Taipei City, Taiwan 106075",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.042765199999998,
       "lng": 121.5467623,
       "maps_url": "https://maps.google.com/?cid=3765761343623472969",
@@ -5322,10 +5322,10 @@
       "google_id": "/g/11mhhhmcmw"
     },
     {
-      "name": "Double Check, No. 16號, Alley 5, Lane 107, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Double Check",
       "address": "No. 16號, Alley 5, Lane 107, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.044119,
       "lng": 121.545093,
       "maps_url": "https://maps.google.com/?cid=3765761192622693067",
@@ -5333,10 +5333,10 @@
       "google_id": "/g/11cn7hznbc"
     },
     {
-      "name": "2樓 D Town by A Train, No. 2, Lane 49, Section 4, Zhongxiao E Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "D Town by A Train",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 49, Section 4, Zhongxiao E Rd, 2號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0422722,
       "lng": 121.5453826,
       "maps_url": "https://maps.google.com/?cid=3765761192889420087",
@@ -5344,10 +5344,10 @@
       "google_id": "/g/11dz1zjhq4"
     },
     {
-      "name": "L 'AGE aging Restaurant, No. 25, Lane 143, Section 3, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "L 'AGE aging Restaurant",
       "address": "No. 25, Lane 143, Section 3, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0396075,
       "lng": 121.54318169999999,
       "maps_url": "https://maps.google.com/?cid=3765761151879274167",
@@ -5355,10 +5355,10 @@
       "google_id": "/g/11c4jfrp2x"
     },
     {
-      "name": "Asylum, No. 10, Lane 219, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "Asylum",
       "address": "No. 10, Lane 219, Section 1, Fuxing S Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.038946199999998,
       "lng": 121.54451189999999,
       "maps_url": "https://maps.google.com/?cid=3765761153075979919",
@@ -5366,10 +5366,10 @@
       "google_id": "/g/11g7p2l2x3"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 1, Da'an Rd, 135號橘色涮涮屋一館B1",
+      "name": "橘色涮涮屋一館",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 1, Da'an Rd, 135號B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0387681,
       "lng": 121.5461806,
       "maps_url": "https://maps.google.com/?cid=3765761155475676229",
@@ -5377,10 +5377,10 @@
       "google_id": "/g/1hm2gg3d5"
     },
     {
-      "name": "7樓 N°168 PRIME, No. 246號敦化南路1段 Da’an District, Taipei City, Taiwan 106",
+      "name": "N°168 PRIME",
       "address": "106, Taiwan, Taipei City, Da’an District, 敦化南路1段246號7樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0402593,
       "lng": 121.5483057,
       "maps_url": "https://maps.google.com/?cid=3765761148309314751",
@@ -5388,10 +5388,10 @@
       "google_id": "/g/11cn5rkq55"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, 敦化南路1段324號用餐都在地下一樓，沒有電梯！ Ji Yuan Szechuan Restaurant",
+      "name": "Ji Yuan Szechuan Restaurant",
       "address": "106, Taiwan, Taipei City, Da’an District, 敦化南路1段324號用餐都在地下一樓，沒有電梯！",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0353194,
       "lng": 121.5484647,
       "maps_url": "https://maps.google.com/?cid=3765761139684485103",
@@ -5399,10 +5399,10 @@
       "google_id": "/g/1tfzpm7h"
     },
     {
-      "name": "2樓 Halfway There, No. 24號, Wenchang St, Da’an District, Taipei City, Taiwan 106",
+      "name": "Halfway There",
       "address": "106, Taiwan, Taipei City, Da’an District, Wenchang St, 24號2樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.032874999999997,
       "lng": 121.54962069999999,
       "maps_url": "https://maps.google.com/?cid=3765758476853743099",
@@ -5410,10 +5410,10 @@
       "google_id": "/g/11bx1q1q6b"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 11, Section 2, Dunhua S Rd, 6號VG The Seafood Bar , Taipei1樓",
+      "name": "VG The Seafood Bar , Taipei",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 11, Section 2, Dunhua S Rd, 6號1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0325143,
       "lng": 121.5498877,
       "maps_url": "https://maps.google.com/?cid=3765761138077934037",
@@ -5421,10 +5421,10 @@
       "google_id": "/g/11fxb4x1gm"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Wenchang St, 53號Win53",
+      "name": "Win53",
       "address": "No. 53號, Wenchang St, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.032927299999997,
       "lng": 121.55063899999999,
       "maps_url": "https://maps.google.com/?cid=3765760318616727995",
@@ -5432,10 +5432,10 @@
       "google_id": "/g/11j5j4404j"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 27, Section 4, Ren'ai Rd, 9號大安9號鍋物。鐵板燒",
+      "name": "大安9號鍋物。鐵板燒",
       "address": "No. 9號, Lane 27, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.039531399999998,
       "lng": 121.54541669999999,
       "maps_url": "https://maps.google.com/?cid=3765761152427747695",
@@ -5443,10 +5443,10 @@
       "google_id": "/g/11cn95df6n"
     },
     {
-      "name": "啜飲室 大安 (Taihu Da'an), No. 34號, Lane 27, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
+      "name": "啜飲室 大安 (Taihu Da'an)",
       "address": "No. 34號, Lane 27, Section 4, Ren'ai Rd, Da’an District, Taipei City, Taiwan 106",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0411288,
       "lng": 121.54514859999999,
       "maps_url": "https://maps.google.com/?cid=3765761192616499913",
@@ -5454,10 +5454,10 @@
       "google_id": "/g/11b6snw47g"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Lane 27, Section 4, Ren'ai Rd, 25號The Tavernist12F",
+      "name": "The Tavernist",
       "address": "106, Taiwan, Taipei City, Da’an District, Lane 27, Section 4, Ren'ai Rd, 25號12F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0404117,
       "lng": 121.5454838,
       "maps_url": "https://maps.google.com/?cid=3765760416539985605",
@@ -5465,10 +5465,10 @@
       "google_id": "/g/11fj0vcmv7"
     },
     {
-      "name": "106, Taiwan, Taipei City, Da’an District, Section 4, Zhongxiao E Rd, 97號頂好紫琳蒸餃館 Zi Lin Steamed DumplingB1樓",
+      "name": "頂好紫琳蒸餃館 Zi Lin Steamed Dumpling",
       "address": "106, Taiwan, Taipei City, Da’an District, Section 4, Zhongxiao E Rd, 97號B1樓",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 25.0417836,
       "lng": 121.5479306,
       "maps_url": "https://maps.google.com/?cid=3765761194353288769",

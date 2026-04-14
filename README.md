@@ -35,20 +35,22 @@ cp .env.example .env
 Populate local raw data from public Google Maps lists:
 
 ```bash
-pnpm run refresh:data
+pnpm run sync:sources
 ```
+
+This re-scrapes configured source lists if needed and then rebuilds generated site data.
 
 Force-refresh raw list scrapes even if the saved snapshot is still fresh:
 
 ```bash
-pnpm run refresh:data:force
+pnpm run sync:sources:force
 ```
 
 Force-refresh one configured raw list by slug or source URL:
 
 ```bash
-pnpm run refresh:data:list -- tokyo-japan
-pnpm run refresh:data:list -- https://maps.app.goo.gl/your-public-list
+pnpm run sync:source -- tokyo-japan
+pnpm run sync:source -- https://maps.app.goo.gl/your-public-list
 ```
 
 Build generated site data from local raw JSON:
@@ -56,6 +58,8 @@ Build generated site data from local raw JSON:
 ```bash
 pnpm run build:data
 ```
+
+Use this when `data/raw/` is already up to date and you only want to regenerate site inputs.
 
 Fill missing or stale Google Places enrichment cache entries, then rebuild:
 
@@ -94,7 +98,7 @@ It still does not commit generated build data.
 
 Only `slug` and `url` are required. `title` is optional and acts as a fallback if the
 scraper cannot recover the list title.
-`refresh_days` is optional and controls how long a raw scrape stays fresh before `pnpm run refresh:data`
+`refresh_days` is optional and controls how long a raw scrape stays fresh before `pnpm run sync:sources`
 tries to scrape it again. The default is 14 days.
 
 Example:
@@ -124,11 +128,12 @@ Optional fallback title example:
 2. Pull raw list data through the installed scraper dependency:
 
 ```bash
-pnpm run refresh:data
+pnpm run sync:sources
 ```
 
 This writes local JSON files into `data/raw/`, including scrape metadata like `fetched_at`,
-`refresh_after`, and a source signature so future refreshes can skip fresh lists.
+`refresh_after`, and a source signature so future refreshes can skip fresh lists. It also rebuilds
+the generated site JSON afterward.
 
 3. Add manual curation files in `src/data/overrides/`.
 
@@ -170,7 +175,7 @@ enrichment results.
 pnpm run build:data
 ```
 
-This writes local generated JSON into `src/data/generated/`.
+This writes local generated JSON into `src/data/generated/` from the current contents of `data/raw/`.
 
 6. Run the site:
 
@@ -180,8 +185,13 @@ pnpm run dev
 
 If you already have raw JSON from elsewhere, you can skip the live scrape and place compatible files directly in `data/raw/<slug>.json`, then run `pnpm run build:data`.
 For a full raw re-scrape even within the freshness window, run
-`pnpm run refresh:data:force`.
-For a targeted forced re-scrape, run `pnpm run refresh:data:list -- <slug-or-url>`.
+`pnpm run sync:sources:force`.
+For a targeted forced re-scrape, run `pnpm run sync:source -- <slug-or-url>`.
+
+Legacy aliases still work:
+- `pnpm run refresh:data`
+- `pnpm run refresh:data:force`
+- `pnpm run refresh:data:list -- <slug-or-url>`
 
 ## Data Model
 

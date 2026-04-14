@@ -46,19 +46,21 @@ pnpm install
 Populate local raw data from public Google Maps lists:
 
 ```bash
-pnpm run refresh:data
+pnpm run sync:sources
 ```
+
+This refreshes raw sources when needed and then rebuilds generated site data.
 
 Force-refresh all configured raw list scrapes:
 
 ```bash
-pnpm run refresh:data:force
+pnpm run sync:sources:force
 ```
 
 Force-refresh one configured raw list by slug or source URL:
 
 ```bash
-pnpm run refresh:data:list -- tokyo-japan
+pnpm run sync:source -- tokyo-japan
 ```
 
 Build generated JSON from local raw data:
@@ -66,6 +68,8 @@ Build generated JSON from local raw data:
 ```bash
 pnpm run build:data
 ```
+
+Use this when raw snapshots are already current and you only need to regenerate site inputs.
 
 Fill or refresh Google Places enrichment cache:
 
