@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import unittest
-from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -131,23 +130,70 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("tokyo", first_place.tags)
         self.assertTrue(hidden_place.hidden)
 
-    def test_raw_refresh_skip_reason_returns_fresh_window_only_for_matching_sources(self) -> None:
-        source = SourceConfig(
-            slug="tokyo-japan",
-            url="https://maps.app.goo.gl/tokyo",
-            refresh_days=7,
+    def test_import_saved_list_csv_reads_description_notes_and_maps_tokens(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / "alishan.csv"
+            csv_path.write_text(
+                "\n".join(
+                    [
+                        "A foggy mountain weekend",
+                        "",
+                        "Title,Note,URL,Tags,Comment",
+                        (
+                            "Legacy Tea Stop,Best at sunrise,"
+                            "https://www.google.com/maps/place/Tea+House/data=!4m2!3m1!1s0xabc123:0xdef456,,Order the oolong"
+                        ),
+                        "Fallback Name,,https://maps.app.goo.gl/short-link,,",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            source = SourceConfig(
+                slug="alishan-taiwan",
+                type="google_export_csv",
+                path=str(csv_path),
+                title="Alishan, Taiwan",
+            )
+
+            saved_list = build_data.import_saved_list_csv(source)
+
+        self.assertEqual(saved_list.title, "Alishan, Taiwan")
+        self.assertEqual(saved_list.description, "A foggy mountain weekend")
+        self.assertEqual(len(saved_list.places), 2)
+
+        first_place = saved_list.places[0]
+        second_place = saved_list.places[1]
+
+        self.assertEqual(first_place.name, "Tea House")
+        self.assertEqual(first_place.note, "Best at sunrise\n\nOrder the oolong")
+        self.assertEqual(first_place.maps_place_token, "0xabc123:0xdef456")
+        self.assertEqual(
+            build_data.stable_place_id(first_place, source_type="google_export_csv"),
+            "gms:0xabc123:0xdef456",
         )
-        matching_payload = RawSavedList(
-            source_signature=build_data.raw_source_signature(source),
-            refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
-        )
-        mismatched_payload = RawSavedList(
-            source_signature="stale-signature",
-            refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+        self.assertEqual(second_place.name, "Fallback Name")
+        self.assertTrue(
+            build_data.stable_place_id(second_place, source_type="google_export_csv").startswith("url:")
         )
 
-        self.assertIn("fresh until", build_data.raw_refresh_skip_reason(matching_payload, source) or "")
-        self.assertIsNone(build_data.raw_refresh_skip_reason(mismatched_payload, source))
+    def test_resolve_refresh_sources_matches_csv_path_selector(self) -> None:
+        sources = [
+            SourceConfig(
+                slug="tokyo-japan",
+                type="google_list_url",
+                url="https://maps.app.goo.gl/tokyo",
+            ),
+            SourceConfig(
+                slug="alishan-taiwan",
+                type="google_export_csv",
+                path="data/raw/alishan-taiwan.csv",
+                title="Alishan, Taiwan",
+            ),
+        ]
+
+        selected_sources = build_data.resolve_refresh_sources(sources, ["data/raw/alishan-taiwan.csv"])
+
+        self.assertEqual([source.slug for source in selected_sources], ["alishan-taiwan"])
 
 
 if __name__ == "__main__":
