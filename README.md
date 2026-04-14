@@ -98,11 +98,11 @@ It still does not commit generated build data.
 
 Go to [Google Takeout](https://takeout.google.com/), select `Saved`, and download the export.
 
-![Google Takeout Saved export](docs/google-takeout.png)
+![Google Takeout Saved export](docs/images/google-takeout.png)
 
 After extracting the archive, you should get a folder with one or more `.csv` files for your saved lists.
 
-![Google Takeout contents](docs/takeout-contents.png)
+![Google Takeout contents](docs/images/takeout-contents.png)
 
 You can then either keep those CSVs as your own reference data, or use the place names and URLs while
 building `scripts/config/list_sources.json`.
