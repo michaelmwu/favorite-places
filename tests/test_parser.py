@@ -247,6 +247,58 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(parsed.places[0].address, "Nakameguro, Tokyo")
         self.assertTrue(parsed.places[0].is_favorite)
 
+    def test_prefers_enclosing_place_name_over_metadata_string(self) -> None:
+        runtime_state = [
+            "noise",
+            [
+                ["UGEPbA20Qd-OH4uoWjmDgQ", 1, None, 1, 1],
+                4,
+                "https://www.google.com/maps/placelists/list/UGEPbA20Qd-OH4uoWjmDgQ",
+                "Owner",
+                "Taipei Dumplings",
+                None,
+                None,
+                None,
+                [
+                    [
+                        None,
+                        [
+                            None,
+                            None,
+                            (
+                                "106, Taiwan, Taipei City, Da’an District, Section 4, "
+                                "Zhongxiao E Rd, 97號頂好紫琳蒸餃館 Zi Lin Steamed DumplingB1樓"
+                            ),
+                            None,
+                            (
+                                "106, Taiwan, Taipei City, Da’an District, Section 4, "
+                                "Zhongxiao E Rd, 97號B1樓"
+                            ),
+                            [None, None, 25.0417836, 121.5479306],
+                            ["3765761194353288769", "4471733103496006465"],
+                            "/g/1tlcywsb",
+                        ],
+                        "頂好紫琳蒸餃館 Zi Lin Steamed Dumpling",
+                        "",
+                        None,
+                        None,
+                        None,
+                        [],
+                        [["3765761194353288769", "4471733103496006465"]],
+                    ]
+                ],
+            ],
+        ]
+
+        parsed = parse_saved_list_artifacts(_LIST_URL, runtime_state=runtime_state)
+
+        self.assertEqual(len(parsed.places), 1)
+        self.assertEqual(parsed.places[0].name, "頂好紫琳蒸餃館 Zi Lin Steamed Dumpling")
+        self.assertEqual(
+            parsed.places[0].address,
+            "106, Taiwan, Taipei City, Da’an District, Section 4, Zhongxiao E Rd, 97號B1樓",
+        )
+
     def test_raises_when_no_place_records_are_found(self) -> None:
         runtime_state = copy.deepcopy(["noise", _LIST_NODE])
         runtime_state[1][8] = []

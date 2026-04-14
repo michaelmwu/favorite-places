@@ -325,6 +325,16 @@ def _contains_place_metadata_signal(node: list[JSONValue]) -> bool:
 
 
 def _find_place_name(ancestors: Sequence[JSONValue], *, address: str | None) -> str | None:
+    # Prefer the enclosing place record over its nested metadata payload.
+    for ancestor in reversed(ancestors):
+        if not isinstance(ancestor, list):
+            continue
+        if not _is_place_record_node(ancestor):
+            continue
+        preferred = _clean_text(_safe_index(ancestor, 2))
+        if _is_name_candidate(preferred, address=address):
+            return preferred
+
     for ancestor in reversed(ancestors):
         if not isinstance(ancestor, list):
             continue
