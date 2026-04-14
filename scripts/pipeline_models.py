@@ -36,6 +36,8 @@ class SourceConfig(PipelineModel):
             raise ValueError("google_list_url sources require `url`")
         if self.type == "google_export_csv" and not self.path:
             raise ValueError("google_export_csv sources require `path`")
+        if self.type == "google_export_csv" and not self.title:
+            raise ValueError("google_export_csv sources require `title`")
         return self
 
 

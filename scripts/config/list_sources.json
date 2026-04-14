@@ -18,5 +18,11 @@
     "slug": "melbourne-australia",
     "type": "google_list_url",
     "url": "https://maps.app.goo.gl/HGxndKFgJNiVjZRL7"
+  },
+  {
+    "slug": "alishan-taiwan",
+    "type": "google_export_csv",
+    "path": "data/raw/alishan-taiwan.csv",
+    "title": "Alishan, Taiwan 🇹🇼"
   }
 ]

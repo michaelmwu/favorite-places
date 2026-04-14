@@ -63,6 +63,8 @@ pnpm run build:data
 ```
 
 Use this when `data/raw/` is already up to date and you only want to regenerate site inputs.
+For configured CSV sources, this expects the matching `data/raw/<slug>.json` to already exist.
+If it does not, run `pnpm run refresh:data` or `pnpm run refresh:data:list -- <slug>` first.
 
 Fill missing or stale Google Places enrichment cache entries, then rebuild:
 
@@ -101,8 +103,8 @@ It still does not commit generated build data.
 
 Every source needs a `slug` and a `type`.
 - `google_list_url` sources require `url`
-- `google_export_csv` sources require `path`
-- `title` is optional and acts as a fallback list title
+- `google_export_csv` sources require `path` and `title`
+- `title` is optional only for `google_list_url` and acts as a fallback list title
 
 Example:
 

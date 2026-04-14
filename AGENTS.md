@@ -26,7 +26,7 @@ This repo deliberately avoids committing generated build artifacts.
 - `src/data/generated/` is local-only generated site input data.
 - `src/data/overrides/` is the source-controlled layer for handwritten curation.
 - `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
-- In `scripts/config/list_sources.json`, `slug` and `type` are required. `google_list_url` sources use `url`; `google_export_csv` sources use `path`. `title` is only a fallback if the source data cannot recover the real title.
+- In `scripts/config/list_sources.json`, `slug` and `type` are required. `google_list_url` sources use `url`; `google_export_csv` sources use `path` and `title`. `title` is only optional for `google_list_url` as a fallback if the source data cannot recover the real title.
 
 Merge precedence:
 
@@ -70,6 +70,7 @@ pnpm run build:data
 ```
 
 Use this when raw snapshots are already current and you only need to regenerate site inputs.
+For configured CSV sources, this expects `data/raw/<slug>.json` to already exist; otherwise run `pnpm run refresh:data` or `pnpm run refresh:data:list -- <slug>` first.
 
 Fill or refresh Google Places enrichment cache:
 
