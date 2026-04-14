@@ -20,6 +20,7 @@ type JSONValue = JSONScalar | list["JSONValue"] | dict[str, "JSONValue"]
 
 _XSSI_PREFIX = ")]}'"
 _APP_STATE_PATTERN = re.compile(r"APP_INITIALIZATION_STATE\s*=\s*", re.MULTILINE)
+_FAVORITE_MARKERS = frozenset({"❤", "♥", "♥️", "❤️"})
 
 
 @dataclass(slots=True)
@@ -280,6 +281,7 @@ def _extract_places(node: JSONValue) -> list[Place]:
         google_id = _find_google_id(metadata_node)
         name = _find_place_name(ancestors, address=address)
         note = _find_place_note(ancestors, name=name, address=address)
+        is_favorite = _find_place_is_favorite(ancestors, name=name)
         place = Place(
             name=name or address or f"{lat:.6f},{lng:.6f}",
             address=address,
@@ -289,6 +291,7 @@ def _extract_places(node: JSONValue) -> list[Place]:
             maps_url=_build_maps_url(lat=lat, lng=lng, cid=cid),
             cid=cid,
             google_id=google_id,
+            is_favorite=is_favorite,
         )
         dedupe_key = cid or google_id or f"{place.name}:{lat:.6f}:{lng:.6f}"
         if dedupe_key in seen:
@@ -352,6 +355,23 @@ def _find_place_note(
     return None
 
 
+def _find_place_is_favorite(
+    ancestors: Sequence[JSONValue],
+    *,
+    name: str | None,
+) -> bool:
+    for ancestor in reversed(ancestors):
+        if not isinstance(ancestor, list):
+            continue
+        if not _is_place_record_node(ancestor):
+            continue
+        candidate_name = _clean_text(_safe_index(ancestor, 2))
+        if candidate_name is not None and name is not None and candidate_name != name:
+            continue
+        return _contains_favorite_marker(ancestor)
+    return False
+
+
 def _extract_address(node: list[JSONValue] | None) -> str | None:
     if node is None:
         return None
@@ -399,6 +419,15 @@ def _find_google_id(node: list[JSONValue] | None) -> str | None:
         if value.startswith("/g/"):
             return value
     return None
+
+
+def _contains_favorite_marker(node: JSONValue) -> bool:
+    return any(value in _FAVORITE_MARKERS for value in _iter_strings(node))
+
+
+def _is_place_record_node(node: list[JSONValue]) -> bool:
+    metadata_node = _safe_index(node, 1)
+    return isinstance(metadata_node, list) and _contains_place_metadata_signal(metadata_node)
 
 
 def _find_list_id_in_node(node: JSONValue) -> str | None:

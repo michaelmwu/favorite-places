@@ -31,6 +31,7 @@ def _saved_list() -> SavedList:
                 lng=139.6868459,
                 maps_url="https://maps.google.com/?cid=7451636382641713350",
                 cid="7451636382641713350",
+                is_favorite=True,
             )
         ],
     )

@@ -17,6 +17,7 @@ class Place:
     maps_url: str
     cid: str | None = None
     google_id: str | None = None
+    is_favorite: bool = False
 
     def to_dict(self) -> dict[str, object]:
         """Convert a place into a JSON-serializable dictionary."""
@@ -24,6 +25,7 @@ class Place:
             "name": self.name,
             "address": self.address,
             "note": self.note,
+            "is_favorite": self.is_favorite,
             "lat": self.lat,
             "lng": self.lng,
             "maps_url": self.maps_url,
