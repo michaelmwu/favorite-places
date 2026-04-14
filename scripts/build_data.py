@@ -6,6 +6,7 @@ import json
 import math
 import re
 from collections import Counter
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,7 @@ GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
 DEFAULT_RAW_REFRESH_TTL = timedelta(days=14)
+DEFAULT_REFRESH_WORKERS = 4
 ERROR_CACHE_TTL = timedelta(days=1)
 UNMATCHED_CACHE_TTL = timedelta(days=3)
 LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
@@ -90,6 +92,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force-refresh only the configured list matching this slug or source URL. Repeat to target multiple lists.",
     )
     parser.add_argument(
+        "--refresh-workers",
+        type=int,
+        default=DEFAULT_REFRESH_WORKERS,
+        help="Maximum parallel workers for headless raw list refreshes. Headed refreshes stay single-worker.",
+    )
+    parser.add_argument(
         "--enrich",
         action="store_true",
         help="Fill missing or stale Google Places enrichment cache entries.",
@@ -108,7 +116,13 @@ def load_sources() -> list[SourceConfig]:
     return TypeAdapter(list[SourceConfig]).validate_json(CONFIG_PATH.read_text(encoding="utf-8"))
 
 
-def refresh_raw_sources(*, headed: bool, force_refresh: bool, refresh_lists: list[str]) -> None:
+def refresh_raw_sources(
+    *,
+    headed: bool,
+    force_refresh: bool,
+    refresh_lists: list[str],
+    refresh_workers: int,
+) -> None:
     if scrape_saved_list is None:
         raise RuntimeError(
             "Could not import google_saved_lists. "
@@ -119,6 +133,7 @@ def refresh_raw_sources(*, headed: bool, force_refresh: bool, refresh_lists: lis
     sources = load_sources()
     selected_sources = resolve_refresh_sources(sources, refresh_lists)
     selected_keys = {(source.slug, source.url) for source in selected_sources}
+    refresh_jobs: list[tuple[SourceConfig, Path]] = []
 
     for source in sources:
         if selected_sources and (source.slug, source.url) not in selected_keys:
@@ -133,12 +148,57 @@ def refresh_raw_sources(*, headed: bool, force_refresh: bool, refresh_lists: lis
             continue
 
         print(f"Refreshing {source.slug} from {source.url}")
-        result = scrape_saved_list(source.url, headless=not headed)
-        payload = RawSavedList.model_validate(result.to_dict())
-        if source.title and not payload.title:
-            payload.title = source.title
-        stamp_raw_saved_list(payload, source)
-        write_json(raw_path, payload)
+        refresh_jobs.append((source, raw_path))
+
+    if not refresh_jobs:
+        return
+
+    max_workers = max(1, refresh_workers)
+    if headed or len(refresh_jobs) == 1 or max_workers == 1:
+        for source, raw_path in refresh_jobs:
+            write_json(raw_path, scrape_raw_source(source, headed=headed))
+        return
+
+    max_workers = min(max_workers, len(refresh_jobs))
+    print(f"Running {len(refresh_jobs)} headless refresh jobs with {max_workers} workers")
+    payloads_by_slug: dict[str, RawSavedList] = {}
+    failures: list[str] = []
+
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        future_map = {
+            executor.submit(scrape_raw_source, source, headed=False): (source, raw_path)
+            for source, raw_path in refresh_jobs
+        }
+        for future in as_completed(future_map):
+            source, _raw_path = future_map[future]
+            try:
+                payloads_by_slug[source.slug] = future.result()
+            except Exception as exc:
+                failures.append(f"{source.slug}: {exc}")
+
+    for source, raw_path in refresh_jobs:
+        payload = payloads_by_slug.get(source.slug)
+        if payload is not None:
+            write_json(raw_path, payload)
+
+    if failures:
+        failure_text = "\n".join(failures)
+        raise RuntimeError(f"Raw refresh failed for {len(failures)} source(s):\n{failure_text}")
+
+
+def scrape_raw_source(source: SourceConfig, *, headed: bool) -> RawSavedList:
+    if scrape_saved_list is None:
+        raise RuntimeError(
+            "Could not import google_saved_lists. "
+            "Run `uv sync` to install the scraper dependency before using --refresh."
+        )
+
+    result = scrape_saved_list(source.url, headless=not headed)
+    payload = RawSavedList.model_validate(result.to_dict())
+    if source.title and not payload.title:
+        payload.title = source.title
+    stamp_raw_saved_list(payload, source)
+    return payload
 
 
 def rebuild_generated_data() -> None:
@@ -887,6 +947,7 @@ def main() -> int:
             headed=args.headed,
             force_refresh=args.refresh_force,
             refresh_lists=args.refresh_list,
+            refresh_workers=args.refresh_workers,
         )
 
     if args.enrich or args.refresh_enrichment:
