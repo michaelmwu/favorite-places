@@ -94,7 +94,20 @@ This repo can commit raw scraped list snapshots in `data/raw/` and reproducible 
 enrichment cache files in `data/cache/google-places/` when you want stable source data in git.
 It still does not commit generated build data.
 
-1. Add your public Google Maps list URLs to `scripts/config/list_sources.json`.
+1. Export your saved lists from Google Takeout.
+
+Go to [Google Takeout](https://takeout.google.com/), select `Saved`, and download the export.
+
+![Google Takeout Saved export](docs/google-takeout.png)
+
+After extracting the archive, you should get a folder with one or more `.csv` files for your saved lists.
+
+![Google Takeout contents](docs/takeout-contents.png)
+
+You can then either keep those CSVs as your own reference data, or use the place names and URLs while
+building `scripts/config/list_sources.json`.
+
+2. Add your public Google Maps list URLs to `scripts/config/list_sources.json`.
 
 If you are starting from this repo as a base template, copy the example file first:
 
@@ -131,7 +144,7 @@ Optional fallback title example:
 ]
 ```
 
-2. Pull raw list data through the installed scraper dependency:
+3. Pull raw list data through the installed scraper dependency:
 
 ```bash
 pnpm run sync:sources
@@ -141,7 +154,7 @@ This writes local JSON files into `data/raw/`, including scrape metadata like `f
 `refresh_after`, and a source signature so future refreshes can skip fresh lists. It also rebuilds
 the generated site JSON afterward.
 
-3. Add manual curation files in `src/data/overrides/`.
+4. Add manual curation files in `src/data/overrides/`.
 
 Example files live alongside the real override directories:
 
@@ -171,7 +184,7 @@ Per-place example at `src/data/overrides/places/tokyo-japan.json`:
 }
 ```
 
-4. Optionally fill Google Places enrichment cache:
+5. Optionally fill Google Places enrichment cache:
 
 ```bash
 pnpm run enrich:data
@@ -180,7 +193,7 @@ pnpm run enrich:data
 This writes cache files into `data/cache/google-places/`, which may be committed for reproducible
 enrichment results.
 
-5. Build generated site data:
+6. Build generated site data:
 
 ```bash
 pnpm run build:data
@@ -188,7 +201,7 @@ pnpm run build:data
 
 This writes local generated JSON into `src/data/generated/` from the current contents of `data/raw/`.
 
-6. Run the site:
+7. Run the site:
 
 ```bash
 pnpm run dev
@@ -213,8 +226,8 @@ The key is to keep "replace me" files obvious and colocated with the real paths 
 - `scripts/config/list_sources.example.json` is the starter file for template users.
 - `src/data/site.ts` is the site-level branding and copy config for this instance.
 - `src/data/site.example.ts` shows the expected shape for a new instance.
-- `src/data/overrides/lists/*.json` and `src/data/overrides/places/*.json` are real handwritten curation files.
-- `src/data/overrides/lists/list.example.json` and `src/data/overrides/places/list.example.json` show the expected override shapes.
+- `src/data/overrides/lists/*.json` and `src/data/overrides/places/*.json` are real handwritten curation files, excluding `*.example.json`.
+- `src/data/overrides/lists/list.example.json` and `src/data/overrides/places/list.example.json` are starter examples showing the expected override shapes.
 
 For future extraction into a dedicated template repo, the split is:
 
