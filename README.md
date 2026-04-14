@@ -39,6 +39,9 @@ pnpm run sync:sources
 ```
 
 This re-scrapes configured source lists if needed and then rebuilds generated site data.
+Headless refreshes run up to 4 scraper workers in parallel by default. Use
+`uv run python3 scripts/build_data.py --refresh --refresh-workers 1` to force
+serial execution, or `--headed` to keep browser windows single-worker.
 
 Force-refresh raw list scrapes even if the saved snapshot is still fresh:
 
