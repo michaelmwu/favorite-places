@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { siteConfig } from "../data/site";
 
 interface Props {
   title: string;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const metaDescription = description ?? siteConfig.siteDescription;
 ---
 
 <!doctype html>
@@ -15,7 +17,12 @@ const { title, description } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name="description" content={description ?? "Personal saved-place guides."} />
+    <meta name="description" content={metaDescription} />
+    <meta name="author" content={siteConfig.ownerName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:site_name" content={siteConfig.siteName} />
+    {siteConfig.defaultSeoImage && <meta property="og:image" content={siteConfig.defaultSeoImage} />}
   </head>
   <body>
     <main class="page-shell">

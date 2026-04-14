@@ -1,6 +1,7 @@
 ---
 import GuideCard from "../components/GuideCard.astro";
 import Layout from "../components/Layout.astro";
+import { siteConfig } from "../data/site";
 import { getGuideManifests } from "../lib/data";
 
 const guides = getGuideManifests();
@@ -15,19 +16,15 @@ const guidesByCountry = Object.entries(
 ---
 
 <Layout
-  title="Favorite Places"
-  description="A personal collection of saved-place guides built for sharing, searching, and quick Google Maps handoff."
+  title={siteConfig.siteName}
+  description={siteConfig.siteDescription}
 >
   <section class="hero">
     <div class="hero-grid">
       <div class="section-stack">
-        <p class="eyebrow">Favorite Places</p>
-        <h1>Saved places, but actually readable.</h1>
-        <p class="lede">
-          These guides start from public Google Maps saved lists, then add curation, tags, top picks,
-          and much faster scanning on mobile. The actual save and navigation flow still belongs to
-          Google Maps. The presentation layer does not.
-        </p>
+        <p class="eyebrow">{siteConfig.home.eyebrow}</p>
+        <h1>{siteConfig.home.title}</h1>
+        <p class="lede">{siteConfig.home.intro}</p>
         <div class="hero-meta">
           <span class="stat-pill">{guides.length} guides</span>
           <span class="stat-pill">
@@ -38,10 +35,10 @@ const guidesByCountry = Object.entries(
       </div>
 
       <div class="section-stack">
-        <p class="eyebrow">What makes this better</p>
-        <p class="small-copy">Top picks surface first instead of disappearing inside a giant list.</p>
-        <p class="small-copy">List tags and country grouping make the site browseable before search.</p>
-        <p class="small-copy">Every place card hands off directly into Google Maps in one tap.</p>
+        <p class="eyebrow">{siteConfig.home.highlightsHeading}</p>
+        {siteConfig.home.highlights.map((highlight) => (
+          <p class="small-copy">{highlight}</p>
+        ))}
       </div>
     </div>
   </section>

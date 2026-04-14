@@ -10,4 +10,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-google-saved-list-scraper = { git = "https://github.com/michaelmwu/google-saved-list-scraper.git", branch = "main" }
+google-saved-list-scraper = { path = "vendor/google-saved-lists" }
