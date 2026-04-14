@@ -3,8 +3,8 @@
 Static-first personal travel guides built from Google Maps saved lists.
 
 Frontend package management and script execution use `pnpm`.
-The scraper dependency is installed via `uv` from the public
-`michaelmwu/google-saved-list-scraper` GitHub repo, so worktrees do not need a sibling checkout.
+The scraper dependency is vendored into this repo as a git subtree at
+`vendor/google-saved-lists/`, and `uv` installs it from that in-repo path.
 
 ## Stack
 
