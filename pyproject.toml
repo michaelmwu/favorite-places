@@ -1,0 +1,13 @@
+[project]
+name = "favorite-places-pipeline"
+version = "0.1.0"
+description = "Data pipeline for favorite-places."
+requires-python = ">=3.14,<3.15"
+dependencies = [
+  "google-saved-list-scraper",
+  "pydantic>=2.11.0,<3.0.0",
+  "pydantic-settings>=2.10.0,<3.0.0",
+]
+
+[tool.uv.sources]
+google-saved-list-scraper = { path = "../google-saved-lists" }

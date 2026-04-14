@@ -1,0 +1,134 @@
+---
+import Layout from "../../components/Layout.astro";
+import PlaceCard from "../../components/PlaceCard.astro";
+import { getGuides } from "../../lib/data";
+
+export function getStaticPaths() {
+  return getGuides().map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+
+const visiblePlaces = guide.places.filter((place) => !place.hidden);
+const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includes(place.id)).slice(0, 3);
+const allTags = [...new Set(visiblePlaces.flatMap((place) => place.tags))].sort((a, b) =>
+  a.localeCompare(b),
+);
+---
+
+<Layout title={`${guide.title} · Favorite Places`} description={guide.description ?? undefined}>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="section-stack">
+        <a class="utility-link small-copy" href="/">← Back to all guides</a>
+        <p class="eyebrow">{guide.country_name}</p>
+        <h1>{guide.title}</h1>
+        <p class="lede">
+          {guide.description ??
+            "A personal saved-places guide with quick search, tags, and a direct Google Maps handoff."}
+        </p>
+        <div class="hero-meta">
+          <span class="stat-pill">{guide.place_count} places</span>
+          <span class="stat-pill">{guide.city_name}</span>
+          {guide.source_url && (
+            <a class="action-pill" href={guide.source_url} target="_blank" rel="noreferrer">
+              View source list
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div class="section-stack">
+        <p class="eyebrow">List tags</p>
+        <div class="tag-row">
+          {guide.list_tags.map((tag) => (
+            <span class="tag-pill">#{tag}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {topPicks.length > 0 && (
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Start here</p>
+          <h2 class="section-title">Top picks</h2>
+        </div>
+      </div>
+
+      <div class="top-picks-grid">
+        {topPicks.map((place) => (
+          <PlaceCard place={place} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section" data-guide-root>
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Browse</p>
+        <h2 class="section-title">Search, sort, and filter</h2>
+      </div>
+      <p class="small-copy">
+        Client-side only. Fast enough for static guides, no backend required.
+      </p>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-grid" data-guide-controls>
+        <div class="control-group">
+          <label class="control-label" for="guide-search">Search</label>
+          <input
+            id="guide-search"
+            name="guide-search"
+            type="search"
+            placeholder="Search places, notes, categories, neighborhoods"
+            data-search-input
+          />
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="guide-sort">Sort</label>
+          <select id="guide-sort" name="guide-sort" data-sort-select>
+            <option value="curated">Curated order</option>
+            <option value="name">Name</option>
+            <option value="neighborhood">Neighborhood</option>
+          </select>
+        </div>
+
+        {allTags.length > 0 && (
+          <div class="control-group" style="grid-column: 1 / -1;">
+            <span class="control-label">Filter by tag</span>
+            <div class="tag-row">
+              <button class="tag-pill" type="button" data-tag-filter data-tag="">
+                All
+              </button>
+              {allTags.map((tag) => (
+                <button class="tag-pill" type="button" data-tag-filter data-tag={tag.toLowerCase()}>
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
+    <div class="empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
+
+    <div class="card-grid" data-kind="places" data-place-list>
+      {visiblePlaces.map((place) => (
+        <PlaceCard place={place} />
+      ))}
+    </div>
+  </section>
+
+  <script is:inline type="module" src="/scripts/guide-filters.js"></script>
+</Layout>

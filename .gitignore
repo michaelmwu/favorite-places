@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.venv/
+__pycache__/
+uv.lock
+.env
+data/cache/
+src/data/generated/

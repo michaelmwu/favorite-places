@@ -1,0 +1,57 @@
+---
+import type { Place } from "../lib/types";
+
+interface Props {
+  place: Place;
+}
+
+const { place } = Astro.props;
+---
+
+<article
+  class="place-card"
+  data-place-card
+  data-name={place.name.toLowerCase()}
+  data-tags={place.tags.join(" ").toLowerCase()}
+  data-category={(place.primary_category ?? "").toLowerCase()}
+  data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
+  data-top-pick={place.top_pick ? "true" : "false"}
+  data-rank={String(place.manual_rank)}
+  data-search={[
+    place.name,
+    place.address ?? "",
+    place.note ?? "",
+    place.why_recommended ?? "",
+    place.primary_category ?? "",
+    place.neighborhood ?? "",
+    place.tags.join(" "),
+  ].join(" ").toLowerCase()}
+>
+  <div class="place-card-title">
+    <div class="section-stack">
+      <h3>{place.name}</h3>
+      <p class="meta-copy">
+        {place.primary_category ?? "Saved place"}
+        {place.neighborhood && ` · ${place.neighborhood}`}
+      </p>
+    </div>
+    {place.top_pick && <span class="badge">Top pick</span>}
+  </div>
+
+  {place.why_recommended && <p>{place.why_recommended}</p>}
+  {place.note && <p class="small-copy">{place.note}</p>}
+  {place.address && <p class="small-copy">{place.address}</p>}
+
+  <div class="tag-row">
+    {place.tags.map((tag) => (
+      <span class="tag-pill">#{tag}</span>
+    ))}
+  </div>
+
+  <div class="place-card-footer">
+    <a class="action-pill" href={place.maps_url} target="_blank" rel="noreferrer">
+      Open in Google Maps
+    </a>
+    {place.status !== "active" && <span class="stat-pill">{place.status}</span>}
+  </div>
+</article>

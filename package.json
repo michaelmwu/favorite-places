@@ -1,0 +1,23 @@
+{
+  "name": "favorite-places",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "build:data": "uv run python3 scripts/build_data.py",
+    "refresh:data": "uv run python3 scripts/build_data.py --refresh",
+    "enrich:data": "uv run python3 scripts/build_data.py --enrich",
+    "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment"
+  },
+  "dependencies": {
+    "astro": "^6.1.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.9.3"
+  }
+}
