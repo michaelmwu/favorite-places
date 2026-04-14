@@ -70,7 +70,7 @@ pnpm run build:data
 ```
 
 Use this when raw snapshots are already current and you only need to regenerate site inputs.
-For configured CSV sources, this expects `data/raw/<slug>.json` to already exist; otherwise run `pnpm run refresh:data` or `pnpm run refresh:data:list -- <slug>` first.
+Configured local CSV sources are auto-imported into `data/raw/<slug>.json` before rebuild. Public URL sources are not refreshed here.
 
 Fill or refresh Google Places enrichment cache:
 

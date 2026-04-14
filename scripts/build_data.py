@@ -192,7 +192,7 @@ def refresh_google_export_csv(
 
 
 def rebuild_generated_data() -> None:
-    ensure_csv_sources_have_raw_json()
+    sync_local_csv_sources()
     GENERATED_LISTS_DIR.mkdir(parents=True, exist_ok=True)
     guides: list[Guide] = []
     search_index: list[dict[str, Any]] = []
@@ -239,21 +239,22 @@ def rebuild_generated_data() -> None:
     write_json(GENERATED_DIR / "search-index.json", search_index)
 
 
-def ensure_csv_sources_have_raw_json() -> None:
-    missing_raw_slugs = [
-        source.slug
-        for source in load_sources()
-        if source.type == "google_export_csv" and not (RAW_DIR / f"{source.slug}.json").exists()
-    ]
-    if not missing_raw_slugs:
-        return
+def sync_local_csv_sources() -> None:
+    for source in load_sources():
+        if source.type != "google_export_csv":
+            continue
 
-    missing_text = ", ".join(sorted(missing_raw_slugs))
-    raise RuntimeError(
-        "Configured CSV sources are missing imported raw JSON: "
-        f"{missing_text}. Run `pnpm run refresh:data` or "
-        "`pnpm run refresh:data:list -- <slug>` first."
-    )
+        raw_path = RAW_DIR / f"{source.slug}.json"
+        existing_payload = load_raw_saved_list(raw_path)
+        payload = refresh_google_export_csv(
+            source,
+            existing_payload=existing_payload,
+            force_refresh=False,
+        )
+        if payload is None:
+            continue
+
+        write_json(raw_path, payload)
 
 
 def import_saved_list_csv(source: SourceConfig) -> RawSavedList:
