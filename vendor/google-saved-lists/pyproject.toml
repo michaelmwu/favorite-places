@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "google-saved-list-scraper"
+version = "0.1.0"
+description = "Extract places from Google Maps saved lists."
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+  "cloakbrowser",
+]
+
+[project.scripts]
+google-saved-lists = "google_saved_lists.cli:main"
+
+[dependency-groups]
+dev = [
+  "mypy",
+  "ruff",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/google_saved_lists"]
+
+[tool.mypy]
+files = ["src"]
+python_version = "3.14"
+strict = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["google_saved_lists"]
