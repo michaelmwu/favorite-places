@@ -1,11 +1,14 @@
 ---
 import type { Place } from "../lib/types";
+import { renderRichText } from "../lib/renderRichText";
 
 interface Props {
   place: Place;
 }
 
 const { place } = Astro.props;
+const whyRecommendedHtml = renderRichText(place.why_recommended);
+const noteHtml = renderRichText(place.note);
 ---
 
 <article
@@ -38,8 +41,8 @@ const { place } = Astro.props;
     {place.top_pick && <span class="badge">Top pick</span>}
   </div>
 
-  {place.why_recommended && <p>{place.why_recommended}</p>}
-  {place.note && <p class="small-copy">{place.note}</p>}
+  {whyRecommendedHtml && <p class="rich-copy" set:html={whyRecommendedHtml} />}
+  {noteHtml && <p class="small-copy rich-copy" set:html={noteHtml} />}
   {place.address && <p class="small-copy">{place.address}</p>}
 
   <div class="tag-row">

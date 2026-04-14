@@ -2,6 +2,10 @@
 
 Static-first personal travel guides built from Google Maps saved lists.
 
+Frontend package management and script execution use `pnpm`.
+The scraper dependency is installed via `uv` from the public
+`michaelmwu/google-saved-list-scraper` GitHub repo, so worktrees do not need a sibling checkout.
+
 ## Stack
 
 - Astro for the site
@@ -31,7 +35,22 @@ cp .env.example .env
 Populate local raw data from public Google Maps lists:
 
 ```bash
-pnpm run refresh:data
+pnpm run sync:sources
+```
+
+This re-scrapes configured source lists if needed and then rebuilds generated site data.
+
+Force-refresh raw list scrapes even if the saved snapshot is still fresh:
+
+```bash
+pnpm run sync:sources:force
+```
+
+Force-refresh one configured raw list by slug or source URL:
+
+```bash
+pnpm run sync:source -- tokyo-japan
+pnpm run sync:source -- https://maps.app.goo.gl/your-public-list
 ```
 
 Build generated site data from local raw JSON:
@@ -39,6 +58,8 @@ Build generated site data from local raw JSON:
 ```bash
 pnpm run build:data
 ```
+
+Use this when `data/raw/` is already up to date and you only want to regenerate site inputs.
 
 Fill missing or stale Google Places enrichment cache entries, then rebuild:
 
@@ -57,18 +78,28 @@ GOOGLE_PLACES_API_KEY=... pnpm run refresh:enrichment
 Start the site:
 
 ```bash
-pnpm dev
+pnpm run dev
+```
+
+Verify the site:
+
+```bash
+pnpm run check
+pnpm run build
 ```
 
 ## Populate Base Data
 
-This repo can commit raw scraped list snapshots in `data/raw/` when you want reproducible source data in git.
-It still does not commit local cache files or generated build data.
+This repo can commit raw scraped list snapshots in `data/raw/` and reproducible Google Places
+enrichment cache files in `data/cache/google-places/` when you want stable source data in git.
+It still does not commit generated build data.
 
 1. Add your public Google Maps list URLs to `scripts/config/list_sources.json`.
 
 Only `slug` and `url` are required. `title` is optional and acts as a fallback if the
 scraper cannot recover the list title.
+`refresh_days` is optional and controls how long a raw scrape stays fresh before `pnpm run sync:sources`
+tries to scrape it again. The default is 14 days.
 
 Example:
 
@@ -76,7 +107,8 @@ Example:
 [
   {
     "slug": "tokyo-japan",
-    "url": "https://maps.app.goo.gl/your-public-list"
+    "url": "https://maps.app.goo.gl/your-public-list",
+    "refresh_days": 14
   }
 ]
 ```
@@ -93,13 +125,15 @@ Optional fallback title example:
 ]
 ```
 
-2. Pull raw list data from your sibling scraper repo:
+2. Pull raw list data through the installed scraper dependency:
 
 ```bash
-pnpm run refresh:data
+pnpm run sync:sources
 ```
 
-This writes local JSON files into `data/raw/`.
+This writes local JSON files into `data/raw/`, including scrape metadata like `fetched_at`,
+`refresh_after`, and a source signature so future refreshes can skip fresh lists. It also rebuilds
+the generated site JSON afterward.
 
 3. Add manual curation files in `src/data/overrides/`.
 
@@ -132,7 +166,8 @@ Per-place example at `src/data/overrides/places/tokyo-japan.json`:
 pnpm run enrich:data
 ```
 
-This writes local cache files into `data/cache/google-places/`.
+This writes cache files into `data/cache/google-places/`, which may be committed for reproducible
+enrichment results.
 
 5. Build generated site data:
 
@@ -140,22 +175,30 @@ This writes local cache files into `data/cache/google-places/`.
 pnpm run build:data
 ```
 
-This writes local generated JSON into `src/data/generated/`.
+This writes local generated JSON into `src/data/generated/` from the current contents of `data/raw/`.
 
 6. Run the site:
 
 ```bash
-pnpm dev
+pnpm run dev
 ```
 
 If you already have raw JSON from elsewhere, you can skip the live scrape and place compatible files directly in `data/raw/<slug>.json`, then run `pnpm run build:data`.
+For a full raw re-scrape even within the freshness window, run
+`pnpm run sync:sources:force`.
+For a targeted forced re-scrape, run `pnpm run sync:source -- <slug-or-url>`.
+
+Legacy aliases still work:
+- `pnpm run refresh:data`
+- `pnpm run refresh:data:force`
+- `pnpm run refresh:data:list -- <slug-or-url>`
 
 ## Data Model
 
 The project keeps three layers separate:
 
 1. `data/raw/` stores disposable scraper output.
-2. `data/cache/google-places/` stores cached Google Places lookups keyed by stable place id.
+2. `data/cache/google-places/` stores cached Google Places lookups keyed by stable place id and may be committed.
 3. `src/data/overrides/` stores handwritten metadata, tags, notes, and ranking.
 4. `src/data/generated/` stores the static JSON that Astro reads at build time.
 
@@ -165,9 +208,11 @@ Manual overrides always win over machine-enriched fields.
 
 Enrichment is optional and cached. A normal build never calls Google.
 
-- `--enrich` fills missing or stale cache entries older than 30 days.
+- `--enrich` fills missing or stale cache entries according to the cache entry's own refresh window.
 - `--refresh-enrichment` ignores the 30-day cache window and refetches every place.
 - Manual overrides still win over Google data.
+- Cache invalidation is field-aware: raw input changes force a refresh, operational places refresh more slowly,
+  and volatile or risky states like ratings, closures, unmatched results, and API errors refresh sooner.
 
 The current enrichment pass uses Google Places Text Search with a narrow field mask and
 location bias around the scraped coordinates. It is meant to fill in useful metadata

@@ -2,6 +2,7 @@
 import Layout from "../../components/Layout.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
+import { renderRichText } from "../../lib/renderRichText";
 
 export function getStaticPaths() {
   return getGuides().map((guide) => ({
@@ -17,6 +18,7 @@ const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includ
 const allTags = [...new Set(visiblePlaces.flatMap((place) => place.tags))].sort((a, b) =>
   a.localeCompare(b),
 );
+const guideDescriptionHtml = renderRichText(guide.description);
 ---
 
 <Layout title={`${guide.title} · Favorite Places`} description={guide.description ?? undefined}>
@@ -26,10 +28,15 @@ const allTags = [...new Set(visiblePlaces.flatMap((place) => place.tags))].sort(
         <a class="utility-link small-copy" href="/">← Back to all guides</a>
         <p class="eyebrow">{guide.country_name}</p>
         <h1>{guide.title}</h1>
-        <p class="lede">
-          {guide.description ??
-            "A personal saved-places guide with quick search, tags, and a direct Google Maps handoff."}
-        </p>
+        {
+          guideDescriptionHtml ? (
+            <p class="lede rich-copy" set:html={guideDescriptionHtml} />
+          ) : (
+            <p class="lede">
+              A personal saved-places guide with quick search, tags, and a direct Google Maps handoff.
+            </p>
+          )
+        }
         <div class="hero-meta">
           <span class="stat-pill">{guide.place_count} places</span>
           <span class="stat-pill">{guide.city_name}</span>

@@ -9,7 +9,12 @@
     "preview": "astro preview",
     "check": "astro check",
     "build:data": "uv run python3 scripts/build_data.py",
-    "refresh:data": "uv run python3 scripts/build_data.py --refresh",
+    "sync:sources": "uv run python3 scripts/build_data.py --refresh",
+    "sync:sources:force": "uv run python3 scripts/build_data.py --refresh --refresh-force",
+    "sync:source": "sh -c 'selector=\"$1\"; if [ \"$selector\" = \"--\" ]; then selector=\"$2\"; fi; uv run python3 scripts/build_data.py --refresh-list \"$selector\"' --",
+    "refresh:data": "pnpm run sync:sources",
+    "refresh:data:force": "pnpm run sync:sources:force",
+    "refresh:data:list": "pnpm run sync:source --",
     "enrich:data": "uv run python3 scripts/build_data.py --enrich",
     "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment"
   },

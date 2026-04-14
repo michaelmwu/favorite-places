@@ -1,18 +1,28 @@
 ---
 import type { GuideManifest } from "../lib/types";
+import { renderRichText } from "../lib/renderRichText";
 
 interface Props {
   guide: GuideManifest;
 }
 
 const { guide } = Astro.props;
+const guideDescriptionHtml = renderRichText(guide.description);
 ---
 
-<a class="guide-card" href={`/guides/${guide.slug}/`}>
+<article class="guide-card">
   <div class="section-stack">
     <p class="eyebrow">{guide.country_name}</p>
-    <h3>{guide.title}</h3>
-    <p>{guide.description ?? "A personal guide with fast map handoff and curated picks."}</p>
+    <h3>
+      <a href={`/guides/${guide.slug}/`}>{guide.title}</a>
+    </h3>
+    {
+      guideDescriptionHtml ? (
+        <p class="rich-copy" set:html={guideDescriptionHtml} />
+      ) : (
+        <p>A personal guide with fast map handoff and curated picks.</p>
+      )
+    }
   </div>
 
   <div class="tag-row">
@@ -30,5 +40,9 @@ const { guide } = Astro.props;
     {guide.featured_names.length > 0 && (
       <p class="small-copy">{guide.featured_names.join(" · ")}</p>
     )}
+
+    <a class="action-pill" href={`/guides/${guide.slug}/`}>
+      Open guide
+    </a>
   </div>
-</a>
+</article>
