@@ -6,7 +6,7 @@
 
 - Frontend: Astro + TypeScript
 - Data pipeline: Python + `uv`
-- Source scraper: public repo at `https://github.com/michaelmwu/google-saved-list-scraper`
+- Source scraper: vendored git subtree at `vendor/google-saved-lists/` from `https://github.com/michaelmwu/google-saved-list-scraper`
 - Hosting target: static deploys on Cloudflare Pages or GitHub Pages
 
 ## Working Rules
