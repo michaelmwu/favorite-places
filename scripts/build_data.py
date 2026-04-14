@@ -1141,6 +1141,7 @@ def main() -> int:
         )
 
     if args.enrich or args.refresh_enrichment:
+        sync_local_csv_sources()
         enrich_raw_sources(force_refresh=args.refresh_enrichment)
 
     rebuild_generated_data()
