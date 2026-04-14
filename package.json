@@ -10,6 +10,8 @@
     "check": "astro check",
     "build:data": "uv run python3 scripts/build_data.py",
     "refresh:data": "uv run python3 scripts/build_data.py --refresh",
+    "refresh:data:force": "uv run python3 scripts/build_data.py --refresh --refresh-force",
+    "refresh:data:list": "sh -c 'shift; uv run python3 scripts/build_data.py --refresh-list \"$1\"' --",
     "enrich:data": "uv run python3 scripts/build_data.py --enrich",
     "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment"
   },

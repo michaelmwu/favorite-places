@@ -5,5 +5,4 @@ dist/
 __pycache__/
 uv.lock
 .env
-data/cache/
 src/data/generated/

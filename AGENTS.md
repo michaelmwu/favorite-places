@@ -6,7 +6,7 @@
 
 - Frontend: Astro + TypeScript
 - Data pipeline: Python + `uv`
-- Source scraper: sibling repo at `../google-saved-lists`
+- Source scraper: public repo at `https://github.com/michaelmwu/google-saved-list-scraper`
 - Hosting target: static deploys on Cloudflare Pages or GitHub Pages
 
 ## Working Rules
@@ -19,14 +19,14 @@
 
 ## Data Practices
 
-This repo deliberately avoids committing local cache and generated build artifacts.
+This repo deliberately avoids committing generated build artifacts.
 
 - `data/raw/` may be committed when you want reproducible scraped snapshots in git.
-- `data/cache/` is local-only enrichment cache data.
+- `data/cache/google-places/` may be committed when you want reproducible enrichment snapshots in git.
 - `src/data/generated/` is local-only generated site input data.
 - `src/data/overrides/` is the source-controlled layer for handwritten curation.
 - `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
-- In `scripts/config/list_sources.json`, `slug` and `url` are required. `title` is only a fallback if the scraper cannot recover the real title.
+- In `scripts/config/list_sources.json`, `slug` and `url` are required. `title` is only a fallback if the scraper cannot recover the real title. `refresh_days` is optional.
 
 Merge precedence:
 
@@ -49,6 +49,18 @@ Populate local raw data from public Google Maps lists:
 pnpm run refresh:data
 ```
 
+Force-refresh all configured raw list scrapes:
+
+```bash
+pnpm run refresh:data:force
+```
+
+Force-refresh one configured raw list by slug or source URL:
+
+```bash
+pnpm run refresh:data:list -- tokyo-japan
+```
+
 Build generated JSON from local raw data:
 
 ```bash
@@ -65,7 +77,7 @@ GOOGLE_PLACES_API_KEY=... pnpm run refresh:enrichment
 Run the site:
 
 ```bash
-pnpm dev
+pnpm run dev
 ```
 
 ## Notes For Future Agents
@@ -73,4 +85,6 @@ pnpm dev
 - Raw place `note` should flow through as the default place note.
 - Raw place `is_favorite` should flow through as the default top-pick signal.
 - Manual `note` and `top_pick` overrides still win.
+- Google Places cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
+- Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature` so `--refresh` can skip recent scrapes.
 - Do not reintroduce tracked generated JSON unless the user explicitly asks for fixture-style examples in git.

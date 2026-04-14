@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
-import sys
 from collections import Counter
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -15,7 +15,6 @@ from urllib.request import Request, urlopen
 from pydantic import TypeAdapter
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRAPER_SRC_DIR = ROOT.parent / "google-saved-lists" / "src"
 CONFIG_PATH = ROOT / "scripts" / "config" / "list_sources.json"
 RAW_DIR = ROOT / "data" / "raw"
 PLACES_CACHE_DIR = ROOT / "data" / "cache" / "google-places"
@@ -23,7 +22,14 @@ GENERATED_DIR = ROOT / "src" / "data" / "generated"
 GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
-CACHE_TTL = timedelta(days=30)
+DEFAULT_RAW_REFRESH_TTL = timedelta(days=14)
+ERROR_CACHE_TTL = timedelta(days=1)
+UNMATCHED_CACHE_TTL = timedelta(days=3)
+LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
+RATINGS_CACHE_TTL = timedelta(days=7)
+NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
+OPERATIONAL_CACHE_TTL = timedelta(days=14)
+STRONG_MATCH_SCORE = 45
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 PLACES_FIELD_MASK = ",".join(
     [
@@ -32,6 +38,8 @@ PLACES_FIELD_MASK = ",".join(
         "places.displayName",
         "places.formattedAddress",
         "places.googleMapsUri",
+        "places.rating",
+        "places.userRatingCount",
         "places.location",
         "places.primaryType",
         "places.primaryTypeDisplayName",
@@ -39,9 +47,6 @@ PLACES_FIELD_MASK = ",".join(
         "places.businessStatus",
     ]
 )
-
-if SCRAPER_SRC_DIR.exists():
-    sys.path.insert(0, str(SCRAPER_SRC_DIR))
 
 from pipeline_models import (
     EnrichmentCacheEntry,
@@ -74,6 +79,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the scraper in headed mode.",
     )
     parser.add_argument(
+        "--refresh-force",
+        action="store_true",
+        help="Force-refresh raw list scrapes even if the stored list is still within its refresh window.",
+    )
+    parser.add_argument(
+        "--refresh-list",
+        action="append",
+        default=[],
+        help="Force-refresh only the configured list matching this slug or source URL. Repeat to target multiple lists.",
+    )
+    parser.add_argument(
         "--enrich",
         action="store_true",
         help="Fill missing or stale Google Places enrichment cache entries.",
@@ -92,21 +108,37 @@ def load_sources() -> list[SourceConfig]:
     return TypeAdapter(list[SourceConfig]).validate_json(CONFIG_PATH.read_text(encoding="utf-8"))
 
 
-def refresh_raw_sources(*, headed: bool) -> None:
+def refresh_raw_sources(*, headed: bool, force_refresh: bool, refresh_lists: list[str]) -> None:
     if scrape_saved_list is None:
         raise RuntimeError(
-            "Could not import google_saved_lists from ../google-saved-lists/src. "
-            "Clone the sibling scraper repo before using --refresh."
+            "Could not import google_saved_lists. "
+            "Run `uv sync` to install the scraper dependency before using --refresh."
         )
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
-    for source in load_sources():
+    sources = load_sources()
+    selected_sources = resolve_refresh_sources(sources, refresh_lists)
+    selected_keys = {(source.slug, source.url) for source in selected_sources}
+
+    for source in sources:
+        if selected_sources and (source.slug, source.url) not in selected_keys:
+            continue
+
+        raw_path = RAW_DIR / f"{source.slug}.json"
+        existing_payload = load_raw_saved_list(raw_path)
+        should_force_refresh = force_refresh or bool(selected_sources)
+        skip_reason = None if should_force_refresh else raw_refresh_skip_reason(existing_payload, source)
+        if skip_reason is not None:
+            print(f"Skipping {source.slug} ({skip_reason})")
+            continue
+
         print(f"Refreshing {source.slug} from {source.url}")
         result = scrape_saved_list(source.url, headless=not headed)
         payload = RawSavedList.model_validate(result.to_dict())
         if source.title and not payload.title:
             payload.title = source.title
-        write_json(RAW_DIR / f"{source.slug}.json", payload)
+        stamp_raw_saved_list(payload, source)
+        write_json(raw_path, payload)
 
 
 def rebuild_generated_data() -> None:
@@ -303,10 +335,14 @@ def enrich_raw_sources(*, force_refresh: bool) -> None:
         for place in raw.places:
             place_id = stable_place_id(place)
             cache_entry = cache_payload.get(place_id)
-            if not force_refresh and cache_is_fresh(cache_entry):
+            refresh_reason = None if force_refresh else cache_refresh_reason(place, cache_entry)
+            if not force_refresh and refresh_reason is None:
                 continue
 
-            print(f"Enriching {raw_path.stem}:{place_id}")
+            if force_refresh:
+                print(f"Enriching {raw_path.stem}:{place_id} (forced)")
+            else:
+                print(f"Enriching {raw_path.stem}:{place_id} ({refresh_reason})")
             cache_payload[place_id] = fetch_places_enrichment(place, api_key=api_key)
             changed = True
 
@@ -425,6 +461,12 @@ def read_json(path: Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def load_raw_saved_list(path: Path) -> RawSavedList | None:
+    if not path.exists():
+        return None
+    return RawSavedList.model_validate_json(path.read_text(encoding="utf-8"))
+
+
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if hasattr(payload, "model_dump"):
@@ -469,14 +511,157 @@ def google_places_api_key() -> str | None:
     return PlacesSettings().google_places_api_key
 
 
-def cache_is_fresh(cache_entry: EnrichmentCacheEntry | None) -> bool:
+def raw_source_signature(source: SourceConfig) -> str:
+    payload = {
+        "slug": source.slug,
+        "url": source.url,
+        "title": source.title,
+        "refresh_days": source.refresh_days,
+    }
+    serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def raw_refresh_ttl(source: SourceConfig) -> timedelta:
+    refresh_days = source.refresh_days
+    if isinstance(refresh_days, int) and refresh_days > 0:
+        return timedelta(days=refresh_days)
+    return DEFAULT_RAW_REFRESH_TTL
+
+
+def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig) -> None:
+    fetched_at = datetime.now(UTC)
+    payload.fetched_at = fetched_at.isoformat()
+    payload.refresh_after = (fetched_at + raw_refresh_ttl(source)).isoformat()
+    payload.source_signature = raw_source_signature(source)
+    payload.configured_source_url = source.url
+
+
+def raw_refresh_skip_reason(payload: RawSavedList | None, source: SourceConfig) -> str | None:
+    if payload is None:
+        return None
+    if payload.source_signature != raw_source_signature(source):
+        return None
+    if payload.refresh_after:
+        try:
+            refresh_after_dt = datetime.fromisoformat(payload.refresh_after)
+        except ValueError:
+            return None
+        if datetime.now(UTC) < refresh_after_dt:
+            return f"fresh until {payload.refresh_after}"
+        return None
+    if payload.fetched_at:
+        try:
+            fetched_at_dt = datetime.fromisoformat(payload.fetched_at)
+        except ValueError:
+            return None
+        if datetime.now(UTC) - fetched_at_dt < raw_refresh_ttl(source):
+            return f"fresh from {payload.fetched_at}"
+    return None
+
+
+def resolve_refresh_sources(sources: list[SourceConfig], selectors: list[str]) -> list[SourceConfig]:
+    if not selectors:
+        return []
+
+    normalized_selectors = {selector.strip() for selector in selectors if selector.strip()}
+    matched_sources: list[SourceConfig] = []
+    missing_selectors = set(normalized_selectors)
+
+    for source in sources:
+        if source.slug in normalized_selectors or source.url in normalized_selectors:
+            matched_sources.append(source)
+            missing_selectors.discard(source.slug)
+            missing_selectors.discard(source.url)
+
+    if missing_selectors:
+        missing_text = ", ".join(sorted(missing_selectors))
+        raise RuntimeError(f"No configured list matched: {missing_text}")
+
+    return matched_sources
+
+
+def cache_refresh_reason(place: RawPlace, cache_entry: EnrichmentCacheEntry | None) -> str | None:
     if cache_entry is None:
-        return False
+        return "missing-cache-entry"
+
+    expected_signature = place_input_signature(place)
+    if cache_entry.input_signature != expected_signature:
+        return "raw-place-changed"
+
+    if cache_entry.refresh_after:
+        try:
+            refresh_after_dt = datetime.fromisoformat(cache_entry.refresh_after)
+        except ValueError:
+            return "invalid-refresh-after"
+        if datetime.now(UTC) >= refresh_after_dt:
+            return "refresh-window-expired"
+        return None
+
     try:
         fetched_at_dt = datetime.fromisoformat(cache_entry.fetched_at)
     except ValueError:
-        return False
-    return datetime.now(UTC) - fetched_at_dt <= CACHE_TTL
+        return "invalid-fetched-at"
+    if datetime.now(UTC) - fetched_at_dt > OPERATIONAL_CACHE_TTL:
+        return "legacy-cache-entry"
+    if cache_entry.input_signature is None:
+        return "missing-input-signature"
+    return None
+
+
+def place_input_signature(place: RawPlace) -> str:
+    payload = {
+        "name": place.name,
+        "address": place.address,
+        "lat": place.lat,
+        "lng": place.lng,
+        "cid": place.cid,
+        "google_id": place.google_id,
+    }
+    serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def cache_refresh_ttl(cache_entry: EnrichmentCacheEntry) -> timedelta:
+    if cache_entry.error:
+        return ERROR_CACHE_TTL
+    if cache_entry.matched is False or cache_entry.place is None:
+        return UNMATCHED_CACHE_TTL
+    if cache_entry.score is None or cache_entry.score < STRONG_MATCH_SCORE:
+        return LOW_CONFIDENCE_CACHE_TTL
+
+    place = cache_entry.place
+    if place.business_status and place.business_status != "OPERATIONAL":
+        return NON_OPERATIONAL_CACHE_TTL
+    if place.rating is not None or place.user_rating_count is not None:
+        return RATINGS_CACHE_TTL
+    return OPERATIONAL_CACHE_TTL
+
+
+def build_cache_entry(
+    place: RawPlace,
+    *,
+    query: str,
+    matched: bool | None = None,
+    score: int | None = None,
+    error: str | None = None,
+    error_body: str | None = None,
+    enrichment_place: EnrichmentPlace | None = None,
+) -> EnrichmentCacheEntry:
+    fetched_at = datetime.now(UTC)
+    cache_entry = EnrichmentCacheEntry(
+        fetched_at=fetched_at.isoformat(),
+        last_verified_at=fetched_at.isoformat(),
+        query=query,
+        input_signature=place_input_signature(place),
+        matched=matched,
+        score=score,
+        error=error,
+        error_body=error_body,
+        place=enrichment_place,
+    )
+    cache_entry.refresh_after = (fetched_at + cache_refresh_ttl(cache_entry)).isoformat()
+    return cache_entry
 
 
 def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
@@ -526,23 +711,23 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCache
             payload = json.loads(response.read().decode("utf-8"))
     except HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
-        return EnrichmentCacheEntry(
-            fetched_at=datetime.now(UTC).isoformat(),
+        return build_cache_entry(
+            place,
             query=query,
             error=f"http_{exc.code}",
             error_body=body[:500],
         )
     except URLError as exc:
-        return EnrichmentCacheEntry(
-            fetched_at=datetime.now(UTC).isoformat(),
+        return build_cache_entry(
+            place,
             query=query,
             error=f"url_error:{exc.reason}",
         )
 
     matches = payload.get("places")
     if not isinstance(matches, list) or not matches:
-        return EnrichmentCacheEntry(
-            fetched_at=datetime.now(UTC).isoformat(),
+        return build_cache_entry(
+            place,
             query=query,
             matched=False,
         )
@@ -555,14 +740,13 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCache
     scored_matches.sort(key=lambda item: item[0], reverse=True)
     best_score, best_match = scored_matches[0]
 
-    result = EnrichmentCacheEntry(
-        fetched_at=datetime.now(UTC).isoformat(),
+    result = build_cache_entry(
+        place,
         query=query,
         matched=best_score >= 25,
         score=best_score,
+        enrichment_place=normalize_enrichment_match(best_match) if best_score >= 25 else None,
     )
-    if best_score >= 25:
-        result.place = normalize_enrichment_match(best_match)
     return result
 
 
@@ -627,6 +811,8 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
         display_name=display_name_text(display_name),
         formatted_address=as_string(candidate.get("formattedAddress")),
         google_maps_uri=as_string(candidate.get("googleMapsUri")),
+        rating=as_float(candidate.get("rating")),
+        user_rating_count=as_int(candidate.get("userRatingCount")),
         primary_type=as_string(candidate.get("primaryType")),
         primary_type_display_name=display_name_text(primary_type_display_name),
         types=coerce_string_list(candidate.get("types")),
@@ -693,8 +879,15 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
+    if args.refresh_list and not args.refresh:
+        args.refresh = True
+
     if args.refresh:
-        refresh_raw_sources(headed=args.headed)
+        refresh_raw_sources(
+            headed=args.headed,
+            force_refresh=args.refresh_force,
+            refresh_lists=args.refresh_list,
+        )
 
     if args.enrich or args.refresh_enrichment:
         enrich_raw_sources(force_refresh=args.refresh_enrichment)

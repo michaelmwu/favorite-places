@@ -2,6 +2,21 @@
   {
     "slug": "tokyo-japan",
     "url": "https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18",
-    "title": "Tokyo, Japan 🇯🇵"
+    "refresh_days": 14
+  },
+  {
+    "slug": "seoul-korea",
+    "url": "https://maps.app.goo.gl/S7jrTHwyGshsXuFS7",
+    "refresh_days": 14
+  },
+  {
+    "slug": "taipei-taiwan",
+    "url": "https://maps.app.goo.gl/8Z8NbWQEStXEDXzH7",
+    "refresh_days": 14
+  },
+  {
+    "slug": "melbourne-australia",
+    "url": "https://maps.app.goo.gl/HGxndKFgJNiVjZRL7",
+    "refresh_days": 14
   }
 ]

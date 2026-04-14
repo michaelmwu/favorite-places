@@ -25,6 +25,7 @@ class SourceConfig(PipelineModel):
     slug: str
     url: str
     title: str | None = None
+    refresh_days: int | None = None
 
 
 class RawPlace(PipelineModel):
@@ -40,6 +41,10 @@ class RawPlace(PipelineModel):
 
 
 class RawSavedList(PipelineModel):
+    fetched_at: str | None = None
+    refresh_after: str | None = None
+    source_signature: str | None = None
+    configured_source_url: str | None = None
     source_url: str | None = None
     list_id: str | None = None
     title: str | None = None
@@ -53,6 +58,8 @@ class EnrichmentPlace(PipelineModel):
     display_name: str | None = None
     formatted_address: str | None = None
     google_maps_uri: str | None = None
+    rating: float | None = None
+    user_rating_count: int | None = None
     primary_type: str | None = None
     primary_type_display_name: str | None = None
     types: list[str] = Field(default_factory=list)
@@ -61,7 +68,10 @@ class EnrichmentPlace(PipelineModel):
 
 class EnrichmentCacheEntry(PipelineModel):
     fetched_at: str
+    last_verified_at: str | None = None
+    refresh_after: str | None = None
     query: str
+    input_signature: str | None = None
     matched: bool | None = None
     score: int | None = None
     error: str | None = None
