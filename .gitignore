@@ -5,6 +5,5 @@ dist/
 .astro/
 .venv/
 __pycache__/
-uv.lock
 .env
 src/data/generated/

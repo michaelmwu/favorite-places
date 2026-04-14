@@ -8,6 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test": "pnpm run test:frontend && pnpm run test:python",
+    "test:frontend": "vitest run",
+    "test:python": "uv run python3 -m unittest discover -s tests/python -p 'test_*.py'",
     "build:data": "uv run python3 scripts/build_data.py",
     "sync:sources": "uv run python3 scripts/build_data.py --refresh",
     "sync:sources:force": "uv run python3 scripts/build_data.py --refresh --refresh-force",
@@ -23,6 +26,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }
