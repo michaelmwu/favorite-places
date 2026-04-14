@@ -96,6 +96,12 @@ It still does not commit generated build data.
 
 1. Add your public Google Maps list URLs to `scripts/config/list_sources.json`.
 
+If you are starting from this repo as a base template, copy the example file first:
+
+```bash
+cp scripts/config/list_sources.example.json scripts/config/list_sources.json
+```
+
 Only `slug` and `url` are required. `title` is optional and acts as a fallback if the
 scraper cannot recover the list title.
 `refresh_days` is optional and controls how long a raw scrape stays fresh before `pnpm run sync:sources`
@@ -136,6 +142,11 @@ This writes local JSON files into `data/raw/`, including scrape metadata like `f
 the generated site JSON afterward.
 
 3. Add manual curation files in `src/data/overrides/`.
+
+Example files live alongside the real override directories:
+
+- `src/data/overrides/lists/list.example.json`
+- `src/data/overrides/places/list.example.json`
 
 Per-list example at `src/data/overrides/lists/tokyo-japan.json`:
 
@@ -192,6 +203,24 @@ Legacy aliases still work:
 - `pnpm run refresh:data`
 - `pnpm run refresh:data:force`
 - `pnpm run refresh:data:list -- <slug-or-url>`
+
+## Template-Ready Files
+
+This repo can keep personal data and still act as the basis for a cleaner template extraction later.
+The key is to keep "replace me" files obvious and colocated with the real paths future users will edit.
+
+- `scripts/config/list_sources.json` is your real source list config.
+- `scripts/config/list_sources.example.json` is the starter file for template users.
+- `src/data/site.ts` is the site-level branding and copy config for this instance.
+- `src/data/site.example.ts` shows the expected shape for a new instance.
+- `src/data/overrides/lists/*.json` and `src/data/overrides/places/*.json` are real handwritten curation files.
+- `src/data/overrides/lists/list.example.json` and `src/data/overrides/places/list.example.json` show the expected override shapes.
+
+For future extraction into a dedicated template repo, the split is:
+
+- Engine: `scripts/`, `src/lib/`, `src/components/`, and Astro wiring.
+- Content: `scripts/config/list_sources.json`, `data/raw/`, and `src/data/overrides/`.
+- Theme and branding: `src/data/site.ts` plus any styling and assets under `src/styles/` and `public/`.
 
 ## Data Model
 

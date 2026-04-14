@@ -1,5 +1,6 @@
 ---
 import Layout from "../../components/Layout.astro";
+import { siteConfig } from "../../data/site";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
 import { renderRichText } from "../../lib/renderRichText";
@@ -21,7 +22,7 @@ const allTags = [...new Set(visiblePlaces.flatMap((place) => place.tags))].sort(
 const guideDescriptionHtml = renderRichText(guide.description);
 ---
 
-<Layout title={`${guide.title} · Favorite Places`} description={guide.description ?? undefined}>
+<Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
   <section class="hero">
     <div class="hero-grid">
       <div class="section-stack">
@@ -32,9 +33,7 @@ const guideDescriptionHtml = renderRichText(guide.description);
           guideDescriptionHtml ? (
             <p class="lede rich-copy" set:html={guideDescriptionHtml} />
           ) : (
-            <p class="lede">
-              A personal saved-places guide with quick search, tags, and a direct Google Maps handoff.
-            </p>
+            <p class="lede">{siteConfig.guide.fallbackDescription}</p>
           )
         }
         <div class="hero-meta">
