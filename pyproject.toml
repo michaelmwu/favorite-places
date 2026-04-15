@@ -2,6 +2,7 @@
 name = "favorite-places-pipeline"
 version = "0.1.0"
 description = "Data pipeline for favorite-places."
+license = { file = "LICENSE" }
 requires-python = ">=3.14,<3.15"
 dependencies = [
   "google-saved-list-scraper",
