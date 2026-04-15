@@ -36,7 +36,7 @@ jobs:
               - "public/**"
               - "astro.config.*"
               - "package.json"
-              - "pnpm-lock.yaml"
+              - "bun.lock"
               - "tsconfig.json"
               - "tests/frontend/**"
             python_pipeline:
@@ -62,22 +62,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+          bun-version: 1.3.12
 
       - name: Install frontend dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun ci
 
       - name: Run frontend tests
-        run: pnpm run test:frontend
+        run: bun run test:frontend
 
   test-python:
     needs: changes
@@ -113,16 +107,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+          bun-version: 1.3.12
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -135,16 +123,16 @@ jobs:
           enable-cache: true
 
       - name: Install frontend dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun ci
 
       - name: Install Python dependencies
         run: uv sync --frozen
 
       - name: Build generated site data
-        run: pnpm run build:data
+        run: bun run build:data
 
       - name: Type-check Astro project
-        run: pnpm run check
+        run: bun run check
 
       - name: Build Astro site
-        run: pnpm run build
+        run: bun run build

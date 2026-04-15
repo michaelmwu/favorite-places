@@ -2,7 +2,7 @@
 
 Static-first personal travel guides built from Google Maps saved lists.
 
-Frontend package management and script execution use `pnpm`.
+Frontend package management and script execution use `bun`.
 The scraper dependency is vendored into this repo as a git subtree at
 `vendor/google-saved-lists/`, and `uv` installs it from that in-repo path.
 
@@ -17,7 +17,7 @@ The scraper dependency is vendored into this repo as a git subtree at
 Install frontend dependencies:
 
 ```bash
-pnpm install
+bun install
 ```
 
 Install Python dependencies:
@@ -37,7 +37,7 @@ cp .env.example .env
 Populate local raw data from public Google Maps lists:
 
 ```bash
-pnpm run sync:sources
+bun run sync:sources
 ```
 
 This refreshes every configured source and then rebuilds generated site data.
@@ -50,21 +50,21 @@ serial execution, or `--headed` to keep browser windows single-worker.
 Force-refresh raw source imports even if a CSV input is unchanged:
 
 ```bash
-pnpm run sync:sources:force
+bun run sync:sources:force
 ```
 
 Refresh one configured source by slug, source URL, or source path:
 
 ```bash
-pnpm run sync:source -- tokyo-japan
-pnpm run sync:source -- https://maps.app.goo.gl/your-public-list
-pnpm run sync:source -- data/imports/taipei-taiwan.csv
+bun run sync:source -- tokyo-japan
+bun run sync:source -- https://maps.app.goo.gl/your-public-list
+bun run sync:source -- data/imports/taipei-taiwan.csv
 ```
 
 Build generated site data from local raw JSON:
 
 ```bash
-pnpm run build:data
+bun run build:data
 ```
 
 Use this when `data/raw/` is already up to date and you only want to regenerate site inputs.
@@ -73,7 +73,7 @@ Configured local CSV sources are auto-imported before rebuild. Public Google Map
 Fill missing or stale Google Places enrichment cache entries, then rebuild:
 
 ```bash
-GOOGLE_PLACES_API_KEY=... pnpm run enrich:data
+GOOGLE_PLACES_API_KEY=... bun run enrich:data
 ```
 
 The same key can live in `.env` as `GOOGLE_PLACES_API_KEY=...`.
@@ -81,21 +81,21 @@ The same key can live in `.env` as `GOOGLE_PLACES_API_KEY=...`.
 Force-refresh all Google Places enrichment cache entries:
 
 ```bash
-GOOGLE_PLACES_API_KEY=... pnpm run refresh:enrichment
+GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
 ```
 
 Start the site:
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 Verify the site:
 
 ```bash
-pnpm run test
-pnpm run check
-pnpm run build
+bun run test
+bun run check
+bun run build
 ```
 
 ## Cloudflare Pages
@@ -108,20 +108,21 @@ default `pip` install path does not understand the vendored scraper declared in
 Use these Pages settings instead:
 
 - Environment variable: `SKIP_DEPENDENCY_INSTALL=true`
+- Environment variable: `BUN_VERSION=1.3.12`
 - Python version: keep the root [`.python-version`](.python-version) in sync with `pyproject.toml`
 - Build command:
 
 ```bash
-pnpm install && pipx install uv==0.11.6 && export PATH="$HOME/.local/bin:$PATH" && uv sync && pnpm run build:data && pnpm run build
+bun ci && pipx install uv==0.11.6 && export PATH="$HOME/.local/bin:$PATH" && uv sync && bun run build:data && bun run build
 ```
 
 Why this is necessary:
 
-- `pnpm install` installs the frontend dependencies
+- `bun ci` installs the frontend dependencies from `bun.lock`
 - `pipx install uv==0.11.6` makes `uv` available in the Pages build image
 - `uv sync` installs Python dependencies, including the vendored scraper from `vendor/google-saved-lists`
-- `pnpm run build:data` generates `src/data/generated/`, which Astro reads at build time
-- `pnpm run build` builds the static site
+- `bun run build:data` generates `src/data/generated/`, which Astro reads at build time
+- `bun run build` builds the static site
 
 Do not rely on Cloudflare's automatic Python dependency detection for this repo
 unless the packaging layout changes.
@@ -192,7 +193,7 @@ Optional fallback title example:
 3. Pull raw list data through the installed scraper dependency:
 
 ```bash
-pnpm run sync:sources
+bun run sync:sources
 ```
 
 This writes local JSON files into `data/raw/`, including refresh metadata like `fetched_at`
@@ -232,7 +233,7 @@ Per-place example at `src/data/overrides/places/tokyo-japan.json`:
 5. Optionally fill Google Places enrichment cache:
 
 ```bash
-pnpm run enrich:data
+bun run enrich:data
 ```
 
 This writes cache files into `data/cache/google-places/`, which may be committed for reproducible
@@ -241,7 +242,7 @@ enrichment results.
 6. Build generated site data:
 
 ```bash
-pnpm run build:data
+bun run build:data
 ```
 
 This writes local generated JSON into `src/data/generated/` from the current contents of `data/raw/`.
@@ -250,17 +251,17 @@ Configured local CSV sources are imported into `data/raw/<slug>.json` first when
 7. Run the site:
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
-If you already have raw JSON from elsewhere, you can skip source refresh and place compatible files directly in `data/raw/<slug>.json`, then run `pnpm run build:data`.
-For a targeted refresh, run `pnpm run sync:source -- <slug-or-url-or-path>`.
-For a full forced refresh, run `pnpm run sync:sources:force`.
+If you already have raw JSON from elsewhere, you can skip source refresh and place compatible files directly in `data/raw/<slug>.json`, then run `bun run build:data`.
+For a targeted refresh, run `bun run sync:source -- <slug-or-url-or-path>`.
+For a full forced refresh, run `bun run sync:sources:force`.
 
 Legacy aliases still work:
-- `pnpm run refresh:data`
-- `pnpm run refresh:data:force`
-- `pnpm run refresh:data:list -- <slug-or-url>`
+- `bun run refresh:data`
+- `bun run refresh:data:force`
+- `bun run refresh:data:list -- <slug-or-url>`
 
 ## Template-Ready Files
 
