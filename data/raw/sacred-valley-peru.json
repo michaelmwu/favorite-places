@@ -1,0 +1,110 @@
+{
+  "fetched_at": "2026-04-15T15:17:19.156660+00:00",
+  "refresh_after": "2026-04-29T15:17:19.156660+00:00",
+  "source_signature": "5159d34fb14120e2e27d4c8d4c0a7a11077368044878aa30035c6ced8744c0af",
+  "configured_source_type": "google_list_url",
+  "configured_source_url": "https://maps.app.goo.gl/51eHF2WGtY3WpYZy6",
+  "configured_source_path": null,
+  "source_url": "https://maps.app.goo.gl/51eHF2WGtY3WpYZy6",
+  "list_id": "JwJma3y8s39e3D1sZ_3VHkReIqBHKQ",
+  "title": "Sacred Valley, Peru 🇵🇪",
+  "description": "Michael's list for the Sacred Valley, Peru 🇵🇪 See https://beacons.ai/demflyers for more.",
+  "places": [
+    {
+      "name": "Ollantaytambo Sanctuary",
+      "address": "PPVM+5M7, Ollantaytambo 08676, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.2569661,
+      "lng": -72.26593969999999,
+      "maps_url": "https://maps.google.com/?cid=4196549491230723645",
+      "cid": "4196549491230723645",
+      "google_id": "/g/1tjz9041",
+      "maps_place_token": null
+    },
+    {
+      "name": "Templo del Sol",
+      "address": "PPVM+34M, Ollantaytambo 08676, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.257278399999999,
+      "lng": -72.2672098,
+      "maps_url": "https://maps.google.com/?q=-13.2572784,-72.2672098",
+      "cid": null,
+      "google_id": "/g/11gbsv8x2l",
+      "maps_place_token": null
+    },
+    {
+      "name": "Plaza de Armas de Ollantaytambo",
+      "address": "PPRP+FG4, Ollantaytambo 08676, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.258863199999999,
+      "lng": -72.26367379999999,
+      "maps_url": "https://maps.google.com/?q=-13.2588632,-72.2636738",
+      "cid": null,
+      "google_id": "/g/1hhgllyj8",
+      "maps_place_token": null
+    },
+    {
+      "name": "Sitio arqueológico Pinkuylluna",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.2562635,
+      "lng": -72.261034,
+      "maps_url": "https://maps.google.com/?cid=2658457288019645983",
+      "cid": "2658457288019645983",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Apu Veronica Restaurant",
+      "address": "Calle Ventiderio, 08675, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.2581668,
+      "lng": -72.2648268,
+      "maps_url": "https://maps.google.com/?cid=619243818924205270",
+      "cid": "619243818924205270",
+      "google_id": "/g/11b_2wb16y",
+      "maps_place_token": null
+    },
+    {
+      "name": "ALQA - Museo de Arte Popular Andino",
+      "address": "Sipas Calle, Ollantaytambo 08676, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.257079099999999,
+      "lng": -72.2626229,
+      "maps_url": "https://maps.google.com/?q=-13.2570791,-72.2626229",
+      "cid": null,
+      "google_id": "/g/11pkf1xt66",
+      "maps_place_token": null
+    },
+    {
+      "name": "ALQA - El Restaurante del Museo",
+      "address": "Calle sipas S/n, Ollantaytambo 08676, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.257117099999999,
+      "lng": -72.26249039999999,
+      "maps_url": "https://maps.google.com/?cid=2474466876253676630",
+      "cid": "2474466876253676630",
+      "google_id": "/g/11v5fcwzwd",
+      "maps_place_token": null
+    },
+    {
+      "name": "CHUNCHO",
+      "address": "Plaza de Armas de Ollantaytambo, Ollantaytambo 08676, Peru",
+      "note": null,
+      "is_favorite": false,
+      "lat": -13.2583377,
+      "lng": -72.263635,
+      "maps_url": "https://maps.google.com/?cid=270208856391526420",
+      "cid": "270208856391526420",
+      "google_id": "/g/11g05gp_cq",
+      "maps_place_token": null
+    }
+  ]
+}

@@ -16,6 +16,7 @@ const noteHtml = renderRichText(place.note);
 <article
   class="place-card"
   data-place-card
+  data-place-id={place.id}
   data-name={place.name.toLowerCase()}
   data-tags={displayTags.join(" ").toLowerCase()}
   data-category={(place.primary_category ?? "").toLowerCase()}
