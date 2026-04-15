@@ -3,6 +3,7 @@ export interface SiteConfig {
   ownerName: string;
   siteDescription: string;
   defaultSeoImage: string | null;
+  demFlyersUrl: string;
   home: {
     eyebrow: string;
     title: string;
@@ -16,25 +17,23 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  siteName: "Favorite Places",
+  siteName: "DEM Flyers Places",
   ownerName: "Michael Wu",
-  siteDescription:
-    "A personal collection of saved-place guides built for sharing, searching, and quick Google Maps handoff.",
+  siteDescription: "Michael's city bookmarks from DEM Flyers, organized for quick trip planning.",
   defaultSeoImage: null,
+  demFlyersUrl: "https://www.demflyers.com/",
   home: {
-    eyebrow: "Favorite Places",
-    title: "Saved places, but actually readable.",
-    intro:
-      "These guides start from public Google Maps saved lists, then add curation, tags, top picks, and much faster scanning on mobile. The actual save and navigation flow still belongs to Google Maps. The presentation layer does not.",
-    highlightsHeading: "What makes this better",
+    eyebrow: "DEM Flyers",
+    title: "Trip suggestions",
+    intro: "Michael's saved restaurants, cafes, bars, shops, and sights by city.",
+    highlightsHeading: "Also on DEM Flyers",
     highlights: [
-      "Top picks surface first instead of disappearing inside a giant list.",
-      "List tags and country grouping make the site browseable before search.",
-      "Every place card hands off directly into Google Maps in one tap.",
+      "Posts, trip reports, and travel notes live on the main site.",
+      "Google Maps and Wanderlog lists are linked where available.",
+      "Country sections below mirror the trip suggestions index.",
     ],
   },
   guide: {
-    fallbackDescription:
-      "A personal saved-places guide with quick search, tags, and a direct Google Maps handoff.",
+    fallbackDescription: "Michael's saved places for this city.",
   },
 };
