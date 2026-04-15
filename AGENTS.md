@@ -13,6 +13,7 @@
 
 - Prefer `rg` for search.
 - Keep the root [`.python-version`](</Users/michaelwu/conductor/workspaces/favorite-places/guangzhou-v3/.python-version>) aligned with `pyproject.toml` because Cloudflare Pages otherwise falls back to its default Python runtime.
+- For Cloudflare Pages deploys, set `SKIP_DEPENDENCY_INSTALL=true` and use a custom build command that installs `uv==0.11.6`, runs `uv sync`, then `pnpm run build:data` before `pnpm run build`.
 - Use `uv sync` for Python dependencies.
 - Use `pnpm install` for frontend dependencies.
 - Use `pnpm run check` and `pnpm run build` before closing out frontend changes.
@@ -88,6 +89,7 @@ pnpm run dev
 
 ## Notes For Future Agents
 
+- Cloudflare Pages should not use its default `pip install .` auto-detection for this repo; the data pipeline depends on `uv` to resolve the vendored scraper from `vendor/google-saved-lists`.
 - Raw place `note` should flow through as the default place note.
 - Raw place `is_favorite` should flow through as the default top-pick signal.
 - Manual `note` and `top_pick` overrides still win.

@@ -97,6 +97,34 @@ pnpm run check
 pnpm run build
 ```
 
+## Cloudflare Pages
+
+Cloudflare Pages should not auto-install Python dependencies for this repo.
+The root `pyproject.toml` exists for the local data pipeline, and Cloudflare's
+default `pip` install path does not understand the vendored scraper declared in
+`[tool.uv.sources]`.
+
+Use these Pages settings instead:
+
+- Environment variable: `SKIP_DEPENDENCY_INSTALL=true`
+- Python version: keep the root [`.python-version`](</Users/michaelwu/conductor/workspaces/favorite-places/guangzhou-v3/.python-version>) in sync with `pyproject.toml`
+- Build command:
+
+```bash
+pnpm install && pipx install uv==0.11.6 && export PATH="$HOME/.local/bin:$PATH" && uv sync && pnpm run build:data && pnpm run build
+```
+
+Why this is necessary:
+
+- `pnpm install` installs the frontend dependencies
+- `pipx install uv==0.11.6` makes `uv` available in the Pages build image
+- `uv sync` installs Python dependencies, including the vendored scraper from `vendor/google-saved-lists`
+- `pnpm run build:data` generates `src/data/generated/`, which Astro reads at build time
+- `pnpm run build` builds the static site
+
+Do not rely on Cloudflare's automatic Python dependency detection for this repo
+unless the packaging layout changes.
+
 ## Populate Base Data
 
 This repo can commit raw scraped list snapshots in `data/raw/` and reproducible Google Places
