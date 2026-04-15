@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -194,6 +195,120 @@ class BuildDataTests(unittest.TestCase):
         selected_sources = build_data.resolve_refresh_sources(sources, ["data/raw/alishan-taiwan.csv"])
 
         self.assertEqual([source.slug for source in selected_sources], ["alishan-taiwan"])
+
+    def test_raw_source_refresh_reason_respects_future_refresh_after(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+        saved_list = RawSavedList(
+            fetched_at=datetime.now(UTC).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+            source_signature=build_data.raw_source_signature(source),
+        )
+
+        self.assertIsNone(build_data.raw_source_refresh_reason(source, saved_list))
+
+    def test_raw_source_refresh_reason_detects_config_change_despite_future_refresh_after(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+        saved_list = RawSavedList(
+            fetched_at=datetime.now(UTC).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+            source_signature="old-signature",
+        )
+
+        self.assertEqual(build_data.raw_source_refresh_reason(source, saved_list), "source-config-changed")
+
+    def test_raw_source_refresh_reason_accepts_legacy_url_source_signature(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+        saved_list = RawSavedList(
+            fetched_at=datetime.now(UTC).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+            source_signature=build_data.legacy_google_list_source_signature(source),
+        )
+
+        self.assertIsNone(build_data.raw_source_refresh_reason(source, saved_list))
+
+    def test_refresh_raw_sources_skips_fresh_url_snapshot(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[source]),
+                patch.object(build_data, "scrape_google_list_url") as scrape,
+            ):
+                build_data.refresh_raw_sources(
+                    headed=False,
+                    force_refresh=False,
+                    refresh_lists=[],
+                    refresh_workers=1,
+                )
+
+        scrape.assert_not_called()
+
+    def test_refresh_raw_sources_force_bypasses_fresh_url_snapshot(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[source]),
+                patch.object(
+                    build_data,
+                    "scrape_google_list_url",
+                    return_value=RawSavedList(title="Fresh", places=[]),
+                ) as scrape,
+            ):
+                build_data.refresh_raw_sources(
+                    headed=False,
+                    force_refresh=True,
+                    refresh_lists=[],
+                    refresh_workers=1,
+                )
+
+        scrape.assert_called_once_with(source, headed=False)
 
 
 if __name__ == "__main__":
