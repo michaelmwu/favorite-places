@@ -26,6 +26,8 @@ Install Python dependencies:
 uv sync
 ```
 
+The repo pins Python via [`.python-version`](</Users/michaelwu/conductor/workspaces/favorite-places/guangzhou-v3/.python-version>) so local `uv` usage and Cloudflare Pages builds both resolve the intended `3.14` runtime instead of Cloudflare's default `3.13.x`.
+
 Optional local Google Places API key:
 
 ```bash
