@@ -211,6 +211,57 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("tokyo", first_place.tags)
         self.assertTrue(hidden_place.hidden)
 
+    def test_country_inference_keeps_monaco_english_with_localized_address_tails(self) -> None:
+        raw = RawSavedList(
+            title="Monaco 🇲🇨",
+            places=[
+                RawPlace(
+                    name="Cafe",
+                    address="42 Quai Jean-Charles Rey, 98000 Monaco, モナコ",
+                    maps_url="https://maps.google.com/?cid=1",
+                ),
+                RawPlace(
+                    name="Cathedral",
+                    address="4 Rue Colonel Bellando de Castro, 98000 Monaco, モナコ",
+                    maps_url="https://maps.google.com/?cid=2",
+                ),
+                RawPlace(
+                    name="Garden",
+                    address="モナコ 〒98000 モナコ",
+                    maps_url="https://maps.google.com/?cid=3",
+                ),
+            ],
+        )
+
+        self.assertEqual(build_data.infer_country_name(raw.title or "", raw), "Monaco")
+        self.assertEqual(
+            build_data.infer_country_from_address("42 Quai Jean-Charles Rey, 98000 Monaco, モナコ"),
+            "Monaco",
+        )
+        self.assertEqual(build_data.infer_country_code("Monaco"), "MC")
+
+    def test_country_inference_uses_flag_before_address_fragments(self) -> None:
+        raw = RawSavedList(
+            title="Okinawa Main Island 🇯🇵",
+            description="Michael's list for Okinawa, Japan 🇯🇵",
+            places=[
+                RawPlace(
+                    name="Street Fragment",
+                    address="〒900-0015 Okinawa, Naha, Kumoji, 2 Chome−19−17 RS-ONE 1F",
+                    maps_url="https://maps.google.com/?cid=1",
+                ),
+                RawPlace(
+                    name="Postal Fragment",
+                    address="3 Chome-9-26 Makishi, Naha, Okinawa 900-0013",
+                    maps_url="https://maps.google.com/?cid=2",
+                ),
+            ],
+        )
+
+        self.assertEqual(build_data.infer_country_name(raw.title or "", raw), "Japan")
+        self.assertIsNone(build_data.infer_country_from_address(raw.places[0].address))
+        self.assertIsNone(build_data.infer_country_from_address(raw.places[1].address))
+
     def test_address_locality_tags_exclude_buildings_blocks_and_postal_fragments(self) -> None:
         enrichment = EnrichmentPlace()
         addresses = [

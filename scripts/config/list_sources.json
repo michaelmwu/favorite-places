@@ -1,35 +1,55 @@
 [
   {
-    "slug": "austin-texas",
+    "slug": "austin-texas-usa",
     "url": "https://maps.app.goo.gl/kDUwsyoCCXL3Q3TU8"
   },
   {
-    "slug": "boston-massachusetts",
+    "slug": "boston-massachusetts-usa",
     "url": "https://maps.app.goo.gl/1WA7ME8RtvcnzDmy9"
   },
   {
-    "slug": "chicago-illinois",
+    "slug": "chicago-illinois-usa",
     "url": "https://maps.app.goo.gl/zUwkW4La7LMh8nBP9"
   },
   {
-    "slug": "bangor-maine",
+    "slug": "bangor-maine-usa",
     "url": "https://maps.app.goo.gl/FQKg5VsvdqPA7vB38"
   },
   {
-    "slug": "portland-maine",
+    "slug": "portland-maine-usa",
     "url": "https://maps.app.goo.gl/2p19qNGERSvSm97g7"
   },
   {
-    "slug": "maine-coast",
+    "slug": "maine-coast-usa",
     "url": "https://maps.app.goo.gl/Tdk96kR7P2qpULaS7"
   },
   {
-    "slug": "omaha-nebraska",
+    "slug": "omaha-nebraska-usa",
     "url": "https://maps.app.goo.gl/GZ8KQrfLZHsBoi5x9"
   },
   {
-    "slug": "new-york-new-york",
+    "slug": "new-york-new-york-usa",
     "url": "https://maps.app.goo.gl/GaqQcc3CNws26x358"
+  },
+  {
+    "slug": "seattle-washington-usa",
+    "url": "https://maps.app.goo.gl/LjnhBWrDhAyHoYSn7"
+  },
+  {
+    "slug": "las-vegas-nevada-usa",
+    "url": "https://maps.app.goo.gl/WHTVv1f2rssaBWQ98"
+  },
+  {
+    "slug": "oahu-hawaii-usa",
+    "url": "https://maps.app.goo.gl/ajdSFscR3PycHPdQ7"
+  },
+  {
+    "slug": "los-angeles-california-usa",
+    "url": "https://maps.app.goo.gl/7uA7Lyzm4Kvqx7y96"
+  },
+  {
+    "slug": "san-francisco-california-usa",
+    "url": "https://maps.app.goo.gl/FFpz3CY9GehrBmbr6"
   },
   {
     "slug": "guadalajara-mexico",
@@ -96,6 +116,26 @@
     "url": "https://maps.app.goo.gl/6kxZU8HYJnK8YWBr5"
   },
   {
+    "slug": "lille-france",
+    "url": "https://maps.app.goo.gl/uQmbz92Fgi2zFWxC9"
+  },
+  {
+    "slug": "metz-france",
+    "url": "https://maps.app.goo.gl/iqnFXaAS5vVqSwqN8"
+  },
+  {
+    "slug": "lyon-france",
+    "url": "https://maps.app.goo.gl/Y8ctSJLu6XKN3fm99"
+  },
+  {
+    "slug": "dijon-france",
+    "url": "https://maps.app.goo.gl/qowYWHRMDjEafSJR8"
+  },
+  {
+    "slug": "grenoble-france",
+    "url": "https://maps.app.goo.gl/vS8YFAofDDkmDYFC6"
+  },
+  {
     "slug": "berlin-germany",
     "url": "https://maps.app.goo.gl/EfD5VVsJHAqgdw5H9"
   },
@@ -132,8 +172,24 @@
     "url": "https://maps.app.goo.gl/mXQoUYRRjWuj6HNw8"
   },
   {
+    "slug": "venice-italy",
+    "url": "https://maps.app.goo.gl/XE5jJ74ccMFNBnKt6"
+  },
+  {
+    "slug": "tuscany-italy",
+    "url": "https://maps.app.goo.gl/pff93cjT3B9myqWU9"
+  },
+  {
     "slug": "milan-italy",
     "url": "https://maps.app.goo.gl/WqqDpX7anJAcWyoV8"
+  },
+  {
+    "slug": "lake-como-italy",
+    "url": "https://maps.app.goo.gl/7C5jGmEtGcH9BoLw7"
+  },
+  {
+    "slug": "bologna-italy",
+    "url": "https://maps.app.goo.gl/1u5aKzYfQxDpvcwL7"
   },
   {
     "slug": "sorrento-italy",
@@ -181,7 +237,7 @@
   },
   {
     "slug": "zurich-switzerland",
-    "url": "https://maps.app.goo.gl/VbyXtGcs1LSAmP1C9"
+    "url": "https://maps.app.goo.gl/LZVL7EmREzv3Eg1W8"
   },
   {
     "slug": "london-united-kingdom",
@@ -196,8 +252,24 @@
     "url": "https://maps.app.goo.gl/SBdpNn65NHyrG3nF7"
   },
   {
+    "slug": "luxembourg",
+    "url": "https://maps.app.goo.gl/y1PCGeedt9tPT9W7A"
+  },
+  {
+    "slug": "baku-azerbaijan",
+    "url": "https://maps.app.goo.gl/M8RTmwqQLgV7LHuz9"
+  },
+  {
+    "slug": "almaty-kazakhstan",
+    "url": "https://maps.app.goo.gl/tWDDf11MmsXhaUgZA"
+  },
+  {
     "slug": "chengdu-china",
     "url": "https://maps.app.goo.gl/bpQCda49dVdDMDjZ6"
+  },
+  {
+    "slug": "urumqi-china",
+    "url": "https://maps.app.goo.gl/uJwUTPTJchDfj98FA"
   },
   {
     "slug": "hong-kong",
@@ -284,6 +356,10 @@
     "url": "https://maps.app.goo.gl/Hr4MFQCjhpZDouhJ9"
   },
   {
+    "slug": "takamatsu-japan",
+    "url": "https://maps.app.goo.gl/XxvwFxwYsZwgi7Up7"
+  },
+  {
     "slug": "toyama-japan",
     "url": "https://maps.app.goo.gl/R8XJpoWKeWakhhRa6"
   },
@@ -352,6 +428,10 @@
     "url": "https://maps.app.goo.gl/fHKrDY1ztvqyDY1f8"
   },
   {
+    "slug": "green-island-taiwan",
+    "url": "https://maps.app.goo.gl/p7r5UMHVEGB7m9km9"
+  },
+  {
     "slug": "xiaoliuqiu-lambai-island-taiwan",
     "url": "https://maps.app.goo.gl/Bd441Xw8WoAhXSfH9"
   },
@@ -404,12 +484,32 @@
     "url": "https://maps.app.goo.gl/HGxndKFgJNiVjZRL7"
   },
   {
+    "slug": "yarra-valley-australia",
+    "url": "https://maps.app.goo.gl/JNdx6Y7wHqDwfXk96"
+  },
+  {
+    "slug": "tasmania-australia",
+    "url": "https://maps.app.goo.gl/5E9deruD3n6GaWbh9"
+  },
+  {
+    "slug": "brisbane-gold-coast-australia",
+    "url": "https://maps.app.goo.gl/ovty2cUiLNNYXeg5A"
+  },
+  {
     "slug": "perth-and-fremantle-australia",
     "url": "https://maps.app.goo.gl/B9fZqbwbWNeudkEr6"
   },
   {
     "slug": "sydney-australia",
     "url": "https://maps.app.goo.gl/ArZXfu9jkibZXEHd7"
+  },
+  {
+    "slug": "south-island-new-zealand",
+    "url": "https://maps.app.goo.gl/g8EKXM1DHy7NKS7aA"
+  },
+  {
+    "slug": "fiji",
+    "url": "https://maps.app.goo.gl/bNAYndUCaEm7utUX6"
   },
   {
     "slug": "tonga",

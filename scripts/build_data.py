@@ -687,6 +687,11 @@ def infer_country_name(title: str, raw: RawSavedList) -> str | None:
     parts = split_title_parts(title)
     if len(parts) > 1:
         return parts[-1]
+    if len(parts) == 1 and known_country_name(parts[0]):
+        return parts[0]
+    flag_country_name = infer_country_from_flag(title) or infer_country_from_flag(raw.description)
+    if flag_country_name:
+        return flag_country_name
 
     place_countries = [infer_country_from_address(place.address) for place in raw.places]
     place_countries = [country for country in place_countries if country]
@@ -705,7 +710,14 @@ def infer_country_code(country_name: str | None) -> str | None:
         "Taiwan": "TW",
         "United States": "US",
     }
-    return mapping.get(country_name)
+    mapped_code = mapping.get(country_name)
+    if mapped_code:
+        return mapped_code
+    try:
+        country = pycountry.countries.lookup(country_name)
+    except LookupError:
+        return None
+    return country.alpha_2
 
 
 def infer_country_from_address(address: str | None) -> str | None:
@@ -714,8 +726,80 @@ def infer_country_from_address(address: str | None) -> str | None:
     parts = [part.strip() for part in address.split(",") if part.strip()]
     if not parts:
         return None
-    tail = re.sub(r"[^\w\s-]", "", parts[-1]).strip()
-    return tail or None
+
+    for part in reversed(parts):
+        country_name = known_country_name(normalize_country_candidate(part))
+        if country_name:
+            return country_name
+
+    return None
+
+
+def normalize_country_candidate(value: str) -> str:
+    candidate = re.sub(r"[^\w\s-]", " ", value).strip()
+    candidate = re.sub(r"\b\d{3,6}(?:[-−ー－]\d{4})?\b", " ", candidate)
+    candidate = re.sub(r"\s+", " ", candidate).strip(" -−ー－")
+    return candidate
+
+
+def known_country_name(candidate: str | None) -> str | None:
+    if candidate is None:
+        return None
+    candidate = candidate.strip()
+    if not candidate:
+        return None
+
+    aliases = {
+        "england": "England",
+        "scotland": "Scotland",
+        "wales": "Wales",
+        "northern ireland": "Northern Ireland",
+        "uk": "UK",
+        "uae": "UAE",
+        "usa": "USA",
+        "korea": "Korea",
+        "taiwan": "Taiwan",
+        "vatican city": "Vatican City",
+        "ivory coast": "Ivory Coast",
+    }
+    alias = aliases.get(normalize_locality_key(candidate))
+    if alias:
+        return alias
+
+    try:
+        pycountry.countries.lookup(candidate)
+    except LookupError:
+        return None
+    return candidate
+
+
+def infer_country_from_flag(text: str | None) -> str | None:
+    if text is None:
+        return None
+
+    flag_country_names = {
+        "AE": "United Arab Emirates",
+        "GB": "United Kingdom",
+        "KR": "South Korea",
+        "TW": "Taiwan",
+        "US": "United States",
+    }
+    regional_indicator_start = 0x1F1E6
+    regional_indicator_end = 0x1F1FF
+    regional_indicators = [
+        char for char in text if regional_indicator_start <= ord(char) <= regional_indicator_end
+    ]
+    for index in range(len(regional_indicators) - 1):
+        first = ord(regional_indicators[index]) - regional_indicator_start
+        second = ord(regional_indicators[index + 1]) - regional_indicator_start
+        country_code = f"{chr(ord('A') + first)}{chr(ord('A') + second)}"
+        mapped_name = flag_country_names.get(country_code)
+        if mapped_name:
+            return mapped_name
+        country = pycountry.countries.get(alpha_2=country_code)
+        if country:
+            return country.name
+    return None
 
 
 def infer_neighborhood(address: str | None, *, city_name: str | None = None) -> str | None:

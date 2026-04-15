@@ -5,7 +5,7 @@ import { siteConfig } from "../data/site";
 import { getGuideManifests } from "../lib/data";
 
 const guides = getGuideManifests();
-const guidesByCountry = Object.entries(
+const countryEntries = Object.entries(
   guides.reduce<Record<string, typeof guides>>((accumulator, guide) => {
     const key = guide.country_name || "Unknown";
     accumulator[key] ??= [];
@@ -13,6 +13,28 @@ const guidesByCountry = Object.entries(
     return accumulator;
   }, {}),
 ).sort(([left], [right]) => left.localeCompare(right));
+const flagPattern = /[\u{1F1E6}-\u{1F1FF}]{2}/gu;
+const getCountryFlag = (countryGuides: typeof guides) => {
+  const flagCounts = countryGuides.reduce<Record<string, number>>((accumulator, guide) => {
+    const flags = [...guide.title.matchAll(flagPattern)].map(([flag]) => flag);
+    const flag = flags.at(-1);
+
+    if (flag) {
+      accumulator[flag] = (accumulator[flag] ?? 0) + 1;
+    }
+
+    return accumulator;
+  }, {});
+
+  return Object.entries(flagCounts).sort(([, leftCount], [, rightCount]) => rightCount - leftCount)[0]?.[0] ?? "";
+};
+const guidesByCountry = countryEntries.map(([countryName, countryGuides]) => ({
+  countryGuides,
+  countryName,
+  countryFlag: getCountryFlag(countryGuides),
+}));
+const countryCount = guidesByCountry.length;
+const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0);
 ---
 
 <Layout
@@ -27,9 +49,8 @@ const guidesByCountry = Object.entries(
         <p class="lede">{siteConfig.home.intro}</p>
         <div class="hero-meta">
           <span class="stat-pill">{guides.length} guides</span>
-          <span class="stat-pill">
-            {guides.reduce((count, guide) => count + guide.place_count, 0)} places
-          </span>
+          <span class="stat-pill">{countryCount} countries</span>
+          <span class="stat-pill">{placeCount} places</span>
         </div>
       </div>
 
@@ -42,7 +63,7 @@ const guidesByCountry = Object.entries(
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" data-home-browser-root>
     <div class="section-head">
       <div>
         <p class="eyebrow">Guides</p>
@@ -53,12 +74,64 @@ const guidesByCountry = Object.entries(
       </p>
     </div>
 
-    {guidesByCountry.map(([countryName, countryGuides]) => (
-      <div class="country-block">
+    <div class="controls-panel country-browser" data-home-browser-controls>
+      <div class="controls-grid">
+        <div class="control-group">
+          <label class="control-label" for="country-search">Search</label>
+          <input
+            id="country-search"
+            name="country-search"
+            type="search"
+            placeholder="Search countries, cities, guide names, tags"
+            data-home-search-input
+          />
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Showing</span>
+          <p class="browse-count" data-home-results-count>
+            {guides.length} guides across {countryCount} countries
+          </p>
+        </div>
+
+        <div class="control-group country-filter-group">
+          <span class="control-label">Countries</span>
+          <div class="country-filter-list" data-country-filter-list>
+            <button
+              class="country-filter"
+              type="button"
+              data-country-filter
+              data-country=""
+              aria-pressed="true"
+            >
+              <span>All</span>
+              <span class="country-filter-count">{guides.length}</span>
+            </button>
+            {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
+              <button
+                class="country-filter"
+                type="button"
+                data-country-filter
+                data-country={countryName.toLowerCase()}
+                aria-pressed="false"
+              >
+                <span>{countryFlag ? `${countryName} ${countryFlag}` : countryName}</span>
+                <span class="country-filter-count">{countryGuides.length}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" data-home-empty-state>No matching guides. Try a broader search or choose all countries.</div>
+
+    {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
+      <div class="country-block" data-country-block data-country={countryName.toLowerCase()}>
         <div class="section-head">
           <div>
             <p class="eyebrow">{countryGuides.length} guide{countryGuides.length === 1 ? "" : "s"}</p>
-            <h3 class="section-title">{countryName}</h3>
+            <h3 class="section-title">{countryFlag ? `${countryName} ${countryFlag}` : countryName}</h3>
           </div>
         </div>
 
@@ -70,4 +143,6 @@ const guidesByCountry = Object.entries(
       </div>
     ))}
   </section>
+
+  <script is:inline type="module" src="/scripts/home-browser.js"></script>
 </Layout>
