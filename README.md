@@ -157,6 +157,7 @@ cp scripts/config/list_sources.example.json scripts/config/list_sources.json
 Every source needs a `slug`.
 - `url` sources infer `type: "google_list_url"` for supported Google Maps links, including `https://maps.app.goo.gl/...` shortlinks and `https://www.google.com/maps/...` share links.
 - `path` sources infer `type: "google_export_csv"` and require `title`.
+- `type` can still be included explicitly, but it must match the configured `url` or `path`.
 - `title` is optional for Google Maps URL sources and acts as a fallback list title.
 - Google My Maps URLs such as `https://www.google.com/maps/d/...` are not supported yet.
 

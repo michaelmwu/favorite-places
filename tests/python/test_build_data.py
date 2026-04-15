@@ -19,6 +19,15 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(source.type, "google_list_url")
 
+    def test_source_config_accepts_matching_explicit_type(self) -> None:
+        source = SourceConfig(
+            slug="florence-italy",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/mXQoUYRRjWuj6HNw8",
+        )
+
+        self.assertEqual(source.type, "google_list_url")
+
     def test_source_config_infers_google_list_url_from_google_maps_share_url(self) -> None:
         source = SourceConfig(
             slug="florence-italy",
@@ -38,6 +47,37 @@ class BuildDataTests(unittest.TestCase):
         )
 
         self.assertEqual(source.type, "google_export_csv")
+
+    def test_source_config_rejects_type_that_disagrees_with_maps_url(self) -> None:
+        with self.assertRaises(ValidationError) as context:
+            SourceConfig(
+                slug="florence-italy",
+                type="google_export_csv",
+                url="https://maps.app.goo.gl/mXQoUYRRjWuj6HNw8",
+            )
+
+        self.assertIn("does not match configured source fields", str(context.exception))
+
+    def test_source_config_rejects_type_that_disagrees_with_csv_path(self) -> None:
+        with self.assertRaises(ValidationError) as context:
+            SourceConfig(
+                slug="taipei-taiwan",
+                type="google_list_url",
+                path="data/imports/taipei-taiwan.csv",
+                title="Taipei, Taiwan",
+            )
+
+        self.assertIn("does not match configured source fields", str(context.exception))
+
+    def test_source_config_rejects_non_google_url_for_google_list_url(self) -> None:
+        with self.assertRaises(ValidationError) as context:
+            SourceConfig(
+                slug="example",
+                type="google_list_url",
+                url="https://example.com/list",
+            )
+
+        self.assertIn("supported Google Maps URL", str(context.exception))
 
     def test_source_config_rejects_google_mymaps_url(self) -> None:
         with self.assertRaises(ValidationError) as context:

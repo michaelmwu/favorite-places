@@ -28,7 +28,7 @@ This repo deliberately avoids committing generated build artifacts.
 - `src/data/generated/` is local-only generated site input data.
 - `src/data/overrides/` is the source-controlled layer for handwritten curation.
 - `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
-- In `scripts/config/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; only set it explicitly when inference is not enough. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
+- In `scripts/config/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; explicit `type` is allowed but must match the configured `url` or `path`. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
 
 Merge precedence:
 

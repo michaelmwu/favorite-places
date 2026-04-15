@@ -33,19 +33,21 @@ class SourceConfig(PipelineModel):
     @model_validator(mode="before")
     @classmethod
     def infer_source_type(cls, data: Any) -> Any:
-        if not isinstance(data, dict) or data.get("type"):
+        if not isinstance(data, dict):
             return data
 
         inferred = dict(data)
+        explicit_type = as_nonempty_string(inferred.get("type"))
         url = as_nonempty_string(inferred.get("url"))
         path = as_nonempty_string(inferred.get("path"))
+        field_type = infer_source_type_from_fields(url=url, path=path)
 
-        if url and is_unsupported_google_mymaps_url(url):
-            raise ValueError("Google My Maps URLs are not supported as list sources.")
-        if url and is_supported_google_maps_source_url(url):
-            inferred["type"] = "google_list_url"
-        elif path:
-            inferred["type"] = "google_export_csv"
+        if explicit_type and field_type and explicit_type != field_type:
+            raise ValueError(f"Source type `{explicit_type}` does not match configured source fields.")
+        if explicit_type:
+            return inferred
+        if field_type:
+            inferred["type"] = field_type
         else:
             raise ValueError("Could not infer source type. Provide `type`, `url`, or `path`.")
 
@@ -57,6 +59,8 @@ class SourceConfig(PipelineModel):
             raise ValueError("Source type is required.")
         if self.url and is_unsupported_google_mymaps_url(self.url):
             raise ValueError("Google My Maps URLs are not supported as list sources.")
+        if self.type == "google_list_url" and self.url and not is_supported_google_maps_source_url(self.url):
+            raise ValueError("google_list_url sources require a supported Google Maps URL.")
         if self.type == "google_list_url" and not self.url:
             raise ValueError("google_list_url sources require `url`")
         if self.type == "google_export_csv" and not self.path:
@@ -71,6 +75,16 @@ def as_nonempty_string(value: Any) -> str | None:
         return None
     stripped = value.strip()
     return stripped or None
+
+
+def infer_source_type_from_fields(*, url: str | None, path: str | None) -> str | None:
+    if url and is_unsupported_google_mymaps_url(url):
+        raise ValueError("Google My Maps URLs are not supported as list sources.")
+    if url and is_supported_google_maps_source_url(url):
+        return "google_list_url"
+    if path:
+        return "google_export_csv"
+    return None
 
 
 def is_supported_google_maps_source_url(url: str) -> bool:
