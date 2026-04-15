@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -25,13 +25,38 @@ class PlacesSettings(BaseSettings):
 
 class SourceConfig(PipelineModel):
     slug: str
-    type: Literal["google_list_url", "google_export_csv"]
+    type: Literal["google_list_url", "google_export_csv"] | None = None
     url: str | None = None
     path: str | None = None
     title: str | None = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def infer_source_type(cls, data: Any) -> Any:
+        if not isinstance(data, dict) or data.get("type"):
+            return data
+
+        inferred = dict(data)
+        url = as_nonempty_string(inferred.get("url"))
+        path = as_nonempty_string(inferred.get("path"))
+
+        if url and is_unsupported_google_mymaps_url(url):
+            raise ValueError("Google My Maps URLs are not supported as list sources.")
+        if url and is_supported_google_maps_source_url(url):
+            inferred["type"] = "google_list_url"
+        elif path:
+            inferred["type"] = "google_export_csv"
+        else:
+            raise ValueError("Could not infer source type. Provide `type`, `url`, or `path`.")
+
+        return inferred
+
     @model_validator(mode="after")
     def validate_source_location(self) -> "SourceConfig":
+        if not self.type:
+            raise ValueError("Source type is required.")
+        if self.url and is_unsupported_google_mymaps_url(self.url):
+            raise ValueError("Google My Maps URLs are not supported as list sources.")
         if self.type == "google_list_url" and not self.url:
             raise ValueError("google_list_url sources require `url`")
         if self.type == "google_export_csv" and not self.path:
@@ -39,6 +64,26 @@ class SourceConfig(PipelineModel):
         if self.type == "google_export_csv" and not self.title:
             raise ValueError("google_export_csv sources require `title`")
         return self
+
+
+def as_nonempty_string(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    stripped = value.strip()
+    return stripped or None
+
+
+def is_supported_google_maps_source_url(url: str) -> bool:
+    normalized = url.strip().lower()
+    return normalized.startswith("https://maps.app.goo.gl/") or (
+        normalized.startswith("https://www.google.com/maps/")
+        and not is_unsupported_google_mymaps_url(normalized)
+    )
+
+
+def is_unsupported_google_mymaps_url(url: str) -> bool:
+    normalized = url.strip().lower()
+    return normalized.startswith("https://www.google.com/maps/d/")
 
 
 class RawPlace(PipelineModel):

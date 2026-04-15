@@ -154,10 +154,11 @@ If you are starting from this repo as a base template, copy the example file fir
 cp scripts/config/list_sources.example.json scripts/config/list_sources.json
 ```
 
-Every source needs a `slug` and a `type`.
-- `google_list_url` sources require `url`
-- `google_export_csv` sources require `path` and `title`
-- `title` is optional only for `google_list_url` and acts as a fallback list title
+Every source needs a `slug`.
+- `url` sources infer `type: "google_list_url"` for supported Google Maps links, including `https://maps.app.goo.gl/...` shortlinks and `https://www.google.com/maps/...` share links.
+- `path` sources infer `type: "google_export_csv"` and require `title`.
+- `title` is optional for Google Maps URL sources and acts as a fallback list title.
+- Google My Maps URLs such as `https://www.google.com/maps/d/...` are not supported yet.
 
 Example:
 
@@ -165,12 +166,10 @@ Example:
 [
   {
     "slug": "tokyo-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/your-public-list"
   },
   {
     "slug": "taipei-taiwan",
-    "type": "google_export_csv",
     "path": "data/imports/taipei-taiwan.csv",
     "title": "Taipei, Taiwan 🇹🇼"
   }
@@ -183,7 +182,6 @@ Optional fallback title example:
 [
   {
     "slug": "tokyo-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/your-public-list",
     "title": "Tokyo, Japan 🇯🇵"
   }

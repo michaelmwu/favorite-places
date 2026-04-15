@@ -1,522 +1,418 @@
 [
   {
     "slug": "austin-texas",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/5c2d8VV8LSM9SDf27"
   },
   {
     "slug": "boston-massachusetts",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/1WA7ME8RtvcnzDmy9"
   },
   {
     "slug": "chicago-illinois",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/zUwkW4La7LMh8nBP9"
   },
   {
     "slug": "bangor-maine",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/FQKg5VsvdqPA7vB38"
   },
   {
     "slug": "portland-maine",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/2p19qNGERSvSm97g7"
   },
   {
     "slug": "maine-coast",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Tdk96kR7P2qpULaS7"
   },
   {
     "slug": "omaha-nebraska",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/GZ8KQrfLZHsBoi5x9"
   },
   {
     "slug": "new-york-new-york",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/GaqQcc3CNws26x358"
   },
   {
     "slug": "guadalajara-mexico",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/cKeV5GXhmTNfvo9y8"
   },
   {
     "slug": "mexico-city",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/hBDyM233Ju4BW7UK6"
   },
   {
     "slug": "merida-mexico",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/3cbe85NYjTT3oY85A"
   },
   {
     "slug": "oaxaca-mexico",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/eNrdv6E2KGqAWJcP6"
   },
   {
     "slug": "puerto-vallarta-mexico",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/2r13HLtmoWaXwZi1A"
   },
   {
     "slug": "aguascalientes-peru",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/hXEPKiFKKwWS3BQ46"
   },
   {
     "slug": "cusco-peru",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/99M14dNDMedTFujq9"
   },
   {
     "slug": "lima-peru",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/6hxj6mFr1gv78NTq7"
   },
   {
     "slug": "sacred-valley-peru",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/51eHF2WGtY3WpYZy6"
   },
   {
     "slug": "vienna-austria",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/eB1CPyLfQPXjGfn58"
   },
   {
     "slug": "brussels-belgium",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Z3f16vN2nFNVy7349"
   },
   {
     "slug": "copenhagen-denmark",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/556jefsE5JYQyCLQ8"
   },
   {
     "slug": "cannes-france",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/zAQETQP3TzixbDDq6"
   },
   {
     "slug": "nice-france",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/odyDkTtTf9X3sxxB7"
   },
   {
     "slug": "marseille-france",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/axiF2zmHLN6KPbf36"
   },
   {
     "slug": "paris-france",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/6kxZU8HYJnK8YWBr5"
   },
   {
     "slug": "berlin-germany",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/1WA7ME8RtvcnzDmy9"
   },
   {
     "slug": "munich-germany",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/mZU9GEcrDfqbxesm7"
   },
   {
     "slug": "nuremberg-germany",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/z6uB1Aee1z7zP9zX9"
   },
   {
     "slug": "stuttgart-germany",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/BKhiAsr1hjpoaiPc7"
   },
   {
     "slug": "budapest-hungary",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/KKUALcoZ2CVLP4rM6"
   },
   {
     "slug": "dublin-ireland",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/SVxJaJx5D7ZLZicw5"
   },
   {
     "slug": "amalfi-coast-italy",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/PW2TfwTum5MTwyEa9"
   },
   {
     "slug": "capri-italy",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/CQmwubi6cZeVBYan7"
   },
   {
     "slug": "florence-italy",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/mXQoUYRRjWuj6HNw8"
   },
   {
     "slug": "milan-italy",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/WqqDpX7anJAcWyoV8"
   },
   {
     "slug": "sorrento-italy",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/UhstMwsyDtTLtgMH9"
   },
   {
     "slug": "amsterdam-netherlands",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/5c2d8VV8LSM9SDf27"
   },
   {
     "slug": "the-hague-netherlands",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/8JFBMxey3jwUnCEu7"
   },
   {
     "slug": "lisbon-portugal",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/ZnM64oQkUdSSfwGF9"
   },
   {
     "slug": "sintra-and-cascais-portugal",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/YUCpULTNF6wg8gR76"
   },
   {
     "slug": "barcelona-spain",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/jarXYbTH9FUrNVzn9"
   },
   {
     "slug": "bilbao-and-san-sebastian-spain",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/n5z5ghhntmNmHhJA8"
   },
   {
     "slug": "ibiza-spain",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/fG3MPprsjnLnSrjN9"
   },
   {
     "slug": "madrid-spain",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/5xdr1tyPZqMg684k6"
   },
   {
     "slug": "toledo-spain",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/g7f1yVNXzMtYudbP8"
   },
   {
     "slug": "valencia-spain",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/H4y3RcAqiFsBahSZ7"
   },
   {
     "slug": "zurich-switzerland",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/VbyXtGcs1LSAmP1C9"
   },
   {
     "slug": "london-united-kingdom",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/4bF3nCUU3BgNZvqRA"
   },
   {
     "slug": "belfast-northern-ireland",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/1ddU6qhj2QfYBur27"
   },
   {
     "slug": "monaco",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/SBdpNn65NHyrG3nF7"
   },
   {
     "slug": "chengdu-china",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/bpQCda49dVdDMDjZ6"
   },
   {
     "slug": "hong-kong",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/PLQW15uRwGFLa9zq8"
   },
   {
     "slug": "bali-indonesia",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/VP4zg8Gqp9PoH54f6"
   },
   {
     "slug": "tokyo-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18"
   },
   {
     "slug": "fukuoka-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/B6GMbSwqYLiv7yS9A"
   },
   {
     "slug": "furano-and-biei-hokkaido",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/V9BztrexRsELpywY6"
   },
   {
     "slug": "hakodate-hokkaido",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/kFhPT3qS9gfzoCCL6"
   },
   {
     "slug": "hakuba-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Po7e3kBCSVHdcVrb7"
   },
   {
     "slug": "ishigaki-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/VCZAnqiTpEQJyaKh8"
   },
   {
     "slug": "kanazawa-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/b5gU61Vtsma87X437"
   },
   {
     "slug": "karuizawa-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/ozvKBC4oQmgCWS2g7"
   },
   {
     "slug": "kyoto-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/ScLZpnt6oYVBSPZ47"
   },
   {
     "slug": "matsumoto-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/UihVvJXRj7ipNewn9"
   },
   {
     "slug": "nagasaki-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/FGvK2LZPrDf8koYX6"
   },
   {
     "slug": "nagoya-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/hAENsrBixi7waVaJA"
   },
   {
     "slug": "niseko-rusutsu-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/4riMSaf3VD7sG9jP8"
   },
   {
     "slug": "noto-peninsula-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/z8wFqPsmsNfqqug99"
   },
   {
     "slug": "oita-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/g75hDqrYAyimM4AK8"
   },
   {
     "slug": "okinawa-main-island-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/82KQGqGVAshyFmup9"
   },
   {
     "slug": "sapporo-hokkaido",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/KXpT3QAC5tTQD1yk7"
   },
   {
     "slug": "sendai-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/qCNJauQVhBmBp6Ne8"
   },
   {
     "slug": "takayama-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Hr4MFQCjhpZDouhJ9"
   },
   {
     "slug": "toyama-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/R8XJpoWKeWakhhRa6"
   },
   {
     "slug": "yufuin-japan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/S8yinzDCstwoEX4d8"
   },
   {
     "slug": "singapore",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/kj4viMLvZPdnkFyW8"
   },
   {
     "slug": "seoul-korea",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/S7jrTHwyGshsXuFS7"
   },
   {
     "slug": "gyeongju-korea",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/NaxWqgG1U9NXFWU2A"
   },
   {
     "slug": "busan-korea",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Cm5rEKT86Nx24QY18"
   },
   {
     "slug": "kota-kinabalu-malaysia",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/qpu5xS2E6TYaj1kS6"
   },
   {
     "slug": "kuala-lumpur-malaysia",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/VcA2SXG6KcFWMcU77"
   },
   {
     "slug": "taipei-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/8Z8NbWQEStXEDXzH7"
   },
   {
     "slug": "taichung-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/hztp4mn7UFK4UgJ76"
   },
   {
     "slug": "alishan-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/CyBpVLMUL4jGuNep6"
   },
   {
     "slug": "chiayi-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Wq4HBEyd9p8Spgqy5"
   },
   {
     "slug": "nantou-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Gr9mTXqE4vE635S1A"
   },
   {
     "slug": "tainan-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/7iREHbpdNkKbZYNr8"
   },
   {
     "slug": "taoyuan-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Fwws9KeFpakiFXD78"
   },
   {
     "slug": "penghu-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/NwSXEAXNGxZ4235E6"
   },
   {
     "slug": "pingxi-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/fHKrDY1ztvqyDY1f8"
   },
   {
     "slug": "xiaoliuqiu-lambai-island-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Bd441Xw8WoAhXSfH9"
   },
   {
     "slug": "yilan-taiwan",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/zEyn4yr3h3ovtVr9A"
   },
   {
     "slug": "bangkok-thailand",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/coLsZiK75aujHidb7"
   },
   {
     "slug": "chiang-mai-thailand",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/Wj8zY85EK3ryZ5419"
   },
   {
     "slug": "danang-vietnam",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/49wdVqBdRiP6MFqTA"
   },
   {
     "slug": "hanoi-vietnam",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/dUDUdru3FYRmtsvu8"
   },
   {
     "slug": "hoi-an-vietnam",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/N9R8Qj7jmBnKXVLQ6"
   },
   {
     "slug": "saigon-ho-chi-minh-city",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/9W44A7mfQ2fUssk67"
   },
   {
     "slug": "dubai-uae",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/KL8TMzmBynCG8uEu5"
   },
   {
     "slug": "cape-town-south-africa",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/zR2XjiUPsMZYcvCK7"
   },
   {
     "slug": "cape-winelands-south-africa",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/DASVrHFw2yGv8ppA9"
   },
   {
     "slug": "seychelles",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/rW8W854xUKGhNZjw5"
   },
   {
     "slug": "melbourne-australia",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/HGxndKFgJNiVjZRL7"
   },
   {
     "slug": "perth-and-fremantle-australia",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/B9fZqbwbWNeudkEr6"
   },
   {
     "slug": "sydney-australia",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/ArZXfu9jkibZXEHd7"
   },
   {
     "slug": "tonga",
-    "type": "google_list_url",
     "url": "https://maps.app.goo.gl/d1eA5wLntFechqyr6"
   }
 ]

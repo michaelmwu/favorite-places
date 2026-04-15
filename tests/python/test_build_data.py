@@ -7,11 +7,50 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+from pydantic import ValidationError
+
 from scripts import build_data
 from scripts.pipeline_models import EnrichmentCacheEntry, EnrichmentPlace, RawPlace, RawSavedList, SourceConfig
 
 
 class BuildDataTests(unittest.TestCase):
+    def test_source_config_infers_google_list_url_from_maps_shortlink(self) -> None:
+        source = SourceConfig(slug="florence-italy", url="https://maps.app.goo.gl/mXQoUYRRjWuj6HNw8")
+
+        self.assertEqual(source.type, "google_list_url")
+
+    def test_source_config_infers_google_list_url_from_google_maps_share_url(self) -> None:
+        source = SourceConfig(
+            slug="florence-italy",
+            url=(
+                "https://www.google.com/maps/@43.7704158,11.2457711,15z/"
+                "data=!4m6!1m2!10m1!1e1!11m2!2sMc3UGukaEH6YkxkW4hLKEg!3e3"
+            ),
+        )
+
+        self.assertEqual(source.type, "google_list_url")
+
+    def test_source_config_infers_google_export_csv_from_path(self) -> None:
+        source = SourceConfig(
+            slug="taipei-taiwan",
+            path="data/imports/taipei-taiwan.csv",
+            title="Taipei, Taiwan",
+        )
+
+        self.assertEqual(source.type, "google_export_csv")
+
+    def test_source_config_rejects_google_mymaps_url(self) -> None:
+        with self.assertRaises(ValidationError) as context:
+            SourceConfig(
+                slug="valencia-spain",
+                url=(
+                    "https://www.google.com/maps/d/u/0/viewer?hl=en"
+                    "&mid=1OiyJQ0xcbnanQ2QJsTavzetf5b_D_s4"
+                ),
+            )
+
+        self.assertIn("Google My Maps URLs are not supported", str(context.exception))
+
     def test_normalize_guide_applies_overrides_and_hides_places_from_counts(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
