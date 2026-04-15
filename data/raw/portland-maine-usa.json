@@ -1,7 +1,7 @@
 {
-  "fetched_at": "2026-04-15T15:15:32.304527+00:00",
-  "refresh_after": "2026-04-29T15:15:32.304527+00:00",
-  "source_signature": "9df1e1b435520dff861dbdf0284406d323f27609244ed07a14676b1a187e06cb",
+  "fetched_at": "2026-04-15T23:49:51.728494+00:00",
+  "refresh_after": "2026-04-29T23:49:51.728494+00:00",
+  "source_signature": "ebe5067219eadb82100f63ac8c458d6dfc2d6dc2149945ae90235c2aa7d953c5",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/2p19qNGERSvSm97g7",
   "configured_source_path": null,

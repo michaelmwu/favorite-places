@@ -8,6 +8,30 @@ function isGuideModule(value: unknown): value is { default: Guide } {
   return typeof value === "object" && value !== null && "default" in value;
 }
 
+const countryNameAliases: Record<string, string> = {
+  "2 Chome1917 RS-ONE 1F": "Japan",
+  Korea: "South Korea",
+  "New York": "United States",
+  Okinawa: "Japan",
+  "Singapore 238252": "Singapore",
+  UAE: "United Arab Emirates",
+  UK: "United Kingdom",
+  USA: "United States",
+  "モナコ": "Monaco",
+};
+
+const countryNameBySlug: Record<string, string> = {
+  seychelles: "Seychelles",
+};
+
+function getDisplayCountryName(guide: Guide): string {
+  if (guide.slug in countryNameBySlug) {
+    return countryNameBySlug[guide.slug];
+  }
+
+  return countryNameAliases[guide.country_name] ?? guide.country_name;
+}
+
 function summarizeGuide(guide: Guide): GuideManifest {
   const featuredPlaceIds = new Set(guide.featured_place_ids);
   const featuredNames = guide.places
@@ -19,7 +43,7 @@ function summarizeGuide(guide: Guide): GuideManifest {
     slug: guide.slug,
     title: guide.title,
     description: guide.description,
-    country_name: guide.country_name,
+    country_name: getDisplayCountryName(guide),
     country_code: guide.country_code,
     city_name: guide.city_name,
     list_tags: guide.list_tags,
