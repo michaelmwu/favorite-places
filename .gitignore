@@ -5,7 +5,6 @@ dist/
 .astro/
 .venv/
 __pycache__/
-uv.lock
 .env
 .DS_Store
 src/data/generated/
