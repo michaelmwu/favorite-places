@@ -196,8 +196,10 @@ Optional fallback title example:
 bun run sync:sources
 ```
 
-This writes local JSON files into `data/raw/`, including refresh metadata like `fetched_at`
-and a source signature. CSV-backed sources skip rewrites when the input file hash is unchanged.
+This writes local JSON files into `data/raw/`, including refresh metadata like `fetched_at`,
+`refresh_after`, and a source signature. URL-backed sources skip network refreshes until
+their refresh window expires unless the source config changes. CSV-backed sources skip rewrites
+when the input file hash is unchanged.
 It also rebuilds the generated site JSON afterward.
 
 4. Add manual curation files in `src/data/overrides/`.

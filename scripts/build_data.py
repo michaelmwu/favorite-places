@@ -33,6 +33,7 @@ LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
 RATINGS_CACHE_TTL = timedelta(days=7)
 NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
 OPERATIONAL_CACHE_TTL = timedelta(days=14)
+RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 STRONG_MATCH_SCORE = 45
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 PLACES_FIELD_MASK = ",".join(
@@ -176,7 +177,22 @@ def refresh_raw_sources(
         source_url = source.url
         if not source_url:
             raise RuntimeError(f"Configured source {source.slug} is missing a URL.")
-        print(f"Refreshing {source.slug} from {source_url}")
+
+        refresh_reason = (
+            None
+            if force_refresh or bool(selected_sources)
+            else raw_source_refresh_reason(source, existing_payload)
+        )
+        if not force_refresh and not bool(selected_sources) and refresh_reason is None:
+            print(f"Skipping {source.slug} (raw snapshot fresh)")
+            continue
+
+        if force_refresh:
+            print(f"Refreshing {source.slug} from {source_url} (forced)")
+        elif selected_sources:
+            print(f"Refreshing {source.slug} from {source_url} (selected)")
+        else:
+            print(f"Refreshing {source.slug} from {source_url} ({refresh_reason})")
         refresh_jobs.append((source, raw_path))
 
     if not refresh_jobs:
@@ -809,11 +825,68 @@ def raw_source_signature(source: SourceConfig) -> str:
 def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig, *, source_signature: str) -> None:
     fetched_at = datetime.now(UTC)
     payload.fetched_at = fetched_at.isoformat()
-    payload.refresh_after = None
+    payload.refresh_after = (fetched_at + RAW_SOURCE_CACHE_TTL).isoformat()
     payload.source_signature = source_signature
     payload.configured_source_type = source.type
     payload.configured_source_url = source.url
     payload.configured_source_path = source.path
+
+
+def raw_source_refresh_reason(source: SourceConfig, existing_payload: RawSavedList | None) -> str | None:
+    if existing_payload is None:
+        return "missing-raw-snapshot"
+
+    if not raw_source_signature_matches(source, existing_payload.source_signature):
+        return "source-config-changed"
+
+    if existing_payload.refresh_after:
+        try:
+            refresh_after_dt = parse_metadata_datetime(existing_payload.refresh_after)
+        except ValueError:
+            return "invalid-refresh-after"
+        if datetime.now(UTC) >= refresh_after_dt:
+            return "refresh-window-expired"
+        return None
+
+    if existing_payload.fetched_at:
+        try:
+            fetched_at_dt = parse_metadata_datetime(existing_payload.fetched_at)
+        except ValueError:
+            return "invalid-fetched-at"
+        if datetime.now(UTC) - fetched_at_dt >= RAW_SOURCE_CACHE_TTL:
+            return "legacy-refresh-window-expired"
+        return None
+
+    return "missing-refresh-metadata"
+
+
+def parse_metadata_datetime(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def raw_source_signature_matches(source: SourceConfig, signature: str | None) -> bool:
+    return signature in raw_source_signature_candidates(source)
+
+
+def raw_source_signature_candidates(source: SourceConfig) -> set[str]:
+    signatures = {raw_source_signature(source)}
+    if source.type == "google_list_url":
+        signatures.add(legacy_google_list_source_signature(source))
+    return signatures
+
+
+def legacy_google_list_source_signature(source: SourceConfig) -> str:
+    payload = {
+        "slug": source.slug,
+        "url": source.url,
+        "title": source.title,
+        "refresh_days": RAW_SOURCE_CACHE_TTL.days,
+    }
+    serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
 def resolve_refresh_sources(sources: list[SourceConfig], selectors: list[str]) -> list[SourceConfig]:
