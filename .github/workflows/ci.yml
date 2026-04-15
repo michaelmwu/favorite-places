@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      python_pipeline: ${{ steps.filter.outputs.python_pipeline }}
+      content_or_data: ${{ steps.filter.outputs.content_or_data }}
+      workflow: ${{ steps.filter.outputs.workflow }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - "src/**"
+              - "public/**"
+              - "astro.config.*"
+              - "package.json"
+              - "pnpm-lock.yaml"
+              - "tsconfig.json"
+              - "tests/frontend/**"
+            python_pipeline:
+              - "scripts/**"
+              - "pyproject.toml"
+              - "uv.lock"
+              - "vendor/google-saved-lists/**"
+              - "tests/python/**"
+            content_or_data:
+              - "data/raw/**"
+              - "data/cache/**"
+              - "src/data/**"
+              - "scripts/config/**"
+            workflow:
+              - ".github/workflows/**"
+
+  test-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.workflow == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run frontend tests
+        run: pnpm run test:frontend
+
+  test-python:
+    needs: changes
+    if: needs.changes.outputs.python_pipeline == 'true' || needs.changes.outputs.workflow == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        run: uv sync --frozen
+
+      - name: Run Python tests
+        run: uv run python3 -m unittest discover -s tests/python -p 'test_*.py'
+
+  verify-site:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.python_pipeline == 'true' || needs.changes.outputs.content_or_data == 'true' || needs.changes.outputs.workflow == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Python dependencies
+        run: uv sync --frozen
+
+      - name: Build generated site data
+        run: pnpm run build:data
+
+      - name: Type-check Astro project
+        run: pnpm run check
+
+      - name: Build Astro site
+        run: pnpm run build

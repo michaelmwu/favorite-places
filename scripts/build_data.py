@@ -52,17 +52,30 @@ PLACES_FIELD_MASK = ",".join(
     ]
 )
 
-from pipeline_models import (
-    EnrichmentCacheEntry,
-    EnrichmentPlace,
-    Guide,
-    GuideManifest,
-    NormalizedPlace,
-    PlacesSettings,
-    RawPlace,
-    RawSavedList,
-    SourceConfig,
-)
+try:
+    from pipeline_models import (
+        EnrichmentCacheEntry,
+        EnrichmentPlace,
+        Guide,
+        GuideManifest,
+        NormalizedPlace,
+        PlacesSettings,
+        RawPlace,
+        RawSavedList,
+        SourceConfig,
+    )
+except ModuleNotFoundError:
+    from scripts.pipeline_models import (
+        EnrichmentCacheEntry,
+        EnrichmentPlace,
+        Guide,
+        GuideManifest,
+        NormalizedPlace,
+        PlacesSettings,
+        RawPlace,
+        RawSavedList,
+        SourceConfig,
+    )
 
 try:
     from google_saved_lists import scrape_saved_list

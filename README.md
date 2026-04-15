@@ -91,6 +91,7 @@ pnpm run dev
 Verify the site:
 
 ```bash
+pnpm run test
 pnpm run check
 pnpm run build
 ```
