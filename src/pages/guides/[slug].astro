@@ -1,6 +1,7 @@
 ---
 import Layout from "../../components/Layout.astro";
 import { siteConfig } from "../../data/site";
+import GuideMap from "../../components/GuideMap.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
 import { getDisplayPlaceTags } from "../../lib/placeTags";
@@ -76,7 +77,7 @@ const guideDescriptionHtml = renderRichText(guide.description);
     </section>
   )}
 
-  <section class="section" data-guide-root>
+  <section class="section browse-section" data-guide-root>
     <div class="section-head">
       <div>
         <p class="eyebrow">Browse</p>
@@ -85,53 +86,59 @@ const guideDescriptionHtml = renderRichText(guide.description);
       <p class="small-copy">Search names, notes, neighborhoods, or address text.</p>
     </div>
 
-    <div class="controls-panel">
-      <div class="controls-grid" data-guide-controls>
-        <div class="control-group">
-          <label class="control-label" for="guide-search">Search</label>
-          <input
-            id="guide-search"
-            name="guide-search"
-            type="search"
-            placeholder="Search places, notes, categories, neighborhoods"
-            data-search-input
-          />
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="guide-sort">Sort</label>
-          <select id="guide-sort" name="guide-sort" data-sort-select>
-            <option value="curated">Curated order</option>
-            <option value="name">Name</option>
-            <option value="neighborhood">Neighborhood</option>
-          </select>
-        </div>
-
-        {allTags.length > 0 && (
-          <div class="control-group" style="grid-column: 1 / -1;">
-            <span class="control-label">Filter by tag</span>
-            <div class="tag-row">
-              <button class="tag-pill" type="button" data-tag-filter data-tag="">
-                All
-              </button>
-              {allTags.map((tag) => (
-                <button class="tag-pill" type="button" data-tag-filter data-tag={tag.toLowerCase()}>
-                  #{tag}
-                </button>
-              ))}
+    <div class="browse-layout">
+      <div class="browse-main">
+        <div class="controls-panel">
+          <div class="controls-grid" data-guide-controls>
+            <div class="control-group">
+              <label class="control-label" for="guide-search">Search</label>
+              <input
+                id="guide-search"
+                name="guide-search"
+                type="search"
+                placeholder="Search places, notes, categories, neighborhoods"
+                data-search-input
+              />
             </div>
+
+            <div class="control-group">
+              <label class="control-label" for="guide-sort">Sort</label>
+              <select id="guide-sort" name="guide-sort" data-sort-select>
+                <option value="curated">Curated order</option>
+                <option value="name">Name</option>
+                <option value="neighborhood">Neighborhood</option>
+              </select>
+            </div>
+
+            {allTags.length > 0 && (
+              <div class="control-group" style="grid-column: 1 / -1;">
+                <span class="control-label">Filter by tag</span>
+                <div class="tag-row">
+                  <button class="tag-pill" type="button" data-tag-filter data-tag="">
+                    All
+                  </button>
+                  {allTags.map((tag) => (
+                    <button class="tag-pill" type="button" data-tag-filter data-tag={tag.toLowerCase()}>
+                      #{tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
+        <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
+        <div class="empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
+
+        <div class="card-grid" data-kind="places" data-place-list>
+          {visiblePlaces.map((place) => (
+            <PlaceCard place={place} />
+          ))}
+        </div>
       </div>
-    </div>
 
-    <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
-    <div class="empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
-
-    <div class="card-grid" data-kind="places" data-place-list>
-      {visiblePlaces.map((place) => (
-        <PlaceCard place={place} />
-      ))}
+      <GuideMap places={visiblePlaces} />
     </div>
   </section>
 

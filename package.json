@@ -24,10 +24,12 @@
     "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment"
   },
   "dependencies": {
-    "astro": "^6.1.6"
+    "astro": "^6.1.6",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@types/leaflet": "^1.9.21",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
