@@ -23,8 +23,23 @@ const metaDescription = description ?? siteConfig.siteDescription;
     <meta property="og:description" content={metaDescription} />
     <meta property="og:site_name" content={siteConfig.siteName} />
     {siteConfig.defaultSeoImage && <meta property="og:image" content={siteConfig.defaultSeoImage} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Raleway:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
+    <header class="site-header">
+      <a class="site-title" href={siteConfig.demFlyersUrl} aria-label="DEM Flyers">
+        <img src="/demflyers-logo.png" alt="DEM Flyers" />
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="/">Places</a>
+        <a href={siteConfig.demFlyersUrl}>Main site</a>
+      </nav>
+    </header>
     <main class="page-shell">
       <slot />
     </main>

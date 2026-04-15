@@ -1,18 +1,17 @@
 :root {
-  --bg: #f4efe6;
-  --bg-strong: #efe4d2;
-  --surface: rgba(255, 252, 246, 0.88);
-  --surface-strong: #fffaf1;
-  --ink: #1f1a16;
-  --muted: #6a5f54;
-  --line: rgba(31, 26, 22, 0.12);
-  --accent: #b64d1f;
-  --accent-soft: rgba(182, 77, 31, 0.12);
-  --shadow: 0 20px 50px rgba(92, 62, 30, 0.12);
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 999px;
-  --page-width: 1180px;
+  --bg: #353e49;
+  --surface: #ffffff;
+  --surface-strong: #f6f6f6;
+  --ink: #272f38;
+  --muted: #555555;
+  --line: #dddddd;
+  --accent: #ff706c;
+  --accent-strong: #d84d49;
+  --accent-soft: rgba(255, 112, 108, 0.1);
+  --radius-lg: 6px;
+  --radius-md: 4px;
+  --radius-sm: 3px;
+  --page-width: 1100px;
 }
 
 * {
@@ -20,21 +19,24 @@
 }
 
 html {
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.45), transparent 36%),
-    linear-gradient(180deg, #f7f1e8 0%, #efe7da 100%);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--muted);
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  background: var(--bg);
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
 }
 
 img {
@@ -42,38 +44,68 @@ img {
   display: block;
 }
 
-.page-shell {
+.site-header {
   width: min(calc(100% - 2rem), var(--page-width));
   margin: 0 auto;
-  padding: 1rem 0 4rem;
+  padding: 2.25rem 0 1.75rem;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.site-title {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.site-title img {
+  width: min(280px, 64vw);
+  height: auto;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 1rem;
+  font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-nav a {
+  color: white;
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--accent);
+}
+
+.page-shell {
+  width: min(calc(100% - 2rem), var(--page-width));
+  margin: 0 auto 4rem;
+  padding: clamp(1.25rem, 3vw, 3rem);
+  background: var(--surface);
 }
 
 .hero {
   position: relative;
-  overflow: hidden;
-  background: linear-gradient(140deg, rgba(255, 250, 241, 0.94), rgba(239, 228, 210, 0.92));
-  border: 1px solid rgba(31, 26, 22, 0.08);
-  border-radius: calc(var(--radius-lg) + 8px);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: auto -3rem -4rem auto;
-  width: 14rem;
-  height: 14rem;
-  background: radial-gradient(circle, rgba(182, 77, 31, 0.17), transparent 68%);
-  pointer-events: none;
+  padding: 0 0 clamp(2rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--line);
 }
 
 .eyebrow {
   color: var(--accent);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 0.78rem;
+  font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -81,16 +113,17 @@ img {
 .hero h2,
 .section-title {
   margin: 0.2rem 0 0;
-  font-size: clamp(2.2rem, 7vw, 4.8rem);
-  line-height: 0.92;
-  letter-spacing: -0.05em;
+  color: var(--ink);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: 0;
 }
 
 .hero p,
 .lede {
   max-width: 60ch;
   color: var(--muted);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
   font-size: 1rem;
   line-height: 1.6;
 }
@@ -113,6 +146,14 @@ img {
   gap: 0.75rem;
 }
 
+.section-stack,
+.rich-copy,
+.small-copy,
+.meta-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .stat-pill,
 .tag-pill,
 .action-pill {
@@ -120,12 +161,15 @@ img {
   align-items: center;
   gap: 0.35rem;
   min-height: 2.3rem;
-  padding: 0 0.9rem;
+  padding: 0 0.72rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.72);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 0.9rem;
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1;
+  text-decoration: none;
 }
 
 .tag-pill {
@@ -134,17 +178,19 @@ img {
 
 .tag-pill[data-active="true"] {
   background: var(--accent);
-  color: white;
+  color: var(--surface);
   border-color: transparent;
 }
 
 .action-pill {
-  background: var(--ink);
-  color: white;
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+  font-weight: 700;
 }
 
 .section {
-  margin-top: 1.3rem;
+  margin-top: clamp(2rem, 4vw, 3.25rem);
 }
 
 .section-head {
@@ -157,7 +203,7 @@ img {
 }
 
 .section-title {
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
 }
 
 .country-block + .country-block {
@@ -167,29 +213,58 @@ img {
 .card-grid {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .guide-card,
 .place-card,
 .controls-panel {
   background: var(--surface);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(31, 26, 22, 0.08);
+  border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
 }
 
 .guide-card {
+  position: relative;
+  min-width: 0;
   padding: 1.2rem;
   display: grid;
   gap: 1rem;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.guide-card:hover {
+  border-color: var(--accent);
+  background: #fffdfd;
+}
+
+.guide-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.guide-card-link:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.guide-card .rich-copy a {
+  position: relative;
+  z-index: 2;
 }
 
 .guide-card h3,
 .place-card h3 {
   margin: 0;
-  font-size: 1.4rem;
-  letter-spacing: -0.04em;
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0;
 }
 
 .guide-card p,
@@ -198,7 +273,6 @@ img {
 .meta-copy {
   margin: 0;
   color: var(--muted);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
   line-height: 1.55;
 }
 
@@ -230,8 +304,8 @@ img {
 }
 
 .place-card[data-top-pick="true"] {
-  background:
-    linear-gradient(180deg, rgba(255, 244, 232, 0.96), rgba(255, 250, 244, 0.92));
+  background: #fffafa;
+  border-color: rgba(255, 112, 108, 0.4);
 }
 
 .place-card-title {
@@ -248,7 +322,7 @@ img {
   padding: 0.35rem 0.7rem;
   background: var(--accent-soft);
   color: var(--accent);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -257,9 +331,7 @@ img {
 
 .controls-panel {
   padding: 1rem;
-  position: sticky;
-  top: 0.8rem;
-  z-index: 5;
+  background: var(--surface-strong);
 }
 
 .controls-grid {
@@ -272,8 +344,14 @@ img {
   gap: 0.45rem;
 }
 
+.controls-panel .tag-row {
+  max-height: 13rem;
+  overflow: auto;
+  padding-bottom: 0.15rem;
+}
+
 .control-label {
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -285,9 +363,9 @@ input[type="search"],
 select {
   width: 100%;
   min-height: 2.8rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--surface);
   padding: 0.8rem 0.95rem;
   color: var(--ink);
   font: inherit;
@@ -297,18 +375,21 @@ select {
   display: none;
   padding: 1rem 1.1rem;
   border-radius: var(--radius-md);
-  border: 1px dashed rgba(31, 26, 22, 0.16);
-  background: rgba(255, 255, 255, 0.5);
+  border: 1px dashed var(--line);
+  background: var(--surface-strong);
   color: var(--muted);
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
 }
 
 .empty-state[data-visible="true"] {
   display: block;
 }
 
+[data-results-count] {
+  margin: 1rem 0 0.7rem;
+}
+
 .utility-link {
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 600;
 }
 
@@ -328,6 +409,30 @@ select {
   .controls-grid {
     grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.9fr);
     align-items: end;
+  }
+}
+
+@media (max-width: 719px) {
+  .card-grid,
+  .top-picks-grid,
+  .controls-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 719px) {
+  .site-header {
+    align-items: start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .site-title img {
+    width: min(220px, 72vw);
+  }
+
+  .site-nav {
+    justify-content: start;
   }
 }
 

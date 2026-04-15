@@ -122,13 +122,60 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(first_place.primary_category, "Bakery")
         self.assertEqual(first_place.note, "Manual note")
         self.assertEqual(first_place.maps_url, "https://maps.google.com/?cid=override")
-        self.assertEqual(first_place.neighborhood, "Tokyo")
+        self.assertEqual(first_place.neighborhood, "Shibuya")
         self.assertTrue(first_place.top_pick)
         self.assertEqual(first_place.status, "active")
         self.assertIn("bakery", first_place.tags)
+        self.assertIn("shibuya", first_place.tags)
         self.assertIn("specialty", first_place.tags)
         self.assertIn("tokyo", first_place.tags)
         self.assertTrue(hidden_place.hidden)
+
+    def test_address_locality_tags_exclude_buildings_blocks_and_postal_fragments(self) -> None:
+        enrichment = EnrichmentPlace()
+        addresses = [
+            (
+                "5 Chome-13-14 Jingumae, Shibuya City, Tokyo 150-0001, Japan",
+                {"jingumae", "shibuya-city", "tokyo"},
+                {"chome-13-14-jingumae", "tokyo-150-0001"},
+                "Jingumae",
+            ),
+            (
+                "〒104-0045 Tokyo, Chuo City, Tsukiji, 3 Chome−16−9 アーバンメイツビル １F",
+                {"chuo-city", "tsukiji", "tokyo"},
+                {"tokyo-104-0045", "chome-16-9", "urbanmeitsubiru"},
+                "Tsukiji",
+            ),
+            (
+                "Japan, 〒105-0004 Tokyo, Minato City, Shinbashi, 3 Chome−8−5, Le Gratteciel, 号 B1",
+                {"minato-city", "shinbashi", "tokyo"},
+                {"le-gratteciel", "chome-8-5"},
+                "Shinbashi",
+            ),
+        ]
+
+        for address, expected_tags, rejected_tags, expected_neighborhood in addresses:
+            with self.subTest(address=address):
+                place = RawPlace(
+                    name="Test Place",
+                    address=address,
+                    maps_url="https://maps.google.com/?cid=1",
+                )
+                tags = set(
+                    build_data.derive_place_tags(
+                        place,
+                        "Tokyo",
+                        enrichment=enrichment,
+                        category=None,
+                    )
+                )
+
+                self.assertEqual(
+                    build_data.infer_neighborhood(address, city_name="Tokyo"),
+                    expected_neighborhood,
+                )
+                self.assertTrue(expected_tags.issubset(tags))
+                self.assertTrue(tags.isdisjoint(rejected_tags))
 
     def test_import_saved_list_csv_reads_description_notes_and_maps_tokens(self) -> None:
         with TemporaryDirectory() as tmpdir:

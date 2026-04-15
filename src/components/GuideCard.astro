@@ -11,16 +11,16 @@ const guideDescriptionHtml = renderRichText(guide.description);
 ---
 
 <article class="guide-card">
+  <a class="guide-card-link" href={`/guides/${guide.slug}/`} aria-label={`Open ${guide.title}`}></a>
+
   <div class="section-stack">
     <p class="eyebrow">{guide.country_name}</p>
-    <h3>
-      <a href={`/guides/${guide.slug}/`}>{guide.title}</a>
-    </h3>
+    <h3>{guide.title}</h3>
     {
       guideDescriptionHtml ? (
         <p class="rich-copy" set:html={guideDescriptionHtml} />
       ) : (
-        <p>A personal guide with fast map handoff and curated picks.</p>
+        <p>Saved places from Michael's travel notes.</p>
       )
     }
   </div>
@@ -37,12 +37,5 @@ const guideDescriptionHtml = renderRichText(guide.description);
       {guide.top_categories[0] && <span class="stat-pill">{guide.top_categories[0]}</span>}
     </div>
 
-    {guide.featured_names.length > 0 && (
-      <p class="small-copy">{guide.featured_names.join(" · ")}</p>
-    )}
-
-    <a class="action-pill" href={`/guides/${guide.slug}/`}>
-      Open guide
-    </a>
   </div>
 </article>

@@ -1,5 +1,6 @@
 ---
 import type { Place } from "../lib/types";
+import { getDisplayPlaceTags } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const { place } = Astro.props;
+const displayTags = getDisplayPlaceTags(place.tags);
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
 ---
@@ -15,7 +17,7 @@ const noteHtml = renderRichText(place.note);
   class="place-card"
   data-place-card
   data-name={place.name.toLowerCase()}
-  data-tags={place.tags.join(" ").toLowerCase()}
+  data-tags={displayTags.join(" ").toLowerCase()}
   data-category={(place.primary_category ?? "").toLowerCase()}
   data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
   data-top-pick={place.top_pick ? "true" : "false"}
@@ -46,7 +48,7 @@ const noteHtml = renderRichText(place.note);
   {place.address && <p class="small-copy">{place.address}</p>}
 
   <div class="tag-row">
-    {place.tags.map((tag) => (
+    {displayTags.map((tag) => (
       <span class="tag-pill">#{tag}</span>
     ))}
   </div>

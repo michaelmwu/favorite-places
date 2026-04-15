@@ -456,7 +456,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
-        neighborhood = as_string(override.get("neighborhood")) or infer_neighborhood(place.address)
+        neighborhood = as_string(override.get("neighborhood")) or infer_neighborhood(
+            place.address,
+            city_name=city_name,
+        )
         hidden = bool(override.get("hidden", False))
         top_pick_override = as_bool(override.get("top_pick"))
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
@@ -633,10 +636,8 @@ def derive_place_tags(
     tags: set[str] = set()
     if city_name:
         tags.add(slugify(city_name))
-    address = place.address
-    neighborhood = infer_neighborhood(address)
-    if neighborhood:
-        tags.add(slugify(neighborhood))
+    for locality in infer_address_localities(place.address, city_name=city_name):
+        tags.add(slugify(locality))
     if category:
         tags.add(slugify(category))
     for place_type in enrichment.types[:4]:
@@ -686,15 +687,149 @@ def infer_country_from_address(address: str | None) -> str | None:
     return tail or None
 
 
-def infer_neighborhood(address: str | None) -> str | None:
-    if address is None:
-        return None
-    parts = [part.strip() for part in address.split(",") if part.strip()]
-    if len(parts) >= 2:
-        candidate = parts[-2]
-        cleaned = re.sub(r"^[0-9]+\s*", "", candidate).strip()
-        return cleaned or None
+def infer_neighborhood(address: str | None, *, city_name: str | None = None) -> str | None:
+    localities = infer_address_localities(address, city_name=city_name)
+    if localities:
+        return localities[0]
     return None
+
+
+def infer_address_localities(address: str | None, *, city_name: str | None = None) -> list[str]:
+    if address is None:
+        return []
+
+    city_key = normalize_locality_key(city_name)
+    neighborhoods: list[str] = []
+    subcities: list[str] = []
+    seen_precise_address_part = False
+
+    for raw_part in re.split(r"[,、]", address):
+        has_precise_address_part = is_street_or_block_part(raw_part)
+        candidate = normalize_address_locality_part(raw_part)
+        if candidate is None:
+            if has_precise_address_part:
+                seen_precise_address_part = True
+            continue
+        if seen_precise_address_part and not is_subcity_locality(candidate):
+            continue
+        key = normalize_locality_key(candidate)
+        if not key or key == city_key:
+            continue
+        if is_subcity_locality(candidate):
+            append_unique_locality(subcities, candidate)
+        else:
+            append_unique_locality(neighborhoods, candidate)
+        if has_precise_address_part:
+            seen_precise_address_part = True
+
+    return [*neighborhoods, *subcities]
+
+
+def normalize_address_locality_part(part: str) -> str | None:
+    candidate = part.strip()
+    if not candidate:
+        return None
+
+    candidate = re.sub(r"^(?:japan|日本)\s*", "", candidate, flags=re.IGNORECASE).strip()
+    candidate = re.sub(r"〒\s*\d{3}[-−ー－]?\d{4}\s*", "", candidate).strip()
+    candidate = re.sub(r"\b\d{3}[-−ー－]\d{4}\b", "", candidate).strip()
+    candidate = re.sub(r"\b\d{5}(?:-\d{4})?\b", "", candidate).strip()
+    candidate = re.sub(r"\s+\d{4}\b", "", candidate).strip()
+    candidate = candidate.strip(" -−ー－/()[]{}.")
+
+    if not candidate or is_country_locality(candidate):
+        return None
+
+    if is_building_or_unit_part(candidate):
+        return None
+
+    trailing_locality = extract_trailing_locality(candidate)
+    if trailing_locality is not None:
+        candidate = trailing_locality
+    else:
+        candidate = re.sub(r"^\d+[A-Za-z]?(?:[-−ー－/]\d+[A-Za-z]?)*\s+", "", candidate).strip()
+
+    if is_street_or_block_part(candidate) or is_building_or_unit_part(candidate):
+        return None
+
+    candidate = re.sub(r"\s+", " ", candidate).strip(" -−ー－/()[]{}.")
+    if not candidate:
+        return None
+    if re.search(r"\d", candidate):
+        return None
+    if len(candidate) <= 1:
+        return None
+    return candidate
+
+
+def extract_trailing_locality(candidate: str) -> str | None:
+    patterns = [
+        r"^\d+\s*-?\s*chome(?:[-−ー－]\d+)*\s+([A-Za-z][A-Za-z' -]+)$",
+        r"^\d+\s*丁目(?:[-−ー－]\d+)*\s+([A-Za-z][A-Za-z' -]+)$",
+        r"^(?:\d+[Ff]?\s*,?\s*)?(?:\d+[-−ー－/])+\d+\s+([A-Za-z][A-Za-z' -]+)$",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, candidate, flags=re.IGNORECASE)
+        if match:
+            locality = match.group(1).strip(" -−ー－/()[]{}.")
+            if locality and not is_building_or_unit_part(locality):
+                return locality
+    return None
+
+
+def is_country_locality(candidate: str) -> bool:
+    return normalize_locality_key(candidate) in {
+        "japan",
+        "日本",
+        "south korea",
+        "korea",
+        "taiwan",
+        "australia",
+        "united states",
+        "usa",
+    }
+
+
+def is_subcity_locality(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:city|ward|district|borough|county|prefecture|province|gu|ku)\b",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def is_building_or_unit_part(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:bldg|building|tower|plaza|terrace|floor|mall|hotel|mansion|palace|garden|stream|works|center|centre|place|v-city)\b|ビル|階|号|館",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def is_street_or_block_part(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:chome|丁目|st|street|rd|road|ln|lane|ave|avenue|dr|drive|blvd|boulevard)\b",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def append_unique_locality(localities: list[str], candidate: str) -> None:
+    key = normalize_locality_key(candidate)
+    if key and all(normalize_locality_key(existing) != key for existing in localities):
+        localities.append(candidate)
+
+
+def normalize_locality_key(value: str | None) -> str:
+    if value is None:
+        return ""
+    return re.sub(r"\s+", " ", value.strip().lower())
 
 
 def split_title_parts(title: str) -> list[str]:

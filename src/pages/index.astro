@@ -30,7 +30,6 @@ const guidesByCountry = Object.entries(
           <span class="stat-pill">
             {guides.reduce((count, guide) => count + guide.place_count, 0)} places
           </span>
-          <span class="stat-pill">Static-first</span>
         </div>
       </div>
 
@@ -49,7 +48,9 @@ const guidesByCountry = Object.entries(
         <p class="eyebrow">Guides</p>
         <h2 class="section-title">Browse by country</h2>
       </div>
-      <p class="small-copy">Static builds, manual taste, fast handoff.</p>
+      <p class="small-copy">
+        More travel notes at <a href={siteConfig.demFlyersUrl}>DEM Flyers</a>.
+      </p>
     </div>
 
     {guidesByCountry.map(([countryName, countryGuides]) => (
