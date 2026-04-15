@@ -555,7 +555,7 @@ class BuildDataTests(unittest.TestCase):
             patch.object(
                 build_data,
                 "scrape_google_list_url",
-                side_effect=[RuntimeError("timeout"), RawSavedList(title="Tokyo", places=[])],
+                side_effect=[build_data.ScrapeError("timeout"), RawSavedList(title="Tokyo", places=[])],
             ) as scrape,
         ):
             payload = build_data.scrape_google_list_url_with_retries(
@@ -595,7 +595,7 @@ class BuildDataTests(unittest.TestCase):
             with (
                 patch.object(build_data, "RAW_DIR", raw_dir),
                 patch.object(build_data, "load_sources", return_value=[source]),
-                patch.object(build_data, "scrape_google_list_url", side_effect=RuntimeError("timeout")),
+                patch.object(build_data, "scrape_google_list_url", side_effect=build_data.ScrapeError("timeout")),
             ):
                 build_data.refresh_raw_sources(
                     headed=False,
@@ -605,6 +605,46 @@ class BuildDataTests(unittest.TestCase):
                     refresh_retries=0,
                     refresh_startup_jitter_seconds=0,
                 )
+
+            payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload.title, "Backup")
+
+    def test_refresh_raw_sources_does_not_hide_unexpected_refresh_errors(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    title="Backup",
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) - timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[source]),
+                patch.object(build_data, "scrape_google_list_url", side_effect=ValueError("bad data")),
+            ):
+                with self.assertRaisesRegex(ValueError, "bad data"):
+                    build_data.refresh_raw_sources(
+                        headed=False,
+                        force_refresh=False,
+                        refresh_lists=[],
+                        refresh_workers=1,
+                        refresh_retries=0,
+                        refresh_startup_jitter_seconds=0,
+                    )
 
             payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
 
@@ -639,7 +679,7 @@ class BuildDataTests(unittest.TestCase):
             with (
                 patch.object(build_data, "RAW_DIR", raw_dir),
                 patch.object(build_data, "load_sources", return_value=[current_source]),
-                patch.object(build_data, "scrape_google_list_url", side_effect=RuntimeError("timeout")),
+                patch.object(build_data, "scrape_google_list_url", side_effect=build_data.ScrapeError("timeout")),
             ):
                 with self.assertRaisesRegex(RuntimeError, "Raw refresh failed for 1 source"):
                     build_data.refresh_raw_sources(

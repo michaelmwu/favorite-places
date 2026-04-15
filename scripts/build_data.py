@@ -101,8 +101,11 @@ except ModuleNotFoundError:
     )
 
 try:
-    from google_saved_lists import scrape_saved_list
+    from google_saved_lists import ScrapeError, scrape_saved_list
 except ImportError:
+    class ScrapeError(RuntimeError):
+        pass
+
     scrape_saved_list = None
 
 
@@ -260,7 +263,7 @@ def refresh_raw_sources(
                     refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
                     refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
                 )
-            except Exception as exc:
+            except ScrapeError as exc:
                 if backup_available:
                     print(f"Keeping existing raw snapshot for {source.slug} after refresh failure: {exc}")
                     continue
@@ -292,7 +295,7 @@ def refresh_raw_sources(
             source, raw_path, backup_available = future_map[future]
             try:
                 payload = future.result()
-            except Exception as exc:
+            except ScrapeError as exc:
                 if backup_available:
                     print(f"Keeping existing raw snapshot for {source.slug} after refresh failure: {exc}")
                 else:
@@ -339,7 +342,7 @@ def scrape_google_list_url_with_retries(
         sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
         try:
             return scrape_google_list_url(source, headed=headed)
-        except Exception as exc:
+        except ScrapeError as exc:
             last_error = exc
             if attempt >= attempts:
                 break
