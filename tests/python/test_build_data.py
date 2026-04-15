@@ -610,6 +610,51 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(payload.title, "Backup")
 
+    def test_refresh_raw_sources_rejects_backup_when_source_config_changed(self) -> None:
+        current_source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/current",
+        )
+        previous_source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/previous",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    title="Previous List",
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(previous_source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[current_source]),
+                patch.object(build_data, "scrape_google_list_url", side_effect=RuntimeError("timeout")),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Raw refresh failed for 1 source"):
+                    build_data.refresh_raw_sources(
+                        headed=False,
+                        force_refresh=False,
+                        refresh_lists=[],
+                        refresh_workers=1,
+                        refresh_retries=0,
+                        refresh_startup_jitter_seconds=0,
+                    )
+
+            payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload.title, "Previous List")
+
     def test_google_list_refresh_after_uses_stable_source_jitter(self) -> None:
         source = SourceConfig(
             slug="tokyo-japan",

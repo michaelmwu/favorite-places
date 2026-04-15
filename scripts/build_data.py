@@ -236,7 +236,11 @@ def refresh_raw_sources(
             print(f"Refreshing {source.slug} from {source_url} (selected)")
         else:
             print(f"Refreshing {source.slug} from {source_url} ({refresh_reason})")
-        refresh_jobs.append((source, raw_path, existing_payload is not None))
+        backup_available = existing_payload is not None and raw_source_signature_matches(
+            source,
+            existing_payload.source_signature,
+        )
+        refresh_jobs.append((source, raw_path, backup_available))
 
     if not refresh_jobs:
         return
