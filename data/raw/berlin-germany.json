@@ -1,0 +1,122 @@
+{
+  "fetched_at": "2026-04-15T15:43:39.346914+00:00",
+  "refresh_after": "2026-04-29T15:43:39.346914+00:00",
+  "source_signature": "7981cd83a0365e0050a82332a1ca46bb649cd6913c92f374d0b821b12c185cd1",
+  "configured_source_type": "google_list_url",
+  "configured_source_url": "https://maps.app.goo.gl/1WA7ME8RtvcnzDmy9",
+  "configured_source_path": null,
+  "source_url": "https://maps.app.goo.gl/1WA7ME8RtvcnzDmy9",
+  "list_id": "Ve5lRtVAS5G3S75v3-pJLA",
+  "title": "Boston, MA, USA 🇺🇸",
+  "description": "Michael's list for Boston, MA, USA 🇺🇸 See https://beacons.ai/demflyers for more.",
+  "places": [
+    {
+      "name": "Michael's list for Boston, MA, USA 🇺🇸 See https://beacons.ai/demflyers for more.",
+      "address": "Alive & Kicking Lobsters",
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.362686,
+      "lng": -71.1137482,
+      "maps_url": "https://maps.google.com/?cid=104356373423434804635",
+      "cid": "104356373423434804635",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "The Abbey",
+      "address": "1657 Beacon St, Brookline, MA 02445",
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.3387342,
+      "lng": -71.1367377,
+      "maps_url": "https://maps.google.com/?q=42.3387342,-71.1367377",
+      "cid": null,
+      "google_id": "/g/1tjrqz_1",
+      "maps_place_token": null
+    },
+    {
+      "name": "The Barking Crab",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.3536651,
+      "lng": -71.0487571,
+      "maps_url": "https://maps.google.com/?cid=2939844587404906291",
+      "cid": "2939844587404906291",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Chopps Italian Steakhouse and Bar",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.489700299999996,
+      "lng": -71.1956294,
+      "maps_url": "https://maps.google.com/?cid=6178274249658453987",
+      "cid": "6178274249658453987",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Ostra",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.3510919,
+      "lng": -71.0670837,
+      "maps_url": "https://maps.google.com/?cid=4355678635826831015",
+      "cid": "4355678635826831015",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "LITTLE WHALE OYSTER BAR",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.3485744,
+      "lng": -71.0853229,
+      "maps_url": "https://maps.google.com/?cid=4259887324116771890",
+      "cid": "4259887324116771890",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Rino's Place",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.378304799999995,
+      "lng": -71.0321132,
+      "maps_url": "https://maps.google.com/?cid=1342001964866560555",
+      "cid": "1342001964866560555",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Saltie Girl",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.351156599999996,
+      "lng": -71.07756789999999,
+      "maps_url": "https://maps.google.com/?cid=1850195991803436904",
+      "cid": "1850195991803436904",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Citrus & Salt Boston",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.3488895,
+      "lng": -71.0488567,
+      "maps_url": "https://maps.google.com/?cid=1561204278875599866",
+      "cid": "1561204278875599866",
+      "google_id": null,
+      "maps_place_token": null
+    }
+  ]
+}
