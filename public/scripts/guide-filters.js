@@ -48,6 +48,13 @@ if (root) {
     if (emptyState) {
       emptyState.dataset.visible = visibleCards.length === 0 ? "true" : "false";
     }
+
+    root.dispatchEvent(new CustomEvent("guide:places-updated", {
+      bubbles: true,
+      detail: {
+        visiblePlaceIds: visibleCards.map((card) => card.dataset.placeId).filter(Boolean),
+      },
+    }));
   };
 
   searchInput?.addEventListener("input", update);

@@ -1,0 +1,265 @@
+---
+import type { Place } from "../lib/types";
+
+interface Props {
+  places: Place[];
+}
+
+const { places } = Astro.props;
+const mapPlaces = places
+  .filter((place) => place.lat !== null && place.lng !== null)
+  .map((place) => ({
+    id: place.id,
+    name: place.name,
+    category: place.primary_category ?? "Saved place",
+    neighborhood: place.neighborhood,
+    lat: place.lat,
+    lng: place.lng,
+    mapsUrl: place.maps_url,
+    topPick: place.top_pick,
+  }));
+---
+
+{
+  mapPlaces.length > 0 && (
+    <aside class="map-panel" data-map-panel data-collapsed="false" aria-label="Places map">
+      <button class="map-toggle" type="button" data-map-toggle aria-label="Collapse map" title="Collapse map">
+        <span class="map-toggle-icon" aria-hidden="true" />
+      </button>
+
+      <div class="guide-map" data-guide-map data-places={JSON.stringify(mapPlaces)} />
+
+      <noscript>
+        <div class="map-fallback">
+          {mapPlaces.slice(0, 8).map((place) => (
+            <a href={place.mapsUrl} target="_blank" rel="noreferrer">
+              {place.name}
+            </a>
+          ))}
+        </div>
+      </noscript>
+    </aside>
+  )
+}
+
+<script>
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
+
+  interface MapPlace {
+    id: string;
+    name: string;
+    category: string;
+    neighborhood: string | null;
+    lat: number;
+    lng: number;
+    mapsUrl: string;
+    topPick: boolean;
+  }
+
+  interface PlacesUpdatedEvent extends CustomEvent {
+    detail: {
+      visiblePlaceIds: string[];
+    };
+  }
+
+  interface GuideMapElement extends HTMLElement {
+    guideMap?: L.Map;
+    guideMapFit?: () => void;
+  }
+
+  const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
+
+  const escapeHtml = (value: string) =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const popupHtml = (place: MapPlace) => {
+    const meta = [place.category, place.neighborhood].filter(Boolean).join(" · ");
+    return `
+      <strong>${escapeHtml(place.name)}</strong>
+      <span>${escapeHtml(meta)}</span>
+      <a href="${escapeHtml(place.mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+    `;
+  };
+
+  const placeCircle = (place: MapPlace) =>
+    L.circleMarker([place.lat, place.lng], {
+      radius: place.topPick ? 8 : 6,
+      color: place.topPick ? "#b64d1f" : "#1f1a16",
+      fillColor: place.topPick ? "#b64d1f" : "#fffaf1",
+      fillOpacity: place.topPick ? 0.92 : 0.86,
+      opacity: 0.95,
+      weight: 2,
+    }).bindPopup(popupHtml(place), {
+      className: "guide-map-popup",
+      closeButton: false,
+    });
+
+  const fitPlaces = (map: L.Map, places: MapPlace[]) => {
+    if (places.length === 0) return;
+
+    if (places.length === 1) {
+      map.setView([places[0].lat, places[0].lng], 14);
+      return;
+    }
+
+    const bounds = L.latLngBounds(places.map((place) => [place.lat, place.lng]));
+    map.fitBounds(bounds, {
+      padding: [28, 28],
+      maxZoom: 15,
+    });
+  };
+
+  const enableTrackpadPinchZoom = (map: L.Map, element: HTMLElement) => {
+    let wheelDelta = 0;
+    let wheelFrame = 0;
+    let gestureStartZoom = map.getZoom();
+
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16;
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * element.clientHeight;
+      return event.deltaY;
+    };
+
+    const clampZoom = (zoom: number) => Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), zoom));
+
+    element.addEventListener(
+      "wheel",
+      (event) => {
+        if (!event.ctrlKey) return;
+
+        event.preventDefault();
+        wheelDelta += normalizeWheelDelta(event);
+
+        if (wheelFrame) return;
+
+        wheelFrame = window.requestAnimationFrame(() => {
+          const zoomDelta = -wheelDelta / 8;
+          const nextZoom = clampZoom(map.getZoom() + Math.max(-3, Math.min(3, zoomDelta)));
+          map.setZoomAround(map.mouseEventToContainerPoint(event), nextZoom);
+          wheelDelta = 0;
+          wheelFrame = 0;
+        });
+      },
+      { passive: false },
+    );
+
+    element.addEventListener("gesturestart", ((event: Event) => {
+      event.preventDefault();
+      gestureStartZoom = map.getZoom();
+    }) as EventListener);
+
+    element.addEventListener("gesturechange", ((event: Event) => {
+      event.preventDefault();
+      const scale = "scale" in event && typeof event.scale === "number" ? event.scale : 1;
+      map.setZoom(clampZoom(gestureStartZoom + Math.log2(scale) * 7));
+    }) as EventListener);
+  };
+
+  const setPanelCollapsed = (panel: HTMLElement, collapsed: boolean, persist = true) => {
+    const button = panel.querySelector<HTMLButtonElement>("[data-map-toggle]");
+    const mapElement = panel.querySelector<GuideMapElement>("[data-guide-map]");
+
+    panel.dataset.collapsed = collapsed ? "true" : "false";
+
+    if (button) {
+      button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      button.setAttribute("aria-label", collapsed ? "Expand map" : "Collapse map");
+      button.title = collapsed ? "Expand map" : "Collapse map";
+    }
+
+    if (persist) {
+      window.localStorage.setItem(MAP_COLLAPSED_KEY, collapsed ? "true" : "false");
+    }
+
+    if (!collapsed && mapElement?.guideMapFit) {
+      window.setTimeout(() => mapElement.guideMapFit?.(), 180);
+    }
+  };
+
+  const initPanels = () => {
+    const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY) === "true";
+
+    document.querySelectorAll<HTMLElement>("[data-map-panel]").forEach((panel) => {
+      if (panel.dataset.panelInitialized === "true") return;
+      panel.dataset.panelInitialized = "true";
+
+      setPanelCollapsed(panel, storedCollapsed, false);
+      panel.querySelector("[data-map-toggle]")?.addEventListener("click", () => {
+        setPanelCollapsed(panel, panel.dataset.collapsed !== "true");
+      });
+    });
+  };
+
+  const initMap = (element: HTMLElement) => {
+    const places = JSON.parse(element.dataset.places || "[]") as MapPlace[];
+    if (places.length === 0 || element.dataset.initialized === "true") return;
+
+    element.dataset.initialized = "true";
+
+    let currentPlaces = places;
+    const mapElement = element as GuideMapElement;
+    const map = L.map(mapElement, {
+      dragging: true,
+      maxZoom: 19,
+      scrollWheelZoom: false,
+      touchZoom: "center",
+      zoomDelta: 0.5,
+      zoomControl: true,
+      zoomSnap: 0.1,
+    });
+    enableTrackpadPinchZoom(map, mapElement);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    const markers = new Map<string, L.CircleMarker>();
+    places.forEach((place) => {
+      const marker = placeCircle(place).addTo(map);
+      markers.set(place.id, marker);
+    });
+
+    mapElement.guideMap = map;
+    mapElement.guideMapFit = () => {
+      map.invalidateSize();
+      fitPlaces(map, currentPlaces);
+    };
+
+    fitPlaces(map, currentPlaces);
+    window.setTimeout(() => mapElement.guideMapFit?.(), 0);
+
+    document.addEventListener("guide:places-updated", ((event: PlacesUpdatedEvent) => {
+      const visiblePlaceIds = new Set(event.detail.visiblePlaceIds);
+      const visiblePlaces = places.filter((place) => visiblePlaceIds.has(place.id));
+      currentPlaces = visiblePlaces;
+
+      markers.forEach((marker, placeId) => {
+        if (visiblePlaceIds.has(placeId)) {
+          marker.addTo(map);
+        } else {
+          marker.removeFrom(map);
+        }
+      });
+
+      fitPlaces(map, currentPlaces);
+    }) as EventListener);
+  };
+
+  const initMaps = () => {
+    initPanels();
+    document.querySelectorAll<HTMLElement>("[data-guide-map]").forEach(initMap);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMaps, { once: true });
+  } else {
+    initMaps();
+  }
+</script>
