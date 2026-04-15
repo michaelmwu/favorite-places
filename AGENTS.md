@@ -13,10 +13,10 @@
 
 - Prefer `rg` for search.
 - Keep the root [`.python-version`](.python-version) aligned with `pyproject.toml` because Cloudflare Pages otherwise falls back to its default Python runtime.
-- For Cloudflare Pages deploys, set `SKIP_DEPENDENCY_INSTALL=true` and use a custom build command that installs `uv==0.11.6`, runs `uv sync`, then `pnpm run build:data` before `pnpm run build`.
+- For Cloudflare Pages deploys, set `SKIP_DEPENDENCY_INSTALL=true` and `BUN_VERSION=1.3.12`, then use a custom build command that runs `bun ci`, installs `uv==0.11.6`, runs `uv sync`, then `bun run build:data` before `bun run build`.
 - Use `uv sync` for Python dependencies.
-- Use `pnpm install` for frontend dependencies.
-- Use `pnpm run check` and `pnpm run build` before closing out frontend changes.
+- Use `bun install` for frontend dependencies.
+- Use `bun run check` and `bun run build` before closing out frontend changes.
 - Use `.venv/bin/python` if `uv run` hits sandbox cache issues in Codex.
 
 ## Data Practices
@@ -42,13 +42,13 @@ Install dependencies:
 
 ```bash
 uv sync
-pnpm install
+bun install
 ```
 
 Populate local raw data from public Google Maps lists:
 
 ```bash
-pnpm run sync:sources
+bun run sync:sources
 ```
 
 This refreshes every configured source and then rebuilds generated site data. URL sources always re-fetch; CSV sources skip rewrites when their input hash is unchanged.
@@ -56,19 +56,19 @@ This refreshes every configured source and then rebuilds generated site data. UR
 Force-refresh all configured raw source imports:
 
 ```bash
-pnpm run sync:sources:force
+bun run sync:sources:force
 ```
 
 Refresh one configured raw source by slug, source URL, or source path:
 
 ```bash
-pnpm run sync:source -- tokyo-japan
+bun run sync:source -- tokyo-japan
 ```
 
 Build generated JSON from local raw data:
 
 ```bash
-pnpm run build:data
+bun run build:data
 ```
 
 Use this when raw snapshots are already current and you only need to regenerate site inputs.
@@ -77,14 +77,14 @@ Configured local CSV sources are auto-imported into `data/raw/<slug>.json` befor
 Fill or refresh Google Places enrichment cache:
 
 ```bash
-GOOGLE_PLACES_API_KEY=... pnpm run enrich:data
-GOOGLE_PLACES_API_KEY=... pnpm run refresh:enrichment
+GOOGLE_PLACES_API_KEY=... bun run enrich:data
+GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
 ```
 
 Run the site:
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 ## Notes For Future Agents
