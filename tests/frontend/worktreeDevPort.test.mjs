@@ -55,6 +55,20 @@ describe("worktree dev port", () => {
     expect(config.usingExplicitPort).toBe(true);
   });
 
+  it("does not validate derivation settings when an explicit port is set", () => {
+    const config = resolveWorktreeDevPort({
+      env: {
+        PORT: "6400",
+        WORKTREE_DEV_BASE_PORT: "99999",
+        WORKTREE_DEV_PORT_SPAN: "0",
+      },
+      worktreeRoot: "/repo/epsilon",
+    });
+
+    expect(config.port).toBe(6400);
+    expect(config.usingExplicitPort).toBe(true);
+  });
+
   it("normalizes paths into a filesystem-root-relative key", () => {
     expect(worktreePathKey("/Users/example/project")).toBe("Users/example/project");
   });

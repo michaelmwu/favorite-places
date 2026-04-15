@@ -81,6 +81,11 @@ const child = spawn(command, astroArgs, {
   stdio: "inherit",
 });
 
+child.on("error", (error) => {
+  console.error(`Failed to start Astro: ${error.message}`);
+  process.exit(1);
+});
+
 child.on("exit", (code, signal) => {
   if (signal) {
     process.kill(process.pid, signal);

@@ -55,6 +55,19 @@ export function resolveWorktreeDevPort({ env = process.env, worktreeRoot }) {
     parsePortLike(env[WORKTREE_DEV_PORT_ENV], WORKTREE_DEV_PORT_ENV) ??
     parsePortLike(env.PORT, "PORT");
 
+  const pathKey = worktreePathKey(worktreeRoot);
+  if (explicitPort !== undefined) {
+    const span = DEFAULT_WORKTREE_DEV_PORT_SPAN;
+    return {
+      basePort: DEFAULT_WORKTREE_DEV_BASE_PORT,
+      offset: worktreePortOffset(worktreeRoot, span),
+      pathKey,
+      port: explicitPort,
+      span,
+      usingExplicitPort: true,
+    };
+  }
+
   const basePort =
     parsePortLike(env[WORKTREE_DEV_BASE_PORT_ENV], WORKTREE_DEV_BASE_PORT_ENV) ??
     DEFAULT_WORKTREE_DEV_BASE_PORT;
@@ -74,9 +87,9 @@ export function resolveWorktreeDevPort({ env = process.env, worktreeRoot }) {
   return {
     basePort,
     offset,
-    pathKey: worktreePathKey(worktreeRoot),
+    pathKey,
     port: explicitPort ?? derivedPort,
     span,
-    usingExplicitPort: explicitPort !== undefined,
+    usingExplicitPort: false,
   };
 }
