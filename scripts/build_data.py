@@ -16,6 +16,7 @@ from urllib.parse import unquote
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+import pycountry
 from pydantic import TypeAdapter
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -33,8 +34,23 @@ LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
 RATINGS_CACHE_TTL = timedelta(days=7)
 NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
 OPERATIONAL_CACHE_TTL = timedelta(days=14)
+RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 STRONG_MATCH_SCORE = 45
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
+COUNTRY_LOCALITY_ALIASES = (
+    "England",
+    "Scotland",
+    "Wales",
+    "Northern Ireland",
+    "UK",
+    "UAE",
+    "USA",
+    "Korea",
+    "Taiwan",
+    "Vatican City",
+    "Ivory Coast",
+)
+COUNTRY_LOCALITY_KEYS: set[str] | None = None
 PLACES_FIELD_MASK = ",".join(
     [
         "places.id",
@@ -176,7 +192,22 @@ def refresh_raw_sources(
         source_url = source.url
         if not source_url:
             raise RuntimeError(f"Configured source {source.slug} is missing a URL.")
-        print(f"Refreshing {source.slug} from {source_url}")
+
+        refresh_reason = (
+            None
+            if force_refresh or bool(selected_sources)
+            else raw_source_refresh_reason(source, existing_payload)
+        )
+        if not force_refresh and not bool(selected_sources) and refresh_reason is None:
+            print(f"Skipping {source.slug} (raw snapshot fresh)")
+            continue
+
+        if force_refresh:
+            print(f"Refreshing {source.slug} from {source_url} (forced)")
+        elif selected_sources:
+            print(f"Refreshing {source.slug} from {source_url} (selected)")
+        else:
+            print(f"Refreshing {source.slug} from {source_url} ({refresh_reason})")
         refresh_jobs.append((source, raw_path))
 
     if not refresh_jobs:
@@ -456,7 +487,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
-        neighborhood = as_string(override.get("neighborhood")) or infer_neighborhood(place.address)
+        neighborhood = as_string(override.get("neighborhood")) or infer_neighborhood(
+            place.address,
+            city_name=city_name,
+        )
         hidden = bool(override.get("hidden", False))
         top_pick_override = as_bool(override.get("top_pick"))
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
@@ -633,10 +667,8 @@ def derive_place_tags(
     tags: set[str] = set()
     if city_name:
         tags.add(slugify(city_name))
-    address = place.address
-    neighborhood = infer_neighborhood(address)
-    if neighborhood:
-        tags.add(slugify(neighborhood))
+    for locality in infer_address_localities(place.address, city_name=city_name):
+        tags.add(slugify(locality))
     if category:
         tags.add(slugify(category))
     for place_type in enrichment.types[:4]:
@@ -686,15 +718,149 @@ def infer_country_from_address(address: str | None) -> str | None:
     return tail or None
 
 
-def infer_neighborhood(address: str | None) -> str | None:
-    if address is None:
-        return None
-    parts = [part.strip() for part in address.split(",") if part.strip()]
-    if len(parts) >= 2:
-        candidate = parts[-2]
-        cleaned = re.sub(r"^[0-9]+\s*", "", candidate).strip()
-        return cleaned or None
+def infer_neighborhood(address: str | None, *, city_name: str | None = None) -> str | None:
+    localities = infer_address_localities(address, city_name=city_name)
+    if localities:
+        return localities[0]
     return None
+
+
+def infer_address_localities(address: str | None, *, city_name: str | None = None) -> list[str]:
+    if address is None:
+        return []
+
+    city_key = normalize_locality_key(city_name)
+    neighborhoods: list[str] = []
+    subcities: list[str] = []
+
+    for raw_part in re.split(r"[,、]", address):
+        candidate = normalize_address_locality_part(raw_part)
+        if candidate is None:
+            continue
+        key = normalize_locality_key(candidate)
+        if not key or key == city_key:
+            continue
+        if is_subcity_locality(candidate):
+            append_unique_locality(subcities, candidate)
+        else:
+            append_unique_locality(neighborhoods, candidate)
+
+    return [*neighborhoods, *subcities]
+
+
+def normalize_address_locality_part(part: str) -> str | None:
+    candidate = part.strip()
+    if not candidate:
+        return None
+
+    candidate = re.sub(r"^(?:japan|日本)\s*", "", candidate, flags=re.IGNORECASE).strip()
+    candidate = re.sub(r"〒\s*\d{3}[-−ー－]?\d{4}\s*", "", candidate).strip()
+    candidate = re.sub(r"\b\d{3}[-−ー－]\d{4}\b", "", candidate).strip()
+    candidate = re.sub(r"\b\d{5}(?:-\d{4})?\b", "", candidate).strip()
+    candidate = re.sub(r"\s+\d{4}\b", "", candidate).strip()
+    candidate = candidate.strip(" -−ー－/()[]{}.")
+
+    if not candidate or is_country_locality(candidate):
+        return None
+
+    if is_building_or_unit_part(candidate):
+        return None
+
+    trailing_locality = extract_trailing_locality(candidate)
+    if trailing_locality is not None:
+        candidate = trailing_locality
+    else:
+        candidate = re.sub(r"^\d+[A-Za-z]?(?:[-−ー－/]\d+[A-Za-z]?)*\s+", "", candidate).strip()
+
+    if is_street_or_block_part(candidate) or is_building_or_unit_part(candidate):
+        return None
+
+    candidate = re.sub(r"\s+", " ", candidate).strip(" -−ー－/()[]{}.")
+    if not candidate:
+        return None
+    if re.search(r"\d", candidate):
+        return None
+    if len(candidate) <= 1:
+        return None
+    return candidate
+
+
+def extract_trailing_locality(candidate: str) -> str | None:
+    patterns = [
+        r"^\d+\s*-?\s*chome(?:[-−ー－]\d+)*\s+([A-Za-z][A-Za-z' -]+)$",
+        r"^\d+\s*丁目(?:[-−ー－]\d+)*\s+([A-Za-z][A-Za-z' -]+)$",
+        r"^(?:\d+[Ff]?\s*,?\s*)?(?:\d+[-−ー－/])+\d+\s+([A-Za-z][A-Za-z' -]+)$",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, candidate, flags=re.IGNORECASE)
+        if match:
+            locality = match.group(1).strip(" -−ー－/()[]{}.")
+            if locality and not is_building_or_unit_part(locality):
+                return locality
+    return None
+
+
+def is_country_locality(candidate: str) -> bool:
+    return normalize_locality_key(candidate) in get_country_locality_keys()
+
+
+def get_country_locality_keys() -> set[str]:
+    global COUNTRY_LOCALITY_KEYS
+    if COUNTRY_LOCALITY_KEYS is not None:
+        return COUNTRY_LOCALITY_KEYS
+
+    country_names = set(COUNTRY_LOCALITY_ALIASES)
+    for country in pycountry.countries:
+        for attribute in ("name", "official_name", "common_name"):
+            value = getattr(country, attribute, None)
+            if value:
+                country_names.add(value)
+
+    COUNTRY_LOCALITY_KEYS = {normalize_locality_key(name) for name in country_names}
+    return COUNTRY_LOCALITY_KEYS
+
+
+def is_subcity_locality(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:city|ward|district|borough|county|prefecture|province|gu|ku)\b",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def is_building_or_unit_part(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:bldg|building|tower|plaza|terrace|floor|mall|hotel|mansion|palace|garden|stream|works|center|centre|place|v-city|gratteciel|gems)\b|ビル|階|号|館",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def is_street_or_block_part(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:chome|丁目|st|street|rd|road|ln|lane|ave|avenue|dr|drive|blvd|boulevard|rue|via)\b",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def append_unique_locality(localities: list[str], candidate: str) -> None:
+    key = normalize_locality_key(candidate)
+    if key and all(normalize_locality_key(existing) != key for existing in localities):
+        localities.append(candidate)
+
+
+def normalize_locality_key(value: str | None) -> str:
+    if value is None:
+        return ""
+    cleaned = re.sub(r"[^\w\s-]", " ", value.strip().lower())
+    return re.sub(r"\s+", " ", cleaned).strip()
 
 
 def split_title_parts(title: str) -> list[str]:
@@ -809,11 +975,68 @@ def raw_source_signature(source: SourceConfig) -> str:
 def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig, *, source_signature: str) -> None:
     fetched_at = datetime.now(UTC)
     payload.fetched_at = fetched_at.isoformat()
-    payload.refresh_after = None
+    payload.refresh_after = (fetched_at + RAW_SOURCE_CACHE_TTL).isoformat()
     payload.source_signature = source_signature
     payload.configured_source_type = source.type
     payload.configured_source_url = source.url
     payload.configured_source_path = source.path
+
+
+def raw_source_refresh_reason(source: SourceConfig, existing_payload: RawSavedList | None) -> str | None:
+    if existing_payload is None:
+        return "missing-raw-snapshot"
+
+    if not raw_source_signature_matches(source, existing_payload.source_signature):
+        return "source-config-changed"
+
+    if existing_payload.refresh_after:
+        try:
+            refresh_after_dt = parse_metadata_datetime(existing_payload.refresh_after)
+        except ValueError:
+            return "invalid-refresh-after"
+        if datetime.now(UTC) >= refresh_after_dt:
+            return "refresh-window-expired"
+        return None
+
+    if existing_payload.fetched_at:
+        try:
+            fetched_at_dt = parse_metadata_datetime(existing_payload.fetched_at)
+        except ValueError:
+            return "invalid-fetched-at"
+        if datetime.now(UTC) - fetched_at_dt >= RAW_SOURCE_CACHE_TTL:
+            return "legacy-refresh-window-expired"
+        return None
+
+    return "missing-refresh-metadata"
+
+
+def parse_metadata_datetime(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def raw_source_signature_matches(source: SourceConfig, signature: str | None) -> bool:
+    return signature in raw_source_signature_candidates(source)
+
+
+def raw_source_signature_candidates(source: SourceConfig) -> set[str]:
+    signatures = {raw_source_signature(source)}
+    if source.type == "google_list_url":
+        signatures.add(legacy_google_list_source_signature(source))
+    return signatures
+
+
+def legacy_google_list_source_signature(source: SourceConfig) -> str:
+    payload = {
+        "slug": source.slug,
+        "url": source.url,
+        "title": source.title,
+        "refresh_days": RAW_SOURCE_CACHE_TTL.days,
+    }
+    serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
 def resolve_refresh_sources(sources: list[SourceConfig], selectors: list[str]) -> list[SourceConfig]:

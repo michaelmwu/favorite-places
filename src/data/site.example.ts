@@ -1,25 +1,23 @@
 import type { SiteConfig } from "./site";
 
 export const siteConfig: SiteConfig = {
-  siteName: "Favorite Places",
+  siteName: "DEM Flyers Places",
   ownerName: "Your Name",
-  siteDescription:
-    "Shareable travel guides built from your own public Google Maps saved lists.",
+  siteDescription: "City bookmarks organized for trip planning.",
   defaultSeoImage: "/social-card.png",
+  demFlyersUrl: "https://www.demflyers.com/",
   home: {
-    eyebrow: "Favorite Places",
-    title: "Saved places, but actually readable.",
-    intro:
-      "Start from public Google Maps saved lists, then layer on your own curation, tags, and top picks.",
-    highlightsHeading: "Why use this site",
+    eyebrow: "DEM Flyers",
+    title: "Trip suggestions",
+    intro: "Saved restaurants, cafes, bars, shops, and sights by city.",
+    highlightsHeading: "Also on DEM Flyers",
     highlights: [
-      "Top picks surface first instead of hiding inside a giant list.",
-      "Country and list tags make guides browseable before search.",
-      "Each place card can hand off directly into Google Maps.",
+      "Posts, trip reports, and travel notes live on the main site.",
+      "Google Maps and Wanderlog lists are linked where available.",
+      "Country sections mirror the trip suggestions index.",
     ],
   },
   guide: {
-    fallbackDescription:
-      "A curated saved-places guide with quick search, tags, and direct Google Maps handoff.",
+    fallbackDescription: "Saved places for this city.",
   },
 };

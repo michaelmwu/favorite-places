@@ -51,7 +51,7 @@ Populate local raw data from public Google Maps lists:
 bun run sync:sources
 ```
 
-This refreshes every configured source and then rebuilds generated site data. URL sources always re-fetch; CSV sources skip rewrites when their input hash is unchanged.
+This refreshes every configured source and then rebuilds generated site data. URL sources skip network refreshes until their `refresh_after` window expires unless the source config changes; CSV sources skip rewrites when their input hash is unchanged.
 
 Force-refresh all configured raw source imports:
 
@@ -94,5 +94,5 @@ bun run dev
 - Raw place `is_favorite` should flow through as the default top-pick signal.
 - Manual `note` and `top_pick` overrides still win.
 - Google Places cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
-- Raw saved-list snapshots now carry `fetched_at` and `source_signature`; URL sources always re-fetch on `--refresh`, while CSV sources can skip rewrites when the input hash is unchanged.
+- Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature`; URL sources skip network refreshes until the refresh window expires unless the source config changes, while CSV sources can skip rewrites when the input hash is unchanged.
 - Do not reintroduce tracked generated JSON unless the user explicitly asks for fixture-style examples in git.
