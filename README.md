@@ -26,7 +26,7 @@ Install Python dependencies:
 uv sync
 ```
 
-The repo pins Python via [`.python-version`](</Users/michaelwu/conductor/workspaces/favorite-places/guangzhou-v3/.python-version>) so local `uv` usage and Cloudflare Pages builds both resolve the intended `3.14` runtime instead of Cloudflare's default `3.13.x`.
+The repo pins Python via [`.python-version`](.python-version) so local `uv` usage and Cloudflare Pages builds both resolve the intended `3.14` runtime instead of Cloudflare's default `3.13.x`.
 
 Optional local Google Places API key:
 
@@ -107,7 +107,7 @@ default `pip` install path does not understand the vendored scraper declared in
 Use these Pages settings instead:
 
 - Environment variable: `SKIP_DEPENDENCY_INSTALL=true`
-- Python version: keep the root [`.python-version`](</Users/michaelwu/conductor/workspaces/favorite-places/guangzhou-v3/.python-version>) in sync with `pyproject.toml`
+- Python version: keep the root [`.python-version`](.python-version) in sync with `pyproject.toml`
 - Build command:
 
 ```bash

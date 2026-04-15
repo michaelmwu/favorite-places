@@ -12,7 +12,7 @@
 ## Working Rules
 
 - Prefer `rg` for search.
-- Keep the root [`.python-version`](</Users/michaelwu/conductor/workspaces/favorite-places/guangzhou-v3/.python-version>) aligned with `pyproject.toml` because Cloudflare Pages otherwise falls back to its default Python runtime.
+- Keep the root [`.python-version`](.python-version) aligned with `pyproject.toml` because Cloudflare Pages otherwise falls back to its default Python runtime.
 - For Cloudflare Pages deploys, set `SKIP_DEPENDENCY_INSTALL=true` and use a custom build command that installs `uv==0.11.6`, runs `uv sync`, then `pnpm run build:data` before `pnpm run build`.
 - Use `uv sync` for Python dependencies.
 - Use `pnpm install` for frontend dependencies.
