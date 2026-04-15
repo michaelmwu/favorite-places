@@ -136,25 +136,56 @@ class BuildDataTests(unittest.TestCase):
         addresses = [
             (
                 "5 Chome-13-14 Jingumae, Shibuya City, Tokyo 150-0001, Japan",
+                "Tokyo",
                 {"jingumae", "shibuya-city", "tokyo"},
                 {"chome-13-14-jingumae", "tokyo-150-0001"},
                 "Jingumae",
             ),
             (
                 "〒104-0045 Tokyo, Chuo City, Tsukiji, 3 Chome−16−9 アーバンメイツビル １F",
+                "Tokyo",
                 {"chuo-city", "tsukiji", "tokyo"},
                 {"tokyo-104-0045", "chome-16-9", "urbanmeitsubiru"},
                 "Tsukiji",
             ),
             (
                 "Japan, 〒105-0004 Tokyo, Minato City, Shinbashi, 3 Chome−8−5, Le Gratteciel, 号 B1",
+                "Tokyo",
                 {"minato-city", "shinbashi", "tokyo"},
                 {"le-gratteciel", "chome-8-5"},
                 "Shinbashi",
             ),
+            (
+                "123 Main St, Williamsburg, Brooklyn, United States",
+                "New York",
+                {"williamsburg", "brooklyn", "new-york"},
+                {"main-st", "united-states"},
+                "Williamsburg",
+            ),
+            (
+                "10 Rue de Rivoli, Le Marais, Paris, France",
+                "Paris",
+                {"le-marais", "paris"},
+                {"rue-de-rivoli", "france"},
+                "Le Marais",
+            ),
+            (
+                "1 Via Roma, Brera, Milan, Italy",
+                "Milan",
+                {"brera", "milan"},
+                {"via-roma", "italy"},
+                "Brera",
+            ),
+            (
+                "1 Oxford St, Soho, London, United Kingdom",
+                "London",
+                {"soho", "london"},
+                {"oxford-st", "united-kingdom"},
+                "Soho",
+            ),
         ]
 
-        for address, expected_tags, rejected_tags, expected_neighborhood in addresses:
+        for address, city_name, expected_tags, rejected_tags, expected_neighborhood in addresses:
             with self.subTest(address=address):
                 place = RawPlace(
                     name="Test Place",
@@ -164,14 +195,14 @@ class BuildDataTests(unittest.TestCase):
                 tags = set(
                     build_data.derive_place_tags(
                         place,
-                        "Tokyo",
+                        city_name,
                         enrichment=enrichment,
                         category=None,
                     )
                 )
 
                 self.assertEqual(
-                    build_data.infer_neighborhood(address, city_name="Tokyo"),
+                    build_data.infer_neighborhood(address, city_name=city_name),
                     expected_neighborhood,
                 )
                 self.assertTrue(expected_tags.issubset(tags))

@@ -1,8 +1,14 @@
-const ADDRESS_TAG_PATTERN =
-  /(^|-)chome($|-)|(^|-)be-re-|\d|\b(bldg|building|tower|plaza|terrace|floor|mansion|palace|gems|gratteciel|road|rd|street|st|lane|ln|avenue|ave)\b/;
+const ADDRESS_TAG_PATTERNS = [
+  /(^|-)chome($|-)/,
+  /(^|-)be-re-/,
+  /(^|-)tokyo-\d{3}-\d{4}$/,
+  /(^|-)\d{3}-\d{4}$/,
+  /(^|-)(bldg|building|tower|plaza|terrace|floor|mansion|palace|gems|gratteciel)($|-)/,
+];
 
 export function isDisplayPlaceTag(tag: string): boolean {
-  return !ADDRESS_TAG_PATTERN.test(tag.toLowerCase());
+  const normalizedTag = tag.toLowerCase();
+  return !ADDRESS_TAG_PATTERNS.some((pattern) => pattern.test(normalizedTag));
 }
 
 export function getDisplayPlaceTags(tags: string[]): string[] {

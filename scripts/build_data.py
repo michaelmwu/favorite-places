@@ -16,6 +16,7 @@ from urllib.parse import unquote
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+import pycountry
 from pydantic import TypeAdapter
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,6 +36,20 @@ NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
 OPERATIONAL_CACHE_TTL = timedelta(days=14)
 STRONG_MATCH_SCORE = 45
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
+COUNTRY_LOCALITY_ALIASES = (
+    "England",
+    "Scotland",
+    "Wales",
+    "Northern Ireland",
+    "UK",
+    "UAE",
+    "USA",
+    "Korea",
+    "Taiwan",
+    "Vatican City",
+    "Ivory Coast",
+)
+COUNTRY_LOCALITY_KEYS: set[str] | None = None
 PLACES_FIELD_MASK = ",".join(
     [
         "places.id",
@@ -701,16 +716,10 @@ def infer_address_localities(address: str | None, *, city_name: str | None = Non
     city_key = normalize_locality_key(city_name)
     neighborhoods: list[str] = []
     subcities: list[str] = []
-    seen_precise_address_part = False
 
     for raw_part in re.split(r"[,、]", address):
-        has_precise_address_part = is_street_or_block_part(raw_part)
         candidate = normalize_address_locality_part(raw_part)
         if candidate is None:
-            if has_precise_address_part:
-                seen_precise_address_part = True
-            continue
-        if seen_precise_address_part and not is_subcity_locality(candidate):
             continue
         key = normalize_locality_key(candidate)
         if not key or key == city_key:
@@ -719,8 +728,6 @@ def infer_address_localities(address: str | None, *, city_name: str | None = Non
             append_unique_locality(subcities, candidate)
         else:
             append_unique_locality(neighborhoods, candidate)
-        if has_precise_address_part:
-            seen_precise_address_part = True
 
     return [*neighborhoods, *subcities]
 
@@ -778,16 +785,23 @@ def extract_trailing_locality(candidate: str) -> str | None:
 
 
 def is_country_locality(candidate: str) -> bool:
-    return normalize_locality_key(candidate) in {
-        "japan",
-        "日本",
-        "south korea",
-        "korea",
-        "taiwan",
-        "australia",
-        "united states",
-        "usa",
-    }
+    return normalize_locality_key(candidate) in get_country_locality_keys()
+
+
+def get_country_locality_keys() -> set[str]:
+    global COUNTRY_LOCALITY_KEYS
+    if COUNTRY_LOCALITY_KEYS is not None:
+        return COUNTRY_LOCALITY_KEYS
+
+    country_names = set(COUNTRY_LOCALITY_ALIASES)
+    for country in pycountry.countries:
+        for attribute in ("name", "official_name", "common_name"):
+            value = getattr(country, attribute, None)
+            if value:
+                country_names.add(value)
+
+    COUNTRY_LOCALITY_KEYS = {normalize_locality_key(name) for name in country_names}
+    return COUNTRY_LOCALITY_KEYS
 
 
 def is_subcity_locality(candidate: str) -> bool:
@@ -803,7 +817,7 @@ def is_subcity_locality(candidate: str) -> bool:
 def is_building_or_unit_part(candidate: str) -> bool:
     return bool(
         re.search(
-            r"\b(?:bldg|building|tower|plaza|terrace|floor|mall|hotel|mansion|palace|garden|stream|works|center|centre|place|v-city)\b|ビル|階|号|館",
+            r"\b(?:bldg|building|tower|plaza|terrace|floor|mall|hotel|mansion|palace|garden|stream|works|center|centre|place|v-city|gratteciel|gems)\b|ビル|階|号|館",
             candidate,
             flags=re.IGNORECASE,
         )
@@ -813,7 +827,7 @@ def is_building_or_unit_part(candidate: str) -> bool:
 def is_street_or_block_part(candidate: str) -> bool:
     return bool(
         re.search(
-            r"\b(?:chome|丁目|st|street|rd|road|ln|lane|ave|avenue|dr|drive|blvd|boulevard)\b",
+            r"\b(?:chome|丁目|st|street|rd|road|ln|lane|ave|avenue|dr|drive|blvd|boulevard|rue|via)\b",
             candidate,
             flags=re.IGNORECASE,
         )
@@ -829,7 +843,8 @@ def append_unique_locality(localities: list[str], candidate: str) -> None:
 def normalize_locality_key(value: str | None) -> str:
     if value is None:
         return ""
-    return re.sub(r"\s+", " ", value.strip().lower())
+    cleaned = re.sub(r"[^\w\s-]", " ", value.strip().lower())
+    return re.sub(r"\s+", " ", cleaned).strip()
 
 
 def split_title_parts(title: str) -> list[str]:

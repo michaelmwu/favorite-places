@@ -9,6 +9,10 @@ describe("getDisplayPlaceTags", () => {
         "coffee",
         "jingumae",
         "shibuya-city",
+        "district-1",
+        "3rd-wave",
+        "street-food",
+        "st-kilda",
         "tokyo-150-0001",
         "chome-17-5-okubo",
         "best-select-bldg",
@@ -16,6 +20,14 @@ describe("getDisplayPlaceTags", () => {
         "gicros-ginza-gems",
         "le-gratteciel",
       ]),
-    ).toEqual(["coffee", "jingumae", "shibuya-city"]);
+    ).toEqual([
+      "coffee",
+      "jingumae",
+      "shibuya-city",
+      "district-1",
+      "3rd-wave",
+      "street-food",
+      "st-kilda",
+    ]);
   });
 });
