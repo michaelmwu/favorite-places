@@ -426,23 +426,29 @@ const mapPlaces = places
           resolve(window.google);
           return;
         }
-        if (existingScript.dataset.googleMapsStatus === "loaded") {
-          reject(new Error("Google Maps loaded without the Maps API namespace"));
+        if (
+          existingScript.dataset.googleMapsStatus === "loaded" ||
+          existingScript.dataset.googleMapsStatus === "error"
+        ) {
+          existingScript.remove();
+          delete window.__favoritePlacesGoogleMapsInit;
+        } else {
+          existingScript.addEventListener(
+            "load",
+            () => {
+              if (window.google?.maps) {
+                resolve(window.google);
+                return;
+              }
+              reject(new Error("Google Maps loaded without the Maps API namespace"));
+            },
+            { once: true },
+          );
+          existingScript.addEventListener("error", () => reject(new Error("Google Maps failed to load")), {
+            once: true,
+          });
           return;
         }
-        if (existingScript.dataset.googleMapsStatus === "error") {
-          reject(new Error("Google Maps failed to load"));
-          return;
-        }
-        existingScript.addEventListener("load", () => {
-          if (window.google?.maps) {
-            resolve(window.google);
-            return;
-          }
-          reject(new Error("Google Maps loaded without the Maps API namespace"));
-        });
-        existingScript.addEventListener("error", () => reject(new Error("Google Maps failed to load")));
-        return;
       }
 
       const callbackName = "__favoritePlacesGoogleMapsInit";
