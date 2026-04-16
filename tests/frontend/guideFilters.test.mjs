@@ -127,4 +127,35 @@ describe("guide filters", () => {
       tag: "date-night",
     })).toBe(2);
   });
+
+  it("does not count off-screen matches in the same area as guide-wide overflow", () => {
+    const cards = [
+      makeCard({ placeId: "1", neighborhood: "south brisbane", search: "brunch", vibeTags: "date-night" }),
+      makeCard({ placeId: "2", neighborhood: "south brisbane", search: "brunch", vibeTags: "date-night" }),
+    ];
+
+    const broaderAreaCount = countMatchingCards(cards, {
+      normalizedQuery: "brunch",
+      searchResultIds: new Set(["1", "2"]),
+      tag: "date-night",
+    });
+    const areaMatchCount = countMatchingCards(cards, {
+      activeArea: "south brisbane",
+      normalizedQuery: "brunch",
+      searchResultIds: new Set(["1", "2"]),
+      tag: "date-night",
+    });
+    const visibleCountInMapFrame = countMatchingCards(cards, {
+      activeArea: "south brisbane",
+      mapFramePlaceIds: new Set(["1"]),
+      normalizedQuery: "brunch",
+      searchResultIds: new Set(["1", "2"]),
+      tag: "date-night",
+    });
+
+    expect(broaderAreaCount).toBe(2);
+    expect(areaMatchCount).toBe(2);
+    expect(visibleCountInMapFrame).toBe(1);
+    expect(Math.max(0, broaderAreaCount - areaMatchCount)).toBe(0);
+  });
 });

@@ -175,7 +175,15 @@ if (root) {
         tag: activeTag,
       })
       : visibleCards.length;
-    const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - visibleCards.length) : 0;
+    const areaMatchCount = activeArea
+      ? countMatchingCards(cards, {
+        activeArea,
+        normalizedQuery,
+        searchResultIds,
+        tag: activeTag,
+      })
+      : visibleCards.length;
+    const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
 
     tagButtons.forEach((button) => {
       const tag = button.dataset.tag || "";
