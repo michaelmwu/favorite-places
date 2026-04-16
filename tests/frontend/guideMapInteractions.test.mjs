@@ -29,6 +29,7 @@ describe("guide map interactions", () => {
     expect(guidePage).toContain("data-map-filter-reset");
     expect(guideMap).toContain("data-map-frame-filter");
     expect(guideMap).toContain("data-map-full-area");
+    expect(guideMap).toContain(">Reset Map</button>");
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-reset-request"');
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-filter"');
     expect(filters).toContain('root.addEventListener("guide:map-frame-filter"');
