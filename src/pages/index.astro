@@ -33,6 +33,17 @@ const guidesByCountry = countryEntries.map(([countryName, countryGuides]) => ({
   countryName,
   countryFlag: getCountryFlag(countryGuides),
 }));
+const locationGuideCandidates = guides
+  .filter((guide) => typeof guide.center_lat === "number" && typeof guide.center_lng === "number")
+  .map((guide) => ({
+    slug: guide.slug,
+    title: guide.title,
+    country: guide.country_name.toLowerCase(),
+    countryName: guide.country_name,
+    lat: guide.center_lat,
+    lng: guide.center_lng,
+  }));
+const locationGuideJson = JSON.stringify(locationGuideCandidates).replace(/</g, "\\u003c");
 const countryCount = guidesByCountry.length;
 const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0);
 ---
@@ -94,6 +105,32 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
           </p>
         </div>
 
+        <div class="control-group location-control-group">
+          <span class="control-label">Near me</span>
+          <div class="location-control-row">
+            <button
+              class="location-target-button"
+              type="button"
+              data-location-target
+              aria-label="Show nearby country"
+              title="Show nearby country"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+                <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                <path
+                  d="M12 2v3M12 19v3M2 12h3M19 12h3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+              </svg>
+            </button>
+            <p class="location-status" data-location-status role="status" aria-live="polite"></p>
+          </div>
+        </div>
+
         <div class="control-group country-filter-group">
           <span class="control-label">Countries</span>
           <div class="country-filter-list" data-country-filter-list>
@@ -144,5 +181,6 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
     ))}
   </section>
 
+  <script is:inline type="application/json" data-location-guide-index set:html={locationGuideJson}></script>
   <script is:inline type="module" src="/scripts/home-browser.js"></script>
 </Layout>
