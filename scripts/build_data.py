@@ -392,12 +392,13 @@ def scraper_session_identity_key(proxy: str | None) -> str:
 def build_scraper_session_state(proxy: str | None) -> ScraperSessionState:
     identity_key = scraper_session_identity_key(proxy)
     identity_dir = SCRAPER_STATE_DIR / identity_key
+    pid = os.getpid()
     return ScraperSessionState(
         identity_key=identity_key,
         identity_dir=identity_dir,
-        browser_profile_dir=identity_dir / "browser" / f"pid-{os.getpid()}",
-        http_cookie_jar_path=identity_dir / "http-cookies.txt",
-        metadata_path=identity_dir / "metadata.json",
+        browser_profile_dir=identity_dir / "browser" / f"pid-{pid}",
+        http_cookie_jar_path=identity_dir / f"http-cookies.pid-{pid}.txt",
+        metadata_path=identity_dir / f"metadata.pid-{pid}.json",
     )
 
 
@@ -468,8 +469,22 @@ def record_scraper_session_use(
 
 
 def clear_scraper_session_state(state: ScraperSessionState) -> None:
-    if state.identity_dir.exists():
-        shutil.rmtree(state.identity_dir)
+    if state.browser_profile_dir.exists() and state.browser_profile_dir.is_dir():
+        shutil.rmtree(state.browser_profile_dir, ignore_errors=True)
+
+    for path in (state.http_cookie_jar_path, state.metadata_path):
+        try:
+            if path.exists() or path.is_symlink():
+                path.unlink()
+        except OSError:
+            pass
+
+    for directory in (state.browser_profile_dir.parent, state.identity_dir):
+        try:
+            if directory.exists() and not any(directory.iterdir()):
+                directory.rmdir()
+        except OSError:
+            pass
 
 
 def should_reset_scraper_session(exc: Exception) -> bool:

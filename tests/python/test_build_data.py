@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import unittest
 from contextlib import redirect_stderr
 from datetime import UTC, datetime, timedelta
@@ -1008,6 +1009,40 @@ class BuildDataTests(unittest.TestCase):
             self.assertTrue(refreshed.identity_dir.is_dir())
             self.assertFalse(refreshed.http_cookie_jar_path.exists())
             self.assertFalse(refreshed.browser_profile_dir.exists())
+
+    def test_build_scraper_session_state_uses_per_process_state_files(self) -> None:
+        state = build_data.build_scraper_session_state("http://proxy.example:8080")
+        pid_suffix = f"pid-{os.getpid()}"
+
+        self.assertIn(pid_suffix, state.browser_profile_dir.name)
+        self.assertIn(pid_suffix, state.http_cookie_jar_path.name)
+        self.assertIn(pid_suffix, state.metadata_path.name)
+
+    def test_clear_scraper_session_state_keeps_other_worker_files(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            state_dir = Path(tmpdir)
+            with patch.object(build_data, "SCRAPER_STATE_DIR", state_dir):
+                state = build_data.build_scraper_session_state(None)
+                sibling_browser_dir = state.identity_dir / "browser" / "pid-99999"
+                sibling_cookie_jar_path = state.identity_dir / "http-cookies.pid-99999.txt"
+                sibling_metadata_path = state.identity_dir / "metadata.pid-99999.json"
+
+                state.browser_profile_dir.mkdir(parents=True, exist_ok=True)
+                state.http_cookie_jar_path.write_text("current", encoding="utf-8")
+                state.metadata_path.write_text("{}", encoding="utf-8")
+
+                sibling_browser_dir.mkdir(parents=True, exist_ok=True)
+                sibling_cookie_jar_path.write_text("sibling", encoding="utf-8")
+                sibling_metadata_path.write_text("{}", encoding="utf-8")
+
+                build_data.clear_scraper_session_state(state)
+
+            self.assertFalse(state.browser_profile_dir.exists())
+            self.assertFalse(state.http_cookie_jar_path.exists())
+            self.assertFalse(state.metadata_path.exists())
+            self.assertTrue(sibling_browser_dir.exists())
+            self.assertTrue(sibling_cookie_jar_path.exists())
+            self.assertTrue(sibling_metadata_path.exists())
 
     def test_scrape_google_list_url_passes_persistent_sessions_to_scraper(self) -> None:
         source = SourceConfig(
