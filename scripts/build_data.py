@@ -270,19 +270,19 @@ VIBE_TAG_KEYWORDS: dict[str, tuple[str, ...]] = {
 VIBE_CATEGORY_RULES: dict[str, tuple[str, ...]] = {
     "cafe": ("cozy", "solo-friendly", "slow-afternoon"),
     "coffee": ("cozy", "solo-friendly", "slow-afternoon"),
-    "coffee_shop": ("cozy", "solo-friendly", "slow-afternoon"),
-    "tea_house": ("quiet", "slow-afternoon"),
+    "coffee-shop": ("cozy", "solo-friendly", "slow-afternoon"),
+    "tea-house": ("quiet", "slow-afternoon"),
     "bakery": ("quick-stop", "slow-afternoon"),
     "bar": ("date-night", "late-night", "lively"),
     "pub": ("group-friendly", "late-night", "lively"),
-    "night_club": ("late-night", "lively"),
+    "night-club": ("late-night", "lively"),
     "restaurant": ("date-night", "group-friendly"),
-    "fine_dining_restaurant": ("date-night", "splurge"),
+    "fine-dining-restaurant": ("date-night", "splurge"),
     "museum": ("rainy-day", "solo-friendly"),
-    "art_gallery": ("design-forward", "rainy-day"),
-    "book_store": ("quiet", "rainy-day", "solo-friendly"),
+    "art-gallery": ("design-forward", "rainy-day"),
+    "book-store": ("quiet", "rainy-day", "solo-friendly"),
     "park": ("scenic", "family-friendly"),
-    "tourist_attraction": ("touristy-but-worth-it", "scenic"),
+    "tourist-attraction": ("touristy-but-worth-it", "scenic"),
 }
 
 try:
@@ -808,11 +808,11 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         note = as_string(override.get("note")) or place.note
         why_recommended = as_string(override.get("why_recommended"))
-        override_vibe_tags = coerce_string_list(override.get("vibe_tags"))
-        vibe_tags = (
-            sorted({slugify(tag) for tag in override_vibe_tags if slugify(tag)})
-            if override_vibe_tags
-            else derive_vibe_tags(
+        if "vibe_tags" in override:
+            override_vibe_tags = coerce_string_list(override.get("vibe_tags"))
+            vibe_tags = sorted({slugify(tag) for tag in override_vibe_tags if slugify(tag)})
+        else:
+            vibe_tags = derive_vibe_tags(
                 place,
                 enrichment=enrichment,
                 category=primary_category,
@@ -821,7 +821,6 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 why_recommended=why_recommended,
                 top_pick=top_pick,
             )
-        )
         manual_rank = as_int(override.get("manual_rank")) or 0
         status = (
             as_string(override.get("status"))
@@ -1135,7 +1134,7 @@ def derive_vibe_tags(
         )
     )
     for vibe_tag, keywords in VIBE_TAG_KEYWORDS.items():
-        if any(keyword in lookup_text for keyword in keywords):
+        if any(vibe_keyword_matches(lookup_text, keyword) for keyword in keywords):
             vibes.add(vibe_tag)
 
     if top_pick:
@@ -1146,6 +1145,14 @@ def derive_vibe_tags(
 
 def normalize_vibe_lookup_text(value: str) -> str:
     return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ").lower()).strip()
+
+
+def vibe_keyword_matches(lookup_text: str, keyword: str) -> bool:
+    normalized_keyword = normalize_vibe_lookup_text(keyword)
+    if not normalized_keyword:
+        return False
+    pattern = r"(?<![a-z0-9])" + re.escape(normalized_keyword).replace(r"\ ", r"\s+") + r"(?![a-z0-9])"
+    return re.search(pattern, lookup_text) is not None
 
 
 def build_search_index(guides: list[Guide]) -> dict[str, Any]:
@@ -1164,6 +1171,7 @@ def build_search_index(guides: list[Guide]) -> dict[str, Any]:
 
 
 def search_index_guide_entry(guide: Guide) -> dict[str, Any]:
+    featured_ids = set(guide.featured_place_ids)
     return {
         "slug": guide.slug,
         "title": guide.title,
@@ -1177,7 +1185,7 @@ def search_index_guide_entry(guide: Guide) -> dict[str, Any]:
         "featured_names": [
             place.name
             for place in guide.places
-            if place.id in set(guide.featured_place_ids) and not place.hidden
+            if place.id in featured_ids and not place.hidden
         ][:3],
         "url": f"/guides/{guide.slug}/",
         "search_text": compact_search_text(

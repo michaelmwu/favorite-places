@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { prepareSearchIndex, searchGuides, searchPlaces } from "../../public/scripts/place-search.js";
+import { loadSearchIndex, prepareSearchIndex, searchGuides, searchPlaces } from "../../public/scripts/place-search.js";
 
 const index = prepareSearchIndex({
   version: 1,
@@ -30,6 +30,19 @@ const index = prepareSearchIndex({
       featured_names: ["Buzzy Dinner"],
       url: "/guides/san-francisco-california-usa/",
       search_text: "san francisco california sf restaurants",
+    },
+    {
+      slug: "new-york-new-york-usa",
+      title: "New York, New York, USA",
+      city: "New York",
+      country: "United States",
+      country_code: "US",
+      tags: ["coffee"],
+      place_count: 1,
+      top_categories: ["Coffee shop"],
+      featured_names: ["NY Coffee"],
+      url: "/guides/new-york-new-york-usa/",
+      search_text: "new york nyc united states us coffee",
     },
   ],
   entries: [
@@ -69,10 +82,32 @@ const index = prepareSearchIndex({
       url: "/guides/san-francisco-california-usa/?place=sf-dinner",
       search_text: "date night restaurant mission san francisco sf",
     },
+    {
+      id: "ny-coffee",
+      guide_slug: "new-york-new-york-usa",
+      guide_title: "New York, New York, USA",
+      city: "New York",
+      country: "United States",
+      name: "NY Coffee",
+      category: "Coffee shop",
+      neighborhood: "SoHo",
+      tags: ["coffee-shop", "soho"],
+      vibe_tags: ["quiet"],
+      note: "Quiet coffee shop.",
+      top_pick: false,
+      manual_rank: 0,
+      maps_url: "https://maps.example/ny-coffee",
+      url: "/guides/new-york-new-york-usa/?place=ny-coffee",
+      search_text: "quiet coffee shop soho new york united states us",
+    },
   ],
 });
 
 describe("place search", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("parses natural global queries into location, category, and vibe constraints", () => {
     const state = searchPlaces("quiet coffee in tokyo", { index, scope: "all" });
 
@@ -99,7 +134,36 @@ describe("place search", () => {
     expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-coffee"]);
   });
 
+  it("ignores cross-guide location aliases in guide-scoped searches", () => {
+    const state = searchPlaces("quiet coffee in united states", {
+      index,
+      scope: "guide",
+      guideSlug: "tokyo-japan",
+    });
+
+    expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-coffee"]);
+    expect(state.parsed.guideSlugs).toEqual([]);
+  });
+
   it("returns guide matches for broad home-page discovery", () => {
     expect(searchGuides("sf restaurants", { index })[0].guide.slug).toBe("san-francisco-california-usa");
+  });
+
+  it("allows a failed index fetch to retry", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ version: 1, guides: [], entries: [] }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(loadSearchIndex("/data/search-index.json")).rejects.toThrow("offline");
+    await expect(loadSearchIndex("/data/search-index.json")).resolves.toMatchObject({
+      entries: [],
+      guides: [],
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });

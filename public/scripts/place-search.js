@@ -70,7 +70,11 @@ export async function loadSearchIndex(url = "/data/search-index.json") {
       }
       return response.json();
     })
-    .then(prepareSearchIndex);
+    .then(prepareSearchIndex)
+    .catch((error) => {
+      cachedIndexPromise = undefined;
+      throw error;
+    });
 
   return cachedIndexPromise;
 }
@@ -111,7 +115,11 @@ export function searchPlaces(query, options = {}) {
     if (options.scope === "guide" && options.guideSlug && entry.guide_slug !== options.guideSlug) {
       return false;
     }
-    if (parsed.guideSlugs.size > 0 && !parsed.guideSlugs.has(entry.guide_slug)) {
+    if (
+      options.scope !== "guide" &&
+      parsed.guideSlugs.size > 0 &&
+      !parsed.guideSlugs.has(entry.guide_slug)
+    ) {
       return false;
     }
     if (
@@ -217,8 +225,8 @@ function parseQuery(query, index, options) {
     }
   }
 
-  if (options.scope === "guide" && options.guideSlug) {
-    guideSlugs.delete(options.guideSlug);
+  if (options.scope === "guide") {
+    guideSlugs.clear();
   }
 
   const unmatchedTerms = tokens.filter((token) => !STOP_WORDS.has(token) && !consumedTokens.has(token));

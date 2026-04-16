@@ -283,6 +283,67 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(guide.places[0].vibe_tags, ["date-night"])
 
+    def test_place_vibe_tags_can_be_manually_cleared(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Quiet Coffee",
+                    address="1 Shibuya, Tokyo, Japan",
+                    note="Quiet cafe with wifi and outlets.",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            (place_overrides_dir / "tokyo-japan.json").write_text(
+                json.dumps({place_id: {"vibe_tags": []}}),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "tokyo-japan",
+                    raw,
+                    enrichment_cache={},
+                )
+
+        self.assertEqual(guide.places[0].vibe_tags, [])
+
+    def test_vibe_tags_match_snake_case_enrichment_types(self) -> None:
+        vibes = build_data.derive_vibe_tags(
+            RawPlace(
+                name="Plain Place",
+                address="1 Shibuya, Tokyo, Japan",
+                maps_url="https://maps.google.com/?cid=1",
+            ),
+            enrichment=EnrichmentPlace(primary_type="coffee_shop", types=["coffee_shop"]),
+            category="coffee_shop",
+            tags=[],
+            note=None,
+            why_recommended=None,
+            top_pick=False,
+        )
+
+        self.assertIn("cozy", vibes)
+        self.assertIn("slow-afternoon", vibes)
+        self.assertIn("solo-friendly", vibes)
+
+    def test_vibe_keyword_matching_uses_token_boundaries(self) -> None:
+        self.assertFalse(build_data.vibe_keyword_matches("barcelona cafe", "bar"))
+        self.assertTrue(build_data.vibe_keyword_matches("quiet bar seating", "bar"))
+
     def test_build_search_index_contains_compact_place_context(self) -> None:
         guide = build_data.normalize_guide(
             "tokyo-japan",
