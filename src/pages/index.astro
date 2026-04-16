@@ -163,7 +163,15 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
 
     <div class="empty-state" data-home-empty-state>No matching guides. Try a broader search or choose all countries.</div>
 
-    <div class="global-search-results" data-global-search-results hidden>
+    <div
+      class="global-search-results"
+      data-global-search-results
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-hidden="true"
+      hidden
+    >
       <div class="section-head">
         <div>
           <p class="eyebrow">Search results</p>
@@ -171,8 +179,10 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
         </div>
         <p class="small-copy" data-global-search-summary></p>
       </div>
-      <div class="search-result-grid" data-global-search-list></div>
-      <div class="empty-state" data-global-search-empty>No matching places. Try a broader search.</div>
+      <div class="search-result-grid" data-global-search-list aria-live="polite"></div>
+      <div class="empty-state" data-global-search-empty role="status" aria-live="polite">
+        No matching places. Try a broader search.
+      </div>
     </div>
 
     {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (

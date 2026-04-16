@@ -60,23 +60,28 @@ const LOCATION_ALIASES = new Map([
   ["tokyo-japan", ["tokyo"]],
 ]);
 
-let cachedIndexPromise;
+const cachedIndexPromises = new Map();
 
 export async function loadSearchIndex(url = "/data/search-index.json") {
-  cachedIndexPromise ??= fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Search index request failed: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(prepareSearchIndex)
-    .catch((error) => {
-      cachedIndexPromise = undefined;
-      throw error;
-    });
+  if (!cachedIndexPromises.has(url)) {
+    cachedIndexPromises.set(
+      url,
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Search index request failed: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(prepareSearchIndex)
+        .catch((error) => {
+          cachedIndexPromises.delete(url);
+          throw error;
+        }),
+    );
+  }
 
-  return cachedIndexPromise;
+  return cachedIndexPromises.get(url);
 }
 
 export function prepareSearchIndex(index) {
@@ -141,7 +146,7 @@ export function searchPlaces(query, options = {}) {
   });
 
   const results = scopedEntries
-    .map((entry) => scoreEntry(entry, parsed, options))
+    .map((entry) => scoreEntry(entry, parsed))
     .filter((result) => parsed.tokens.length === 0 || result.score > 0)
     .sort((left, right) => right.score - left.score || curatedSort(left.entry, right.entry));
 
@@ -241,21 +246,13 @@ function parseQuery(query, index, options) {
   };
 }
 
-function scoreEntry(entry, parsed, options) {
+function scoreEntry(entry, parsed) {
   const matchedSignals = [];
   let score = 0;
   const entryTags = normalizedList(entry.tags);
   const entryVibes = normalizedList(entry.vibe_tags);
   const categoryText = normalizeText([entry.category, ...entryTags].join(" "));
-
-  if (options.scope === "guide") {
-    score += 4;
-  }
-
-  if (parsed.guideSlugs.has(entry.guide_slug)) {
-    score += 80;
-    matchedSignals.push("location");
-  }
+  const locationMatched = parsed.guideSlugs.has(entry.guide_slug);
 
   for (const category of parsed.categories) {
     const matchTerms = CATEGORY_MATCH_TERMS.get(category) || [category];
@@ -307,11 +304,20 @@ function scoreEntry(entry, parsed, options) {
     score = 1;
   }
 
-  if (entry.top_pick) {
+  const hasNonLocationIntent =
+    parsed.categories.size > 0 || parsed.vibes.size > 0 || parsed.unmatchedTerms.length > 0;
+  const hasNonLocationMatch = matchedSignals.length > 0;
+  if (locationMatched && (!hasNonLocationIntent || hasNonLocationMatch)) {
+    score += 80;
+    matchedSignals.push("location");
+  }
+
+  const hasMatch = parsed.tokens.length === 0 || matchedSignals.length > 0;
+  if (hasMatch && entry.top_pick) {
     score += 8;
     matchedSignals.push("top-pick");
   }
-  if (Number(entry.manual_rank) > 0) {
+  if (hasMatch && Number(entry.manual_rank) > 0) {
     score += Math.min(8, Number(entry.manual_rank));
   }
 

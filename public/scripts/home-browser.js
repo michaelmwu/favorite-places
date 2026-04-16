@@ -194,9 +194,13 @@ if (root) {
     }
 
     globalResults.hidden = !query;
+    globalResults.setAttribute("aria-hidden", query ? "false" : "true");
     if (!query) {
       globalResultsList.replaceChildren();
       globalResultsEmpty.dataset.visible = "false";
+      if (globalResultsTitle) {
+        globalResultsTitle.textContent = "Matching places";
+      }
       if (globalResultsSummary) {
         globalResultsSummary.textContent = "";
       }
@@ -207,12 +211,21 @@ if (root) {
       globalResultsList.replaceChildren();
       globalResultsEmpty.dataset.visible = "true";
       globalResultsEmpty.textContent = "Place search is unavailable. Guide browsing still works.";
+      if (globalResultsTitle) {
+        globalResultsTitle.textContent = "Place search unavailable";
+      }
+      if (globalResultsSummary) {
+        globalResultsSummary.textContent = "";
+      }
       return;
     }
 
     if (!searchIndex) {
       globalResultsList.replaceChildren();
       globalResultsEmpty.dataset.visible = "false";
+      if (globalResultsTitle) {
+        globalResultsTitle.textContent = "Loading matching places";
+      }
       if (globalResultsSummary) {
         globalResultsSummary.textContent = "Loading index...";
       }

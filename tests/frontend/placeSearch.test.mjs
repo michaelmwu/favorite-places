@@ -134,6 +134,16 @@ describe("place search", () => {
     expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-coffee"]);
   });
 
+  it("filters unmatched guide-local queries after the index loads", () => {
+    const state = searchPlaces("volcanic bookstore", {
+      index,
+      scope: "guide",
+      guideSlug: "tokyo-japan",
+    });
+
+    expect(state.results).toEqual([]);
+  });
+
   it("ignores cross-guide location aliases in guide-scoped searches", () => {
     const state = searchPlaces("quiet coffee in united states", {
       index,
@@ -149,21 +159,42 @@ describe("place search", () => {
     expect(searchGuides("sf restaurants", { index })[0].guide.slug).toBe("san-francisco-california-usa");
   });
 
-  it("allows a failed index fetch to retry", async () => {
+  it("does not return curated places for unrelated global searches", () => {
+    const state = searchPlaces("volcanic bookstore in sf", { index, scope: "all" });
+
+    expect(state.results).toEqual([]);
+  });
+
+  it("caches index fetches per URL and allows failed URLs to retry", async () => {
     const fetchMock = vi
       .fn()
       .mockRejectedValueOnce(new Error("offline"))
       .mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ version: 1, guides: [], entries: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            version: 1,
+            guides: [{ slug: "tokyo-japan", title: "Tokyo", city: "Tokyo" }],
+            entries: [],
+          }),
       });
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(loadSearchIndex("/data/search-index.json")).rejects.toThrow("offline");
-    await expect(loadSearchIndex("/data/search-index.json")).resolves.toMatchObject({
+    await expect(loadSearchIndex("/data/search-index-failed.json")).rejects.toThrow("offline");
+    await expect(loadSearchIndex("/data/search-index-failed.json")).resolves.toMatchObject({
       entries: [],
       guides: [],
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    await expect(loadSearchIndex("/data/search-index-other.json")).resolves.toMatchObject({
+      guides: [expect.objectContaining({ slug: "tokyo-japan" })],
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "/data/search-index-failed.json");
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/data/search-index-failed.json");
+    expect(fetchMock).toHaveBeenNthCalledWith(3, "/data/search-index-other.json");
   });
 });
