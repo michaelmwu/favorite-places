@@ -1,3 +1,33 @@
+export type FieldSource = "manual" | "google_list" | "google_places" | "osm" | "wikidata" | "website";
+
+export interface PlaceField<T> {
+  value: T;
+  source: FieldSource;
+  fetched_at?: string | null;
+  expires_at?: string | null;
+}
+
+export interface PlaceProvenance {
+  name?: PlaceField<string> | null;
+  address?: PlaceField<string> | null;
+  lat?: PlaceField<number> | null;
+  lng?: PlaceField<number> | null;
+  maps_url?: PlaceField<string> | null;
+  cid?: PlaceField<string> | null;
+  google_id?: PlaceField<string> | null;
+  google_place_id?: PlaceField<string> | null;
+  google_place_resource_name?: PlaceField<string> | null;
+  primary_category?: PlaceField<string> | null;
+  tags: PlaceField<string>[];
+  neighborhood?: PlaceField<string> | null;
+  note?: PlaceField<string> | null;
+  why_recommended?: PlaceField<string> | null;
+  top_pick?: PlaceField<boolean> | null;
+  hidden?: PlaceField<boolean> | null;
+  manual_rank?: PlaceField<number> | null;
+  status?: PlaceField<string> | null;
+}
+
 export interface Place {
   id: string;
   name: string;
@@ -19,6 +49,7 @@ export interface Place {
   hidden: boolean;
   manual_rank: number;
   status: string;
+  provenance: PlaceProvenance;
 }
 
 export interface Guide {

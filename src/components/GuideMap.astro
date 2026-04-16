@@ -6,6 +6,10 @@ interface Props {
 }
 
 const { places } = Astro.props;
+const configuredGoogleMapsApiKey = process.env.GOOGLE_MAPS_JS_API_KEY || "";
+const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
+const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
+const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
 const mapPlaces = places
   .filter((place) => place.lat !== null && place.lng !== null)
   .map((place) => ({
@@ -48,7 +52,13 @@ const mapPlaces = places
         </button>
       </div>
 
-      <div class="guide-map" data-guide-map data-places={JSON.stringify(mapPlaces)} />
+      <div
+        class="guide-map"
+        data-guide-map
+        data-map-provider={mapProvider}
+        data-google-maps-api-key={googleMapsApiKey}
+        data-places={JSON.stringify(mapPlaces)}
+      />
 
       <noscript>
         <div class="map-fallback">
@@ -86,16 +96,78 @@ const mapPlaces = places
     };
   }
 
+  interface Coordinates {
+    lat: number;
+    lng: number;
+  }
+
   interface GuideLocationBounds {
-    center: L.LatLng;
+    center: Coordinates;
     radiusKm: number;
     maxDistanceKm: number;
   }
 
   interface GuideMapElement extends HTMLElement {
-    guideMap?: L.Map;
+    guideMap?: unknown;
     guideMapFit?: () => void;
     guideLocationBounds?: GuideLocationBounds;
+  }
+
+  interface MapRuntime {
+    rawMap: unknown;
+    closePopup: () => void;
+    fitPlaces: (places: MapPlace[]) => void;
+    getBoundsContains: (place: MapPlace) => boolean;
+    getZoom: () => number;
+    hasVisiblePlace: (placeId: string) => boolean;
+    highlightPlace: (place: MapPlace, active: boolean) => void;
+    invalidateSize?: () => void;
+    openPlace: (place: MapPlace) => void;
+    setView: (coordinates: Coordinates, zoom: number) => void;
+    setVisiblePlaces: (visiblePlaceIds: Set<string>) => void;
+  }
+
+  interface GoogleMapsApi {
+    maps: {
+      InfoWindow: new (options?: { content?: string }) => {
+        close: () => void;
+        open: (options: { anchor: unknown; map: unknown; shouldFocus?: boolean }) => void;
+        setContent: (content: string) => void;
+      };
+      LatLngBounds: new () => {
+        contains: (coordinates: Coordinates) => boolean;
+        extend: (coordinates: Coordinates) => void;
+      };
+      Map: new (
+        element: HTMLElement,
+        options: Record<string, unknown>,
+      ) => {
+        fitBounds: (bounds: unknown, padding?: number | { top: number; right: number; bottom: number; left: number }) => void;
+        getBounds: () => { contains: (coordinates: Coordinates) => boolean } | undefined;
+        getZoom: () => number | undefined;
+        panTo: (coordinates: Coordinates) => void;
+        setCenter: (coordinates: Coordinates) => void;
+        setZoom: (zoom: number) => void;
+      };
+      Marker: new (options: Record<string, unknown>) => {
+        addListener: (eventName: string, handler: () => void) => void;
+        getMap: () => unknown;
+        setIcon: (icon: Record<string, unknown>) => void;
+        setMap: (map: unknown | null) => void;
+        setZIndex: (zIndex: number) => void;
+      };
+      SymbolPath: {
+        CIRCLE: unknown;
+      };
+    };
+  }
+
+  declare global {
+    interface Window {
+      __favoritePlacesGoogleMapsInit?: () => void;
+      __favoritePlacesGoogleMapsLoader?: Promise<GoogleMapsApi>;
+      google?: GoogleMapsApi;
+    }
   }
 
   const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
@@ -115,12 +187,24 @@ const mapPlaces = places
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
 
+  const safeMapsUrl = (value: string) => {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
+    } catch {
+      return null;
+    }
+  };
+
   const popupHtml = (place: MapPlace) => {
     const meta = [place.category, place.neighborhood].filter(Boolean).join(" · ");
+    const mapsUrl = safeMapsUrl(place.mapsUrl);
     return `
-      <strong>${escapeHtml(place.name)}</strong>
-      <span>${escapeHtml(meta)}</span>
-      <a href="${escapeHtml(place.mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+      <div class="guide-map-popup-content">
+        <strong>${escapeHtml(place.name)}</strong>
+        <span>${escapeHtml(meta)}</span>
+        ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : ""}
+      </div>
     `;
   };
 
@@ -135,7 +219,7 @@ const mapPlaces = places
 
   const placeCircle = (place: MapPlace) =>
     L.circleMarker([place.lat, place.lng], markerStyle(place)).bindPopup(popupHtml(place), {
-      className: "guide-map-popup",
+      className: "guide-map-popup-shell",
       closeButton: false,
     });
 
@@ -227,10 +311,10 @@ const mapPlaces = places
     if (places.length === 0) return null;
 
     const inlierPlaces = guideLocationInliers(places);
-    const center = L.latLng(
-      median(inlierPlaces.map((place) => place.lat)),
-      median(inlierPlaces.map((place) => place.lng)),
-    );
+    const center = {
+      lat: median(inlierPlaces.map((place) => place.lat)),
+      lng: median(inlierPlaces.map((place) => place.lng)),
+    };
     const distances = inlierPlaces.map((place) => distanceInKm(center.lat, center.lng, place.lat, place.lng));
     const radiusKm = percentile(distances, 0.95);
 
@@ -326,21 +410,93 @@ const mapPlaces = places
     });
   };
 
-  const initMap = (element: HTMLElement) => {
-    const places = JSON.parse(element.dataset.places || "[]") as MapPlace[];
-    if (places.length === 0 || element.dataset.initialized === "true") return;
+  const loadGoogleMapsApi = (apiKey: string) => {
+    if (window.google?.maps) {
+      return Promise.resolve(window.google);
+    }
 
-    element.dataset.initialized = "true";
+    if (window.__favoritePlacesGoogleMapsLoader) {
+      return window.__favoritePlacesGoogleMapsLoader;
+    }
 
-    const root = element.closest<HTMLElement>("[data-guide-root]");
-    const panel = element.closest<HTMLElement>("[data-map-panel]");
-    const cards = root ? Array.from(root.querySelectorAll<HTMLElement>("[data-place-card][data-place-id]")) : [];
-    const mapFrameButton = panel?.querySelector<HTMLButtonElement>("[data-map-frame-filter]");
-    const mapFullAreaButton = panel?.querySelector<HTMLButtonElement>("[data-map-full-area]");
-    const locationButton = panel?.querySelector<HTMLButtonElement>("[data-map-location]");
-    const mapResetButtons = root ? Array.from(root.querySelectorAll<HTMLButtonElement>("[data-map-filter-reset]")) : [];
-    let currentPlaces = places;
-    const mapElement = element as GuideMapElement;
+    window.__favoritePlacesGoogleMapsLoader = new Promise<GoogleMapsApi>((resolve, reject) => {
+      const existingScript = document.querySelector<HTMLScriptElement>('script[data-google-maps-loader="favorite-places"]');
+      if (existingScript) {
+        if (window.google?.maps) {
+          resolve(window.google);
+          return;
+        }
+        if (
+          existingScript.dataset.googleMapsStatus === "loaded" ||
+          existingScript.dataset.googleMapsStatus === "error"
+        ) {
+          existingScript.remove();
+          delete window.__favoritePlacesGoogleMapsInit;
+        } else {
+          existingScript.addEventListener(
+            "load",
+            () => {
+              if (window.google?.maps) {
+                resolve(window.google);
+                return;
+              }
+              reject(new Error("Google Maps loaded without the Maps API namespace"));
+            },
+            { once: true },
+          );
+          existingScript.addEventListener("error", () => reject(new Error("Google Maps failed to load")), {
+            once: true,
+          });
+          return;
+        }
+      }
+
+      const callbackName = "__favoritePlacesGoogleMapsInit";
+      window[callbackName] = () => {
+        if (window.google?.maps) {
+          script.dataset.googleMapsStatus = "loaded";
+          delete window.__favoritePlacesGoogleMapsInit;
+          resolve(window.google);
+          return;
+        }
+
+        script.dataset.googleMapsStatus = "loaded";
+        delete window.__favoritePlacesGoogleMapsInit;
+        reject(new Error("Google Maps loaded without the Maps API namespace"));
+      };
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.dataset.googleMapsLoader = "favorite-places";
+      script.dataset.googleMapsStatus = "loading";
+      script.src =
+        "https://maps.googleapis.com/maps/api/js?" +
+        new URLSearchParams({
+          key: apiKey,
+          loading: "async",
+          callback: callbackName,
+          v: "weekly",
+          auth_referrer_policy: "origin",
+        }).toString();
+      script.addEventListener("error", () => {
+        script.dataset.googleMapsStatus = "error";
+        delete window.__favoritePlacesGoogleMapsInit;
+        reject(new Error("Google Maps failed to load"));
+      });
+      document.head.append(script);
+    }).catch((error) => {
+      delete window.__favoritePlacesGoogleMapsLoader;
+      throw error;
+    });
+
+    return window.__favoritePlacesGoogleMapsLoader;
+  };
+
+  const initLeafletRuntime = (
+    mapElement: HTMLElement,
+    places: MapPlace[],
+    onSelectPlace: (placeId: string) => void,
+  ): MapRuntime => {
     const map = L.map(mapElement, {
       dragging: true,
       maxZoom: 19,
@@ -358,10 +514,210 @@ const mapPlaces = places
     }).addTo(map);
 
     const markers = new Map<string, L.CircleMarker>();
+    places.forEach((place) => {
+      const marker = placeCircle(place).addTo(map);
+      marker.on("click", () => onSelectPlace(place.id));
+      markers.set(place.id, marker);
+    });
+
+    return {
+      rawMap: map,
+      closePopup: () => map.closePopup(),
+      fitPlaces: (visiblePlaces) => fitPlaces(map, visiblePlaces),
+      getBoundsContains: (place) => map.getBounds().contains(L.latLng(place.lat, place.lng)),
+      getZoom: () => map.getZoom(),
+      hasVisiblePlace: (placeId) => Boolean(markers.get(placeId) && map.hasLayer(markers.get(placeId)!)),
+      highlightPlace: (place, active) => {
+        const marker = markers.get(place.id);
+        if (!marker) return;
+        marker.setStyle(markerStyle(place, active));
+        if (active && map.hasLayer(marker)) {
+          marker.bringToFront();
+        }
+      },
+      invalidateSize: () => map.invalidateSize(),
+      openPlace: (place) => {
+        const marker = markers.get(place.id);
+        if (marker && map.hasLayer(marker)) {
+          marker.openPopup();
+        }
+      },
+      setView: (coordinates, zoom) => {
+        map.setView([coordinates.lat, coordinates.lng], zoom, { animate: true });
+      },
+      setVisiblePlaces: (visiblePlaceIds) => {
+        markers.forEach((marker, placeId) => {
+          if (visiblePlaceIds.has(placeId)) {
+            marker.addTo(map);
+          } else {
+            marker.removeFrom(map);
+          }
+        });
+      },
+    };
+  };
+
+  const initGoogleRuntime = async (
+    mapElement: HTMLElement,
+    places: MapPlace[],
+    apiKey: string,
+    onSelectPlace: (placeId: string) => void,
+  ): Promise<MapRuntime> => {
+    const google = await loadGoogleMapsApi(apiKey);
+    const map = new google.maps.Map(mapElement, {
+      center: { lat: places[0].lat, lng: places[0].lng },
+      clickableIcons: false,
+      disableDefaultUI: true,
+      gestureHandling: "greedy",
+      keyboardShortcuts: true,
+      mapTypeControl: false,
+      streetViewControl: false,
+      zoom: 13,
+    });
+    const infoWindow = new google.maps.InfoWindow();
+    const markers = new Map<string, any>();
+
+    const markerIcon = (place: MapPlace, active = false) => ({
+      fillColor: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : "#fffaf1",
+      fillOpacity: active ? 0.96 : place.topPick ? 0.92 : 0.86,
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: active ? (place.topPick ? 11 : 9) : place.topPick ? 8 : 6,
+      strokeColor: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : DEFAULT_MARKER_COLOR,
+      strokeOpacity: 0.95,
+      strokeWeight: active ? 3 : 2,
+    });
+
+    places.forEach((place) => {
+      const marker = new google.maps.Marker({
+        icon: markerIcon(place),
+        map,
+        position: { lat: place.lat, lng: place.lng },
+        title: place.name,
+      });
+      marker.addListener("click", () => onSelectPlace(place.id));
+      markers.set(place.id, marker);
+    });
+
+    return {
+      rawMap: map,
+      closePopup: () => infoWindow.close(),
+      fitPlaces: (visiblePlaces) => {
+        if (visiblePlaces.length === 0) return;
+        if (visiblePlaces.length === 1) {
+          map.setCenter({ lat: visiblePlaces[0].lat, lng: visiblePlaces[0].lng });
+          map.setZoom(14);
+          return;
+        }
+
+        const bounds = new google.maps.LatLngBounds();
+        visiblePlaces.forEach((place) => bounds.extend({ lat: place.lat, lng: place.lng }));
+        map.fitBounds(bounds, 28);
+      },
+      getBoundsContains: (place) => map.getBounds()?.contains({ lat: place.lat, lng: place.lng }) ?? true,
+      getZoom: () => map.getZoom() ?? 0,
+      hasVisiblePlace: (placeId) => Boolean(markers.get(placeId)?.getMap()),
+      highlightPlace: (place, active) => {
+        const marker = markers.get(place.id);
+        if (!marker) return;
+        marker.setIcon(markerIcon(place, active));
+        marker.setZIndex(active ? 1000 : place.topPick ? 10 : 1);
+      },
+      openPlace: (place) => {
+        const marker = markers.get(place.id);
+        if (!marker || !marker.getMap()) return;
+        infoWindow.setContent(popupHtml(place));
+        infoWindow.open({ anchor: marker, map, shouldFocus: false });
+      },
+      setView: (coordinates, zoom) => {
+        map.panTo(coordinates);
+        map.setZoom(zoom);
+      },
+      setVisiblePlaces: (visiblePlaceIds) => {
+        markers.forEach((marker, placeId) => marker.setMap(visiblePlaceIds.has(placeId) ? map : null));
+      },
+    };
+  };
+
+  const initMap = async (element: HTMLElement) => {
+    const places = JSON.parse(element.dataset.places || "[]") as MapPlace[];
+    if (places.length === 0 || element.dataset.initialized === "true" || element.dataset.initializing === "true") {
+      return;
+    }
+
+    element.dataset.initializing = "true";
+
+    const root = element.closest<HTMLElement>("[data-guide-root]");
+    const panel = element.closest<HTMLElement>("[data-map-panel]");
+    const cards = root ? Array.from(root.querySelectorAll<HTMLElement>("[data-place-card][data-place-id]")) : [];
+    const mapFrameButton = panel?.querySelector<HTMLButtonElement>("[data-map-frame-filter]");
+    const mapFullAreaButton = panel?.querySelector<HTMLButtonElement>("[data-map-full-area]");
+    const locationButton = panel?.querySelector<HTMLButtonElement>("[data-map-location]");
+    const mapResetButtons = root ? Array.from(root.querySelectorAll<HTMLButtonElement>("[data-map-filter-reset]")) : [];
+    const visiblePlaceIdsFromCards = () =>
+      cards.length === 0
+        ? new Set(places.map((place) => place.id))
+        : new Set(
+            cards
+              .filter((card) => !card.hidden)
+              .map((card) => card.dataset.placeId)
+              .filter((placeId): placeId is string => Boolean(placeId)),
+          );
+    let currentVisiblePlaceIds = visiblePlaceIdsFromCards();
+    let currentPlaces = places.filter((place) => currentVisiblePlaceIds.has(place.id));
+    const mapFrameActive = () => mapResetButtons.some((button) => !button.hidden);
+    const mapElement = element as GuideMapElement;
     const placeById = new Map(places.map((place) => [place.id, place]));
     let selectedPlaceId = "";
     let hoveredPlaceId = "";
-    let currentLocation: L.LatLng | null = null;
+    let currentLocation: Coordinates | null = null;
+    const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
+    const apiKey = element.dataset.googleMapsApiKey || "";
+    const handleMarkerSelect = (placeId: string) => selectPlace(placeId);
+    let runtime: MapRuntime | null = null;
+
+    const updateMapFrameControls = (active: boolean) => {
+      mapResetButtons.forEach((button) => {
+        button.hidden = !active;
+      });
+    };
+
+    const syncVisiblePlaces = (detail: PlacesUpdatedEvent["detail"]) => {
+      currentVisiblePlaceIds = new Set(detail.visiblePlaceIds);
+      currentPlaces = places.filter((place) => currentVisiblePlaceIds.has(place.id));
+      updateMapFrameControls(Boolean(detail.mapFrameActive));
+      if (!runtime) return;
+
+      runtime.setVisiblePlaces(currentVisiblePlaceIds);
+      updateActiveMarker(false);
+
+      if (!detail.mapFrameActive) {
+        runtime.fitPlaces(currentPlaces);
+      }
+    };
+
+    const handlePlacesUpdated = ((event: PlacesUpdatedEvent) => {
+      syncVisiblePlaces(event.detail);
+    }) as EventListener;
+
+    updateMapFrameControls(mapFrameActive());
+    document.addEventListener("guide:places-updated", handlePlacesUpdated);
+    try {
+      runtime =
+        requestedProvider === "google" && apiKey
+          ? await initGoogleRuntime(mapElement, places, apiKey, handleMarkerSelect).catch(() =>
+              initLeafletRuntime(mapElement, places, handleMarkerSelect),
+            )
+          : initLeafletRuntime(mapElement, places, handleMarkerSelect);
+
+      runtime.setVisiblePlaces(currentVisiblePlaceIds);
+      mapElement.guideMap = runtime.rawMap;
+      element.dataset.initialized = "true";
+    } catch (error) {
+      document.removeEventListener("guide:places-updated", handlePlacesUpdated);
+      throw error;
+    } finally {
+      delete element.dataset.initializing;
+    }
 
     const activePlaceId = () => hoveredPlaceId || selectedPlaceId;
 
@@ -375,27 +731,23 @@ const mapPlaces = places
       const placeId = activePlaceId();
       setCardsActive(placeId);
 
-      markers.forEach((marker, markerPlaceId) => {
-        const place = placeById.get(markerPlaceId);
-        if (!place) return;
-
-        marker.setStyle(markerStyle(place, markerPlaceId === placeId));
-        if (markerPlaceId === placeId && map.hasLayer(marker)) {
-          marker.bringToFront();
-          if (openPopup) {
-            marker.openPopup();
-          }
-        }
+      places.forEach((place) => {
+        runtime.highlightPlace(place, place.id === placeId);
       });
 
       if (!placeId) {
-        map.closePopup();
+        runtime.closePopup();
+      } else if (openPopup) {
+        const place = placeById.get(placeId);
+        if (place && runtime.hasVisiblePlace(place.id)) {
+          runtime.openPlace(place);
+        }
       }
     };
 
     const placeIsInSaneView = (place: MapPlace) => {
-      const zoom = map.getZoom();
-      return map.getBounds().pad(-0.08).contains(L.latLng(place.lat, place.lng)) && zoom >= 13 && zoom <= 17;
+      const zoom = runtime.getZoom();
+      return runtime.getBoundsContains(place) && zoom >= 13 && zoom <= 17;
     };
 
     const showPlace = (
@@ -403,8 +755,7 @@ const mapPlaces = places
       { ensureVisible = false, expandCollapsed = false, openPopup = true } = {},
     ) => {
       const place = placeById.get(placeId);
-      const marker = markers.get(placeId);
-      if (!place || !marker) return;
+      if (!place) return;
 
       if (expandCollapsed && panel?.dataset.collapsed === "true") {
         setPanelCollapsed(panel, false);
@@ -417,17 +768,17 @@ const mapPlaces = places
       updateActiveMarker(false);
 
       if (ensureVisible && !placeIsInSaneView(place)) {
-        const zoom = map.getZoom();
+        const zoom = runtime.getZoom();
         const nextZoom = zoom < 13 ? 15 : Math.min(zoom, 17);
-        map.setView([place.lat, place.lng], nextZoom, { animate: true });
+        runtime.setView({ lat: place.lat, lng: place.lng }, nextZoom);
         window.setTimeout(() => {
-          if (map.hasLayer(marker) && openPopup) marker.openPopup();
+          if (runtime.hasVisiblePlace(place.id) && openPopup) runtime.openPlace(place);
         }, 180);
         return;
       }
 
-      if (map.hasLayer(marker) && openPopup) {
-        marker.openPopup();
+      if (runtime.hasVisiblePlace(place.id) && openPopup) {
+        runtime.openPlace(place);
       }
     };
 
@@ -448,19 +799,10 @@ const mapPlaces = places
       updateActiveMarker(Boolean(selectedPlaceId));
     };
 
-    const updateMapFrameControls = (active: boolean) => {
-      mapResetButtons.forEach((button) => {
-        button.hidden = !active;
-      });
-    };
-
     const applyMapFrameFilter = () => {
       if (!root) return;
 
-      const bounds = map.getBounds();
-      const visiblePlaceIds = currentPlaces
-        .filter((place) => bounds.contains(L.latLng(place.lat, place.lng)))
-        .map((place) => place.id);
+      const visiblePlaceIds = currentPlaces.filter((place) => runtime?.getBoundsContains(place)).map((place) => place.id);
 
       root.dispatchEvent(
         new CustomEvent("guide:map-frame-filter", {
@@ -484,7 +826,7 @@ const mapPlaces = places
       locationButton.setAttribute("aria-busy", state === "checking" ? "true" : "false");
     };
 
-    const locationIsNearGuide = (location: L.LatLng) => {
+    const locationIsNearGuide = (location: Coordinates) => {
       const guideLocationBounds = mapElement.guideLocationBounds;
       if (!guideLocationBounds) return false;
 
@@ -499,7 +841,7 @@ const mapPlaces = places
     };
 
     const updateLocationFromPosition = (position: GeolocationPosition) => {
-      currentLocation = L.latLng(position.coords.latitude, position.coords.longitude);
+      currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
 
       if (locationIsNearGuide(currentLocation)) {
         setLocationButtonState("near", "Center map on current location");
@@ -530,7 +872,7 @@ const mapPlaces = places
 
     const centerOnCurrentLocation = () => {
       if (!currentLocation || !locationIsNearGuide(currentLocation)) return;
-      map.setView([currentLocation.lat, currentLocation.lng], 15, { animate: true });
+      runtime.setView(currentLocation, 15);
     };
 
     const resetToFullArea = () => {
@@ -545,16 +887,10 @@ const mapPlaces = places
         );
       } else {
         currentPlaces = places;
-        markers.forEach((marker) => marker.addTo(map));
-        fitPlaces(map, places);
+        runtime.setVisiblePlaces(new Set(places.map((place) => place.id)));
+        runtime.fitPlaces(places);
       }
     };
-
-    places.forEach((place) => {
-      const marker = placeCircle(place).addTo(map);
-      marker.on("click", () => selectPlace(place.id));
-      markers.set(place.id, marker);
-    });
 
     cards.forEach((card) => {
       if (card.dataset.mapInteractionInitialized === "true") return;
@@ -582,45 +918,25 @@ const mapPlaces = places
     mapFrameButton?.addEventListener("click", applyMapFrameFilter);
     mapFullAreaButton?.addEventListener("click", resetToFullArea);
 
-    mapElement.guideMap = map;
     mapElement.guideLocationBounds = locationBoundsForPlaces(places) ?? undefined;
     if (locationButton) {
       locationButton.addEventListener("click", centerOnCurrentLocation);
       startLocationAvailabilityWatch();
     }
     mapElement.guideMapFit = () => {
-      map.invalidateSize();
-      fitPlaces(map, currentPlaces);
+      runtime?.invalidateSize?.();
+      runtime?.fitPlaces(currentPlaces);
     };
 
-    fitPlaces(map, currentPlaces);
+    runtime.fitPlaces(currentPlaces);
     window.setTimeout(() => mapElement.guideMapFit?.(), 0);
-
-    document.addEventListener("guide:places-updated", ((event: PlacesUpdatedEvent) => {
-      const visiblePlaceIds = new Set(event.detail.visiblePlaceIds);
-      const visiblePlaces = places.filter((place) => visiblePlaceIds.has(place.id));
-      currentPlaces = visiblePlaces;
-      updateMapFrameControls(Boolean(event.detail.mapFrameActive));
-
-      markers.forEach((marker, placeId) => {
-        if (visiblePlaceIds.has(placeId)) {
-          marker.addTo(map);
-        } else {
-          marker.removeFrom(map);
-        }
-      });
-
-      updateActiveMarker(false);
-
-      if (!event.detail.mapFrameActive) {
-        fitPlaces(map, currentPlaces);
-      }
-    }) as EventListener);
   };
 
   const initMaps = () => {
     initPanels();
-    document.querySelectorAll<HTMLElement>("[data-guide-map]").forEach(initMap);
+    document.querySelectorAll<HTMLElement>("[data-guide-map]").forEach((element) => {
+      void initMap(element);
+    });
   };
 
   if (document.readyState === "loading") {
