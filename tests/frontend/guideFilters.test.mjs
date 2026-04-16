@@ -86,4 +86,25 @@ describe("guide filters", () => {
       query: "coffee",
     })).toBe('No places matched "coffee" in South Brisbane. 1 more match elsewhere in this guide. Try another area or clear the area filter.');
   });
+
+  it("lets guide-wide overflow ignore the current map frame", () => {
+    const cards = [
+      makeCard({ placeId: "1", neighborhood: "south brisbane", search: "brunch", vibeTags: "date-night" }),
+      makeCard({ placeId: "2", neighborhood: "west end", search: "brunch", vibeTags: "date-night" }),
+    ];
+
+    expect(countMatchingCards(cards, {
+      activeArea: "south brisbane",
+      mapFramePlaceIds: new Set(["1"]),
+      normalizedQuery: "brunch",
+      searchResultIds: new Set(["1", "2"]),
+      tag: "date-night",
+    })).toBe(1);
+
+    expect(countMatchingCards(cards, {
+      normalizedQuery: "brunch",
+      searchResultIds: new Set(["1", "2"]),
+      tag: "date-night",
+    })).toBe(2);
+  });
 });

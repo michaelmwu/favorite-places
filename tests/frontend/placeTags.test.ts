@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { getDisplayGuideTags, getDisplayPlaceTags, getGuideAreaFilters } from "../../src/lib/placeTags";
+import {
+  getDisplayGuideTags,
+  getDisplayPlaceTags,
+  getGuideAreaFilters,
+  normalizeTagValue,
+} from "../../src/lib/placeTags";
 
 describe("getDisplayPlaceTags", () => {
   it("keeps useful tags and hides address fragments", () => {
@@ -111,5 +116,12 @@ describe("getDisplayGuideTags", () => {
         countryName: "Tonga",
       }),
     ).toEqual([]);
+  });
+});
+
+describe("normalizeTagValue", () => {
+  it("slugifies human-readable vibe overrides for guide filter matching", () => {
+    expect(normalizeTagValue("Date Night")).toBe("date-night");
+    expect(normalizeTagValue("Laptop Friendly")).toBe("laptop-friendly");
   });
 });

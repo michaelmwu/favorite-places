@@ -136,7 +136,6 @@ if (root) {
     });
     const broaderAreaCount = activeArea
       ? countMatchingCards(cards, {
-        mapFramePlaceIds,
         normalizedQuery,
         searchResultIds,
         tag: activeTag,

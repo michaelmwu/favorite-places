@@ -42,7 +42,7 @@ function normalizeAreaText(area: string): string {
     .toLowerCase();
 }
 
-function slugifyTagValue(value: string): string {
+export function normalizeTagValue(value: string): string {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -59,7 +59,7 @@ function getGuideLocationTagsToHide({
 }: GuideTagContext): Set<string> {
   const hiddenTags = new Set<string>();
   const addTag = (value?: string | null) => {
-    const normalized = value ? slugifyTagValue(value) : "";
+    const normalized = value ? normalizeTagValue(value) : "";
     if (normalized) {
       hiddenTags.add(normalized);
       (COUNTRY_TAG_ALIASES[normalized] ?? []).forEach((alias) => hiddenTags.add(alias));
@@ -90,7 +90,7 @@ export function getDisplayPlaceTags(tags: string[]): string[] {
 export function getDisplayGuideTags(tags: string[], context: GuideTagContext = {}): string[] {
   const hiddenTags = getGuideLocationTagsToHide(context);
   return tags.filter((tag) => {
-    const normalizedTag = slugifyTagValue(tag);
+    const normalizedTag = normalizeTagValue(tag);
     return normalizedTag.length > 0 && !hiddenTags.has(normalizedTag);
   });
 }

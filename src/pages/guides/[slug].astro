@@ -4,7 +4,12 @@ import { siteConfig } from "../../data/site";
 import GuideMap from "../../components/GuideMap.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
-import { getDisplayGuideTags, getDisplayPlaceTags, getGuideAreaFilters } from "../../lib/placeTags";
+import {
+  getDisplayGuideTags,
+  getDisplayPlaceTags,
+  getGuideAreaFilters,
+  normalizeTagValue,
+} from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
 
 export function getStaticPaths() {
@@ -38,11 +43,12 @@ const supportedGuideVibeTags = new Set([
 ]);
 const guideVibeCounts = visiblePlaces.reduce((counts, place) => {
   getDisplayPlaceTags(place.vibe_tags).forEach((tag) => {
-    if (!supportedGuideVibeTags.has(tag)) {
+    const normalizedTag = normalizeTagValue(tag);
+    if (!supportedGuideVibeTags.has(normalizedTag)) {
       return;
     }
 
-    counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    counts.set(normalizedTag, (counts.get(normalizedTag) ?? 0) + 1);
   });
   return counts;
 }, new Map<string, number>());
