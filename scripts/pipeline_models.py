@@ -154,6 +154,37 @@ class EnrichmentCacheEntry(PipelineModel):
     place: EnrichmentPlace | None = None
 
 
+FieldSource = Literal["manual", "google_list", "google_places", "osm", "wikidata", "website"]
+
+
+class PlaceField(PipelineModel):
+    value: Any
+    source: FieldSource
+    fetched_at: str | None = None
+    expires_at: str | None = None
+
+
+class PlaceProvenance(PipelineModel):
+    name: PlaceField | None = None
+    address: PlaceField | None = None
+    lat: PlaceField | None = None
+    lng: PlaceField | None = None
+    maps_url: PlaceField | None = None
+    cid: PlaceField | None = None
+    google_id: PlaceField | None = None
+    google_place_id: PlaceField | None = None
+    google_place_resource_name: PlaceField | None = None
+    primary_category: PlaceField | None = None
+    tags: list[PlaceField] = Field(default_factory=list)
+    neighborhood: PlaceField | None = None
+    note: PlaceField | None = None
+    why_recommended: PlaceField | None = None
+    top_pick: PlaceField | None = None
+    hidden: PlaceField | None = None
+    manual_rank: PlaceField | None = None
+    status: PlaceField | None = None
+
+
 class NormalizedPlace(PipelineModel):
     id: str
     name: str
@@ -174,6 +205,7 @@ class NormalizedPlace(PipelineModel):
     hidden: bool = False
     manual_rank: int = 0
     status: str
+    provenance: PlaceProvenance = Field(default_factory=PlaceProvenance)
 
 
 class Guide(PipelineModel):

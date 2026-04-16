@@ -241,6 +241,24 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("shibuya", first_place.tags)
         self.assertIn("specialty", first_place.tags)
         self.assertIn("tokyo", first_place.tags)
+        self.assertEqual(first_place.provenance.name.source, "google_list")
+        self.assertEqual(first_place.provenance.address.source, "google_list")
+        self.assertEqual(first_place.provenance.maps_url.source, "google_places")
+        self.assertEqual(first_place.provenance.primary_category.source, "manual")
+        self.assertEqual(first_place.provenance.note.source, "manual")
+        self.assertEqual(first_place.provenance.top_pick.source, "manual")
+        self.assertEqual(first_place.provenance.status.source, "google_places")
+        self.assertEqual(
+            {field.value: field.source for field in first_place.provenance.tags},
+            {
+                "specialty": "manual",
+                "tokyo": "google_list",
+                "shibuya": "google_list",
+                "bakery": "manual",
+                "cafe": "google_places",
+                "food": "google_places",
+            },
+        )
         self.assertTrue(hidden_place.hidden)
 
     def test_guide_location_center_excludes_far_outliers(self) -> None:
@@ -484,6 +502,73 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(second_place.name, "Fallback Name")
         self.assertTrue(
             build_data.stable_place_id(second_place, source_type="google_export_csv").startswith("url:")
+        )
+
+    def test_normalize_guide_prefers_enrichment_name_for_csv_sources_and_tracks_provenance(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            configured_source_type="google_export_csv",
+            fetched_at="2026-04-15T00:00:00+00:00",
+            refresh_after="2026-04-29T00:00:00+00:00",
+            places=[
+                RawPlace(
+                    name="Legacy Tea Stop",
+                    address=None,
+                    maps_url="https://maps.google.com/?cid=1",
+                    maps_place_token="0xabc123:0xdef456",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0], source_type=raw.configured_source_type)
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-16T00:00:00+00:00",
+                refresh_after="2026-04-23T00:00:00+00:00",
+                query="Legacy Tea Stop",
+                matched=True,
+                score=80,
+                place=EnrichmentPlace(
+                    display_name="Modern Tea House",
+                    formatted_address="1 Songshan, Taipei, Taiwan",
+                    google_maps_uri="https://maps.google.com/?cid=override",
+                    primary_type_display_name="Tea house",
+                    types=["tea_house"],
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "taipei-taiwan",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        place = guide.places[0]
+        self.assertEqual(place.name, "Modern Tea House")
+        self.assertEqual(place.address, "1 Songshan, Taipei, Taiwan")
+        self.assertEqual(place.maps_url, "https://maps.google.com/?cid=override")
+        self.assertEqual(place.provenance.name.source, "google_places")
+        self.assertEqual(place.provenance.name.fetched_at, "2026-04-16T00:00:00+00:00")
+        self.assertEqual(place.provenance.address.source, "google_places")
+        self.assertEqual(place.provenance.maps_url.source, "google_places")
+        self.assertEqual(place.provenance.primary_category.source, "google_places")
+        self.assertEqual(
+            {field.value: field.source for field in place.provenance.tags},
+            {
+                "taipei": "google_list",
+                "tea-house": "google_places",
+            },
         )
 
     def test_resolve_refresh_sources_matches_csv_path_selector(self) -> None:

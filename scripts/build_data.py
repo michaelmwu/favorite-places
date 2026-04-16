@@ -88,6 +88,8 @@ try:
         RawPlace,
         RawSavedList,
         SourceConfig,
+        PlaceField,
+        PlaceProvenance,
     )
 except ModuleNotFoundError:
     from scripts.pipeline_models import (
@@ -100,6 +102,8 @@ except ModuleNotFoundError:
         RawPlace,
         RawSavedList,
         SourceConfig,
+        PlaceField,
+        PlaceProvenance,
     )
 
 try:
@@ -606,7 +610,8 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
     for place in raw.places:
         place_id = stable_place_id(place, source_type=raw.configured_source_type)
         override = place_override_map.get(place_id, {})
-        enrichment = coerce_enrichment_place(enrichment_cache.get(place_id))
+        enrichment_cache_entry = enrichment_cache.get(place_id)
+        enrichment = coerce_enrichment_place(enrichment_cache_entry)
         primary_category = (
             as_string(override.get("primary_category"))
             or enrichment.primary_type_display_name
@@ -658,6 +663,20 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             manual_rank=manual_rank,
             status=status,
         )
+        normalized.provenance = build_place_provenance(
+            raw=raw,
+            raw_place=place,
+            override=override,
+            normalized=normalized,
+            enrichment_cache_entry=enrichment_cache_entry,
+            enrichment=enrichment,
+            primary_category=primary_category,
+            tags=tags,
+            city_name=city_name,
+            top_pick_override=top_pick_override,
+            status=status,
+            prefer_enrichment_names=prefer_enrichment_names,
+        )
         normalized_places.append(normalized)
         if primary_category:
             category_counter[primary_category] += 1
@@ -705,6 +724,186 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         center_lat=guide_center[0],
         center_lng=guide_center[1],
         places=normalized_places,
+    )
+
+
+def build_place_provenance(
+    *,
+    raw: RawSavedList,
+    raw_place: RawPlace,
+    override: dict[str, Any],
+    normalized: NormalizedPlace,
+    enrichment_cache_entry: EnrichmentCacheEntry | None,
+    enrichment: EnrichmentPlace,
+    primary_category: str | None,
+    tags: list[str],
+    city_name: str | None,
+    top_pick_override: bool | None,
+    status: str,
+    prefer_enrichment_names: bool,
+) -> PlaceProvenance:
+    manual_name = as_string(override.get("name"))
+    manual_category = as_string(override.get("primary_category"))
+    manual_note = as_string(override.get("note"))
+    manual_neighborhood = as_string(override.get("neighborhood"))
+    manual_why_recommended = as_string(override.get("why_recommended"))
+    manual_status = as_string(override.get("status"))
+
+    provenance = PlaceProvenance()
+    provenance.name = (
+        manual_place_field(normalized.name)
+        if manual_name
+        else google_places_field(normalized.name, enrichment_cache_entry)
+        if prefer_enrichment_names and enrichment.display_name
+        else google_list_field(normalized.name, raw)
+    )
+    if normalized.address:
+        provenance.address = (
+            google_list_field(normalized.address, raw)
+            if raw_place.address
+            else google_places_field(normalized.address, enrichment_cache_entry)
+        )
+    if normalized.lat is not None:
+        provenance.lat = google_list_field(normalized.lat, raw)
+    if normalized.lng is not None:
+        provenance.lng = google_list_field(normalized.lng, raw)
+    provenance.maps_url = (
+        google_places_field(normalized.maps_url, enrichment_cache_entry)
+        if enrichment.google_maps_uri
+        else google_list_field(normalized.maps_url, raw)
+    )
+    if normalized.cid:
+        provenance.cid = google_list_field(normalized.cid, raw)
+    if normalized.google_id:
+        provenance.google_id = google_list_field(normalized.google_id, raw)
+    if normalized.google_place_id:
+        provenance.google_place_id = google_places_field(normalized.google_place_id, enrichment_cache_entry)
+    if normalized.google_place_resource_name:
+        provenance.google_place_resource_name = google_places_field(
+            normalized.google_place_resource_name,
+            enrichment_cache_entry,
+        )
+    if primary_category:
+        provenance.primary_category = (
+            manual_place_field(primary_category)
+            if manual_category
+            else google_places_field(primary_category, enrichment_cache_entry)
+        )
+    provenance.tags = build_tag_provenance(
+        raw=raw,
+        raw_place=raw_place,
+        override=override,
+        enrichment_cache_entry=enrichment_cache_entry,
+        enrichment=enrichment,
+        primary_category=primary_category,
+        primary_category_field=provenance.primary_category,
+        city_name=city_name,
+        tags=tags,
+    )
+    if normalized.neighborhood:
+        provenance.neighborhood = (
+            manual_place_field(normalized.neighborhood)
+            if manual_neighborhood
+            else google_list_field(normalized.neighborhood, raw)
+        )
+    if normalized.note:
+        provenance.note = manual_place_field(normalized.note) if manual_note else google_list_field(normalized.note, raw)
+    if normalized.why_recommended:
+        provenance.why_recommended = (
+            manual_place_field(normalized.why_recommended)
+            if manual_why_recommended
+            else None
+        )
+    provenance.top_pick = (
+        manual_place_field(normalized.top_pick)
+        if top_pick_override is not None
+        else google_list_field(normalized.top_pick, raw)
+    )
+    if "hidden" in override:
+        provenance.hidden = manual_place_field(normalized.hidden)
+    if "manual_rank" in override:
+        provenance.manual_rank = manual_place_field(normalized.manual_rank)
+    if manual_status:
+        provenance.status = manual_place_field(status)
+    elif enrichment.business_status:
+        provenance.status = google_places_field(status, enrichment_cache_entry)
+    return provenance
+
+
+def build_tag_provenance(
+    *,
+    raw: RawSavedList,
+    raw_place: RawPlace,
+    override: dict[str, Any],
+    enrichment_cache_entry: EnrichmentCacheEntry | None,
+    enrichment: EnrichmentPlace,
+    primary_category: str | None,
+    primary_category_field: PlaceField | None,
+    city_name: str | None,
+    tags: list[str],
+) -> list[PlaceField]:
+    ranked_fields: dict[str, tuple[int, PlaceField]] = {}
+
+    def put_tag(value: str | None, field: PlaceField | None, *, priority: int) -> None:
+        tag = as_string(value)
+        if tag is None or field is None:
+            return
+        existing = ranked_fields.get(tag)
+        if existing is None or existing[0] < priority:
+            ranked_fields[tag] = (priority, field)
+
+    for tag in coerce_string_list(override.get("tags")):
+        put_tag(tag, manual_place_field(tag), priority=30)
+    if city_name:
+        tag = slugify(city_name)
+        put_tag(tag, google_list_field(tag, raw), priority=10)
+    for locality in infer_address_localities(raw_place.address, city_name=city_name):
+        tag = slugify(locality)
+        put_tag(tag, google_list_field(tag, raw), priority=10)
+    if primary_category:
+        tag = slugify(primary_category)
+        put_tag(
+            tag,
+            source_place_field(tag, primary_category_field),
+            priority=30 if primary_category_field and primary_category_field.source == "manual" else 20,
+        )
+    for place_type in enrichment.types[:4]:
+        tag = slugify(place_type.replace("_", "-"))
+        put_tag(tag, google_places_field(tag, enrichment_cache_entry), priority=20)
+
+    return [ranked_fields[tag][1] for tag in tags if tag in ranked_fields]
+
+
+def source_place_field(value: Any, source_field: PlaceField | None) -> PlaceField | None:
+    if source_field is None:
+        return None
+    return PlaceField(
+        value=value,
+        source=source_field.source,
+        fetched_at=source_field.fetched_at,
+        expires_at=source_field.expires_at,
+    )
+
+
+def manual_place_field(value: Any) -> PlaceField:
+    return PlaceField(value=value, source="manual")
+
+
+def google_list_field(value: Any, raw: RawSavedList) -> PlaceField:
+    return PlaceField(
+        value=value,
+        source="google_list",
+        fetched_at=raw.fetched_at,
+        expires_at=raw.refresh_after,
+    )
+
+
+def google_places_field(value: Any, cache_entry: EnrichmentCacheEntry | None) -> PlaceField:
+    return PlaceField(
+        value=value,
+        source="google_places",
+        fetched_at=cache_entry.fetched_at if cache_entry else None,
+        expires_at=cache_entry.refresh_after if cache_entry else None,
     )
 
 
