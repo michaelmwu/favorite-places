@@ -21,7 +21,28 @@ const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includ
 const allTags = [...new Set(visiblePlaces.flatMap((place) => getDisplayPlaceTags(place.tags)))].sort((a, b) =>
   a.localeCompare(b),
 );
+const guideVibeFilters = [
+  ...new Set(
+    visiblePlaces.flatMap((place) =>
+      getDisplayPlaceTags(place.vibe_tags).filter((tag) =>
+        [
+          "cozy",
+          "quiet",
+          "lively",
+          "date-night",
+          "laptop-friendly",
+          "scenic",
+          "hidden-gem",
+          "cheap-eats",
+          "splurge",
+          "rainy-day",
+        ].includes(tag),
+      ),
+    ),
+  ),
+].sort((a, b) => a.localeCompare(b));
 const guideDescriptionHtml = renderRichText(guide.description);
+const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
@@ -77,13 +98,12 @@ const guideDescriptionHtml = renderRichText(guide.description);
     </section>
   )}
 
-  <section class="section browse-section" data-guide-root>
+  <section class="section browse-section" data-guide-root data-guide-slug={guide.slug}>
     <div class="section-head">
       <div>
         <p class="eyebrow">Browse</p>
         <h2 class="section-title">Places</h2>
       </div>
-      <p class="small-copy">Search names, notes, neighborhoods, or address text.</p>
     </div>
 
     <div class="browse-layout" data-browse-layout>
@@ -120,6 +140,19 @@ const guideDescriptionHtml = renderRichText(guide.description);
                   {allTags.map((tag) => (
                     <button class="tag-pill" type="button" data-tag-filter data-tag={tag.toLowerCase()}>
                       #{tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {guideVibeFilters.length > 0 && (
+              <div class="control-group" style="grid-column: 1 / -1;">
+                <span class="control-label">Vibe</span>
+                <div class="tag-row">
+                  {guideVibeFilters.map((tag) => (
+                    <button class="tag-pill" type="button" data-tag-filter data-tag={tag}>
+                      {formatVibeLabel(tag)}
                     </button>
                   ))}
                 </div>

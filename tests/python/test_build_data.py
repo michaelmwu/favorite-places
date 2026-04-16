@@ -236,12 +236,81 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(first_place.maps_url, "https://maps.google.com/?cid=override")
         self.assertEqual(first_place.neighborhood, "Shibuya")
         self.assertTrue(first_place.top_pick)
+        self.assertIn("local-favorite", first_place.vibe_tags)
+        self.assertIn("quick-stop", first_place.vibe_tags)
         self.assertEqual(first_place.status, "active")
         self.assertIn("bakery", first_place.tags)
         self.assertIn("shibuya", first_place.tags)
         self.assertIn("specialty", first_place.tags)
         self.assertIn("tokyo", first_place.tags)
         self.assertTrue(hidden_place.hidden)
+
+    def test_place_vibe_tags_can_be_manually_overridden(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Quiet Coffee",
+                    address="1 Shibuya, Tokyo, Japan",
+                    note="Quiet cafe with wifi and outlets.",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            (place_overrides_dir / "tokyo-japan.json").write_text(
+                json.dumps({place_id: {"vibe_tags": ["date-night"]}}),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "tokyo-japan",
+                    raw,
+                    enrichment_cache={},
+                )
+
+        self.assertEqual(guide.places[0].vibe_tags, ["date-night"])
+
+    def test_build_search_index_contains_compact_place_context(self) -> None:
+        guide = build_data.normalize_guide(
+            "tokyo-japan",
+            RawSavedList(
+                title="Tokyo, Japan",
+                places=[
+                    RawPlace(
+                        name="Quiet Coffee",
+                        address="1 Shibuya, Tokyo, Japan",
+                        note="Quiet cafe with wifi.",
+                        is_favorite=True,
+                        maps_url="https://maps.google.com/?cid=1",
+                        cid="111",
+                    ),
+                ],
+            ),
+            enrichment_cache={},
+        )
+
+        index = build_data.build_search_index([guide])
+
+        self.assertEqual(index["version"], 1)
+        self.assertEqual(index["guides"][0]["slug"], "tokyo-japan")
+        self.assertEqual(index["entries"][0]["guide_slug"], "tokyo-japan")
+        self.assertEqual(index["entries"][0]["name"], "Quiet Coffee")
+        self.assertIn("quiet", index["entries"][0]["vibe_tags"])
+        self.assertIn("laptop-friendly", index["entries"][0]["vibe_tags"])
+        self.assertIn("tokyo", index["entries"][0]["search_text"])
 
     def test_guide_location_center_excludes_far_outliers(self) -> None:
         places = [

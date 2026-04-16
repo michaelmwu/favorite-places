@@ -1,3 +1,5 @@
+import { loadSearchIndex, searchGuides, searchPlaces } from "./place-search.js";
+
 const root = document.querySelector("[data-home-browser-root]");
 
 if (root) {
@@ -9,9 +11,16 @@ if (root) {
   const locationButton = root.querySelector("[data-location-target]");
   const locationStatus = root.querySelector("[data-location-status]");
   const locationGuideIndex = document.querySelector("[data-location-guide-index]");
+  const globalResults = root.querySelector("[data-global-search-results]");
+  const globalResultsTitle = root.querySelector("[data-global-search-title]");
+  const globalResultsSummary = root.querySelector("[data-global-search-summary]");
+  const globalResultsList = root.querySelector("[data-global-search-list]");
+  const globalResultsEmpty = root.querySelector("[data-global-search-empty]");
 
   let activeCountry = "";
   let locationMatchCountry = "";
+  let searchIndex = null;
+  let searchIndexUnavailable = false;
 
   const pluralize = (count, singular, plural = `${singular}s`) =>
     `${count} ${count === 1 ? singular : plural}`;
@@ -120,6 +129,9 @@ if (root) {
 
   const update = () => {
     const query = (searchInput?.value || "").trim().toLowerCase();
+    const guideMatches = searchIndex && query ? new Set(
+      searchGuides(query, { index: searchIndex }).map((result) => result.guide.slug),
+    ) : null;
     const matchingGuidesByCountry = new Map();
     let visibleGuideCount = 0;
     let visibleCountryCount = 0;
@@ -128,7 +140,12 @@ if (root) {
     countryBlocks.forEach((block) => {
       const country = block.dataset.country || "";
       const cards = Array.from(block.querySelectorAll("[data-guide-card]"));
-      const matchingCards = cards.filter((card) => !query || (card.dataset.search || "").includes(query));
+      const matchingCards = cards.filter((card) => {
+        if (!query) {
+          return true;
+        }
+        return (card.dataset.search || "").includes(query) || guideMatches?.has(card.dataset.guideSlug || "");
+      });
       const matchingCardSet = new Set(matchingCards);
 
       block.dataset.locationMatch = country && country === locationMatchCountry ? "true" : "false";
@@ -168,6 +185,108 @@ if (root) {
       emptyState.dataset.visible = visibleGuideCount === 0 ? "true" : "false";
     }
 
+    renderGlobalSearch(query);
+  };
+
+  const renderGlobalSearch = (query) => {
+    if (!globalResults || !globalResultsList || !globalResultsEmpty) {
+      return;
+    }
+
+    globalResults.hidden = !query;
+    if (!query) {
+      globalResultsList.replaceChildren();
+      globalResultsEmpty.dataset.visible = "false";
+      if (globalResultsSummary) {
+        globalResultsSummary.textContent = "";
+      }
+      return;
+    }
+
+    if (searchIndexUnavailable) {
+      globalResultsList.replaceChildren();
+      globalResultsEmpty.dataset.visible = "true";
+      globalResultsEmpty.textContent = "Place search is unavailable. Guide browsing still works.";
+      return;
+    }
+
+    if (!searchIndex) {
+      globalResultsList.replaceChildren();
+      globalResultsEmpty.dataset.visible = "false";
+      if (globalResultsSummary) {
+        globalResultsSummary.textContent = "Loading index...";
+      }
+      return;
+    }
+
+    const state = searchPlaces(query, { index: searchIndex, scope: "all" });
+    const results = state.results.slice(0, 24);
+    globalResultsList.replaceChildren(...results.map((result) => createSearchResultCard(result, query)));
+
+    if (globalResultsTitle) {
+      globalResultsTitle.textContent = `${state.count} matching place${state.count === 1 ? "" : "s"}`;
+    }
+    if (globalResultsSummary) {
+      const parsed = [
+        ...state.parsed.vibes.map((vibe) => vibe.replaceAll("-", " ")),
+        ...state.parsed.categories,
+      ];
+      globalResultsSummary.textContent = parsed.length > 0 ? parsed.join(" · ") : "All guides";
+    }
+    globalResultsEmpty.dataset.visible = state.count === 0 ? "true" : "false";
+    globalResultsEmpty.textContent = "No matching places. Try a broader search.";
+  };
+
+  const createSearchResultCard = (result, query) => {
+    const entry = result.entry;
+    const card = document.createElement("article");
+    card.className = "search-result-card";
+
+    const title = document.createElement("h4");
+    title.textContent = entry.name || "Saved place";
+
+    const meta = document.createElement("p");
+    meta.className = "meta-copy";
+    meta.textContent = [
+      entry.guide_title,
+      [entry.category, entry.neighborhood].filter(Boolean).join(" · "),
+      [entry.city, entry.country].filter(Boolean).join(", "),
+    ].filter(Boolean).join(" · ");
+
+    const copy = document.createElement("p");
+    copy.className = "small-copy";
+    copy.textContent = truncateText(entry.why_recommended || entry.note || "", 180);
+    copy.hidden = !copy.textContent;
+
+    const tags = document.createElement("div");
+    tags.className = "tag-row";
+    [...(entry.vibe_tags || []), ...(entry.tags || [])].slice(0, 5).forEach((tag) => {
+      const pill = document.createElement("span");
+      pill.className = "tag-pill";
+      pill.textContent = tag.includes("-") ? tag.replaceAll("-", " ") : `#${tag}`;
+      tags.appendChild(pill);
+    });
+    tags.hidden = tags.childElementCount === 0;
+
+    const link = document.createElement("a");
+    link.className = "action-pill";
+    const params = new URLSearchParams();
+    params.set("place", entry.id);
+    if (query) {
+      params.set("q", query);
+    }
+    link.href = `/guides/${entry.guide_slug}/?${params.toString()}`;
+    link.textContent = "Open in guide";
+
+    card.append(title, meta, copy, tags, link);
+    return card;
+  };
+
+  const truncateText = (value, maxLength) => {
+    if (!value || value.length <= maxLength) {
+      return value || "";
+    }
+    return `${value.slice(0, maxLength - 1).trim()}...`;
   };
 
   searchInput?.addEventListener("input", update);
@@ -230,4 +349,14 @@ if (root) {
   }
 
   update();
+
+  loadSearchIndex()
+    .then((index) => {
+      searchIndex = index;
+      update();
+    })
+    .catch(() => {
+      searchIndexUnavailable = true;
+      update();
+    });
 }

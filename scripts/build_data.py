@@ -29,6 +29,7 @@ RAW_DIR = ROOT / "data" / "raw"
 PLACES_CACHE_DIR = ROOT / "data" / "cache" / "google-places"
 GENERATED_DIR = ROOT / "src" / "data" / "generated"
 GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
+PUBLIC_DATA_DIR = ROOT / "public" / "data"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
 DEFAULT_REFRESH_WORKERS = 4
@@ -76,6 +77,213 @@ PLACES_FIELD_MASK = ",".join(
         "places.businessStatus",
     ]
 )
+VIBE_TAG_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "cozy": (
+        "cozy",
+        "cosy",
+        "warm",
+        "intimate",
+        "comfort",
+        "homey",
+        "home-y",
+        "fireside",
+    ),
+    "quiet": (
+        "quiet",
+        "calm",
+        "peaceful",
+        "serene",
+        "relaxing",
+        "chill",
+        "low-key",
+        "low key",
+        "library",
+    ),
+    "lively": (
+        "lively",
+        "buzzy",
+        "busy",
+        "fun",
+        "energetic",
+        "scene",
+        "nightlife",
+        "live music",
+    ),
+    "date-night": (
+        "date night",
+        "romantic",
+        "intimate",
+        "cocktail",
+        "wine bar",
+        "special occasion",
+    ),
+    "solo-friendly": (
+        "solo",
+        "counter",
+        "bar seating",
+        "quick bite",
+        "book",
+        "people watching",
+    ),
+    "group-friendly": (
+        "group",
+        "friends",
+        "share",
+        "shared",
+        "family style",
+        "large table",
+    ),
+    "laptop-friendly": (
+        "laptop",
+        "wifi",
+        "wi-fi",
+        "work",
+        "cowork",
+        "outlet",
+        "outlets",
+    ),
+    "scenic": (
+        "view",
+        "views",
+        "scenic",
+        "waterfront",
+        "beach",
+        "mountain",
+        "sunset",
+        "rooftop",
+        "garden",
+        "park",
+    ),
+    "design-forward": (
+        "design",
+        "beautiful",
+        "stylish",
+        "interior",
+        "architecture",
+        "gallery",
+        "aesthetic",
+    ),
+    "local-favorite": (
+        "local favorite",
+        "favorite",
+        "institution",
+        "neighborhood",
+        "beloved",
+        "regulars",
+    ),
+    "classic": (
+        "classic",
+        "old-school",
+        "old school",
+        "historic",
+        "traditional",
+        "since ",
+        "heritage",
+    ),
+    "hidden-gem": (
+        "hidden gem",
+        "hidden",
+        "underrated",
+        "hole in the wall",
+        "off the beaten",
+        "tucked",
+    ),
+    "cheap-eats": (
+        "cheap",
+        "inexpensive",
+        "affordable",
+        "budget",
+        "value",
+        "cash only",
+    ),
+    "splurge": (
+        "splurge",
+        "expensive",
+        "fine dining",
+        "michelin",
+        "omakase",
+        "tasting menu",
+        "luxury",
+    ),
+    "quick-stop": (
+        "quick",
+        "grab",
+        "takeout",
+        "take away",
+        "snack",
+        "bakery",
+        "stand",
+        "stall",
+    ),
+    "slow-afternoon": (
+        "afternoon",
+        "linger",
+        "slow",
+        "tea",
+        "cafe",
+        "coffee",
+        "bookstore",
+    ),
+    "late-night": (
+        "late night",
+        "late-night",
+        "24 hour",
+        "24-hour",
+        "bar",
+        "pub",
+        "izakaya",
+        "night market",
+    ),
+    "outdoor-seating": (
+        "outdoor",
+        "patio",
+        "terrace",
+        "sidewalk",
+        "courtyard",
+        "garden",
+    ),
+    "rainy-day": (
+        "rainy",
+        "rain",
+        "museum",
+        "gallery",
+        "bookstore",
+        "indoor",
+        "indoors",
+    ),
+    "family-friendly": (
+        "family",
+        "kids",
+        "children",
+        "playground",
+        "stroller",
+    ),
+    "touristy-but-worth-it": (
+        "touristy",
+        "worth it",
+        "iconic",
+        "famous",
+        "landmark",
+        "must",
+    ),
+}
+VIBE_CATEGORY_RULES: dict[str, tuple[str, ...]] = {
+    "cafe": ("cozy", "solo-friendly", "slow-afternoon"),
+    "coffee": ("cozy", "solo-friendly", "slow-afternoon"),
+    "coffee_shop": ("cozy", "solo-friendly", "slow-afternoon"),
+    "tea_house": ("quiet", "slow-afternoon"),
+    "bakery": ("quick-stop", "slow-afternoon"),
+    "bar": ("date-night", "late-night", "lively"),
+    "pub": ("group-friendly", "late-night", "lively"),
+    "night_club": ("late-night", "lively"),
+    "restaurant": ("date-night", "group-friendly"),
+    "fine_dining_restaurant": ("date-night", "splurge"),
+    "museum": ("rainy-day", "solo-friendly"),
+    "art_gallery": ("design-forward", "rainy-day"),
+    "book_store": ("quiet", "rainy-day", "solo-friendly"),
+    "park": ("scenic", "family-friendly"),
+    "tourist_attraction": ("touristy-but-worth-it", "scenic"),
+}
 
 try:
     from pipeline_models import (
@@ -418,8 +626,8 @@ def refresh_google_export_csv(
 def rebuild_generated_data() -> None:
     sync_local_csv_sources()
     GENERATED_LISTS_DIR.mkdir(parents=True, exist_ok=True)
+    PUBLIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
     guides: list[Guide] = []
-    search_index: list[dict[str, Any]] = []
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
@@ -428,39 +636,12 @@ def rebuild_generated_data() -> None:
         guides.append(guide)
         write_json(GENERATED_LISTS_DIR / f"{guide.slug}.json", guide)
 
-        for place in guide.places:
-            if place.hidden:
-                continue
-            search_index.append(
-                {
-                    "id": place.id,
-                    "list_slug": guide.slug,
-                    "list_title": guide.title,
-                    "name": place.name,
-                    "tags": place.tags,
-                    "category": place.primary_category,
-                    "neighborhood": place.neighborhood,
-                    "search_text": " ".join(
-                        filter(
-                            None,
-                            [
-                                place.name,
-                                place.address,
-                                place.note,
-                                place.why_recommended,
-                                place.primary_category,
-                                place.neighborhood,
-                                " ".join(place.tags),
-                            ],
-                        )
-                    ).lower(),
-                }
-            )
-
     guides.sort(key=lambda guide: (guide.country_name, guide.city_name, guide.title))
     manifests = [summarize_guide(guide) for guide in guides]
+    search_index = build_search_index(guides)
     write_json(GENERATED_DIR / "manifests.json", manifests)
     write_json(GENERATED_DIR / "search-index.json", search_index)
+    write_json(PUBLIC_DATA_DIR / "search-index.json", search_index, compact=True)
 
 
 def sync_local_csv_sources() -> None:
@@ -627,6 +808,20 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         note = as_string(override.get("note")) or place.note
         why_recommended = as_string(override.get("why_recommended"))
+        override_vibe_tags = coerce_string_list(override.get("vibe_tags"))
+        vibe_tags = (
+            sorted({slugify(tag) for tag in override_vibe_tags if slugify(tag)})
+            if override_vibe_tags
+            else derive_vibe_tags(
+                place,
+                enrichment=enrichment,
+                category=primary_category,
+                tags=tags,
+                note=note,
+                why_recommended=why_recommended,
+                top_pick=top_pick,
+            )
+        )
         manual_rank = as_int(override.get("manual_rank")) or 0
         status = (
             as_string(override.get("status"))
@@ -650,6 +845,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             google_place_resource_name=enrichment.google_place_resource_name,
             primary_category=primary_category,
             tags=tags,
+            vibe_tags=vibe_tags,
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
@@ -893,6 +1089,157 @@ def derive_place_tags(
     for place_type in enrichment.types[:4]:
         tags.add(slugify(place_type.replace("_", "-")))
     return sorted(tag for tag in tags if tag)
+
+
+def derive_vibe_tags(
+    place: RawPlace,
+    *,
+    enrichment: EnrichmentPlace,
+    category: str | None,
+    tags: list[str],
+    note: str | None,
+    why_recommended: str | None,
+    top_pick: bool,
+) -> list[str]:
+    vibes: set[str] = set()
+    category_terms = [
+        category,
+        enrichment.primary_type,
+        enrichment.primary_type_display_name,
+        *enrichment.types,
+        *tags,
+    ]
+    category_slugs = {slugify(term.replace("_", "-")) for term in category_terms if term}
+
+    for category_slug in category_slugs:
+        if category_slug in VIBE_CATEGORY_RULES:
+            vibes.update(VIBE_CATEGORY_RULES[category_slug])
+
+    lookup_text = normalize_vibe_lookup_text(
+        " ".join(
+            filter(
+                None,
+                [
+                    place.name,
+                    place.address,
+                    place.note,
+                    note,
+                    why_recommended,
+                    category,
+                    enrichment.primary_type,
+                    enrichment.primary_type_display_name,
+                    " ".join(enrichment.types),
+                    " ".join(tags),
+                ],
+            )
+        )
+    )
+    for vibe_tag, keywords in VIBE_TAG_KEYWORDS.items():
+        if any(keyword in lookup_text for keyword in keywords):
+            vibes.add(vibe_tag)
+
+    if top_pick:
+        vibes.add("local-favorite")
+
+    return sorted(vibes)
+
+
+def normalize_vibe_lookup_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ").lower()).strip()
+
+
+def build_search_index(guides: list[Guide]) -> dict[str, Any]:
+    generated_at = datetime.now(UTC).isoformat()
+    return {
+        "version": 1,
+        "generated_at": generated_at,
+        "guides": [search_index_guide_entry(guide) for guide in guides],
+        "entries": [
+            search_index_place_entry(guide, place)
+            for guide in guides
+            for place in guide.places
+            if not place.hidden
+        ],
+    }
+
+
+def search_index_guide_entry(guide: Guide) -> dict[str, Any]:
+    return {
+        "slug": guide.slug,
+        "title": guide.title,
+        "description": guide.description,
+        "city": guide.city_name,
+        "country": guide.country_name,
+        "country_code": guide.country_code,
+        "tags": guide.list_tags,
+        "place_count": guide.place_count,
+        "top_categories": guide.top_categories,
+        "featured_names": [
+            place.name
+            for place in guide.places
+            if place.id in set(guide.featured_place_ids) and not place.hidden
+        ][:3],
+        "url": f"/guides/{guide.slug}/",
+        "search_text": compact_search_text(
+            [
+                guide.title,
+                guide.description,
+                guide.city_name,
+                guide.country_name,
+                guide.country_code,
+                " ".join(guide.list_tags),
+                " ".join(guide.top_categories),
+            ]
+        ),
+    }
+
+
+def search_index_place_entry(guide: Guide, place: NormalizedPlace) -> dict[str, Any]:
+    return {
+        "id": place.id,
+        "guide_slug": guide.slug,
+        "guide_title": guide.title,
+        "city": guide.city_name,
+        "country": guide.country_name,
+        "country_code": guide.country_code,
+        "name": place.name,
+        "category": place.primary_category,
+        "neighborhood": place.neighborhood,
+        "tags": place.tags,
+        "vibe_tags": place.vibe_tags,
+        "note": place.note,
+        "why_recommended": place.why_recommended,
+        "top_pick": place.top_pick,
+        "manual_rank": place.manual_rank,
+        "maps_url": place.maps_url,
+        "url": f"/guides/{guide.slug}/?place={quote_query_value(place.id)}",
+        "search_text": compact_search_text(
+            [
+                place.name,
+                place.address,
+                place.note,
+                place.why_recommended,
+                place.primary_category,
+                place.neighborhood,
+                " ".join(place.tags),
+                " ".join(place.vibe_tags),
+                guide.title,
+                guide.city_name,
+                guide.country_name,
+                guide.country_code,
+            ]
+        ),
+    }
+
+
+def compact_search_text(parts: list[str | None]) -> str:
+    return re.sub(r"\s+", " ", " ".join(part for part in parts if part).lower()).strip()
+
+
+def quote_query_value(value: str) -> str:
+    from urllib.parse import quote
+
+    return quote(value, safe="")
 
 
 def infer_city_name(title: str) -> str | None:
@@ -1195,14 +1542,18 @@ def load_raw_saved_list(path: Path) -> RawSavedList | None:
     return RawSavedList.model_validate_json(path.read_text(encoding="utf-8"))
 
 
-def write_json(path: Path, payload: Any) -> None:
+def write_json(path: Path, payload: Any, *, compact: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if hasattr(payload, "model_dump"):
         payload = payload.model_dump(mode="json")
     elif isinstance(payload, list):
         payload = [item.model_dump(mode="json") if hasattr(item, "model_dump") else item for item in payload]
     tmp_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    tmp_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if compact:
+        text = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    else:
+        text = json.dumps(payload, indent=2, ensure_ascii=False)
+    tmp_path.write_text(f"{text}\n", encoding="utf-8")
     tmp_path.replace(path)
 
 

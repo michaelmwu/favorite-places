@@ -9,6 +9,7 @@ interface Props {
 
 const { place } = Astro.props;
 const displayTags = getDisplayPlaceTags(place.tags);
+const displayVibeTags = getDisplayPlaceTags(place.vibe_tags);
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
 ---
@@ -20,6 +21,7 @@ const noteHtml = renderRichText(place.note);
   data-place-id={place.id}
   data-name={place.name.toLowerCase()}
   data-tags={displayTags.join(" ").toLowerCase()}
+  data-vibe-tags={displayVibeTags.join(" ").toLowerCase()}
   data-category={(place.primary_category ?? "").toLowerCase()}
   data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
   data-top-pick={place.top_pick ? "true" : "false"}
@@ -32,6 +34,7 @@ const noteHtml = renderRichText(place.note);
     place.primary_category ?? "",
     place.neighborhood ?? "",
     place.tags.join(" "),
+    place.vibe_tags.join(" "),
   ].join(" ").toLowerCase()}
 >
   <div class="place-card-title">
