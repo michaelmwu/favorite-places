@@ -4,7 +4,7 @@ import { siteConfig } from "../../data/site";
 import GuideMap from "../../components/GuideMap.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
-import { getDisplayPlaceTags } from "../../lib/placeTags";
+import { getDisplayPlaceTags, getGuideAreaFilters } from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
 
 export function getStaticPaths() {
@@ -18,9 +18,7 @@ const { guide } = Astro.props;
 
 const visiblePlaces = guide.places.filter((place) => !place.hidden);
 const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includes(place.id)).slice(0, 3);
-const allTags = [...new Set(visiblePlaces.flatMap((place) => getDisplayPlaceTags(place.tags)))].sort((a, b) =>
-  a.localeCompare(b),
-);
+const areaFilters = getGuideAreaFilters(visiblePlaces);
 const guideVibeFilters = [
   ...new Set(
     visiblePlaces.flatMap((place) =>
@@ -130,16 +128,16 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
               </select>
             </div>
 
-            {allTags.length > 0 && (
+            {areaFilters.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
-                <span class="control-label">Filter by tag</span>
+                <span class="control-label">Area</span>
                 <div class="tag-row">
-                  <button class="tag-pill" type="button" data-tag-filter data-tag="">
+                  <button class="tag-pill" type="button" data-area-filter data-area="">
                     All
                   </button>
-                  {allTags.map((tag) => (
-                    <button class="tag-pill" type="button" data-tag-filter data-tag={tag.toLowerCase()}>
-                      #{tag}
+                  {areaFilters.map((area) => (
+                    <button class="tag-pill" type="button" data-area-filter data-area={area.value}>
+                      {area.label} ({area.count})
                     </button>
                   ))}
                 </div>
@@ -150,6 +148,9 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
               <div class="control-group" style="grid-column: 1 / -1;">
                 <span class="control-label">Vibe</span>
                 <div class="tag-row">
+                  <button class="tag-pill" type="button" data-tag-filter data-tag="">
+                    All
+                  </button>
                   {guideVibeFilters.map((tag) => (
                     <button class="tag-pill" type="button" data-tag-filter data-tag={tag}>
                       {formatVibeLabel(tag)}

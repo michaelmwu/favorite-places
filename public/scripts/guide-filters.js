@@ -8,6 +8,7 @@ if (root) {
   const searchInput = root.querySelector("[data-search-input]");
   const sortSelect = root.querySelector("[data-sort-select]");
   const tagButtons = Array.from(root.querySelectorAll("[data-tag-filter]"));
+  const areaButtons = Array.from(root.querySelectorAll("[data-area-filter]"));
   const resultsCount = root.querySelector("[data-results-count]");
   const emptyState = root.querySelector("[data-empty-state]");
   const mapFilterStatus = root.querySelector("[data-map-filter-status]");
@@ -16,6 +17,7 @@ if (root) {
   const initialParams = new URLSearchParams(window.location.search);
 
   let activeTag = "";
+  let activeArea = "";
   let mapFramePlaceIds = null;
   let searchIndex = null;
   let highlightedPlaceId = initialParams.get("place") || "";
@@ -72,8 +74,9 @@ if (root) {
       const matchesSearch = searchResultIds
         ? searchResultIds.has(card.dataset.placeId || "")
         : fallbackMatches(card, normalizedQuery);
+      const matchesArea = !activeArea || (card.dataset.neighborhood || "") === activeArea;
       const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
-      const visible = matchesSearch && matchesMapFrame;
+      const visible = matchesSearch && matchesArea && matchesMapFrame;
       card.hidden = !visible;
       card.dataset.searchHighlight = highlightedPlaceId && card.dataset.placeId === highlightedPlaceId ? "true" : "false";
       return visible;
@@ -131,6 +134,15 @@ if (root) {
       update();
     });
   });
+  areaButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeArea = button.dataset.area || "";
+      areaButtons.forEach((candidate) => {
+        candidate.dataset.active = candidate === button ? "true" : "false";
+      });
+      update();
+    });
+  });
 
   root.addEventListener("guide:map-frame-filter", (event) => {
     const visiblePlaceIds = Array.isArray(event.detail?.visiblePlaceIds) ? event.detail.visiblePlaceIds : [];
@@ -166,6 +178,10 @@ if (root) {
   const allButton = tagButtons.find((button) => (button.dataset.tag || "") === "");
   if (allButton) {
     allButton.dataset.active = "true";
+  }
+  const allAreaButton = areaButtons.find((button) => (button.dataset.area || "") === "");
+  if (allAreaButton) {
+    allAreaButton.dataset.active = "true";
   }
   applyDeepLink();
   update();

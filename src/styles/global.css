@@ -221,6 +221,9 @@ img {
 
 .country-browser {
   margin-bottom: 1rem;
+  position: sticky;
+  top: 0.5rem;
+  z-index: 5;
 }
 
 .global-search-results {
@@ -492,9 +495,6 @@ img {
 
 .controls-panel {
   padding: 1rem;
-  position: sticky;
-  top: 0.5rem;
-  z-index: 5;
   background: var(--surface-strong);
 }
 
