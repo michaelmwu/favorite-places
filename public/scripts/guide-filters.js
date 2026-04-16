@@ -1,6 +1,62 @@
 import { loadSearchIndex, searchPlaces } from "./place-search.js";
 
-const root = document.querySelector("[data-guide-root]");
+export function cardHasTag(card, tag) {
+  const normalizedTag = String(tag || "").trim().toLowerCase();
+  if (!normalizedTag) {
+    return true;
+  }
+
+  return `${card.dataset.tags || ""} ${card.dataset.vibeTags || ""}`
+    .split(/\s+/)
+    .includes(normalizedTag);
+}
+
+export function matchesCardSearch(card, { normalizedQuery = "", searchResultIds = null } = {}) {
+  return searchResultIds
+    ? searchResultIds.has(card.dataset.placeId || "")
+    : !normalizedQuery || (card.dataset.search || "").includes(normalizedQuery);
+}
+
+export function countMatchingCards(cards, {
+  activeArea = "",
+  mapFramePlaceIds = null,
+  normalizedQuery = "",
+  searchResultIds = null,
+  tag = "",
+} = {}) {
+  return cards.filter((card) => {
+    const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
+    const matchesArea = !activeArea || (card.dataset.neighborhood || "") === activeArea;
+    const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
+    return matchesSearch && matchesArea && matchesMapFrame && cardHasTag(card, tag);
+  }).length;
+}
+
+export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, overflowCount }) {
+  if (!activeAreaLabel || overflowCount <= 0) {
+    return "";
+  }
+
+  return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match elsewhere in this guide.`;
+}
+
+export function buildEmptyStateMessage({ activeAreaLabel = "", overflowCount = 0, query = "" }) {
+  if (query && activeAreaLabel && overflowCount > 0) {
+    return `No places matched "${query}" in ${activeAreaLabel}. ${overflowCount} more match elsewhere in this guide. Try another area or clear the area filter.`;
+  }
+  if (activeAreaLabel && overflowCount > 0) {
+    return `No matches in ${activeAreaLabel}. ${overflowCount} more match elsewhere in this guide. Try another area or clear the area filter.`;
+  }
+  if (query) {
+    return `No places matched "${query}" in this guide. Try a broader search or clear filters.`;
+  }
+  if (activeAreaLabel) {
+    return `No matches in ${activeAreaLabel}. Try another area or clear the area filter.`;
+  }
+  return "No matches. Try a broader search or clear the tag filter.";
+}
+
+const root = typeof document === "undefined" ? null : document.querySelector("[data-guide-root]");
 
 if (root) {
   const cards = Array.from(root.querySelectorAll("[data-place-card]"));
@@ -11,6 +67,7 @@ if (root) {
   const areaButtons = Array.from(root.querySelectorAll("[data-area-filter]"));
   const resultsCount = root.querySelector("[data-results-count]");
   const emptyState = root.querySelector("[data-empty-state]");
+  const areaFilterStatus = root.querySelector("[data-area-filter-status]");
   const mapFilterStatus = root.querySelector("[data-map-filter-status]");
   const mapFilterResetButtons = Array.from(root.querySelectorAll("[data-map-filter-reset]"));
   const guideSlug = root.dataset.guideSlug || "";
@@ -36,13 +93,6 @@ if (root) {
       || (left.dataset.name || "").localeCompare(right.dataset.name || ""),
   };
 
-  const fallbackMatches = (card, query) => {
-    const tagText = `${card.dataset.tags || ""} ${card.dataset.vibeTags || ""}`;
-    const matchesQuery = !query || (card.dataset.search || "").includes(query);
-    const matchesTag = !activeTag || tagText.split(" ").includes(activeTag);
-    return matchesQuery && matchesTag;
-  };
-
   const clearMapFrameFilter = () => {
     mapFramePlaceIds = null;
     update("map-reset");
@@ -60,7 +110,6 @@ if (root) {
         index: searchIndex,
         scope: "guide",
         guideSlug,
-        activeFilters: { tag: activeTag },
       })
       : null;
     const searchResultIds = searchState
@@ -70,16 +119,41 @@ if (root) {
       ? new Map(searchState.results.map((result) => [result.entry.id, result.score]))
       : new Map();
 
+    const activeAreaLabel = areaButtons.find((button) => (button.dataset.area || "") === activeArea)?.dataset.areaLabel || "";
     const visibleCards = cards.filter((card) => {
-      const matchesSearch = searchResultIds
-        ? searchResultIds.has(card.dataset.placeId || "")
-        : fallbackMatches(card, normalizedQuery);
+      const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
+      const matchesTag = cardHasTag(card, activeTag);
       const matchesArea = !activeArea || (card.dataset.neighborhood || "") === activeArea;
       const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
-      const visible = matchesSearch && matchesArea && matchesMapFrame;
+      const visible = matchesSearch && matchesTag && matchesArea && matchesMapFrame;
       card.hidden = !visible;
       card.dataset.searchHighlight = highlightedPlaceId && card.dataset.placeId === highlightedPlaceId ? "true" : "false";
       return visible;
+    });
+    const broaderAreaCount = activeArea
+      ? countMatchingCards(cards, {
+        mapFramePlaceIds,
+        normalizedQuery,
+        searchResultIds,
+        tag: activeTag,
+      })
+      : visibleCards.length;
+    const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - visibleCards.length) : 0;
+
+    tagButtons.forEach((button) => {
+      const tag = button.dataset.tag || "";
+      const count = countMatchingCards(cards, {
+        activeArea,
+        mapFramePlaceIds,
+        normalizedQuery,
+        searchResultIds,
+        tag,
+      });
+      button.dataset.tagCount = String(count);
+      const countText = button.querySelector("[data-tag-count-text]");
+      if (countText) {
+        countText.textContent = String(count);
+      }
     });
 
     const sorter = normalizedQuery && sort === "curated" && searchResultIds
@@ -100,9 +174,21 @@ if (root) {
 
     if (emptyState) {
       emptyState.dataset.visible = visibleCards.length === 0 ? "true" : "false";
-      emptyState.textContent = query
-        ? `No places matched "${query}" in this guide. Try a broader search or clear filters.`
-        : "No matches. Try a broader search or clear the tag filter.";
+      emptyState.textContent = buildEmptyStateMessage({
+        activeAreaLabel,
+        overflowCount: areaOverflowCount,
+        query,
+      });
+    }
+
+    if (areaFilterStatus) {
+      const message = buildAreaFilterStatusMessage({
+        activeAreaLabel,
+        visibleCount: visibleCards.length,
+        overflowCount: areaOverflowCount,
+      });
+      areaFilterStatus.hidden = !message;
+      areaFilterStatus.textContent = message;
     }
 
     if (mapFilterStatus) {

@@ -45,7 +45,8 @@ OPERATIONAL_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
-MAP_PIN_DISTANCE_WARNING_METERS = 200_000.0
+MAP_PIN_DISTANCE_WARNING_MIN_METERS = 100_000.0
+MAP_PIN_DISTANCE_WARNING_BUFFER_METERS = 50_000.0
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 COUNTRY_LOCALITY_ALIASES = (
     "England",
@@ -945,8 +946,9 @@ def warn_far_map_pins(
     places: list[NormalizedPlace],
     center: tuple[float | None, float | None],
 ) -> None:
+    warning_distance_meters = guide_map_pin_warning_distance_meters(places, center)
     center_lat, center_lng = center
-    if center_lat is None or center_lng is None:
+    if center_lat is None or center_lng is None or warning_distance_meters is None:
         return
 
     for place in places:
@@ -954,7 +956,7 @@ def warn_far_map_pins(
             continue
 
         distance_meters = haversine_meters(center_lat, center_lng, place.lat, place.lng)
-        if distance_meters < MAP_PIN_DISTANCE_WARNING_METERS:
+        if distance_meters < warning_distance_meters:
             continue
 
         print(
@@ -963,6 +965,35 @@ def warn_far_map_pins(
             f"{distance_meters / 1000:.0f} km from the guide center; "
             "check whether it belongs in this city/country."
         )
+
+
+def guide_map_pin_warning_distance_meters(
+    places: list[NormalizedPlace],
+    center: tuple[float | None, float | None],
+) -> float | None:
+    center_lat, center_lng = center
+    if center_lat is None or center_lng is None:
+        return None
+
+    coordinates = [
+        (place.lat, place.lng)
+        for place in places
+        if place.lat is not None and place.lng is not None
+    ]
+    if not coordinates:
+        return None
+    if len(coordinates) < 4:
+        return MAP_PIN_DISTANCE_WARNING_MIN_METERS
+
+    inlier_coordinates = guide_location_inliers(coordinates)
+    inlier_radius_meters = max(
+        haversine_meters(center_lat, center_lng, latitude, longitude)
+        for latitude, longitude in inlier_coordinates
+    )
+    return max(
+        MAP_PIN_DISTANCE_WARNING_MIN_METERS,
+        inlier_radius_meters + MAP_PIN_DISTANCE_WARNING_BUFFER_METERS,
+    )
 
 
 def guide_location_inliers(coordinates: list[tuple[float, float]]) -> list[tuple[float, float]]:

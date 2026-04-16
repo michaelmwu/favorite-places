@@ -181,6 +181,12 @@ img {
   color: var(--muted);
 }
 
+.tag-pill-count {
+  opacity: 0.72;
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .tag-pill[data-active="true"] {
   background: var(--accent);
   color: var(--surface);

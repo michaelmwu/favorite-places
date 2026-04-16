@@ -4,7 +4,7 @@ import { siteConfig } from "../../data/site";
 import GuideMap from "../../components/GuideMap.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
-import { getDisplayPlaceTags, getGuideAreaFilters } from "../../lib/placeTags";
+import { getDisplayGuideTags, getDisplayPlaceTags, getGuideAreaFilters } from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
 
 export function getStaticPaths() {
@@ -19,6 +19,11 @@ const { guide } = Astro.props;
 const visiblePlaces = guide.places.filter((place) => !place.hidden);
 const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includes(place.id)).slice(0, 3);
 const areaFilters = getGuideAreaFilters(visiblePlaces);
+const displayGuideTags = getDisplayGuideTags(guide.list_tags, {
+  cityName: guide.city_name,
+  countryCode: guide.country_code,
+  countryName: guide.country_name,
+});
 const guideVibeFilters = [
   ...new Set(
     visiblePlaces.flatMap((place) =>
@@ -41,6 +46,13 @@ const guideVibeFilters = [
 ].sort((a, b) => a.localeCompare(b));
 const guideDescriptionHtml = renderRichText(guide.description);
 const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
+const countPlacesForVibe = (tag: string) =>
+  visiblePlaces.filter((place) => getDisplayPlaceTags(place.vibe_tags).includes(tag)).length;
+const placeTagGuideContext = {
+  cityName: guide.city_name,
+  countryCode: guide.country_code,
+  countryName: guide.country_name,
+};
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
@@ -68,14 +80,16 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
         </div>
       </div>
 
-      <div class="section-stack">
-        <p class="eyebrow">List tags</p>
-        <div class="tag-row">
-          {guide.list_tags.map((tag) => (
-            <span class="tag-pill">#{tag}</span>
-          ))}
+      {displayGuideTags.length > 0 && (
+        <div class="section-stack">
+          <p class="eyebrow">List tags</p>
+          <div class="tag-row">
+            {displayGuideTags.map((tag) => (
+              <span class="tag-pill">#{tag}</span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   </section>
 
@@ -90,7 +104,7 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
 
       <div class="top-picks-grid">
         {topPicks.map((place) => (
-          <PlaceCard place={place} />
+          <PlaceCard place={place} guideContext={placeTagGuideContext} />
         ))}
       </div>
     </section>
@@ -132,11 +146,17 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
               <div class="control-group" style="grid-column: 1 / -1;">
                 <span class="control-label">Area</span>
                 <div class="tag-row">
-                  <button class="tag-pill" type="button" data-area-filter data-area="">
+                  <button class="tag-pill" type="button" data-area-filter data-area="" data-area-label="All areas">
                     All
                   </button>
                   {areaFilters.map((area) => (
-                    <button class="tag-pill" type="button" data-area-filter data-area={area.value}>
+                    <button
+                      class="tag-pill"
+                      type="button"
+                      data-area-filter
+                      data-area={area.value}
+                      data-area-label={area.label}
+                    >
                       {area.label} ({area.count})
                     </button>
                   ))}
@@ -148,12 +168,28 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
               <div class="control-group" style="grid-column: 1 / -1;">
                 <span class="control-label">Vibe</span>
                 <div class="tag-row">
-                  <button class="tag-pill" type="button" data-tag-filter data-tag="">
-                    All
+                  <button
+                    class="tag-pill"
+                    type="button"
+                    data-tag-filter
+                    data-tag=""
+                    data-tag-label="All"
+                    data-tag-count={visiblePlaces.length}
+                  >
+                    <span>All</span>
+                    <span class="tag-pill-count" data-tag-count-text>{visiblePlaces.length}</span>
                   </button>
                   {guideVibeFilters.map((tag) => (
-                    <button class="tag-pill" type="button" data-tag-filter data-tag={tag}>
-                      {formatVibeLabel(tag)}
+                    <button
+                      class="tag-pill"
+                      type="button"
+                      data-tag-filter
+                      data-tag={tag}
+                      data-tag-label={formatVibeLabel(tag)}
+                      data-tag-count={countPlacesForVibe(tag)}
+                    >
+                      <span>{formatVibeLabel(tag)}</span>
+                      <span class="tag-pill-count" data-tag-count-text>{countPlacesForVibe(tag)}</span>
                     </button>
                   ))}
                 </div>
@@ -166,12 +202,13 @@ const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
           <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
           <button class="map-filter-reset" type="button" data-map-filter-reset hidden>Reset map</button>
         </div>
+        <p class="map-filter-status small-copy" data-area-filter-status hidden></p>
         <p class="map-filter-status small-copy" data-map-filter-status hidden>Filtered to the visible map area.</p>
         <div class="empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
 
         <div class="card-grid" data-kind="places" data-place-list>
           {visiblePlaces.map((place) => (
-            <PlaceCard place={place} />
+            <PlaceCard place={place} guideContext={placeTagGuideContext} />
           ))}
         </div>
       </div>

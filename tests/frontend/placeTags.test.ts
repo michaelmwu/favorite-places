@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getDisplayPlaceTags, getGuideAreaFilters } from "../../src/lib/placeTags";
+import { getDisplayGuideTags, getDisplayPlaceTags, getGuideAreaFilters } from "../../src/lib/placeTags";
 
 describe("getDisplayPlaceTags", () => {
   it("keeps useful tags and hides address fragments", () => {
@@ -67,6 +67,49 @@ describe("getGuideAreaFilters", () => {
         { neighborhood: "Tokyo" },
         { neighborhood: "Tokyo" },
       ]),
+    ).toEqual([]);
+  });
+});
+
+describe("getDisplayGuideTags", () => {
+  it("hides broad city and country tags while keeping more specific local tags", () => {
+    expect(
+      getDisplayGuideTags(
+        [
+          "brisbane",
+          "gold-coast",
+          "brisbane-gold-coast",
+          "australia",
+          "south-brisbane",
+          "brisbane-city-hall",
+          "coffee",
+        ],
+        {
+          cityName: "Brisbane & Gold Coast",
+          countryCode: "AU",
+          countryName: "Australia",
+        },
+      ),
+    ).toEqual(["south-brisbane", "brisbane-city-hall", "coffee"]);
+  });
+
+  it("drops common country aliases for display", () => {
+    expect(
+      getDisplayGuideTags(["usa", "new-york", "pizza"], {
+        cityName: "New York",
+        countryCode: "US",
+        countryName: "United States",
+      }),
+    ).toEqual(["pizza"]);
+  });
+
+  it("drops single-location country tags such as tonga", () => {
+    expect(
+      getDisplayGuideTags(["tonga"], {
+        cityName: "Tonga",
+        countryCode: "TO",
+        countryName: "Tonga",
+      }),
     ).toEqual([]);
   });
 });
