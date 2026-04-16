@@ -187,13 +187,23 @@ const mapPlaces = places
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
 
+  const safeMapsUrl = (value: string) => {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
+    } catch {
+      return null;
+    }
+  };
+
   const popupHtml = (place: MapPlace) => {
     const meta = [place.category, place.neighborhood].filter(Boolean).join(" · ");
+    const mapsUrl = safeMapsUrl(place.mapsUrl);
     return `
       <div class="guide-map-popup-content">
         <strong>${escapeHtml(place.name)}</strong>
         <span>${escapeHtml(meta)}</span>
-        <a href="${escapeHtml(place.mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+        ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : ""}
       </div>
     `;
   };
@@ -409,7 +419,7 @@ const mapPlaces = places
       return window.__favoritePlacesGoogleMapsLoader;
     }
 
-    window.__favoritePlacesGoogleMapsLoader = new Promise((resolve, reject) => {
+    window.__favoritePlacesGoogleMapsLoader = new Promise<GoogleMapsApi>((resolve, reject) => {
       const existingScript = document.querySelector<HTMLScriptElement>('script[data-google-maps-loader="favorite-places"]');
       if (existingScript) {
         if (window.google?.maps) {
@@ -439,11 +449,13 @@ const mapPlaces = places
       window[callbackName] = () => {
         if (window.google?.maps) {
           script.dataset.googleMapsStatus = "loaded";
+          delete window.__favoritePlacesGoogleMapsInit;
           resolve(window.google);
           return;
         }
 
         script.dataset.googleMapsStatus = "loaded";
+        delete window.__favoritePlacesGoogleMapsInit;
         reject(new Error("Google Maps loaded without the Maps API namespace"));
       };
 
@@ -462,9 +474,13 @@ const mapPlaces = places
         }).toString();
       script.addEventListener("error", () => {
         script.dataset.googleMapsStatus = "error";
+        delete window.__favoritePlacesGoogleMapsInit;
         reject(new Error("Google Maps failed to load"));
       });
       document.head.append(script);
+    }).catch((error) => {
+      delete window.__favoritePlacesGoogleMapsLoader;
+      throw error;
     });
 
     return window.__favoritePlacesGoogleMapsLoader;
