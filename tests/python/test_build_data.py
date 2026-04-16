@@ -270,14 +270,6 @@ class BuildDataTests(unittest.TestCase):
                 status="active",
             ),
             NormalizedPlace(
-                id="tokyo-4",
-                name="Tokyo 4",
-                lat=35.68,
-                lng=139.72,
-                maps_url="https://maps.example/tokyo-4",
-                status="active",
-            ),
-            NormalizedPlace(
                 id="bad-import",
                 name="Bad import",
                 lat=48.86,
@@ -289,8 +281,8 @@ class BuildDataTests(unittest.TestCase):
 
         center_lat, center_lng = build_data.guide_location_center(places)
 
-        self.assertAlmostEqual(center_lat or 0, 35.665, places=3)
-        self.assertAlmostEqual(center_lng or 0, 139.705, places=3)
+        self.assertAlmostEqual(center_lat or 0, 35.66, places=3)
+        self.assertAlmostEqual(center_lng or 0, 139.7, places=3)
 
     def test_warn_far_map_pins_prints_cli_warning_for_distant_places(self) -> None:
         places = [

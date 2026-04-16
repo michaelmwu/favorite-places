@@ -46,7 +46,10 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain('aria-disabled="true"');
     expect(guideMap).not.toContain(">Near me</button>");
     expect(guideMap).toContain("locationBoundsForPlaces");
+    expect(guideMap).toContain("guideLocationInliers");
     expect(guideMap).toContain("guideLocationBounds");
+    expect(guideMap).toContain("(sorted.length - 1) * percentileValue");
+    expect(guideMap).not.toContain("Math.ceil(sorted.length * percentileValue) - 1");
     expect(guideMap).toContain("distanceFromGuideCenter <= guideLocationBounds.maxDistanceKm");
     expect(guideMap).toContain("Current location is too far from this guide");
     expect(guideMap).toContain("watchPosition");

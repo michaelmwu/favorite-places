@@ -105,6 +105,7 @@ const mapPlaces = places
   const ACTIVE_MARKER_COLOR = "#c4312d";
   const LOCATION_PROXIMITY_BUFFER_KM = 25;
   const LOCATION_PROXIMITY_MULTIPLIER = 1.8;
+  const LOCATION_OUTLIER_MIN_DISTANCE_KM = 50;
 
   const escapeHtml = (value: string) =>
     value
@@ -182,19 +183,56 @@ const mapPlaces = places
 
   const percentile = (values: number[], percentileValue: number) => {
     const sorted = [...values].sort((left, right) => left - right);
-    const index = Math.min(sorted.length - 1, Math.max(0, Math.ceil(sorted.length * percentileValue) - 1));
-    return sorted[index];
+    const position = (sorted.length - 1) * percentileValue;
+    const lowerIndex = Math.floor(position);
+    const upperIndex = Math.ceil(position);
+
+    if (lowerIndex === upperIndex) {
+      return sorted[lowerIndex];
+    }
+
+    const lowerValue = sorted[lowerIndex];
+    const upperValue = sorted[upperIndex];
+    return lowerValue + (upperValue - lowerValue) * (position - lowerIndex);
+  };
+
+  const guideLocationInliers = (places: MapPlace[]) => {
+    if (places.length < 4) return places;
+
+    const medoid = places.reduce((bestPlace, place) => {
+      const bestDistance = places.reduce(
+        (sum, otherPlace) => sum + distanceInKm(bestPlace.lat, bestPlace.lng, otherPlace.lat, otherPlace.lng),
+        0,
+      );
+      const distance = places.reduce(
+        (sum, otherPlace) => sum + distanceInKm(place.lat, place.lng, otherPlace.lat, otherPlace.lng),
+        0,
+      );
+
+      return distance < bestDistance ? place : bestPlace;
+    });
+    const distances = places.map((place) => distanceInKm(medoid.lat, medoid.lng, place.lat, place.lng));
+    const medianDistance = median(distances);
+    const medianAbsoluteDeviation = median(distances.map((distance) => Math.abs(distance - medianDistance)));
+    const outlierThreshold = Math.max(
+      LOCATION_OUTLIER_MIN_DISTANCE_KM,
+      medianDistance + 6 * medianAbsoluteDeviation,
+    );
+    const inliers = places.filter((_place, index) => distances[index] <= outlierThreshold);
+
+    return inliers.length > 0 ? inliers : places;
   };
 
   const locationBoundsForPlaces = (places: MapPlace[]): GuideLocationBounds | null => {
     if (places.length === 0) return null;
 
+    const inlierPlaces = guideLocationInliers(places);
     const center = L.latLng(
-      median(places.map((place) => place.lat)),
-      median(places.map((place) => place.lng)),
+      median(inlierPlaces.map((place) => place.lat)),
+      median(inlierPlaces.map((place) => place.lng)),
     );
-    const distances = places.map((place) => distanceInKm(center.lat, center.lng, place.lat, place.lng));
-    const radiusKm = places.length < 8 ? Math.max(...distances) : percentile(distances, 0.95);
+    const distances = inlierPlaces.map((place) => distanceInKm(center.lat, center.lng, place.lat, place.lng));
+    const radiusKm = percentile(distances, 0.95);
 
     return {
       center,

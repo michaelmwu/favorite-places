@@ -774,17 +774,20 @@ def guide_location_inliers(coordinates: list[tuple[float, float]]) -> list[tuple
     if len(coordinates) < 4:
         return coordinates
 
-    median_lat = median(latitude for latitude, _longitude in coordinates)
-    median_lng = median(longitude for _latitude, longitude in coordinates)
+    medoid_lat, medoid_lng = min(
+        coordinates,
+        key=lambda coordinate: sum(
+            haversine_meters(coordinate[0], coordinate[1], latitude, longitude)
+            for latitude, longitude in coordinates
+        ),
+    )
     distances = [
-        haversine_meters(median_lat, median_lng, latitude, longitude)
+        haversine_meters(medoid_lat, medoid_lng, latitude, longitude)
         for latitude, longitude in coordinates
     ]
-    sorted_distances = sorted(distances)
-    first_quartile = percentile(sorted_distances, 0.25)
-    third_quartile = percentile(sorted_distances, 0.75)
-    iqr = third_quartile - first_quartile
-    outlier_threshold = max(50_000.0, third_quartile + 3 * iqr)
+    median_distance = median(distances)
+    median_absolute_deviation = median(abs(distance - median_distance) for distance in distances)
+    outlier_threshold = max(50_000.0, median_distance + 6 * median_absolute_deviation)
 
     inliers = [
         coordinate

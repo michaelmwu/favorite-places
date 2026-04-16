@@ -667,7 +667,7 @@ select {
   width: 1.2rem;
   height: 1.2rem;
   fill: none;
-  stroke: currentColor;
+  stroke: currentcolor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
@@ -726,8 +726,8 @@ select {
 .map-toggle-icon {
   width: 0.62rem;
   height: 0.62rem;
-  border-top: 2px solid currentColor;
-  border-right: 2px solid currentColor;
+  border-top: 2px solid currentcolor;
+  border-right: 2px solid currentcolor;
   transform: rotate(45deg);
   transition: transform 160ms ease;
 }
