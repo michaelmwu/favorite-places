@@ -6,11 +6,7 @@ interface Props {
 }
 
 const { places } = Astro.props;
-const googleMapsApiKey =
-  import.meta.env.GOOGLE_MAPS_JS_API_KEY ||
-  import.meta.env.PUBLIC_GOOGLE_MAPS_API_KEY ||
-  import.meta.env.GOOGLE_MAPS_API_KEY ||
-  "";
+const googleMapsApiKey = import.meta.env.GOOGLE_MAPS_JS_API_KEY || "";
 const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
 const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : googleMapsApiKey ? "google" : "leaflet";
 const mapPlaces = places
