@@ -1,5 +1,6 @@
 ---
 import type { GuideManifest } from "../lib/types";
+import { getDisplayGuideTags } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 
 interface Props {
@@ -8,6 +9,11 @@ interface Props {
 
 const { guide } = Astro.props;
 const guideDescriptionHtml = renderRichText(guide.description);
+const displayGuideTags = getDisplayGuideTags(guide.list_tags, {
+  cityName: guide.city_name,
+  countryCode: guide.country_code,
+  countryName: guide.country_name,
+});
 const guideSearchText = [
   guide.title,
   guide.description,
@@ -71,11 +77,13 @@ const guideDisplayTitle = trimCountryFromTitle(guide.title);
     }
   </div>
 
-  <div class="tag-row">
-    {guide.list_tags.slice(0, 4).map((tag) => (
-      <span class="tag-pill">#{tag}</span>
-    ))}
-  </div>
+  {displayGuideTags.length > 0 && (
+    <div class="tag-row">
+      {displayGuideTags.slice(0, 4).map((tag) => (
+        <span class="tag-pill">#{tag}</span>
+      ))}
+    </div>
+  )}
 
   <div class="guide-card-footer">
     <div class="stats-row">

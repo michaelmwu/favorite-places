@@ -442,6 +442,110 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("WARNING: tokyo-japan:bad-import", warning)
         self.assertIn("check whether it belongs in this city/country", warning)
 
+    def test_guide_map_pin_warning_distance_uses_inlier_radius_plus_buffer(self) -> None:
+        places = [
+            NormalizedPlace(
+                id="urumqi-1",
+                name="Urumqi 1",
+                lat=43.811,
+                lng=87.606,
+                maps_url="https://maps.example/urumqi-1",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="urumqi-2",
+                name="Urumqi 2",
+                lat=43.825,
+                lng=87.615,
+                maps_url="https://maps.example/urumqi-2",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="urumqi-3",
+                name="Urumqi 3",
+                lat=43.801,
+                lng=87.649,
+                maps_url="https://maps.example/urumqi-3",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="urumqi-4",
+                name="Urumqi 4",
+                lat=43.789,
+                lng=87.632,
+                maps_url="https://maps.example/urumqi-4",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="nalati",
+                name="Nalati Grassland",
+                lat=43.292522,
+                lng=84.229038,
+                maps_url="https://maps.example/nalati",
+                status="active",
+            ),
+        ]
+
+        center = build_data.guide_location_center(places)
+        threshold = build_data.guide_map_pin_warning_distance_meters(places, center)
+
+        self.assertIsNotNone(threshold)
+        self.assertEqual(threshold, build_data.MAP_PIN_DISTANCE_WARNING_MIN_METERS)
+
+    def test_warn_far_map_pins_warns_for_medium_distance_bad_imports(self) -> None:
+        places = [
+            NormalizedPlace(
+                id="tokyo-1",
+                name="Tokyo 1",
+                lat=35.6600,
+                lng=139.7000,
+                maps_url="https://maps.example/tokyo-1",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-2",
+                name="Tokyo 2",
+                lat=35.6760,
+                lng=139.6990,
+                maps_url="https://maps.example/tokyo-2",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-3",
+                name="Tokyo 3",
+                lat=35.6700,
+                lng=139.7350,
+                maps_url="https://maps.example/tokyo-3",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-4",
+                name="Tokyo 4",
+                lat=35.6890,
+                lng=139.6910,
+                maps_url="https://maps.example/tokyo-4",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="beaumont-import",
+                name="Kasama Restaurant",
+                lat=33.9290518,
+                lng=-116.9776347,
+                maps_url="https://maps.example/beaumont-import",
+                status="active",
+            ),
+        ]
+
+        center = build_data.guide_location_center(places)
+
+        with patch("builtins.print") as print_mock:
+            build_data.warn_far_map_pins("tokyo-japan", places, center)
+
+        self.assertEqual(print_mock.call_count, 1)
+        warning = print_mock.call_args.args[0]
+        self.assertIn("WARNING: tokyo-japan:beaumont-import", warning)
+        self.assertIn("Kasama Restaurant", warning)
+
     def test_country_inference_keeps_monaco_english_with_localized_address_tails(self) -> None:
         raw = RawSavedList(
             title="Monaco 🇲🇨",

@@ -38,13 +38,17 @@ describe("guide map interactions", () => {
     const guideMap = readSource("src/components/GuideMap.astro");
     const filters = readSource("public/scripts/guide-filters.js");
 
+    expect(guidePage).toContain("data-area-filter-status");
     expect(guidePage).toContain("data-map-filter-status");
+    expect(guidePage).toContain("data-tag-count-text");
     expect(guidePage).toContain("data-map-filter-reset");
     expect(guideMap).toContain("data-map-frame-filter");
     expect(guideMap).toContain("data-map-full-area");
     expect(guideMap).toContain(">Reset Map</button>");
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-reset-request"');
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-filter"');
+    expect(filters).toContain("countMatchingCards");
+    expect(filters).toContain("buildAreaFilterStatusMessage");
     expect(filters).toContain('root.addEventListener("guide:map-frame-filter"');
     expect(filters).toContain('root.dispatchEvent(new CustomEvent("guide:map-frame-reset"');
   });

@@ -1,15 +1,22 @@
 ---
 import type { Place } from "../lib/types";
-import { getDisplayPlaceTags } from "../lib/placeTags";
+import { getDisplayGuideTags, getDisplayPlaceTags, getTagComparisonValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 
 interface Props {
+  guideContext?: {
+    cityName?: string | null;
+    countryCode?: string | null;
+    countryName?: string | null;
+  };
   place: Place;
 }
 
-const { place } = Astro.props;
-const displayTags = getDisplayPlaceTags(place.tags);
+const { guideContext = {}, place } = Astro.props;
+const displayTags = getDisplayGuideTags(getDisplayPlaceTags(place.tags), guideContext);
 const displayVibeTags = getDisplayPlaceTags(place.vibe_tags);
+const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
+const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
 ---
@@ -20,8 +27,8 @@ const noteHtml = renderRichText(place.note);
   data-place-card
   data-place-id={place.id}
   data-name={place.name.toLowerCase()}
-  data-tags={displayTags.join(" ").toLowerCase()}
-  data-vibe-tags={displayVibeTags.join(" ").toLowerCase()}
+  data-tags={filterTagTokens}
+  data-vibe-tags={filterVibeTagTokens}
   data-category={(place.primary_category ?? "").toLowerCase()}
   data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
   data-top-pick={place.top_pick ? "true" : "false"}
@@ -52,11 +59,13 @@ const noteHtml = renderRichText(place.note);
   {noteHtml && <p class="small-copy rich-copy" set:html={noteHtml} />}
   {place.address && <p class="small-copy">{place.address}</p>}
 
-  <div class="tag-row">
-    {displayTags.map((tag) => (
-      <span class="tag-pill">#{tag}</span>
-    ))}
-  </div>
+  {displayTags.length > 0 && (
+    <div class="tag-row">
+      {displayTags.map((tag) => (
+        <span class="tag-pill">#{tag}</span>
+      ))}
+    </div>
+  )}
 
   <div class="place-card-footer">
     <a class="action-pill" href={place.maps_url} target="_blank" rel="noreferrer">

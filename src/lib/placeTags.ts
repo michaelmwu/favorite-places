@@ -9,6 +9,14 @@ const ADDRESS_TAG_PATTERNS = [
 const STREET_AREA_PATTERN =
   /^(p\.|d\.|ng\.|c\/|c\.|carrer\b|rda\.|calle\b|av\b|av\.|jl\.|jalan\b|ngo\b|duong\b)/;
 const DEFAULT_AREA_FILTER_LIMIT = 12;
+const GUIDE_LOCATION_PART_SPLIT_PATTERN = /\s*(?:&|\/|\+|\band\b)\s*/i;
+const COUNTRY_TAG_ALIASES: Record<string, string[]> = {
+  korea: ["kr", "south-korea"],
+  "south-korea": ["kr", "korea"],
+  "united-arab-emirates": ["ae", "uae"],
+  "united-kingdom": ["gb", "uk"],
+  "united-states": ["us", "usa"],
+};
 
 interface AreaFilterPlace {
   neighborhood: string | null;
@@ -20,12 +28,65 @@ export interface AreaFilter {
   count: number;
 }
 
+interface GuideTagContext {
+  cityName?: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
+}
+
 function normalizeAreaText(area: string): string {
   return area
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .toLowerCase();
+}
+
+export function normalizeTagValue(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function getTagComparisonValue(value: string): string {
+  const normalizedText = value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+
+  return normalizeTagValue(normalizedText) || normalizedText;
+}
+
+function getGuideLocationTagsToHide({
+  cityName,
+  countryCode,
+  countryName,
+}: GuideTagContext): Set<string> {
+  const hiddenTags = new Set<string>();
+  const addTag = (value?: string | null) => {
+    const normalized = value ? getTagComparisonValue(value) : "";
+    if (normalized) {
+      hiddenTags.add(normalized);
+      (COUNTRY_TAG_ALIASES[normalized] ?? []).forEach((alias) => hiddenTags.add(alias));
+    }
+  };
+
+  addTag(cityName);
+  cityName
+    ?.split(GUIDE_LOCATION_PART_SPLIT_PATTERN)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .forEach(addTag);
+  addTag(countryName);
+  addTag(countryCode);
+
+  return hiddenTags;
 }
 
 export function isDisplayPlaceTag(tag: string): boolean {
@@ -35,6 +96,14 @@ export function isDisplayPlaceTag(tag: string): boolean {
 
 export function getDisplayPlaceTags(tags: string[]): string[] {
   return tags.filter(isDisplayPlaceTag);
+}
+
+export function getDisplayGuideTags(tags: string[], context: GuideTagContext = {}): string[] {
+  const hiddenTags = getGuideLocationTagsToHide(context);
+  return tags.filter((tag) => {
+    const normalizedTag = getTagComparisonValue(tag);
+    return tag.trim().length > 0 && !hiddenTags.has(normalizedTag);
+  });
 }
 
 export function getGuideAreaFilters(
