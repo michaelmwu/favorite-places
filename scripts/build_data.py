@@ -6,7 +6,10 @@ import hashlib
 import io
 import json
 import math
+import os
+import random
 import re
+import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
@@ -29,6 +32,9 @@ GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
 DEFAULT_REFRESH_WORKERS = 4
+DEFAULT_REFRESH_RETRIES = 2
+DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
+DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
 ERROR_CACHE_TTL = timedelta(days=1)
 UNMATCHED_CACHE_TTL = timedelta(days=3)
 LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
@@ -36,6 +42,7 @@ RATINGS_CACHE_TTL = timedelta(days=7)
 NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
 OPERATIONAL_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
+RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
 MAP_PIN_DISTANCE_WARNING_METERS = 200_000.0
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
@@ -96,9 +103,17 @@ except ModuleNotFoundError:
     )
 
 try:
-    from google_saved_lists import scrape_saved_list
+    from google_saved_lists import ParseError, ScrapeError, scrape_saved_list
 except ImportError:
+    class ParseError(RuntimeError):
+        pass
+
+    class ScrapeError(RuntimeError):
+        pass
+
     scrape_saved_list = None
+
+RECOVERABLE_REFRESH_ERRORS = (ScrapeError, ParseError)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -131,6 +146,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum parallel workers for headless raw list refreshes. Headed refreshes stay single-worker.",
     )
     parser.add_argument(
+        "--refresh-retries",
+        type=non_negative_int,
+        default=DEFAULT_REFRESH_RETRIES,
+        help="Retry each Google list refresh this many times after the first failed attempt.",
+    )
+    parser.add_argument(
+        "--refresh-retry-backoff-seconds",
+        type=non_negative_float,
+        default=DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS,
+        help="Initial delay before retrying a failed Google list refresh. Later retries use exponential backoff.",
+    )
+    parser.add_argument(
+        "--refresh-startup-jitter-seconds",
+        type=non_negative_float,
+        default=DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        help="Maximum randomized delay before each Google list scrape attempt starts its browser.",
+    )
+    parser.add_argument(
         "--enrich",
         action="store_true",
         help="Fill missing or stale Google Places enrichment cache entries.",
@@ -141,6 +174,26 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force-refresh Google Places enrichment cache entries for every place.",
     )
     return parser
+
+
+def non_negative_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be >= 0")
+    return parsed
+
+
+def non_negative_float(value: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be a number") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be >= 0")
+    return parsed
 
 
 def load_sources() -> list[SourceConfig]:
@@ -167,12 +220,15 @@ def refresh_raw_sources(
     force_refresh: bool,
     refresh_lists: list[str],
     refresh_workers: int,
+    refresh_retries: int = DEFAULT_REFRESH_RETRIES,
+    refresh_retry_backoff_seconds: float = DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS,
+    refresh_startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
 ) -> None:
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     sources = load_sources()
     selected_sources = resolve_refresh_sources(sources, refresh_lists)
     selected_slugs = {source.slug for source in selected_sources}
-    refresh_jobs: list[tuple[SourceConfig, Path]] = []
+    refresh_jobs: list[tuple[SourceConfig, Path, bool]] = []
 
     for source in sources:
         if selected_sources and source.slug not in selected_slugs:
@@ -210,37 +266,68 @@ def refresh_raw_sources(
             print(f"Refreshing {source.slug} from {source_url} (selected)")
         else:
             print(f"Refreshing {source.slug} from {source_url} ({refresh_reason})")
-        refresh_jobs.append((source, raw_path))
+        backup_available = existing_payload is not None and raw_source_signature_matches(
+            source,
+            existing_payload.source_signature,
+        )
+        refresh_jobs.append((source, raw_path, backup_available))
 
     if not refresh_jobs:
         return
 
+    effective_startup_jitter_seconds = (
+        refresh_startup_jitter_seconds if not headed and len(refresh_jobs) > 1 else 0
+    )
     max_workers = max(1, refresh_workers)
     if headed or len(refresh_jobs) == 1 or max_workers == 1:
-        for source, raw_path in refresh_jobs:
-            write_json(raw_path, scrape_google_list_url(source, headed=headed))
+        failures: list[str] = []
+        for source, raw_path, backup_available in refresh_jobs:
+            try:
+                payload = scrape_google_list_url_with_retries(
+                    source,
+                    headed=headed,
+                    refresh_retries=refresh_retries,
+                    refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
+                    refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
+                )
+            except RECOVERABLE_REFRESH_ERRORS as exc:
+                if backup_available:
+                    print(f"Keeping existing raw snapshot for {source.slug} after refresh failure: {exc}")
+                    continue
+                failures.append(f"{source.slug}: {exc}")
+                continue
+            write_json(raw_path, payload)
+        if failures:
+            failure_text = "\n".join(failures)
+            raise RuntimeError(f"Raw refresh failed for {len(failures)} source(s):\n{failure_text}")
         return
 
     max_workers = min(max_workers, len(refresh_jobs))
     print(f"Running {len(refresh_jobs)} headless refresh jobs with {max_workers} workers")
-    payloads_by_slug: dict[str, RawSavedList] = {}
     failures: list[str] = []
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         future_map = {
-            executor.submit(scrape_google_list_url, source, headed=False): (source, raw_path)
-            for source, raw_path in refresh_jobs
+            executor.submit(
+                scrape_google_list_url_with_retries,
+                source,
+                headed=False,
+                refresh_retries=refresh_retries,
+                refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
+                refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
+            ): (source, raw_path, backup_available)
+            for source, raw_path, backup_available in refresh_jobs
         }
         for future in as_completed(future_map):
-            source, _raw_path = future_map[future]
+            source, raw_path, backup_available = future_map[future]
             try:
-                payloads_by_slug[source.slug] = future.result()
-            except Exception as exc:
-                failures.append(f"{source.slug}: {exc}")
-
-    for source, raw_path in refresh_jobs:
-        payload = payloads_by_slug.get(source.slug)
-        if payload is not None:
+                payload = future.result()
+            except RECOVERABLE_REFRESH_ERRORS as exc:
+                if backup_available:
+                    print(f"Keeping existing raw snapshot for {source.slug} after refresh failure: {exc}")
+                else:
+                    failures.append(f"{source.slug}: {exc}")
+                continue
             write_json(raw_path, payload)
 
     if failures:
@@ -265,6 +352,48 @@ def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedLis
         payload.title = source.title
     stamp_raw_saved_list(payload, source, source_signature=raw_source_signature(source))
     return payload
+
+
+def scrape_google_list_url_with_retries(
+    source: SourceConfig,
+    *,
+    headed: bool,
+    refresh_retries: int,
+    refresh_retry_backoff_seconds: float,
+    refresh_startup_jitter_seconds: float,
+) -> RawSavedList:
+    attempts = max(1, refresh_retries + 1)
+    last_error: Exception | None = None
+
+    for attempt in range(1, attempts + 1):
+        sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
+        try:
+            return scrape_google_list_url(source, headed=headed)
+        except RECOVERABLE_REFRESH_ERRORS as exc:
+            last_error = exc
+            if attempt >= attempts:
+                break
+
+            backoff_seconds = max(0.0, refresh_retry_backoff_seconds) * (2 ** (attempt - 1))
+            print(
+                f"Retrying {source.slug} after refresh failure "
+                f"({attempt}/{attempts - 1} retries used): {exc}"
+            )
+            if backoff_seconds > 0:
+                time.sleep(backoff_seconds)
+
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError(f"Refresh did not produce a result for {source.slug}.")
+
+
+def sleep_for_refresh_startup_jitter(max_seconds: float) -> None:
+    if max_seconds <= 0:
+        return
+
+    delay = random.uniform(0, max_seconds)
+    if delay > 0:
+        time.sleep(delay)
 
 
 def refresh_google_export_csv(
@@ -1069,7 +1198,9 @@ def write_json(path: Path, payload: Any) -> None:
         payload = payload.model_dump(mode="json")
     elif isinstance(payload, list):
         payload = [item.model_dump(mode="json") if hasattr(item, "model_dump") else item for item in payload]
-    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp_path.replace(path)
 
 
 def as_string(value: Any) -> str | None:
@@ -1146,11 +1277,34 @@ def raw_source_signature(source: SourceConfig) -> str:
 def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig, *, source_signature: str) -> None:
     fetched_at = datetime.now(UTC)
     payload.fetched_at = fetched_at.isoformat()
-    payload.refresh_after = (fetched_at + RAW_SOURCE_CACHE_TTL).isoformat()
+    payload.refresh_after = raw_source_refresh_after(
+        fetched_at,
+        source,
+        source_signature=source_signature,
+    ).isoformat()
     payload.source_signature = source_signature
     payload.configured_source_type = source.type
     payload.configured_source_url = source.url
     payload.configured_source_path = source.path
+
+
+def raw_source_refresh_after(fetched_at: datetime, source: SourceConfig, *, source_signature: str) -> datetime:
+    if source.type != "google_list_url":
+        return fetched_at + RAW_SOURCE_CACHE_TTL
+    return fetched_at + RAW_SOURCE_CACHE_TTL + stable_timedelta_jitter(
+        source_signature,
+        max_jitter=RAW_SOURCE_REFRESH_JITTER,
+    )
+
+
+def stable_timedelta_jitter(key: str, *, max_jitter: timedelta) -> timedelta:
+    max_seconds = int(max_jitter.total_seconds())
+    if max_seconds <= 0:
+        return timedelta()
+
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    offset_seconds = int(digest[:12], 16) % (max_seconds * 2 + 1)
+    return timedelta(seconds=offset_seconds - max_seconds)
 
 
 def raw_source_refresh_reason(source: SourceConfig, existing_payload: RawSavedList | None) -> str | None:
@@ -1545,6 +1699,9 @@ def main() -> int:
             force_refresh=args.refresh_force,
             refresh_lists=args.refresh_list,
             refresh_workers=args.refresh_workers,
+            refresh_retries=args.refresh_retries,
+            refresh_retry_backoff_seconds=args.refresh_retry_backoff_seconds,
+            refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )
 
     if args.enrich or args.refresh_enrichment:

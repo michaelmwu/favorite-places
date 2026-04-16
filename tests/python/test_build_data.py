@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import unittest
+from contextlib import redirect_stderr
 from datetime import UTC, datetime, timedelta
+from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -21,6 +23,23 @@ from scripts.pipeline_models import (
 
 
 class BuildDataTests(unittest.TestCase):
+    def test_parser_rejects_negative_refresh_retry_values(self) -> None:
+        invalid_args = [
+            ["--refresh-retries", "-1"],
+            ["--refresh-retry-backoff-seconds", "-0.1"],
+            ["--refresh-startup-jitter-seconds", "-0.1"],
+        ]
+
+        for args in invalid_args:
+            with self.subTest(args=args):
+                parser = build_data.build_parser()
+                stderr = StringIO()
+                with redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+                    parser.parse_args(args)
+
+                self.assertEqual(raised.exception.code, 2)
+                self.assertIn("must be >= 0", stderr.getvalue())
+
     def test_source_config_infers_google_list_url_from_maps_shortlink(self) -> None:
         source = SourceConfig(slug="florence-italy", url="https://maps.app.goo.gl/mXQoUYRRjWuj6HNw8")
 
@@ -566,6 +585,7 @@ class BuildDataTests(unittest.TestCase):
                     force_refresh=False,
                     refresh_lists=[],
                     refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
                 )
 
         scrape.assert_not_called()
@@ -604,9 +624,333 @@ class BuildDataTests(unittest.TestCase):
                     force_refresh=True,
                     refresh_lists=[],
                     refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
                 )
 
         scrape.assert_called_once_with(source, headed=False)
+
+    def test_parallel_refresh_writes_each_snapshot_as_it_finishes(self) -> None:
+        first_source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+        second_source = SourceConfig(
+            slug="madrid-spain",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/madrid",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            first_raw_path = raw_dir / "tokyo-japan.json"
+
+            class FakeFuture:
+                def __init__(self, result):
+                    self._result = result
+
+                def result(self):
+                    return self._result()
+
+            first_future = FakeFuture(lambda: RawSavedList(title="Tokyo", places=[]))
+
+            def second_result() -> RawSavedList:
+                self.assertTrue(first_raw_path.exists())
+                return RawSavedList(title="Madrid", places=[])
+
+            second_future = FakeFuture(second_result)
+            futures_by_slug = {
+                first_source.slug: first_future,
+                second_source.slug: second_future,
+            }
+            test_case = self
+
+            class FakeExecutor:
+                def __init__(self, max_workers):
+                    self.max_workers = max_workers
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+
+                def submit(self, _fn, source, **kwargs):
+                    test_case.assertEqual(kwargs["refresh_retries"], build_data.DEFAULT_REFRESH_RETRIES)
+                    test_case.assertFalse(kwargs["headed"])
+                    return futures_by_slug[source.slug]
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[first_source, second_source]),
+                patch.object(build_data, "ProcessPoolExecutor", FakeExecutor),
+                patch.object(build_data, "as_completed", return_value=[first_future, second_future]),
+            ):
+                build_data.refresh_raw_sources(
+                    headed=False,
+                    force_refresh=True,
+                    refresh_lists=[],
+                    refresh_workers=2,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            first_payload = RawSavedList.model_validate_json(first_raw_path.read_text(encoding="utf-8"))
+            second_payload = RawSavedList.model_validate_json(
+                (raw_dir / "madrid-spain.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(first_payload.title, "Tokyo")
+        self.assertEqual(second_payload.title, "Madrid")
+
+    def test_refresh_retries_transient_scrape_failure(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter") as startup_sleep,
+            patch.object(build_data.time, "sleep") as retry_sleep,
+            patch.object(
+                build_data,
+                "scrape_google_list_url",
+                side_effect=[build_data.ScrapeError("timeout"), RawSavedList(title="Tokyo", places=[])],
+            ) as scrape,
+        ):
+            payload = build_data.scrape_google_list_url_with_retries(
+                source,
+                headed=False,
+                refresh_retries=2,
+                refresh_retry_backoff_seconds=10,
+                refresh_startup_jitter_seconds=8,
+            )
+
+        self.assertEqual(payload.title, "Tokyo")
+        self.assertEqual(scrape.call_count, 2)
+        self.assertEqual(startup_sleep.call_count, 2)
+        retry_sleep.assert_called_once_with(10)
+
+    def test_refresh_retries_transient_parse_failure(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data.time, "sleep") as retry_sleep,
+            patch.object(
+                build_data,
+                "scrape_google_list_url",
+                side_effect=[build_data.ParseError("missing list payload"), RawSavedList(title="Tokyo", places=[])],
+            ) as scrape,
+        ):
+            payload = build_data.scrape_google_list_url_with_retries(
+                source,
+                headed=False,
+                refresh_retries=2,
+                refresh_retry_backoff_seconds=10,
+                refresh_startup_jitter_seconds=8,
+            )
+
+        self.assertEqual(payload.title, "Tokyo")
+        self.assertEqual(scrape.call_count, 2)
+        retry_sleep.assert_called_once_with(10)
+
+    def test_refresh_raw_sources_keeps_existing_snapshot_when_refresh_fails(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    title="Backup",
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) - timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[source]),
+                patch.object(build_data, "scrape_google_list_url", side_effect=build_data.ScrapeError("timeout")),
+            ):
+                build_data.refresh_raw_sources(
+                    headed=False,
+                    force_refresh=False,
+                    refresh_lists=[],
+                    refresh_workers=1,
+                    refresh_retries=0,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload.title, "Backup")
+
+    def test_refresh_raw_sources_keeps_existing_snapshot_when_parse_fails(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    title="Backup",
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) - timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[source]),
+                patch.object(
+                    build_data,
+                    "scrape_google_list_url",
+                    side_effect=build_data.ParseError("missing list payload"),
+                ),
+            ):
+                build_data.refresh_raw_sources(
+                    headed=False,
+                    force_refresh=False,
+                    refresh_lists=[],
+                    refresh_workers=1,
+                    refresh_retries=0,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload.title, "Backup")
+
+    def test_refresh_raw_sources_does_not_hide_unexpected_refresh_errors(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    title="Backup",
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) - timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[source]),
+                patch.object(build_data, "scrape_google_list_url", side_effect=ValueError("bad data")),
+            ):
+                with self.assertRaisesRegex(ValueError, "bad data"):
+                    build_data.refresh_raw_sources(
+                        headed=False,
+                        force_refresh=False,
+                        refresh_lists=[],
+                        refresh_workers=1,
+                        refresh_retries=0,
+                        refresh_startup_jitter_seconds=0,
+                    )
+
+            payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload.title, "Backup")
+
+    def test_refresh_raw_sources_rejects_backup_when_source_config_changed(self) -> None:
+        current_source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/current",
+        )
+        previous_source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/previous",
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            raw_dir = Path(tmpdir)
+            raw_path = raw_dir / "tokyo-japan.json"
+            build_data.write_json(
+                raw_path,
+                RawSavedList(
+                    title="Previous List",
+                    fetched_at=datetime.now(UTC).isoformat(),
+                    refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+                    source_signature=build_data.raw_source_signature(previous_source),
+                    places=[],
+                ),
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_sources", return_value=[current_source]),
+                patch.object(build_data, "scrape_google_list_url", side_effect=build_data.ScrapeError("timeout")),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "Raw refresh failed for 1 source"):
+                    build_data.refresh_raw_sources(
+                        headed=False,
+                        force_refresh=False,
+                        refresh_lists=[],
+                        refresh_workers=1,
+                        refresh_retries=0,
+                        refresh_startup_jitter_seconds=0,
+                    )
+
+            payload = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload.title, "Previous List")
+
+    def test_google_list_refresh_after_uses_stable_source_jitter(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+        fetched_at = datetime(2026, 4, 15, tzinfo=UTC)
+        source_signature = build_data.raw_source_signature(source)
+
+        refresh_after = build_data.raw_source_refresh_after(
+            fetched_at,
+            source,
+            source_signature=source_signature,
+        )
+        repeated_refresh_after = build_data.raw_source_refresh_after(
+            fetched_at,
+            source,
+            source_signature=source_signature,
+        )
+        lower_bound = fetched_at + build_data.RAW_SOURCE_CACHE_TTL - build_data.RAW_SOURCE_REFRESH_JITTER
+        upper_bound = fetched_at + build_data.RAW_SOURCE_CACHE_TTL + build_data.RAW_SOURCE_REFRESH_JITTER
+
+        self.assertEqual(refresh_after, repeated_refresh_after)
+        self.assertGreaterEqual(refresh_after, lower_bound)
+        self.assertLessEqual(refresh_after, upper_bound)
 
 
 if __name__ == "__main__":
