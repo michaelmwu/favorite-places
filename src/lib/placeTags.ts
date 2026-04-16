@@ -52,6 +52,17 @@ export function normalizeTagValue(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+export function getTagComparisonValue(value: string): string {
+  const normalizedText = value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+
+  return normalizeTagValue(normalizedText) || normalizedText;
+}
+
 function getGuideLocationTagsToHide({
   cityName,
   countryCode,
@@ -59,7 +70,7 @@ function getGuideLocationTagsToHide({
 }: GuideTagContext): Set<string> {
   const hiddenTags = new Set<string>();
   const addTag = (value?: string | null) => {
-    const normalized = value ? normalizeTagValue(value) : "";
+    const normalized = value ? getTagComparisonValue(value) : "";
     if (normalized) {
       hiddenTags.add(normalized);
       (COUNTRY_TAG_ALIASES[normalized] ?? []).forEach((alias) => hiddenTags.add(alias));
@@ -90,8 +101,8 @@ export function getDisplayPlaceTags(tags: string[]): string[] {
 export function getDisplayGuideTags(tags: string[], context: GuideTagContext = {}): string[] {
   const hiddenTags = getGuideLocationTagsToHide(context);
   return tags.filter((tag) => {
-    const normalizedTag = normalizeTagValue(tag);
-    return normalizedTag.length > 0 && !hiddenTags.has(normalizedTag);
+    const normalizedTag = getTagComparisonValue(tag);
+    return tag.trim().length > 0 && !hiddenTags.has(normalizedTag);
   });
 }
 

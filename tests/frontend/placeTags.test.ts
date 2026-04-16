@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getTagComparisonValue,
   getDisplayGuideTags,
   getDisplayPlaceTags,
   getGuideAreaFilters,
@@ -117,11 +118,27 @@ describe("getDisplayGuideTags", () => {
       }),
     ).toEqual([]);
   });
+
+  it("keeps non-latin tags when they are not location duplicates", () => {
+    expect(
+      getDisplayGuideTags(["東京", "coffee"], {
+        cityName: "Tonga",
+        countryCode: "TO",
+        countryName: "Tonga",
+      }),
+    ).toEqual(["東京", "coffee"]);
+  });
 });
 
 describe("normalizeTagValue", () => {
   it("slugifies human-readable vibe overrides for guide filter matching", () => {
     expect(normalizeTagValue("Date Night")).toBe("date-night");
     expect(normalizeTagValue("Laptop Friendly")).toBe("laptop-friendly");
+  });
+});
+
+describe("getTagComparisonValue", () => {
+  it("falls back to normalized non-latin text when ascii slugification is empty", () => {
+    expect(getTagComparisonValue("東京")).toBe("東京");
   });
 });

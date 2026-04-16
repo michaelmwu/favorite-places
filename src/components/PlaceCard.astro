@@ -1,6 +1,6 @@
 ---
 import type { Place } from "../lib/types";
-import { getDisplayGuideTags, getDisplayPlaceTags } from "../lib/placeTags";
+import { getDisplayGuideTags, getDisplayPlaceTags, getTagComparisonValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 
 interface Props {
@@ -15,6 +15,8 @@ interface Props {
 const { guideContext = {}, place } = Astro.props;
 const displayTags = getDisplayGuideTags(getDisplayPlaceTags(place.tags), guideContext);
 const displayVibeTags = getDisplayPlaceTags(place.vibe_tags);
+const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
+const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
 ---
@@ -25,8 +27,8 @@ const noteHtml = renderRichText(place.note);
   data-place-card
   data-place-id={place.id}
   data-name={place.name.toLowerCase()}
-  data-tags={displayTags.join(" ").toLowerCase()}
-  data-vibe-tags={displayVibeTags.join(" ").toLowerCase()}
+  data-tags={filterTagTokens}
+  data-vibe-tags={filterVibeTagTokens}
   data-category={(place.primary_category ?? "").toLowerCase()}
   data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
   data-top-pick={place.top_pick ? "true" : "false"}

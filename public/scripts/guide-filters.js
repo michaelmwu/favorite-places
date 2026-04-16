@@ -1,14 +1,45 @@
 import { loadSearchIndex, searchPlaces } from "./place-search.js";
 
+function getTagComparisonValue(value) {
+  const normalizedText = String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+  const slug = normalizedText
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || normalizedText;
+}
+
+function parseCardTagValues(value) {
+  if (!value) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.map((item) => getTagComparisonValue(item)).filter(Boolean) : [];
+  } catch {
+    return String(value)
+      .split(/\s+/)
+      .map((item) => getTagComparisonValue(item))
+      .filter(Boolean);
+  }
+}
+
 export function cardHasTag(card, tag) {
-  const normalizedTag = String(tag || "").trim().toLowerCase();
+  const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
     return true;
   }
 
-  return `${card.dataset.tags || ""} ${card.dataset.vibeTags || ""}`
-    .split(/\s+/)
-    .includes(normalizedTag);
+  return [
+    ...parseCardTagValues(card.dataset.tags),
+    ...parseCardTagValues(card.dataset.vibeTags),
+  ].includes(normalizedTag);
 }
 
 export function matchesCardSearch(card, { normalizedQuery = "", searchResultIds = null } = {}) {
@@ -33,7 +64,7 @@ export function countMatchingCards(cards, {
 }
 
 export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, overflowCount }) {
-  if (!activeAreaLabel || overflowCount <= 0) {
+  if (!activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
     return "";
   }
 
@@ -45,6 +76,9 @@ export function buildEmptyStateMessage({ activeAreaLabel = "", overflowCount = 0
 
   if (query && activeAreaLabel && overflowCount > 0) {
     return `No places matched "${query}" in ${activeAreaLabel}. ${overflowCount} more ${matchWord} elsewhere in this guide. Try another area or clear the area filter.`;
+  }
+  if (query && activeAreaLabel) {
+    return `No places matched "${query}" in ${activeAreaLabel}. Try another area or clear the area filter.`;
   }
   if (activeAreaLabel && overflowCount > 0) {
     return `No matches in ${activeAreaLabel}. ${overflowCount} more ${matchWord} elsewhere in this guide. Try another area or clear the area filter.`;

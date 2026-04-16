@@ -44,11 +44,15 @@ describe("guide filters", () => {
   });
 
   it("matches tags across place and vibe tag fields", () => {
-    const card = makeCard({ placeId: "1", tags: "coffee bakery", vibeTags: "cozy scenic" });
+    const card = makeCard({
+      placeId: "1",
+      tags: JSON.stringify(["coffee", "bakery"]),
+      vibeTags: JSON.stringify(["Date Night", "scenic"]),
+    });
 
     expect(cardHasTag(card, "bakery")).toBe(true);
     expect(cardHasTag(card, "scenic")).toBe(true);
-    expect(cardHasTag(card, "date-night")).toBe(false);
+    expect(cardHasTag(card, "date-night")).toBe(true);
   });
 
   it("builds area-aware status and empty messages when broader matches exist", () => {
@@ -85,6 +89,22 @@ describe("guide filters", () => {
       overflowCount: 1,
       query: "coffee",
     })).toBe('No places matched "coffee" in South Brisbane. 1 more match elsewhere in this guide. Try another area or clear the area filter.');
+  });
+
+  it("suppresses the area status line when no places are visible in the selected area", () => {
+    expect(buildAreaFilterStatusMessage({
+      activeAreaLabel: "South Brisbane",
+      visibleCount: 0,
+      overflowCount: 2,
+    })).toBe("");
+  });
+
+  it("keeps the area label in query empty-state copy even with no overflow matches", () => {
+    expect(buildEmptyStateMessage({
+      activeAreaLabel: "South Brisbane",
+      overflowCount: 0,
+      query: "coffee",
+    })).toBe('No places matched "coffee" in South Brisbane. Try another area or clear the area filter.');
   });
 
   it("lets guide-wide overflow ignore the current map frame", () => {
