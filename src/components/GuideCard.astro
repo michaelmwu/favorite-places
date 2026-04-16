@@ -57,7 +57,7 @@ const trimCountryFromTitle = (title: string) => {
 const guideDisplayTitle = trimCountryFromTitle(guide.title);
 ---
 
-<article class="guide-card" data-guide-card data-search={guideSearchText}>
+<article class="guide-card" data-guide-card data-guide-slug={guide.slug} data-search={guideSearchText}>
   <a class="guide-card-link" href={`/guides/${guide.slug}/`} aria-label={`Open ${guideDisplayTitle}`}></a>
 
   <div class="section-stack">

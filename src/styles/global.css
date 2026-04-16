@@ -221,6 +221,37 @@ img {
 
 .country-browser {
   margin-bottom: 1rem;
+  position: sticky;
+  top: 0.5rem;
+  z-index: 5;
+}
+
+.global-search-results {
+  margin: 1rem 0 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.search-result-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.search-result-card {
+  min-width: 0;
+  padding: 1rem;
+  display: grid;
+  gap: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.search-result-card h4 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.14rem;
+  line-height: 1.25;
 }
 
 .browse-count {
@@ -427,6 +458,11 @@ img {
   background: #fffdfd;
 }
 
+.place-card[data-search-highlight="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(196, 49, 45, 0.18);
+}
+
 .place-card:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
@@ -459,9 +495,6 @@ img {
 
 .controls-panel {
   padding: 1rem;
-  position: sticky;
-  top: 0.5rem;
-  z-index: 5;
   background: var(--surface-strong);
 }
 
@@ -873,6 +906,10 @@ select {
   }
 
   .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-result-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

@@ -2,8 +2,21 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const readSource = (path) => readFileSync(path, "utf8");
+const cssBlocks = (css, selector) => {
+  return [...css.matchAll(/([^{}]+){([^}]*)}/g)]
+    .filter((match) => match[1].split(",").map((part) => part.trim()).includes(selector))
+    .map((match) => match[2]);
+};
 
 describe("guide map interactions", () => {
+  it("keeps guide search controls in normal document flow while the map remains sticky", () => {
+    const css = readSource("src/styles/global.css");
+
+    expect(cssBlocks(css, ".controls-panel").join("\n")).not.toContain("position: sticky");
+    expect(cssBlocks(css, ".country-browser").join("\n")).toContain("position: sticky");
+    expect(cssBlocks(css, ".map-panel").join("\n")).toContain("position: sticky");
+  });
+
   it("lets the collapsed map panel release width back to the places list", () => {
     const guidePage = readSource("src/pages/guides/[slug].astro");
     const guideMap = readSource("src/components/GuideMap.astro");

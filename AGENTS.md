@@ -26,6 +26,7 @@ This repo deliberately avoids committing generated build artifacts.
 - `data/raw/` may be committed when you want reproducible scraped snapshots in git.
 - `data/cache/google-places/` may be committed when you want reproducible enrichment snapshots in git.
 - `src/data/generated/` is local-only generated site input data.
+- `public/data/search-index.json` is local-only generated browser search data.
 - `src/data/overrides/` is the source-controlled layer for handwritten curation.
 - `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
 - In `scripts/config/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; explicit `type` is allowed but must match the configured `url` or `path`. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
@@ -65,7 +66,7 @@ Refresh one configured raw source by slug, source URL, or source path:
 bun run sync:source -- tokyo-japan
 ```
 
-Build generated JSON from local raw data:
+Build generated JSON and search index data from local raw data:
 
 ```bash
 bun run build:data
@@ -93,6 +94,7 @@ bun run dev
 - Raw place `note` should flow through as the default place note.
 - Raw place `is_favorite` should flow through as the default top-pick signal.
 - Manual `note` and `top_pick` overrides still win.
+- Manual `vibe_tags` overrides win over rule-derived browser search vibe tags.
 - Google Places cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
 - Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature`; URL sources skip network refreshes until the refresh window expires unless the source config changes, while CSV sources can skip rewrites when the input hash is unchanged.
 - Do not reintroduce tracked generated JSON unless the user explicitly asks for fixture-style examples in git.

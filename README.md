@@ -61,13 +61,13 @@ bun run sync:source -- https://maps.app.goo.gl/your-public-list
 bun run sync:source -- data/imports/taipei-taiwan.csv
 ```
 
-Build generated site data from local raw JSON:
+Build generated site data and the static browser search index from local raw JSON:
 
 ```bash
 bun run build:data
 ```
 
-Use this when `data/raw/` is already up to date and you only want to regenerate site inputs.
+Use this when `data/raw/` is already up to date and you only want to regenerate site inputs and search data.
 Configured local CSV sources are auto-imported before rebuild. Public Google Maps URL sources are not refreshed here.
 
 Fill missing or stale Google Places enrichment cache entries, then rebuild:
@@ -246,7 +246,7 @@ enrichment results.
 bun run build:data
 ```
 
-This writes local generated JSON into `src/data/generated/` from the current contents of `data/raw/`.
+This writes local generated JSON into `src/data/generated/` and the client-side search index into `public/data/search-index.json` from the current contents of `data/raw/`.
 Configured local CSV sources are imported into `data/raw/<slug>.json` first when needed.
 
 7. Run the site:

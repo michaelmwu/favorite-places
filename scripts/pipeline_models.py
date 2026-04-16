@@ -167,6 +167,7 @@ class NormalizedPlace(PipelineModel):
     google_place_resource_name: str | None = None
     primary_category: str | None = None
     tags: list[str] = Field(default_factory=list)
+    vibe_tags: list[str] = Field(default_factory=list)
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None

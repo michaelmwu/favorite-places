@@ -11,6 +11,7 @@ export interface Place {
   google_place_resource_name: string | null;
   primary_category: string | null;
   tags: string[];
+  vibe_tags: string[];
   neighborhood: string | null;
   note: string | null;
   why_recommended: string | null;

@@ -1,3 +1,5 @@
+import { loadSearchIndex, searchPlaces } from "./place-search.js";
+
 const root = document.querySelector("[data-guide-root]");
 
 if (root) {
@@ -6,13 +8,19 @@ if (root) {
   const searchInput = root.querySelector("[data-search-input]");
   const sortSelect = root.querySelector("[data-sort-select]");
   const tagButtons = Array.from(root.querySelectorAll("[data-tag-filter]"));
+  const areaButtons = Array.from(root.querySelectorAll("[data-area-filter]"));
   const resultsCount = root.querySelector("[data-results-count]");
   const emptyState = root.querySelector("[data-empty-state]");
   const mapFilterStatus = root.querySelector("[data-map-filter-status]");
   const mapFilterResetButtons = Array.from(root.querySelectorAll("[data-map-filter-reset]"));
+  const guideSlug = root.dataset.guideSlug || "";
+  const initialParams = new URLSearchParams(window.location.search);
 
   let activeTag = "";
+  let activeArea = "";
   let mapFramePlaceIds = null;
+  let searchIndex = null;
+  let highlightedPlaceId = initialParams.get("place") || "";
 
   const sorters = {
     curated: (left, right) => {
@@ -28,6 +36,13 @@ if (root) {
       || (left.dataset.name || "").localeCompare(right.dataset.name || ""),
   };
 
+  const fallbackMatches = (card, query) => {
+    const tagText = `${card.dataset.tags || ""} ${card.dataset.vibeTags || ""}`;
+    const matchesQuery = !query || (card.dataset.search || "").includes(query);
+    const matchesTag = !activeTag || tagText.split(" ").includes(activeTag);
+    return matchesQuery && matchesTag;
+  };
+
   const clearMapFrameFilter = () => {
     mapFramePlaceIds = null;
     update("map-reset");
@@ -37,19 +52,44 @@ if (root) {
   };
 
   const update = (source = "list-filter") => {
-    const query = (searchInput?.value || "").trim().toLowerCase();
+    const query = (searchInput?.value || "").trim();
+    const normalizedQuery = query.toLowerCase();
     const sort = sortSelect?.value || "curated";
+    const searchState = searchIndex && guideSlug
+      ? searchPlaces(query, {
+        index: searchIndex,
+        scope: "guide",
+        guideSlug,
+        activeFilters: { tag: activeTag },
+      })
+      : null;
+    const searchResultIds = searchState
+      ? new Set(searchState.results.map((result) => result.entry.id))
+      : null;
+    const searchScores = searchState
+      ? new Map(searchState.results.map((result) => [result.entry.id, result.score]))
+      : new Map();
 
     const visibleCards = cards.filter((card) => {
-      const matchesQuery = !query || (card.dataset.search || "").includes(query);
-      const matchesTag = !activeTag || (card.dataset.tags || "").split(" ").includes(activeTag);
+      const matchesSearch = searchResultIds
+        ? searchResultIds.has(card.dataset.placeId || "")
+        : fallbackMatches(card, normalizedQuery);
+      const matchesArea = !activeArea || (card.dataset.neighborhood || "") === activeArea;
       const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
-      const visible = matchesQuery && matchesTag && matchesMapFrame;
+      const visible = matchesSearch && matchesArea && matchesMapFrame;
       card.hidden = !visible;
+      card.dataset.searchHighlight = highlightedPlaceId && card.dataset.placeId === highlightedPlaceId ? "true" : "false";
       return visible;
     });
 
-    visibleCards.sort(sorters[sort] || sorters.curated).forEach((card) => {
+    const sorter = normalizedQuery && sort === "curated" && searchResultIds
+      ? (left, right) =>
+        (searchScores.get(right.dataset.placeId || "") || 0)
+          - (searchScores.get(left.dataset.placeId || "") || 0)
+        || sorters.curated(left, right)
+      : sorters[sort] || sorters.curated;
+
+    visibleCards.sort(sorter).forEach((card) => {
       list?.appendChild(card);
     });
 
@@ -60,6 +100,9 @@ if (root) {
 
     if (emptyState) {
       emptyState.dataset.visible = visibleCards.length === 0 ? "true" : "false";
+      emptyState.textContent = query
+        ? `No places matched "${query}" in this guide. Try a broader search or clear filters.`
+        : "No matches. Try a broader search or clear the tag filter.";
     }
 
     if (mapFilterStatus) {
@@ -91,6 +134,15 @@ if (root) {
       update();
     });
   });
+  areaButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeArea = button.dataset.area || "";
+      areaButtons.forEach((candidate) => {
+        candidate.dataset.active = candidate === button ? "true" : "false";
+      });
+      update();
+    });
+  });
 
   root.addEventListener("guide:map-frame-filter", (event) => {
     const visiblePlaceIds = Array.isArray(event.detail?.visiblePlaceIds) ? event.detail.visiblePlaceIds : [];
@@ -104,9 +156,44 @@ if (root) {
     button.addEventListener("click", clearMapFrameFilter);
   });
 
+  const applyDeepLink = () => {
+    const initialQuery = initialParams.get("q") || "";
+    if (initialQuery && searchInput) {
+      searchInput.value = initialQuery;
+    }
+  };
+
+  const scrollToHighlightedPlace = () => {
+    if (!highlightedPlaceId) {
+      return;
+    }
+    const target = cards.find((card) => card.dataset.placeId === highlightedPlaceId);
+    if (!target) {
+      return;
+    }
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.focus({ preventScroll: true });
+  };
+
   const allButton = tagButtons.find((button) => (button.dataset.tag || "") === "");
   if (allButton) {
     allButton.dataset.active = "true";
   }
+  const allAreaButton = areaButtons.find((button) => (button.dataset.area || "") === "");
+  if (allAreaButton) {
+    allAreaButton.dataset.active = "true";
+  }
+  applyDeepLink();
   update();
+
+  loadSearchIndex()
+    .then((index) => {
+      searchIndex = index;
+      update();
+      requestAnimationFrame(scrollToHighlightedPlace);
+    })
+    .catch(() => {
+      update();
+      requestAnimationFrame(scrollToHighlightedPlace);
+    });
 }

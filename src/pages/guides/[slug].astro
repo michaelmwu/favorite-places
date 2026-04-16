@@ -4,7 +4,7 @@ import { siteConfig } from "../../data/site";
 import GuideMap from "../../components/GuideMap.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import { getGuides } from "../../lib/data";
-import { getDisplayPlaceTags } from "../../lib/placeTags";
+import { getDisplayPlaceTags, getGuideAreaFilters } from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
 
 export function getStaticPaths() {
@@ -18,10 +18,29 @@ const { guide } = Astro.props;
 
 const visiblePlaces = guide.places.filter((place) => !place.hidden);
 const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includes(place.id)).slice(0, 3);
-const allTags = [...new Set(visiblePlaces.flatMap((place) => getDisplayPlaceTags(place.tags)))].sort((a, b) =>
-  a.localeCompare(b),
-);
+const areaFilters = getGuideAreaFilters(visiblePlaces);
+const guideVibeFilters = [
+  ...new Set(
+    visiblePlaces.flatMap((place) =>
+      getDisplayPlaceTags(place.vibe_tags).filter((tag) =>
+        [
+          "cozy",
+          "quiet",
+          "lively",
+          "date-night",
+          "laptop-friendly",
+          "scenic",
+          "hidden-gem",
+          "cheap-eats",
+          "splurge",
+          "rainy-day",
+        ].includes(tag),
+      ),
+    ),
+  ),
+].sort((a, b) => a.localeCompare(b));
 const guideDescriptionHtml = renderRichText(guide.description);
+const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
@@ -77,13 +96,12 @@ const guideDescriptionHtml = renderRichText(guide.description);
     </section>
   )}
 
-  <section class="section browse-section" data-guide-root>
+  <section class="section browse-section" data-guide-root data-guide-slug={guide.slug}>
     <div class="section-head">
       <div>
         <p class="eyebrow">Browse</p>
         <h2 class="section-title">Places</h2>
       </div>
-      <p class="small-copy">Search names, notes, neighborhoods, or address text.</p>
     </div>
 
     <div class="browse-layout" data-browse-layout>
@@ -110,16 +128,32 @@ const guideDescriptionHtml = renderRichText(guide.description);
               </select>
             </div>
 
-            {allTags.length > 0 && (
+            {areaFilters.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
-                <span class="control-label">Filter by tag</span>
+                <span class="control-label">Area</span>
+                <div class="tag-row">
+                  <button class="tag-pill" type="button" data-area-filter data-area="">
+                    All
+                  </button>
+                  {areaFilters.map((area) => (
+                    <button class="tag-pill" type="button" data-area-filter data-area={area.value}>
+                      {area.label} ({area.count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {guideVibeFilters.length > 0 && (
+              <div class="control-group" style="grid-column: 1 / -1;">
+                <span class="control-label">Vibe</span>
                 <div class="tag-row">
                   <button class="tag-pill" type="button" data-tag-filter data-tag="">
                     All
                   </button>
-                  {allTags.map((tag) => (
-                    <button class="tag-pill" type="button" data-tag-filter data-tag={tag.toLowerCase()}>
-                      #{tag}
+                  {guideVibeFilters.map((tag) => (
+                    <button class="tag-pill" type="button" data-tag-filter data-tag={tag}>
+                      {formatVibeLabel(tag)}
                     </button>
                   ))}
                 </div>
