@@ -6,9 +6,10 @@ interface Props {
 }
 
 const { places } = Astro.props;
-const googleMapsApiKey = import.meta.env.GOOGLE_MAPS_JS_API_KEY || "";
+const configuredGoogleMapsApiKey = import.meta.env.GOOGLE_MAPS_JS_API_KEY || "";
 const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
-const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : googleMapsApiKey ? "google" : "leaflet";
+const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
+const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
 const mapPlaces = places
   .filter((place) => place.lat !== null && place.lng !== null)
   .map((place) => ({
@@ -189,7 +190,7 @@ const mapPlaces = places
   const popupHtml = (place: MapPlace) => {
     const meta = [place.category, place.neighborhood].filter(Boolean).join(" · ");
     return `
-      <div class="guide-map-popup">
+      <div class="guide-map-popup-content">
         <strong>${escapeHtml(place.name)}</strong>
         <span>${escapeHtml(meta)}</span>
         <a href="${escapeHtml(place.mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>
@@ -208,7 +209,7 @@ const mapPlaces = places
 
   const placeCircle = (place: MapPlace) =>
     L.circleMarker([place.lat, place.lng], markerStyle(place)).bindPopup(popupHtml(place), {
-      className: "guide-map-popup",
+      className: "guide-map-popup-shell",
       closeButton: false,
     });
 
@@ -411,8 +412,24 @@ const mapPlaces = places
     window.__favoritePlacesGoogleMapsLoader = new Promise((resolve, reject) => {
       const existingScript = document.querySelector<HTMLScriptElement>('script[data-google-maps-loader="favorite-places"]');
       if (existingScript) {
+        if (window.google?.maps) {
+          resolve(window.google);
+          return;
+        }
+        if (existingScript.dataset.googleMapsStatus === "loaded") {
+          reject(new Error("Google Maps loaded without the Maps API namespace"));
+          return;
+        }
+        if (existingScript.dataset.googleMapsStatus === "error") {
+          reject(new Error("Google Maps failed to load"));
+          return;
+        }
         existingScript.addEventListener("load", () => {
-          if (window.google?.maps) resolve(window.google);
+          if (window.google?.maps) {
+            resolve(window.google);
+            return;
+          }
+          reject(new Error("Google Maps loaded without the Maps API namespace"));
         });
         existingScript.addEventListener("error", () => reject(new Error("Google Maps failed to load")));
         return;
@@ -421,16 +438,19 @@ const mapPlaces = places
       const callbackName = "__favoritePlacesGoogleMapsInit";
       window[callbackName] = () => {
         if (window.google?.maps) {
+          script.dataset.googleMapsStatus = "loaded";
           resolve(window.google);
           return;
         }
 
+        script.dataset.googleMapsStatus = "loaded";
         reject(new Error("Google Maps loaded without the Maps API namespace"));
       };
 
       const script = document.createElement("script");
       script.async = true;
       script.dataset.googleMapsLoader = "favorite-places";
+      script.dataset.googleMapsStatus = "loading";
       script.src =
         "https://maps.googleapis.com/maps/api/js?" +
         new URLSearchParams({
@@ -440,7 +460,10 @@ const mapPlaces = places
           v: "weekly",
           auth_referrer_policy: "origin",
         }).toString();
-      script.addEventListener("error", () => reject(new Error("Google Maps failed to load")));
+      script.addEventListener("error", () => {
+        script.dataset.googleMapsStatus = "error";
+        reject(new Error("Google Maps failed to load"));
+      });
       document.head.append(script);
     });
 
@@ -617,16 +640,20 @@ const mapPlaces = places
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
     const apiKey = element.dataset.googleMapsApiKey || "";
     const handleMarkerSelect = (placeId: string) => selectPlace(placeId);
-    const runtime =
-      requestedProvider === "google" && apiKey
-        ? await initGoogleRuntime(mapElement, places, apiKey, handleMarkerSelect).catch(() =>
-            initLeafletRuntime(mapElement, places, handleMarkerSelect),
-          )
-        : initLeafletRuntime(mapElement, places, handleMarkerSelect);
+    let runtime: MapRuntime;
+    try {
+      runtime =
+        requestedProvider === "google" && apiKey
+          ? await initGoogleRuntime(mapElement, places, apiKey, handleMarkerSelect).catch(() =>
+              initLeafletRuntime(mapElement, places, handleMarkerSelect),
+            )
+          : initLeafletRuntime(mapElement, places, handleMarkerSelect);
 
-    mapElement.guideMap = runtime.rawMap;
-    element.dataset.initialized = "true";
-    delete element.dataset.initializing;
+      mapElement.guideMap = runtime.rawMap;
+      element.dataset.initialized = "true";
+    } finally {
+      delete element.dataset.initializing;
+    }
 
     const activePlaceId = () => hoveredPlaceId || selectedPlaceId;
 
