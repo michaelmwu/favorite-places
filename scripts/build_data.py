@@ -101,12 +101,17 @@ except ModuleNotFoundError:
     )
 
 try:
-    from google_saved_lists import ScrapeError, scrape_saved_list
+    from google_saved_lists import ParseError, ScrapeError, scrape_saved_list
 except ImportError:
+    class ParseError(RuntimeError):
+        pass
+
     class ScrapeError(RuntimeError):
         pass
 
     scrape_saved_list = None
+
+RECOVERABLE_REFRESH_ERRORS = (ScrapeError, ParseError)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -140,19 +145,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--refresh-retries",
-        type=int,
+        type=non_negative_int,
         default=DEFAULT_REFRESH_RETRIES,
         help="Retry each Google list refresh this many times after the first failed attempt.",
     )
     parser.add_argument(
         "--refresh-retry-backoff-seconds",
-        type=float,
+        type=non_negative_float,
         default=DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS,
         help="Initial delay before retrying a failed Google list refresh. Later retries use exponential backoff.",
     )
     parser.add_argument(
         "--refresh-startup-jitter-seconds",
-        type=float,
+        type=non_negative_float,
         default=DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         help="Maximum randomized delay before each Google list scrape attempt starts its browser.",
     )
@@ -167,6 +172,26 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force-refresh Google Places enrichment cache entries for every place.",
     )
     return parser
+
+
+def non_negative_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be >= 0")
+    return parsed
+
+
+def non_negative_float(value: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be a number") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be >= 0")
+    return parsed
 
 
 def load_sources() -> list[SourceConfig]:
@@ -263,7 +288,7 @@ def refresh_raw_sources(
                     refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
                     refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
                 )
-            except ScrapeError as exc:
+            except RECOVERABLE_REFRESH_ERRORS as exc:
                 if backup_available:
                     print(f"Keeping existing raw snapshot for {source.slug} after refresh failure: {exc}")
                     continue
@@ -295,7 +320,7 @@ def refresh_raw_sources(
             source, raw_path, backup_available = future_map[future]
             try:
                 payload = future.result()
-            except ScrapeError as exc:
+            except RECOVERABLE_REFRESH_ERRORS as exc:
                 if backup_available:
                     print(f"Keeping existing raw snapshot for {source.slug} after refresh failure: {exc}")
                 else:
@@ -342,7 +367,7 @@ def scrape_google_list_url_with_retries(
         sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
         try:
             return scrape_google_list_url(source, headed=headed)
-        except ScrapeError as exc:
+        except RECOVERABLE_REFRESH_ERRORS as exc:
             last_error = exc
             if attempt >= attempts:
                 break
