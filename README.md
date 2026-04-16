@@ -47,7 +47,7 @@ PUBLIC_MAP_PROVIDER=leaflet
 
 Notes:
 
-- `GOOGLE_MAPS_JS_API_KEY` is expected to be public in the browser. Restrict the production key by HTTP referrer and allow only `Maps JavaScript API`.
+- `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and embedded into the page only when the Google map provider is active. Treat it as a browser key: restrict the production key by HTTP referrer and allow only `Maps JavaScript API`.
 - `GOOGLE_PLACES_API_KEY` should never be exposed to the browser. Use it only for local/build/server enrichment flows.
 - Use a separate production browser key instead of reusing a local dev key.
 - `PUBLIC_MAP_PROVIDER=leaflet` is an escape hatch if you need to force the Leaflet fallback while keeping the Google Maps codepath in the repo.
@@ -108,7 +108,7 @@ Start the site:
 bun run dev
 ```
 
-Guide pages use Google Maps by default when `GOOGLE_MAPS_JS_API_KEY` is set. If it is missing, or if `PUBLIC_MAP_PROVIDER=leaflet`, the site falls back to Leaflet/OpenStreetMap.
+Guide pages use Google Maps by default when `GOOGLE_MAPS_JS_API_KEY` is set at build/render time. If it is missing, or if `PUBLIC_MAP_PROVIDER=leaflet`, the site falls back to Leaflet/OpenStreetMap.
 
 Verify the site:
 

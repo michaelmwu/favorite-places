@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { places } = Astro.props;
-const configuredGoogleMapsApiKey = import.meta.env.GOOGLE_MAPS_JS_API_KEY || "";
+const configuredGoogleMapsApiKey = process.env.GOOGLE_MAPS_JS_API_KEY || "";
 const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
 const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
 const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
@@ -647,7 +647,18 @@ const mapPlaces = places
     const mapFullAreaButton = panel?.querySelector<HTMLButtonElement>("[data-map-full-area]");
     const locationButton = panel?.querySelector<HTMLButtonElement>("[data-map-location]");
     const mapResetButtons = root ? Array.from(root.querySelectorAll<HTMLButtonElement>("[data-map-filter-reset]")) : [];
-    let currentPlaces = places;
+    const visiblePlaceIdsFromCards = () =>
+      cards.length === 0
+        ? new Set(places.map((place) => place.id))
+        : new Set(
+            cards
+              .filter((card) => !card.hidden)
+              .map((card) => card.dataset.placeId)
+              .filter((placeId): placeId is string => Boolean(placeId)),
+          );
+    let currentVisiblePlaceIds = visiblePlaceIdsFromCards();
+    let currentPlaces = places.filter((place) => currentVisiblePlaceIds.has(place.id));
+    const mapFrameActive = () => mapResetButtons.some((button) => !button.hidden);
     const mapElement = element as GuideMapElement;
     const placeById = new Map(places.map((place) => [place.id, place]));
     let selectedPlaceId = "";
@@ -656,7 +667,34 @@ const mapPlaces = places
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
     const apiKey = element.dataset.googleMapsApiKey || "";
     const handleMarkerSelect = (placeId: string) => selectPlace(placeId);
-    let runtime: MapRuntime;
+    let runtime: MapRuntime | null = null;
+
+    const updateMapFrameControls = (active: boolean) => {
+      mapResetButtons.forEach((button) => {
+        button.hidden = !active;
+      });
+    };
+
+    const syncVisiblePlaces = (detail: PlacesUpdatedEvent["detail"]) => {
+      currentVisiblePlaceIds = new Set(detail.visiblePlaceIds);
+      currentPlaces = places.filter((place) => currentVisiblePlaceIds.has(place.id));
+      updateMapFrameControls(Boolean(detail.mapFrameActive));
+      if (!runtime) return;
+
+      runtime.setVisiblePlaces(currentVisiblePlaceIds);
+      updateActiveMarker(false);
+
+      if (!detail.mapFrameActive) {
+        runtime.fitPlaces(currentPlaces);
+      }
+    };
+
+    const handlePlacesUpdated = ((event: PlacesUpdatedEvent) => {
+      syncVisiblePlaces(event.detail);
+    }) as EventListener;
+
+    updateMapFrameControls(mapFrameActive());
+    document.addEventListener("guide:places-updated", handlePlacesUpdated);
     try {
       runtime =
         requestedProvider === "google" && apiKey
@@ -665,8 +703,12 @@ const mapPlaces = places
             )
           : initLeafletRuntime(mapElement, places, handleMarkerSelect);
 
+      runtime.setVisiblePlaces(currentVisiblePlaceIds);
       mapElement.guideMap = runtime.rawMap;
       element.dataset.initialized = "true";
+    } catch (error) {
+      document.removeEventListener("guide:places-updated", handlePlacesUpdated);
+      throw error;
     } finally {
       delete element.dataset.initializing;
     }
@@ -751,16 +793,10 @@ const mapPlaces = places
       updateActiveMarker(Boolean(selectedPlaceId));
     };
 
-    const updateMapFrameControls = (active: boolean) => {
-      mapResetButtons.forEach((button) => {
-        button.hidden = !active;
-      });
-    };
-
     const applyMapFrameFilter = () => {
       if (!root) return;
 
-      const visiblePlaceIds = currentPlaces.filter((place) => runtime.getBoundsContains(place)).map((place) => place.id);
+      const visiblePlaceIds = currentPlaces.filter((place) => runtime?.getBoundsContains(place)).map((place) => place.id);
 
       root.dispatchEvent(
         new CustomEvent("guide:map-frame-filter", {
@@ -882,26 +918,12 @@ const mapPlaces = places
       startLocationAvailabilityWatch();
     }
     mapElement.guideMapFit = () => {
-      runtime.invalidateSize?.();
-      runtime.fitPlaces(currentPlaces);
+      runtime?.invalidateSize?.();
+      runtime?.fitPlaces(currentPlaces);
     };
 
     runtime.fitPlaces(currentPlaces);
     window.setTimeout(() => mapElement.guideMapFit?.(), 0);
-
-    document.addEventListener("guide:places-updated", ((event: PlacesUpdatedEvent) => {
-      const visiblePlaceIds = new Set(event.detail.visiblePlaceIds);
-      const visiblePlaces = places.filter((place) => visiblePlaceIds.has(place.id));
-      currentPlaces = visiblePlaces;
-      updateMapFrameControls(Boolean(event.detail.mapFrameActive));
-      runtime.setVisiblePlaces(visiblePlaceIds);
-
-      updateActiveMarker(false);
-
-      if (!event.detail.mapFrameActive) {
-        runtime.fitPlaces(currentPlaces);
-      }
-    }) as EventListener);
   };
 
   const initMaps = () => {
