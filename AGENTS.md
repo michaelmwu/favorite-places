@@ -19,6 +19,12 @@
 - Use `bun run check` and `bun run build` before closing out frontend changes.
 - Use `.venv/bin/python` if `uv run` hits sandbox cache issues in Codex.
 
+## Environment Variables
+
+- `GOOGLE_MAPS_JS_API_KEY` is the browser Google Maps display key. It is expected to be visible in the client, so production usage should be on a separate key restricted by HTTP referrer and limited to `Maps JavaScript API`.
+- `GOOGLE_PLACES_API_KEY` is the server/build-time Places enrichment key. Do not expose it to the browser.
+- `PUBLIC_MAP_PROVIDER=leaflet` forces the Leaflet/OpenStreetMap fallback even when `GOOGLE_MAPS_JS_API_KEY` is present.
+
 ## Data Practices
 
 This repo deliberately avoids committing generated build artifacts.
@@ -86,6 +92,8 @@ Run the site:
 ```bash
 bun run dev
 ```
+
+Guide pages default to Google Maps when `GOOGLE_MAPS_JS_API_KEY` is present. Without that key, or when `PUBLIC_MAP_PROVIDER=leaflet`, they fall back to Leaflet.
 
 ## Notes For Future Agents
 

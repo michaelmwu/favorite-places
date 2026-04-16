@@ -28,11 +28,29 @@ uv sync
 
 The repo pins Python via [`.python-version`](.python-version) so local `uv` usage and Cloudflare Pages builds both resolve the intended `3.14` runtime instead of Cloudflare's default `3.13.x`.
 
-Optional local Google Places API key:
+## Environment Variables
+
+Put local secrets in `.env`.
+
+Recommended split:
 
 ```bash
-cp .env.example .env
+# Browser Google Maps display only.
+GOOGLE_MAPS_JS_API_KEY=...
+
+# Server/build-time Google Places enrichment only.
+GOOGLE_PLACES_API_KEY=...
+
+# Optional: force the old non-Google map path.
+PUBLIC_MAP_PROVIDER=leaflet
 ```
+
+Notes:
+
+- `GOOGLE_MAPS_JS_API_KEY` is expected to be public in the browser. Restrict the production key by HTTP referrer and allow only `Maps JavaScript API`.
+- `GOOGLE_PLACES_API_KEY` should never be exposed to the browser. Use it only for local/build/server enrichment flows.
+- Use a separate production browser key instead of reusing a local dev key.
+- `PUBLIC_MAP_PROVIDER=leaflet` is an escape hatch if you need to force the Leaflet fallback while keeping the Google Maps codepath in the repo.
 
 Populate local raw data from public Google Maps lists:
 
@@ -89,6 +107,8 @@ Start the site:
 ```bash
 bun run dev
 ```
+
+Guide pages use Google Maps by default when `GOOGLE_MAPS_JS_API_KEY` is set. If it is missing, or if `PUBLIC_MAP_PROVIDER=leaflet`, the site falls back to Leaflet/OpenStreetMap.
 
 Verify the site:
 
