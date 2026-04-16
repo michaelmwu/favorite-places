@@ -34,6 +34,8 @@ export interface Guide {
   top_categories: string[];
   generated_at: string;
   place_count: number;
+  center_lat: number | null;
+  center_lng: number | null;
   places: Place[];
 }
 
@@ -43,6 +45,8 @@ export interface GuideManifest {
   description: string | null;
   country_name: string;
   country_code: string | null;
+  center_lat: number | null;
+  center_lng: number | null;
   city_name: string;
   list_tags: string[];
   place_count: number;

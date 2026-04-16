@@ -14,6 +14,7 @@ from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from statistics import median
 from typing import Any
 from urllib.parse import unquote
 from urllib.error import HTTPError, URLError
@@ -43,6 +44,7 @@ OPERATIONAL_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
+MAP_PIN_DISTANCE_WARNING_METERS = 200_000.0
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 COUNTRY_LOCALITY_ALIASES = (
     "England",
@@ -683,6 +685,8 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
     top_categories = [name for name, _count in category_counter.most_common(4)]
     generated_at = datetime.now(UTC).isoformat()
     visible_places = [place for place in normalized_places if not place.hidden]
+    guide_center = guide_location_center(visible_places)
+    warn_far_map_pins(slug, visible_places, guide_center)
 
     return Guide(
         slug=slug,
@@ -698,6 +702,8 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_categories=top_categories,
         generated_at=generated_at,
         place_count=len(visible_places),
+        center_lat=guide_center[0],
+        center_lng=guide_center[1],
         places=normalized_places,
     )
 
@@ -714,12 +720,96 @@ def summarize_guide(guide: Guide) -> GuideManifest:
         description=guide.description,
         country_name=guide.country_name,
         country_code=guide.country_code,
+        center_lat=guide.center_lat,
+        center_lng=guide.center_lng,
         city_name=guide.city_name,
         list_tags=guide.list_tags,
         place_count=guide.place_count,
         featured_names=featured_names[:3],
         top_categories=guide.top_categories,
     )
+
+
+def guide_location_center(places: list[NormalizedPlace]) -> tuple[float | None, float | None]:
+    coordinates = [
+        (place.lat, place.lng)
+        for place in places
+        if place.lat is not None and place.lng is not None
+    ]
+    if not coordinates:
+        return (None, None)
+
+    inlier_coordinates = guide_location_inliers(coordinates)
+    lat = sum(latitude for latitude, _longitude in inlier_coordinates) / len(inlier_coordinates)
+    lng = sum(longitude for _latitude, longitude in inlier_coordinates) / len(inlier_coordinates)
+    return (lat, lng)
+
+
+def warn_far_map_pins(
+    slug: str,
+    places: list[NormalizedPlace],
+    center: tuple[float | None, float | None],
+) -> None:
+    center_lat, center_lng = center
+    if center_lat is None or center_lng is None:
+        return
+
+    for place in places:
+        if place.lat is None or place.lng is None:
+            continue
+
+        distance_meters = haversine_meters(center_lat, center_lng, place.lat, place.lng)
+        if distance_meters < MAP_PIN_DISTANCE_WARNING_METERS:
+            continue
+
+        print(
+            "WARNING: "
+            f"{slug}:{place.id} map pin for {place.name!r} is "
+            f"{distance_meters / 1000:.0f} km from the guide center; "
+            "check whether it belongs in this city/country."
+        )
+
+
+def guide_location_inliers(coordinates: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    if len(coordinates) < 4:
+        return coordinates
+
+    medoid_lat, medoid_lng = min(
+        coordinates,
+        key=lambda coordinate: sum(
+            haversine_meters(coordinate[0], coordinate[1], latitude, longitude)
+            for latitude, longitude in coordinates
+        ),
+    )
+    distances = [
+        haversine_meters(medoid_lat, medoid_lng, latitude, longitude)
+        for latitude, longitude in coordinates
+    ]
+    median_distance = median(distances)
+    median_absolute_deviation = median(abs(distance - median_distance) for distance in distances)
+    outlier_threshold = max(50_000.0, median_distance + 6 * median_absolute_deviation)
+
+    inliers = [
+        coordinate
+        for coordinate, distance in zip(coordinates, distances, strict=True)
+        if distance <= outlier_threshold
+    ]
+    return inliers or coordinates
+
+
+def percentile(sorted_values: list[float], fraction: float) -> float:
+    if not sorted_values:
+        raise ValueError("Cannot calculate percentile for an empty list.")
+
+    position = (len(sorted_values) - 1) * fraction
+    lower_index = math.floor(position)
+    upper_index = math.ceil(position)
+    if lower_index == upper_index:
+        return sorted_values[lower_index]
+
+    lower_value = sorted_values[lower_index]
+    upper_value = sorted_values[upper_index]
+    return lower_value + (upper_value - lower_value) * (position - lower_index)
 
 
 def enrich_raw_sources(*, force_refresh: bool) -> None:

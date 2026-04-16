@@ -21,14 +21,46 @@ const guideSearchText = [
   .filter(Boolean)
   .join(" ")
   .toLowerCase();
-const guideDisplayTitle = guide.title.replace(/(?:\s*[\u{1F1E6}-\u{1F1FF}]{2})+$/u, "");
+const countryCodeAliases: Record<string, string[]> = {
+  AE: ["UAE"],
+  GB: ["UK"],
+  KR: ["Korea"],
+  US: ["USA"],
+};
+const countryNameAliases: Record<string, string[]> = {
+  "South Korea": ["Korea"],
+  "United Arab Emirates": ["UAE"],
+  "United Kingdom": ["UK"],
+  "United States": ["USA"],
+};
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const trimCountryFromTitle = (title: string) => {
+  const titleWithoutFlag = title.replace(/(?:\s*[\u{1F1E6}-\u{1F1FF}]{2})+$/u, "").trim();
+  const suffixes = [
+    guide.country_name,
+    ...(countryNameAliases[guide.country_name] ?? []),
+    guide.country_code,
+    ...(guide.country_code ? countryCodeAliases[guide.country_code] ?? [] : []),
+  ]
+    .filter((suffix): suffix is string => Boolean(suffix))
+    .sort((left, right) => right.length - left.length);
+
+  for (const suffix of suffixes) {
+    const trimmed = titleWithoutFlag.replace(new RegExp(`,\\s*${escapeRegExp(suffix)}$`, "i"), "").trim();
+    if (trimmed && trimmed !== titleWithoutFlag) {
+      return trimmed;
+    }
+  }
+
+  return titleWithoutFlag;
+};
+const guideDisplayTitle = trimCountryFromTitle(guide.title);
 ---
 
 <article class="guide-card" data-guide-card data-search={guideSearchText}>
   <a class="guide-card-link" href={`/guides/${guide.slug}/`} aria-label={`Open ${guideDisplayTitle}`}></a>
 
   <div class="section-stack">
-    <p class="eyebrow">{guide.country_name}</p>
     <h3>{guideDisplayTitle}</h3>
     {
       guideDescriptionHtml ? (

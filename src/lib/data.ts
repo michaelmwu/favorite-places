@@ -45,6 +45,8 @@ function summarizeGuide(guide: Guide): GuideManifest {
     description: guide.description,
     country_name: getDisplayCountryName(guide),
     country_code: guide.country_code,
+    center_lat: guide.center_lat ?? null,
+    center_lng: guide.center_lng ?? null,
     city_name: guide.city_name,
     list_tags: guide.list_tags,
     place_count: guide.place_count,

@@ -86,7 +86,7 @@ const guideDescriptionHtml = renderRichText(guide.description);
       <p class="small-copy">Search names, notes, neighborhoods, or address text.</p>
     </div>
 
-    <div class="browse-layout">
+    <div class="browse-layout" data-browse-layout>
       <div class="browse-main">
         <div class="controls-panel">
           <div class="controls-grid" data-guide-controls>
@@ -128,7 +128,11 @@ const guideDescriptionHtml = renderRichText(guide.description);
           </div>
         </div>
 
-        <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
+        <div class="results-row">
+          <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
+          <button class="map-filter-reset" type="button" data-map-filter-reset hidden>Reset map</button>
+        </div>
+        <p class="map-filter-status small-copy" data-map-filter-status hidden>Filtered to the visible map area.</p>
         <div class="empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
 
         <div class="card-grid" data-kind="places" data-place-list>

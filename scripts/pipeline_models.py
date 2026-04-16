@@ -190,6 +190,8 @@ class Guide(PipelineModel):
     top_categories: list[str] = Field(default_factory=list)
     generated_at: str
     place_count: int
+    center_lat: float | None = None
+    center_lng: float | None = None
     places: list[NormalizedPlace] = Field(default_factory=list)
 
 
@@ -199,6 +201,8 @@ class GuideManifest(PipelineModel):
     description: str | None = None
     country_name: str
     country_code: str | None = None
+    center_lat: float | None = None
+    center_lng: float | None = None
     city_name: str
     list_tags: list[str] = Field(default_factory=list)
     place_count: int
