@@ -613,7 +613,7 @@ const mapPlaces = places
         visiblePlaces.forEach((place) => bounds.extend({ lat: place.lat, lng: place.lng }));
         map.fitBounds(bounds, 28);
       },
-      getBoundsContains: (place) => map.getBounds()?.contains({ lat: place.lat, lng: place.lng }) ?? false,
+      getBoundsContains: (place) => map.getBounds()?.contains({ lat: place.lat, lng: place.lng }) ?? true,
       getZoom: () => map.getZoom() ?? 0,
       hasVisiblePlace: (placeId) => Boolean(markers.get(placeId)?.getMap()),
       highlightPlace: (place, active) => {
