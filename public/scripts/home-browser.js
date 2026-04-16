@@ -167,6 +167,7 @@ if (root) {
     if (emptyState) {
       emptyState.dataset.visible = visibleGuideCount === 0 ? "true" : "false";
     }
+
   };
 
   searchInput?.addEventListener("input", update);
