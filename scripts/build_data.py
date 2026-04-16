@@ -39,6 +39,7 @@ DEFAULT_REFRESH_WORKERS = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
 DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
+SCRAPER_SESSION_SLOT_COUNT = 8
 SCRAPER_SESSION_MAX_AGE = timedelta(days=14)
 ERROR_CACHE_TTL = timedelta(days=1)
 UNMATCHED_CACHE_TTL = timedelta(days=3)
@@ -367,9 +368,11 @@ RECOVERABLE_REFRESH_ERRORS = (ScrapeError, ParseError)
 class ScraperSessionState:
     identity_key: str
     identity_dir: Path
+    slot_key: str
     browser_profile_dir: Path
     http_cookie_jar_path: Path
     metadata_path: Path
+    lock_path: Path
 
 
 def current_scraper_proxy() -> str | None:
@@ -389,16 +392,22 @@ def scraper_session_identity_key(proxy: str | None) -> str:
     return f"proxy-{digest}"
 
 
-def build_scraper_session_state(proxy: str | None) -> ScraperSessionState:
+def build_scraper_session_state(
+    proxy: str | None,
+    *,
+    slot_key: str = "slot-0",
+    lock_path: Path | None = None,
+) -> ScraperSessionState:
     identity_key = scraper_session_identity_key(proxy)
     identity_dir = SCRAPER_STATE_DIR / identity_key
-    pid = os.getpid()
     return ScraperSessionState(
         identity_key=identity_key,
         identity_dir=identity_dir,
-        browser_profile_dir=identity_dir / "browser" / f"pid-{pid}",
-        http_cookie_jar_path=identity_dir / f"http-cookies.pid-{pid}.txt",
-        metadata_path=identity_dir / f"metadata.pid-{pid}.json",
+        slot_key=slot_key,
+        browser_profile_dir=identity_dir / "browser" / slot_key,
+        http_cookie_jar_path=identity_dir / f"http-cookies.{slot_key}.txt",
+        metadata_path=identity_dir / f"metadata.{slot_key}.json",
+        lock_path=lock_path or identity_dir / "locks" / f"{slot_key}.lock",
     )
 
 
@@ -407,8 +416,16 @@ def ensure_scraper_session_state(
     *,
     now: datetime | None = None,
 ) -> ScraperSessionState:
-    state = build_scraper_session_state(proxy)
     reference_time = now or datetime.now(UTC)
+    identity_key = scraper_session_identity_key(proxy)
+    identity_dir = SCRAPER_STATE_DIR / identity_key
+    sweep_stale_scraper_session_states(proxy, identity_dir=identity_dir, now=reference_time)
+    slot_key, lock_path = acquire_scraper_session_slot(identity_dir)
+    state = build_scraper_session_state(
+        proxy,
+        slot_key=slot_key,
+        lock_path=lock_path,
+    )
     if scraper_session_is_stale(state, now=reference_time):
         clear_scraper_session_state(state)
     state.identity_dir.mkdir(parents=True, exist_ok=True)
@@ -435,10 +452,10 @@ def scraper_session_is_stale(
 ) -> bool:
     metadata = load_scraper_session_metadata(state)
     if metadata is None:
-        return False
+        return state.metadata_path.exists()
     timestamp = metadata.get("last_used_at") or metadata.get("created_at")
     if timestamp is None:
-        return False
+        return True
     try:
         last_used_at = parse_metadata_datetime(timestamp)
     except ValueError:
@@ -487,9 +504,99 @@ def clear_scraper_session_state(state: ScraperSessionState) -> None:
             pass
 
 
+def release_scraper_session_lock(state: ScraperSessionState) -> None:
+    try:
+        if state.lock_path.exists() or state.lock_path.is_symlink():
+            state.lock_path.unlink()
+    except OSError:
+        pass
+
+    for directory in (state.lock_path.parent, state.identity_dir):
+        try:
+            if directory.exists() and not any(directory.iterdir()):
+                directory.rmdir()
+        except OSError:
+            pass
+
+
 def should_reset_scraper_session(exc: Exception) -> bool:
     message = str(exc).lower()
     return any(marker in message for marker in SCRAPER_SESSION_RESET_ERROR_MARKERS)
+
+
+def sweep_stale_scraper_session_states(
+    proxy: str | None,
+    *,
+    identity_dir: Path,
+    now: datetime,
+) -> None:
+    for metadata_path in sorted(identity_dir.glob("metadata.*.json")):
+        slot_key = metadata_path.stem.removeprefix("metadata.")
+        state = build_scraper_session_state(proxy, slot_key=slot_key)
+        if scraper_session_lock_is_active(state.lock_path):
+            continue
+        if scraper_session_is_stale(state, now=now):
+            clear_scraper_session_state(state)
+            release_scraper_session_lock(state)
+
+
+def acquire_scraper_session_slot(identity_dir: Path) -> tuple[str, Path]:
+    locks_dir = identity_dir / "locks"
+    locks_dir.mkdir(parents=True, exist_ok=True)
+    for index in range(SCRAPER_SESSION_SLOT_COUNT):
+        slot_key = f"slot-{index}"
+        lock_path = locks_dir / f"{slot_key}.lock"
+        if try_acquire_scraper_session_lock(lock_path):
+            return slot_key, lock_path
+
+    slot_key = f"slot-overflow-{os.getpid()}"
+    lock_path = locks_dir / f"{slot_key}.lock"
+    if try_acquire_scraper_session_lock(lock_path):
+        return slot_key, lock_path
+    raise RuntimeError(f"Could not allocate a scraper session slot under {identity_dir}.")
+
+
+def try_acquire_scraper_session_lock(lock_path: Path) -> bool:
+    payload = f"{os.getpid()}\n"
+    for _ in range(2):
+        try:
+            fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            if not scraper_session_lock_is_active(lock_path):
+                try:
+                    lock_path.unlink()
+                except OSError:
+                    return False
+                continue
+            return False
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(payload)
+        except Exception:
+            try:
+                lock_path.unlink()
+            except OSError:
+                pass
+            raise
+        return True
+    return False
+
+
+def scraper_session_lock_is_active(lock_path: Path) -> bool:
+    if not lock_path.exists():
+        return False
+    try:
+        owner_text = lock_path.read_text(encoding="utf-8").strip()
+        owner_pid = int(owner_text)
+    except (OSError, ValueError):
+        return False
+    try:
+        os.kill(owner_pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
 
 
 def build_scraper_sessions(
@@ -498,6 +605,13 @@ def build_scraper_sessions(
     now: datetime | None = None,
 ) -> tuple[ScraperSessionState, Any, Any]:
     session_state = ensure_scraper_session_state(proxy, now=now)
+    return session_state, *build_scraper_configs(session_state, proxy)
+
+
+def build_scraper_configs(
+    session_state: ScraperSessionState,
+    proxy: str | None,
+) -> tuple[Any, Any]:
     browser_session = None
     http_session = None
     if BrowserSessionConfig is not None:
@@ -510,7 +624,7 @@ def build_scraper_sessions(
             cookie_jar_path=session_state.http_cookie_jar_path,
             proxy=proxy,
         )
-    return session_state, browser_session, http_session
+    return browser_session, http_session
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -745,32 +859,34 @@ def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedLis
 
     proxy = current_scraper_proxy()
     session_state, browser_session, http_session = build_scraper_sessions(proxy)
-
     try:
-        result = scrape_saved_list(
-            source_url,
-            headless=not headed,
-            browser_session=browser_session,
-            http_session=http_session,
-        )
-    except RECOVERABLE_REFRESH_ERRORS as exc:
-        if not should_reset_scraper_session(exc):
-            raise
-        clear_scraper_session_state(session_state)
-        session_state, browser_session, http_session = build_scraper_sessions(proxy)
-        result = scrape_saved_list(
-            source_url,
-            headless=not headed,
-            browser_session=browser_session,
-            http_session=http_session,
-        )
+        try:
+            result = scrape_saved_list(
+                source_url,
+                headless=not headed,
+                browser_session=browser_session,
+                http_session=http_session,
+            )
+        except RECOVERABLE_REFRESH_ERRORS as exc:
+            if not should_reset_scraper_session(exc):
+                raise
+            clear_scraper_session_state(session_state)
+            browser_session, http_session = build_scraper_configs(session_state, proxy)
+            result = scrape_saved_list(
+                source_url,
+                headless=not headed,
+                browser_session=browser_session,
+                http_session=http_session,
+            )
 
-    record_scraper_session_use(session_state, proxy=proxy)
-    payload = RawSavedList.model_validate(result.to_dict())
-    if source.title and not payload.title:
-        payload.title = source.title
-    stamp_raw_saved_list(payload, source, source_signature=raw_source_signature(source))
-    return payload
+        record_scraper_session_use(session_state, proxy=proxy)
+        payload = RawSavedList.model_validate(result.to_dict())
+        if source.title and not payload.title:
+            payload.title = source.title
+        stamp_raw_saved_list(payload, source, source_signature=raw_source_signature(source))
+        return payload
+    finally:
+        release_scraper_session_lock(session_state)
 
 
 def scrape_google_list_url_with_retries(
@@ -2294,7 +2410,14 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str | None) -> Enrichme
             return page_entry
 
     if api_key is not None:
-        return fetch_places_api_enrichment(place, api_key=api_key)
+        api_entry = fetch_places_api_enrichment(place, api_key=api_key)
+        if (
+            page_entry.error is None
+            and page_entry.place is not None
+            and (api_entry.error is not None or api_entry.matched is not True or api_entry.place is None)
+        ):
+            return page_entry
+        return api_entry
 
     return page_entry
 
@@ -2312,49 +2435,52 @@ def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
     proxy = current_scraper_proxy()
     session_state, browser_session, http_session = build_scraper_sessions(proxy)
     try:
-        details = scrape_place(
-            place.maps_url,
-            headless=True,
-            browser_session=browser_session,
-            http_session=http_session,
-        )
-    except RECOVERABLE_REFRESH_ERRORS as exc:
-        if should_reset_scraper_session(exc):
-            clear_scraper_session_state(session_state)
-            session_state, browser_session, http_session = build_scraper_sessions(proxy)
-            try:
-                details = scrape_place(
-                    place.maps_url,
-                    headless=True,
-                    browser_session=browser_session,
-                    http_session=http_session,
-                )
-            except RECOVERABLE_REFRESH_ERRORS as retry_exc:
+        try:
+            details = scrape_place(
+                place.maps_url,
+                headless=True,
+                browser_session=browser_session,
+                http_session=http_session,
+            )
+        except RECOVERABLE_REFRESH_ERRORS as exc:
+            if should_reset_scraper_session(exc):
+                clear_scraper_session_state(session_state)
+                browser_session, http_session = build_scraper_configs(session_state, proxy)
+                try:
+                    details = scrape_place(
+                        place.maps_url,
+                        headless=True,
+                        browser_session=browser_session,
+                        http_session=http_session,
+                    )
+                except RECOVERABLE_REFRESH_ERRORS as retry_exc:
+                    return build_cache_entry(
+                        place,
+                        source="google_maps_page",
+                        query=query,
+                        error=f"scrape_error:{retry_exc}",
+                    )
+            else:
                 return build_cache_entry(
                     place,
                     source="google_maps_page",
                     query=query,
-                    error=f"scrape_error:{retry_exc}",
+                    error=f"scrape_error:{exc}",
                 )
-        else:
-            return build_cache_entry(
-                place,
-                source="google_maps_page",
-                query=query,
-                error=f"scrape_error:{exc}",
-            )
 
-    record_scraper_session_use(session_state, proxy=proxy)
-    enrichment_place = normalize_place_page_enrichment(details)
-    matched = place_page_has_meaningful_enrichment(details, enrichment_place)
-    return build_cache_entry(
-        place,
-        source="google_maps_page",
-        query=query,
-        matched=matched,
-        score=STRONG_MATCH_SCORE if matched else None,
-        enrichment_place=enrichment_place if matched else None,
-    )
+        record_scraper_session_use(session_state, proxy=proxy)
+        enrichment_place = normalize_place_page_enrichment(details)
+        matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+        return build_cache_entry(
+            place,
+            source="google_maps_page",
+            query=query,
+            matched=matched,
+            score=STRONG_MATCH_SCORE if matched else None,
+            enrichment_place=enrichment_place if matched else None,
+        )
+    finally:
+        release_scraper_session_lock(session_state)
 
 
 def should_fallback_to_places_api(entry: EnrichmentCacheEntry) -> bool:
@@ -2381,11 +2507,13 @@ def place_page_has_meaningful_enrichment(
         or enrichment_place.primary_type_display_name
         or enrichment_place.rating is not None
         or enrichment_place.user_rating_count is not None
-        or enrichment_place.google_maps_uri
     ):
         return True
     return not bool(getattr(details, "limited_view", False)) and bool(
-        enrichment_place.website or enrichment_place.phone or enrichment_place.plus_code
+        enrichment_place.website
+        or enrichment_place.phone
+        or enrichment_place.plus_code
+        or enrichment_place.description
     )
 
 
@@ -2398,24 +2526,49 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         if primary_type:
             types.append(primary_type)
 
-    maps_uri = as_string(getattr(details, "resolved_url", None)) or as_string(
-        getattr(details, "source_url", None)
+    display_name = as_string(getattr(details, "name", None))
+    formatted_address = as_string(getattr(details, "address", None))
+    rating = as_float(getattr(details, "rating", None))
+    user_rating_count = as_int(getattr(details, "review_count", None))
+    website = as_string(getattr(details, "website", None))
+    phone = as_string(getattr(details, "phone", None))
+    plus_code = as_string(getattr(details, "plus_code", None))
+    description = as_string(getattr(details, "description", None))
+    limited_view = bool(getattr(details, "limited_view", False))
+    has_meaningful_fields = any(
+        (
+            display_name,
+            formatted_address,
+            primary_type,
+            category,
+            rating is not None,
+            user_rating_count is not None,
+            website,
+            phone,
+            plus_code,
+            description,
+        )
     )
+    maps_uri = None
+    if limited_view or has_meaningful_fields:
+        maps_uri = as_string(getattr(details, "resolved_url", None)) or as_string(
+            getattr(details, "source_url", None)
+        )
     return EnrichmentPlace(
-        display_name=as_string(getattr(details, "name", None)),
-        formatted_address=as_string(getattr(details, "address", None)),
+        display_name=display_name,
+        formatted_address=formatted_address,
         google_maps_uri=maps_uri,
-        rating=as_float(getattr(details, "rating", None)),
-        user_rating_count=as_int(getattr(details, "review_count", None)),
+        rating=rating,
+        user_rating_count=user_rating_count,
         primary_type=primary_type,
         primary_type_display_name=category,
         types=types,
         business_status=normalize_place_page_business_status(as_string(getattr(details, "status", None))),
-        website=as_string(getattr(details, "website", None)),
-        phone=as_string(getattr(details, "phone", None)),
-        plus_code=as_string(getattr(details, "plus_code", None)),
-        description=as_string(getattr(details, "description", None)),
-        limited_view=bool(getattr(details, "limited_view", False)),
+        website=website,
+        phone=phone,
+        plus_code=plus_code,
+        description=description,
+        limited_view=limited_view,
     )
 
 
