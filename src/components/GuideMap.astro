@@ -29,6 +29,7 @@ const mapPlaces = places
 
       <div class="map-actions" data-map-actions>
         <button class="map-control-button" type="button" data-map-frame-filter>Search this area</button>
+        <button class="map-control-button" type="button" data-map-full-area>Full area</button>
         <button
           class="map-icon-button"
           type="button"
@@ -45,7 +46,6 @@ const mapPlaces = places
             <path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22" />
           </svg>
         </button>
-        <button class="map-control-button" type="button" data-map-filter-reset hidden>Reset map</button>
       </div>
 
       <div class="guide-map" data-guide-map data-places={JSON.stringify(mapPlaces)} />
@@ -298,6 +298,7 @@ const mapPlaces = places
     const panel = element.closest<HTMLElement>("[data-map-panel]");
     const cards = root ? Array.from(root.querySelectorAll<HTMLElement>("[data-place-card][data-place-id]")) : [];
     const mapFrameButton = panel?.querySelector<HTMLButtonElement>("[data-map-frame-filter]");
+    const mapFullAreaButton = panel?.querySelector<HTMLButtonElement>("[data-map-full-area]");
     const locationButton = panel?.querySelector<HTMLButtonElement>("[data-map-location]");
     const mapResetButtons = root ? Array.from(root.querySelectorAll<HTMLButtonElement>("[data-map-filter-reset]")) : [];
     let currentPlaces = places;
@@ -494,6 +495,23 @@ const mapPlaces = places
       map.setView([currentLocation.lat, currentLocation.lng], 15, { animate: true });
     };
 
+    const resetToFullArea = () => {
+      selectedPlaceId = "";
+      hoveredPlaceId = "";
+      updateActiveMarker(false);
+      if (root) {
+        root.dispatchEvent(
+          new CustomEvent("guide:map-frame-reset-request", {
+            bubbles: true,
+          }),
+        );
+      } else {
+        currentPlaces = places;
+        markers.forEach((marker) => marker.addTo(map));
+        fitPlaces(map, places);
+      }
+    };
+
     places.forEach((place) => {
       const marker = placeCircle(place).addTo(map);
       marker.on("click", () => selectPlace(place.id));
@@ -524,6 +542,7 @@ const mapPlaces = places
     });
 
     mapFrameButton?.addEventListener("click", applyMapFrameFilter);
+    mapFullAreaButton?.addEventListener("click", resetToFullArea);
 
     mapElement.guideMap = map;
     mapElement.guideLocationBounds = locationBoundsForPlaces(places) ?? undefined;

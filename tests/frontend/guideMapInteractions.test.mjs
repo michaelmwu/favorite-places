@@ -14,6 +14,10 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("layout.dataset.mapCollapsed");
     expect(css).toContain('.browse-layout[data-map-collapsed="true"]');
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) 2.75rem");
+    expect(css).toContain('.map-panel[data-collapsed="true"] .map-toggle');
+    expect(css).toContain("border-color: transparent");
+    expect(css).toContain("background: transparent");
+    expect(css).not.toContain("inset: 0;\n  width: 100%;\n  height: 100%;");
   });
 
   it("keeps map-frame filtering resettable from both the map and the list", () => {
@@ -24,6 +28,8 @@ describe("guide map interactions", () => {
     expect(guidePage).toContain("data-map-filter-status");
     expect(guidePage).toContain("data-map-filter-reset");
     expect(guideMap).toContain("data-map-frame-filter");
+    expect(guideMap).toContain("data-map-full-area");
+    expect(guideMap).toContain('new CustomEvent("guide:map-frame-reset-request"');
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-filter"');
     expect(filters).toContain('root.addEventListener("guide:map-frame-filter"');
     expect(filters).toContain('root.dispatchEvent(new CustomEvent("guide:map-frame-reset"');
