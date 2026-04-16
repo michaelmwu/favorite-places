@@ -786,7 +786,19 @@ select {
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.guide-map-popup {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 12rem;
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .guide-map .leaflet-popup-content strong {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.guide-map-popup strong {
   font-size: 1.1rem;
   font-weight: 900;
 }
@@ -795,7 +807,17 @@ select {
   color: var(--muted);
 }
 
+.guide-map-popup span {
+  color: var(--muted);
+}
+
 .guide-map .leaflet-popup-content a {
+  margin-top: 0.35rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.guide-map-popup a {
   margin-top: 0.35rem;
   color: var(--accent);
   font-weight: 700;
