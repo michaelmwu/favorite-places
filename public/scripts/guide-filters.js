@@ -37,15 +37,17 @@ export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, ov
     return "";
   }
 
-  return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match elsewhere in this guide.`;
+  return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match${overflowCount === 1 ? "" : "es"} elsewhere in this guide.`;
 }
 
 export function buildEmptyStateMessage({ activeAreaLabel = "", overflowCount = 0, query = "" }) {
+  const matchWord = overflowCount === 1 ? "match" : "matches";
+
   if (query && activeAreaLabel && overflowCount > 0) {
-    return `No places matched "${query}" in ${activeAreaLabel}. ${overflowCount} more match elsewhere in this guide. Try another area or clear the area filter.`;
+    return `No places matched "${query}" in ${activeAreaLabel}. ${overflowCount} more ${matchWord} elsewhere in this guide. Try another area or clear the area filter.`;
   }
   if (activeAreaLabel && overflowCount > 0) {
-    return `No matches in ${activeAreaLabel}. ${overflowCount} more match elsewhere in this guide. Try another area or clear the area filter.`;
+    return `No matches in ${activeAreaLabel}. ${overflowCount} more ${matchWord} elsewhere in this guide. Try another area or clear the area filter.`;
   }
   if (query) {
     return `No places matched "${query}" in this guide. Try a broader search or clear filters.`;
@@ -119,7 +121,9 @@ if (root) {
       ? new Map(searchState.results.map((result) => [result.entry.id, result.score]))
       : new Map();
 
-    const activeAreaLabel = areaButtons.find((button) => (button.dataset.area || "") === activeArea)?.dataset.areaLabel || "";
+    const activeAreaLabel = activeArea
+      ? areaButtons.find((button) => (button.dataset.area || "") === activeArea)?.dataset.areaLabel || ""
+      : "";
     const visibleCards = cards.filter((card) => {
       const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
       const matchesTag = cardHasTag(card, activeTag);

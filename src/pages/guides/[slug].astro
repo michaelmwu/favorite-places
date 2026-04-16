@@ -24,30 +24,31 @@ const displayGuideTags = getDisplayGuideTags(guide.list_tags, {
   countryCode: guide.country_code,
   countryName: guide.country_name,
 });
-const guideVibeFilters = [
-  ...new Set(
-    visiblePlaces.flatMap((place) =>
-      getDisplayPlaceTags(place.vibe_tags).filter((tag) =>
-        [
-          "cozy",
-          "quiet",
-          "lively",
-          "date-night",
-          "laptop-friendly",
-          "scenic",
-          "hidden-gem",
-          "cheap-eats",
-          "splurge",
-          "rainy-day",
-        ].includes(tag),
-      ),
-    ),
-  ),
-].sort((a, b) => a.localeCompare(b));
+const supportedGuideVibeTags = new Set([
+  "cozy",
+  "quiet",
+  "lively",
+  "date-night",
+  "laptop-friendly",
+  "scenic",
+  "hidden-gem",
+  "cheap-eats",
+  "splurge",
+  "rainy-day",
+]);
+const guideVibeCounts = visiblePlaces.reduce((counts, place) => {
+  getDisplayPlaceTags(place.vibe_tags).forEach((tag) => {
+    if (!supportedGuideVibeTags.has(tag)) {
+      return;
+    }
+
+    counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  });
+  return counts;
+}, new Map<string, number>());
+const guideVibeFilters = [...guideVibeCounts.keys()].sort((a, b) => a.localeCompare(b));
 const guideDescriptionHtml = renderRichText(guide.description);
 const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
-const countPlacesForVibe = (tag: string) =>
-  visiblePlaces.filter((place) => getDisplayPlaceTags(place.vibe_tags).includes(tag)).length;
 const placeTagGuideContext = {
   cityName: guide.city_name,
   countryCode: guide.country_code,
@@ -186,10 +187,10 @@ const placeTagGuideContext = {
                       data-tag-filter
                       data-tag={tag}
                       data-tag-label={formatVibeLabel(tag)}
-                      data-tag-count={countPlacesForVibe(tag)}
+                      data-tag-count={guideVibeCounts.get(tag) ?? 0}
                     >
                       <span>{formatVibeLabel(tag)}</span>
-                      <span class="tag-pill-count" data-tag-count-text>{countPlacesForVibe(tag)}</span>
+                      <span class="tag-pill-count" data-tag-count-text>{guideVibeCounts.get(tag) ?? 0}</span>
                     </button>
                   ))}
                 </div>
