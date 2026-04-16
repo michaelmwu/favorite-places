@@ -27,6 +27,27 @@ const mapPlaces = places
         <span class="map-toggle-icon" aria-hidden="true" />
       </button>
 
+      <div class="map-actions" data-map-actions>
+        <button class="map-control-button" type="button" data-map-frame-filter>Search this area</button>
+        <button
+          class="map-icon-button"
+          type="button"
+          data-map-location
+          data-location-state="checking"
+          aria-label="Center map on current location"
+          aria-disabled="true"
+          aria-busy="true"
+          title="Center map on current location"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="7" />
+            <circle cx="12" cy="12" r="2.4" />
+            <path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22" />
+          </svg>
+        </button>
+        <button class="map-control-button" type="button" data-map-filter-reset hidden>Reset map</button>
+      </div>
+
       <div class="guide-map" data-guide-map data-places={JSON.stringify(mapPlaces)} />
 
       <noscript>
@@ -59,16 +80,31 @@ const mapPlaces = places
 
   interface PlacesUpdatedEvent extends CustomEvent {
     detail: {
+      source?: string;
+      mapFrameActive?: boolean;
       visiblePlaceIds: string[];
     };
+  }
+
+  interface GuideLocationBounds {
+    center: L.LatLng;
+    radiusKm: number;
+    maxDistanceKm: number;
   }
 
   interface GuideMapElement extends HTMLElement {
     guideMap?: L.Map;
     guideMapFit?: () => void;
+    guideLocationBounds?: GuideLocationBounds;
   }
 
   const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
+
+  const DEFAULT_MARKER_COLOR = "#1f1a16";
+  const TOP_PICK_MARKER_COLOR = "#b64d1f";
+  const ACTIVE_MARKER_COLOR = "#c4312d";
+  const LOCATION_PROXIMITY_BUFFER_KM = 25;
+  const LOCATION_PROXIMITY_MULTIPLIER = 1.8;
 
   const escapeHtml = (value: string) =>
     value
@@ -87,15 +123,17 @@ const mapPlaces = places
     `;
   };
 
+  const markerStyle = (place: MapPlace, active = false): L.CircleMarkerOptions => ({
+    radius: active ? (place.topPick ? 11 : 9) : place.topPick ? 8 : 6,
+    color: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : DEFAULT_MARKER_COLOR,
+    fillColor: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : "#fffaf1",
+    fillOpacity: active ? 0.96 : place.topPick ? 0.92 : 0.86,
+    opacity: 0.95,
+    weight: active ? 3 : 2,
+  });
+
   const placeCircle = (place: MapPlace) =>
-    L.circleMarker([place.lat, place.lng], {
-      radius: place.topPick ? 8 : 6,
-      color: place.topPick ? "#b64d1f" : "#1f1a16",
-      fillColor: place.topPick ? "#b64d1f" : "#fffaf1",
-      fillOpacity: place.topPick ? 0.92 : 0.86,
-      opacity: 0.95,
-      weight: 2,
-    }).bindPopup(popupHtml(place), {
+    L.circleMarker([place.lat, place.lng], markerStyle(place)).bindPopup(popupHtml(place), {
       className: "guide-map-popup",
       closeButton: false,
     });
@@ -113,6 +151,56 @@ const mapPlaces = places
       padding: [28, 28],
       maxZoom: 15,
     });
+  };
+
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+
+  const distanceInKm = (fromLat: number, fromLng: number, toLat: number, toLng: number) => {
+    const earthRadiusKm = 6371;
+    const latDelta = toRadians(toLat - fromLat);
+    const lngDelta = toRadians(toLng - fromLng);
+    const fromLatRadians = toRadians(fromLat);
+    const toLatRadians = toRadians(toLat);
+    const a =
+      Math.sin(latDelta / 2) ** 2 +
+      Math.cos(fromLatRadians) * Math.cos(toLatRadians) * Math.sin(lngDelta / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return earthRadiusKm * c;
+  };
+
+  const median = (values: number[]) => {
+    const sorted = [...values].sort((left, right) => left - right);
+    const middle = Math.floor(sorted.length / 2);
+
+    if (sorted.length % 2 === 0) {
+      return (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    return sorted[middle];
+  };
+
+  const percentile = (values: number[], percentileValue: number) => {
+    const sorted = [...values].sort((left, right) => left - right);
+    const index = Math.min(sorted.length - 1, Math.max(0, Math.ceil(sorted.length * percentileValue) - 1));
+    return sorted[index];
+  };
+
+  const locationBoundsForPlaces = (places: MapPlace[]): GuideLocationBounds | null => {
+    if (places.length === 0) return null;
+
+    const center = L.latLng(
+      median(places.map((place) => place.lat)),
+      median(places.map((place) => place.lng)),
+    );
+    const distances = places.map((place) => distanceInKm(center.lat, center.lng, place.lat, place.lng));
+    const radiusKm = places.length < 8 ? Math.max(...distances) : percentile(distances, 0.95);
+
+    return {
+      center,
+      radiusKm,
+      maxDistanceKm: Math.max(LOCATION_PROXIMITY_BUFFER_KM, radiusKm * LOCATION_PROXIMITY_MULTIPLIER),
+    };
   };
 
   const enableTrackpadPinchZoom = (map: L.Map, element: HTMLElement) => {
@@ -164,8 +252,12 @@ const mapPlaces = places
   const setPanelCollapsed = (panel: HTMLElement, collapsed: boolean, persist = true) => {
     const button = panel.querySelector<HTMLButtonElement>("[data-map-toggle]");
     const mapElement = panel.querySelector<GuideMapElement>("[data-guide-map]");
+    const layout = panel.closest<HTMLElement>("[data-browse-layout]");
 
     panel.dataset.collapsed = collapsed ? "true" : "false";
+    if (layout) {
+      layout.dataset.mapCollapsed = collapsed ? "true" : "false";
+    }
 
     if (button) {
       button.setAttribute("aria-expanded", collapsed ? "false" : "true");
@@ -202,6 +294,12 @@ const mapPlaces = places
 
     element.dataset.initialized = "true";
 
+    const root = element.closest<HTMLElement>("[data-guide-root]");
+    const panel = element.closest<HTMLElement>("[data-map-panel]");
+    const cards = root ? Array.from(root.querySelectorAll<HTMLElement>("[data-place-card][data-place-id]")) : [];
+    const mapFrameButton = panel?.querySelector<HTMLButtonElement>("[data-map-frame-filter]");
+    const locationButton = panel?.querySelector<HTMLButtonElement>("[data-map-location]");
+    const mapResetButtons = root ? Array.from(root.querySelectorAll<HTMLButtonElement>("[data-map-filter-reset]")) : [];
     let currentPlaces = places;
     const mapElement = element as GuideMapElement;
     const map = L.map(mapElement, {
@@ -221,12 +319,218 @@ const mapPlaces = places
     }).addTo(map);
 
     const markers = new Map<string, L.CircleMarker>();
+    const placeById = new Map(places.map((place) => [place.id, place]));
+    let selectedPlaceId = "";
+    let hoveredPlaceId = "";
+    let currentLocation: L.LatLng | null = null;
+
+    const activePlaceId = () => hoveredPlaceId || selectedPlaceId;
+
+    const setCardsActive = (placeId: string) => {
+      cards.forEach((card) => {
+        card.dataset.mapActive = card.dataset.placeId === placeId ? "true" : "false";
+      });
+    };
+
+    const updateActiveMarker = (openPopup = false) => {
+      const placeId = activePlaceId();
+      setCardsActive(placeId);
+
+      markers.forEach((marker, markerPlaceId) => {
+        const place = placeById.get(markerPlaceId);
+        if (!place) return;
+
+        marker.setStyle(markerStyle(place, markerPlaceId === placeId));
+        if (markerPlaceId === placeId && map.hasLayer(marker)) {
+          marker.bringToFront();
+          if (openPopup) {
+            marker.openPopup();
+          }
+        }
+      });
+
+      if (!placeId) {
+        map.closePopup();
+      }
+    };
+
+    const placeIsInSaneView = (place: MapPlace) => {
+      const zoom = map.getZoom();
+      return map.getBounds().pad(-0.08).contains(L.latLng(place.lat, place.lng)) && zoom >= 13 && zoom <= 17;
+    };
+
+    const showPlace = (
+      placeId: string,
+      { ensureVisible = false, expandCollapsed = false, openPopup = true } = {},
+    ) => {
+      const place = placeById.get(placeId);
+      const marker = markers.get(placeId);
+      if (!place || !marker) return;
+
+      if (expandCollapsed && panel?.dataset.collapsed === "true") {
+        setPanelCollapsed(panel, false);
+        window.setTimeout(() => {
+          showPlace(placeId, { ensureVisible, openPopup });
+        }, 220);
+        return;
+      }
+
+      updateActiveMarker(false);
+
+      if (ensureVisible && !placeIsInSaneView(place)) {
+        const zoom = map.getZoom();
+        const nextZoom = zoom < 13 ? 15 : Math.min(zoom, 17);
+        map.setView([place.lat, place.lng], nextZoom, { animate: true });
+        window.setTimeout(() => {
+          if (map.hasLayer(marker) && openPopup) marker.openPopup();
+        }, 180);
+        return;
+      }
+
+      if (map.hasLayer(marker) && openPopup) {
+        marker.openPopup();
+      }
+    };
+
+    const selectPlace = (placeId: string, expandCollapsed = false) => {
+      hoveredPlaceId = "";
+      selectedPlaceId = placeId;
+      showPlace(placeId, { ensureVisible: true, expandCollapsed });
+    };
+
+    const hoverPlace = (placeId: string) => {
+      hoveredPlaceId = placeId;
+      showPlace(placeId, { openPopup: panel?.dataset.collapsed !== "true" });
+    };
+
+    const clearHoveredPlace = (placeId: string) => {
+      if (hoveredPlaceId !== placeId) return;
+      hoveredPlaceId = "";
+      updateActiveMarker(Boolean(selectedPlaceId));
+    };
+
+    const updateMapFrameControls = (active: boolean) => {
+      mapResetButtons.forEach((button) => {
+        button.hidden = !active;
+      });
+    };
+
+    const applyMapFrameFilter = () => {
+      if (!root) return;
+
+      const bounds = map.getBounds();
+      const visiblePlaceIds = currentPlaces
+        .filter((place) => bounds.contains(L.latLng(place.lat, place.lng)))
+        .map((place) => place.id);
+
+      root.dispatchEvent(
+        new CustomEvent("guide:map-frame-filter", {
+          bubbles: true,
+          detail: { visiblePlaceIds },
+        }),
+      );
+    };
+
+    const setLocationButtonState = (
+      state: "checking" | "near" | "far" | "unavailable",
+      label: string,
+    ) => {
+      if (!locationButton) return;
+
+      locationButton.dataset.locationState = state;
+      locationButton.dataset.busy = state === "checking" ? "true" : "false";
+      locationButton.title = label;
+      locationButton.setAttribute("aria-label", label);
+      locationButton.setAttribute("aria-disabled", state === "near" ? "false" : "true");
+      locationButton.setAttribute("aria-busy", state === "checking" ? "true" : "false");
+    };
+
+    const locationIsNearGuide = (location: L.LatLng) => {
+      const guideLocationBounds = mapElement.guideLocationBounds;
+      if (!guideLocationBounds) return false;
+
+      const distanceFromGuideCenter = distanceInKm(
+        location.lat,
+        location.lng,
+        guideLocationBounds.center.lat,
+        guideLocationBounds.center.lng,
+      );
+
+      return distanceFromGuideCenter <= guideLocationBounds.maxDistanceKm;
+    };
+
+    const updateLocationFromPosition = (position: GeolocationPosition) => {
+      currentLocation = L.latLng(position.coords.latitude, position.coords.longitude);
+
+      if (locationIsNearGuide(currentLocation)) {
+        setLocationButtonState("near", "Center map on current location");
+      } else {
+        setLocationButtonState("far", "Current location is too far from this guide");
+      }
+    };
+
+    const startLocationAvailabilityWatch = () => {
+      if (!locationButton) return;
+
+      if (!navigator.geolocation) {
+        setLocationButtonState("unavailable", "Current location is not available");
+        return;
+      }
+
+      setLocationButtonState("checking", "Checking current location");
+      navigator.geolocation.watchPosition(
+        updateLocationFromPosition,
+        () => setLocationButtonState("unavailable", "Current location is not available"),
+        {
+          enableHighAccuracy: true,
+          maximumAge: 60_000,
+          timeout: 8_000,
+        },
+      );
+    };
+
+    const centerOnCurrentLocation = () => {
+      if (!currentLocation || !locationIsNearGuide(currentLocation)) return;
+      map.setView([currentLocation.lat, currentLocation.lng], 15, { animate: true });
+    };
+
     places.forEach((place) => {
       const marker = placeCircle(place).addTo(map);
+      marker.on("click", () => selectPlace(place.id));
       markers.set(place.id, marker);
     });
 
+    cards.forEach((card) => {
+      if (card.dataset.mapInteractionInitialized === "true") return;
+      card.dataset.mapInteractionInitialized = "true";
+
+      const placeId = card.dataset.placeId || "";
+      card.addEventListener("pointerenter", () => hoverPlace(placeId));
+      card.addEventListener("pointerleave", () => clearHoveredPlace(placeId));
+      card.addEventListener("focus", () => hoverPlace(placeId));
+      card.addEventListener("blur", () => clearHoveredPlace(placeId));
+      card.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (target?.closest("a, button, input, select, textarea, [role='button']")) return;
+        selectPlace(placeId, true);
+      });
+      card.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const target = event.target instanceof Element ? event.target : null;
+        if (target?.closest("a, button, input, select, textarea, [role='button']")) return;
+        event.preventDefault();
+        selectPlace(placeId, true);
+      });
+    });
+
+    mapFrameButton?.addEventListener("click", applyMapFrameFilter);
+
     mapElement.guideMap = map;
+    mapElement.guideLocationBounds = locationBoundsForPlaces(places) ?? undefined;
+    if (locationButton) {
+      locationButton.addEventListener("click", centerOnCurrentLocation);
+      startLocationAvailabilityWatch();
+    }
     mapElement.guideMapFit = () => {
       map.invalidateSize();
       fitPlaces(map, currentPlaces);
@@ -239,6 +543,7 @@ const mapPlaces = places
       const visiblePlaceIds = new Set(event.detail.visiblePlaceIds);
       const visiblePlaces = places.filter((place) => visiblePlaceIds.has(place.id));
       currentPlaces = visiblePlaces;
+      updateMapFrameControls(Boolean(event.detail.mapFrameActive));
 
       markers.forEach((marker, placeId) => {
         if (visiblePlaceIds.has(placeId)) {
@@ -248,7 +553,11 @@ const mapPlaces = places
         }
       });
 
-      fitPlaces(map, currentPlaces);
+      updateActiveMarker(false);
+
+      if (!event.detail.mapFrameActive) {
+        fitPlaces(map, currentPlaces);
+      }
     }) as EventListener);
   };
 

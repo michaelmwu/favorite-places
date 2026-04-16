@@ -10,7 +10,14 @@ from unittest.mock import patch
 from pydantic import ValidationError
 
 from scripts import build_data
-from scripts.pipeline_models import EnrichmentCacheEntry, EnrichmentPlace, RawPlace, RawSavedList, SourceConfig
+from scripts.pipeline_models import (
+    EnrichmentCacheEntry,
+    EnrichmentPlace,
+    NormalizedPlace,
+    RawPlace,
+    RawSavedList,
+    SourceConfig,
+)
 
 
 class BuildDataTests(unittest.TestCase):
@@ -102,6 +109,8 @@ class BuildDataTests(unittest.TestCase):
                     address="1 Shibuya, Tokyo, Japan",
                     note="Original note",
                     is_favorite=False,
+                    lat=35.65,
+                    lng=139.7,
                     maps_url="https://maps.google.com/?cid=1",
                     cid="111",
                 ),
@@ -110,6 +119,8 @@ class BuildDataTests(unittest.TestCase):
                     address="2 Shinjuku, Tokyo, Japan",
                     note="Best at lunch",
                     is_favorite=True,
+                    lat=35.66,
+                    lng=139.71,
                     maps_url="https://maps.google.com/?cid=2",
                     cid="222",
                 ),
@@ -194,6 +205,8 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(guide.list_tags, ["coffee", "food", "manual-tag"])
         self.assertEqual(guide.place_count, 2)
         self.assertEqual(guide.featured_place_ids, [second_place_id, first_place_id])
+        self.assertAlmostEqual(guide.center_lat or 0, 35.655, places=3)
+        self.assertAlmostEqual(guide.center_lng or 0, 139.705, places=3)
 
         first_place = guide.places[0]
         hidden_place = next(place for place in guide.places if place.id == third_place_id)
@@ -210,6 +223,83 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("specialty", first_place.tags)
         self.assertIn("tokyo", first_place.tags)
         self.assertTrue(hidden_place.hidden)
+
+    def test_guide_location_center_excludes_far_outliers(self) -> None:
+        places = [
+            NormalizedPlace(
+                id="tokyo-1",
+                name="Tokyo 1",
+                lat=35.66,
+                lng=139.7,
+                maps_url="https://maps.example/tokyo-1",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-2",
+                name="Tokyo 2",
+                lat=35.67,
+                lng=139.71,
+                maps_url="https://maps.example/tokyo-2",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-3",
+                name="Tokyo 3",
+                lat=35.65,
+                lng=139.69,
+                maps_url="https://maps.example/tokyo-3",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-4",
+                name="Tokyo 4",
+                lat=35.68,
+                lng=139.72,
+                maps_url="https://maps.example/tokyo-4",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="bad-import",
+                name="Bad import",
+                lat=48.86,
+                lng=2.35,
+                maps_url="https://maps.example/bad-import",
+                status="active",
+            ),
+        ]
+
+        center_lat, center_lng = build_data.guide_location_center(places)
+
+        self.assertAlmostEqual(center_lat or 0, 35.665, places=3)
+        self.assertAlmostEqual(center_lng or 0, 139.705, places=3)
+
+    def test_warn_far_map_pins_prints_cli_warning_for_distant_places(self) -> None:
+        places = [
+            NormalizedPlace(
+                id="tokyo-1",
+                name="Tokyo 1",
+                lat=35.66,
+                lng=139.7,
+                maps_url="https://maps.example/tokyo-1",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="bad-import",
+                name="Bad import",
+                lat=48.86,
+                lng=2.35,
+                maps_url="https://maps.example/bad-import",
+                status="active",
+            ),
+        ]
+
+        with patch("builtins.print") as print_mock:
+            build_data.warn_far_map_pins("tokyo-japan", places, (35.665, 139.705))
+
+        self.assertEqual(print_mock.call_count, 1)
+        warning = print_mock.call_args.args[0]
+        self.assertIn("WARNING: tokyo-japan:bad-import", warning)
+        self.assertIn("check whether it belongs in this city/country", warning)
 
     def test_country_inference_keeps_monaco_english_with_localized_address_tails(self) -> None:
         raw = RawSavedList(
