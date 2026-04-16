@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from pydantic import ValidationError
@@ -338,6 +339,49 @@ class BuildDataTests(unittest.TestCase):
                 )
 
         self.assertEqual(guide.places[0].vibe_tags, [])
+
+    def test_page_backed_enrichment_uses_google_maps_page_provenance(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    address="1 Shibuya, Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-01T00:00:00+00:00",
+                refresh_after="2026-04-08T00:00:00+00:00",
+                source="google_maps_page",
+                query="Coffee House, Tokyo",
+                matched=True,
+                score=45,
+                place=EnrichmentPlace(
+                    display_name="Coffee House",
+                    formatted_address="1 Shibuya, Tokyo, Japan",
+                    google_maps_uri="https://www.google.com/maps/place/Coffee+House",
+                    primary_type="coffee_shop",
+                    primary_type_display_name="Coffee shop",
+                    types=["coffee_shop"],
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache=enrichment_cache)
+        place = guide.places[0]
+
+        self.assertEqual(place.maps_url, "https://www.google.com/maps/place/Coffee+House")
+        self.assertEqual(place.provenance.maps_url.source, "google_maps_page")
+        self.assertEqual(place.provenance.primary_category.source, "google_maps_page")
+        self.assertIn(
+            "google_maps_page",
+            {field.source for field in place.provenance.tags},
+        )
 
     def test_vibe_tags_match_snake_case_enrichment_types(self) -> None:
         vibes = build_data.derive_vibe_tags(
@@ -939,6 +983,187 @@ class BuildDataTests(unittest.TestCase):
                 )
 
         scrape.assert_called_once_with(source, headed=False)
+
+    def test_scraper_session_identity_key_changes_with_proxy(self) -> None:
+        self.assertEqual(build_data.scraper_session_identity_key(None), "direct")
+        self.assertNotEqual(
+            build_data.scraper_session_identity_key("http://proxy-a.example:8080"),
+            build_data.scraper_session_identity_key("http://proxy-b.example:8080"),
+        )
+
+    def test_ensure_scraper_session_state_expires_idle_sessions(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            state_dir = Path(tmpdir)
+            stale_now = datetime(2026, 4, 1, tzinfo=UTC)
+            fresh_now = stale_now + build_data.SCRAPER_SESSION_MAX_AGE + timedelta(minutes=1)
+
+            with patch.object(build_data, "SCRAPER_STATE_DIR", state_dir):
+                state = build_data.ensure_scraper_session_state(None, now=stale_now)
+                state.browser_profile_dir.mkdir(parents=True, exist_ok=True)
+                state.http_cookie_jar_path.write_text("cookie", encoding="utf-8")
+                build_data.record_scraper_session_use(state, proxy=None, now=stale_now)
+
+                refreshed = build_data.ensure_scraper_session_state(None, now=fresh_now)
+
+            self.assertTrue(refreshed.identity_dir.is_dir())
+            self.assertFalse(refreshed.http_cookie_jar_path.exists())
+            self.assertFalse(refreshed.browser_profile_dir.exists())
+
+    def test_scrape_google_list_url_passes_persistent_sessions_to_scraper(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        class DummySavedListResult:
+            def to_dict(self) -> dict[str, object]:
+                return {
+                    "source_url": source.url,
+                    "resolved_url": source.url,
+                    "list_id": "tokyo",
+                    "title": "Tokyo",
+                    "description": None,
+                    "places": [],
+                }
+
+        with TemporaryDirectory() as tmpdir:
+            state_dir = Path(tmpdir)
+            with (
+                patch.object(build_data, "SCRAPER_STATE_DIR", state_dir),
+                patch.dict("os.environ", {"GMAPS_SCRAPER_PROXY": "http://proxy.example:8080"}, clear=False),
+                patch.object(build_data, "scrape_saved_list", return_value=DummySavedListResult()) as scrape,
+            ):
+                payload = build_data.scrape_google_list_url(source, headed=False)
+
+        self.assertEqual(payload.title, "Tokyo")
+        kwargs = scrape.call_args.kwargs
+        self.assertTrue(kwargs["headless"])
+        self.assertEqual(kwargs["browser_session"].proxy, "http://proxy.example:8080")
+        self.assertEqual(kwargs["http_session"].proxy, "http://proxy.example:8080")
+        self.assertIn("proxy-", str(kwargs["browser_session"].profile_dir))
+        self.assertIn("proxy-", str(kwargs["http_session"].cookie_jar_path))
+
+    def test_scrape_google_list_url_clears_session_after_block_and_retries(self) -> None:
+        source = SourceConfig(
+            slug="tokyo-japan",
+            type="google_list_url",
+            url="https://maps.app.goo.gl/tokyo",
+        )
+
+        class DummySavedListResult:
+            def to_dict(self) -> dict[str, object]:
+                return {
+                    "source_url": source.url,
+                    "resolved_url": source.url,
+                    "list_id": "tokyo",
+                    "title": "Tokyo",
+                    "description": None,
+                    "places": [],
+                }
+
+        with TemporaryDirectory() as tmpdir:
+            state_dir = Path(tmpdir)
+            with (
+                patch.object(build_data, "SCRAPER_STATE_DIR", state_dir),
+                patch.object(
+                    build_data,
+                    "scrape_saved_list",
+                    side_effect=[
+                        build_data.ScrapeError("HTTP 429 Too Many Requests"),
+                        DummySavedListResult(),
+                    ],
+                ) as scrape,
+                patch.object(
+                    build_data,
+                    "clear_scraper_session_state",
+                    wraps=build_data.clear_scraper_session_state,
+                ) as clear_state,
+            ):
+                payload = build_data.scrape_google_list_url(source, headed=False)
+
+        self.assertEqual(payload.title, "Tokyo")
+        self.assertEqual(scrape.call_count, 2)
+        clear_state.assert_called_once()
+
+    def test_fetch_places_enrichment_uses_place_page_without_api_key(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+        details = SimpleNamespace(
+            source_url=place.maps_url,
+            resolved_url="https://www.google.com/maps/place/Jimbocho+Den/@35.67,139.71,17z",
+            name="Jimbocho Den",
+            category="Japanese restaurant",
+            rating=4.8,
+            review_count=324,
+            address="Tokyo, Japan",
+            status="Closed · Opens 6 PM",
+            website="http://www.jimbochoden.com/",
+            phone="+81 3-6455-5433",
+            plus_code="MPF7+73 Shibuya, Tokyo, Japan",
+            description="Modern kaiseki.",
+            limited_view=False,
+        )
+
+        with patch.object(build_data, "scrape_place", return_value=details) as scrape:
+            entry = build_data.fetch_places_enrichment(place, api_key=None)
+
+        scrape.assert_called_once()
+        self.assertEqual(entry.source, "google_maps_page")
+        self.assertTrue(entry.matched)
+        self.assertEqual(entry.place.display_name, "Jimbocho Den")
+        self.assertEqual(entry.place.primary_type, "japanese_restaurant")
+        self.assertEqual(entry.place.user_rating_count, 324)
+        self.assertEqual(entry.place.business_status, "OPERATIONAL")
+
+    def test_fetch_places_enrichment_falls_back_to_api_when_page_is_limited(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+        page_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-16T00:00:00+00:00",
+            refresh_after="2026-04-19T00:00:00+00:00",
+            source="google_maps_page",
+            query="Jimbocho Den, Tokyo, Japan",
+            matched=True,
+            score=45,
+            place=EnrichmentPlace(
+                display_name="Jimbocho Den",
+                formatted_address="Tokyo, Japan",
+                google_maps_uri=place.maps_url,
+                limited_view=True,
+            ),
+        )
+        api_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-16T00:00:00+00:00",
+            refresh_after="2026-04-23T00:00:00+00:00",
+            source="google_places_api",
+            query="Jimbocho Den, Tokyo, Japan",
+            matched=True,
+            score=88,
+            place=EnrichmentPlace(
+                display_name="Jimbocho Den",
+                formatted_address="Tokyo, Japan",
+                google_maps_uri="https://maps.google.com/?cid=1",
+                primary_type="restaurant",
+                primary_type_display_name="Restaurant",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
+        ):
+            entry = build_data.fetch_places_enrichment(place, api_key="test-key")
+
+        page_fetch.assert_called_once_with(place)
+        api_fetch.assert_called_once_with(place, api_key="test-key")
+        self.assertIs(entry, api_entry)
 
     def test_parallel_refresh_writes_each_snapshot_as_it_finishes(self) -> None:
         first_source = SourceConfig(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from google_saved_lists.url_tools import (
+from gmaps_scraper.url_tools import (
     extract_list_id,
     extract_list_id_from_text,
     has_placelist_marker,

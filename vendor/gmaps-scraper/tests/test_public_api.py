@@ -2,12 +2,27 @@ from __future__ import annotations
 
 import unittest
 
-from google_saved_lists import ParseError, Place, SavedList, ScrapeError, scrape_saved_list
+from gmaps_scraper import (
+    BrowserProxyConfig,
+    BrowserSessionConfig,
+    HttpSessionConfig,
+    ParseError,
+    Place,
+    PlaceDetails,
+    SavedList,
+    ScrapeError,
+    scrape_place,
+    scrape_saved_list,
+)
 
 
 class PublicApiTests(unittest.TestCase):
     def test_top_level_exports_are_importable(self) -> None:
         self.assertTrue(callable(scrape_saved_list))
+        self.assertTrue(callable(scrape_place))
+        self.assertEqual(BrowserSessionConfig.__name__, "BrowserSessionConfig")
+        self.assertEqual(BrowserProxyConfig.__name__, "BrowserProxyConfig")
+        self.assertEqual(HttpSessionConfig.__name__, "HttpSessionConfig")
         self.assertTrue(issubclass(ParseError, RuntimeError))
         self.assertTrue(issubclass(ScrapeError, RuntimeError))
 
@@ -58,6 +73,51 @@ class PublicApiTests(unittest.TestCase):
                         "maps_url": "https://maps.google.com/?cid=7451636382641713350",
                     }
                 ],
+            },
+        )
+
+    def test_place_details_omit_missing_fields(self) -> None:
+        place = PlaceDetails(
+            source_url="https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z",
+            name="Den",
+            secondary_name="傳",
+            category="Japanese restaurant",
+            rating=4.4,
+            review_count=324,
+            address="Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+            status="Closed · Opens 6 PM",
+            website="http://www.jimbochoden.com/",
+            phone="+81 3-6455-5433",
+            plus_code="MPF7+73 Shibuya, Tokyo, Japan",
+            lat=35.6731762,
+            lng=139.7127216,
+            limited_view=True,
+        )
+
+        self.assertEqual(
+            place.to_dict(),
+            {
+                "source_url": "https://www.google.com/maps/place/Den",
+                "resolved_url": (
+                    "https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z"
+                ),
+                "name": "Den",
+                "category": "Japanese restaurant",
+                "rating": 4.4,
+                "review_count": 324,
+                "address": (
+                    "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 "
+                    "建築家会館ＪＩＡ館"
+                ),
+                "status": "Closed · Opens 6 PM",
+                "website": "http://www.jimbochoden.com/",
+                "phone": "+81 3-6455-5433",
+                "plus_code": "MPF7+73 Shibuya, Tokyo, Japan",
+                "secondary_name": "傳",
+                "lat": 35.6731762,
+                "lng": 139.7127216,
+                "limited_view": True,
             },
         )
 

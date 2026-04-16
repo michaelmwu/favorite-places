@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from google_saved_lists.debug_dump import write_debug_dump
+from gmaps_scraper.debug_dump import write_debug_dump
 
 _LIST_URL = (
     "https://www.google.com/maps/@35.6501307,139.6868459,15z/"

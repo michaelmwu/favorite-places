@@ -139,12 +139,18 @@ class EnrichmentPlace(PipelineModel):
     primary_type_display_name: str | None = None
     types: list[str] = Field(default_factory=list)
     business_status: str | None = None
+    website: str | None = None
+    phone: str | None = None
+    plus_code: str | None = None
+    description: str | None = None
+    limited_view: bool = False
 
 
 class EnrichmentCacheEntry(PipelineModel):
     fetched_at: str
     last_verified_at: str | None = None
     refresh_after: str | None = None
+    source: Literal["google_maps_page", "google_places_api"] | None = None
     query: str
     input_signature: str | None = None
     matched: bool | None = None
@@ -154,7 +160,15 @@ class EnrichmentCacheEntry(PipelineModel):
     place: EnrichmentPlace | None = None
 
 
-FieldSource = Literal["manual", "google_list", "google_places", "osm", "wikidata", "website"]
+FieldSource = Literal[
+    "manual",
+    "google_list",
+    "google_places",
+    "google_maps_page",
+    "osm",
+    "wikidata",
+    "website",
+]
 
 
 class PlaceField(PipelineModel):

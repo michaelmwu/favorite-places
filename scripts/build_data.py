@@ -9,10 +9,12 @@ import math
 import os
 import random
 import re
+import shutil
 import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
+from dataclasses import dataclass
 from pathlib import Path
 from statistics import median
 from typing import Any
@@ -32,10 +34,12 @@ GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 PUBLIC_DATA_DIR = ROOT / "public" / "data"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
+SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
 DEFAULT_REFRESH_WORKERS = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
 DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
+SCRAPER_SESSION_MAX_AGE = timedelta(days=14)
 ERROR_CACHE_TTL = timedelta(days=1)
 UNMATCHED_CACHE_TTL = timedelta(days=3)
 LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
@@ -48,6 +52,26 @@ STRONG_MATCH_SCORE = 45
 MAP_PIN_DISTANCE_WARNING_MIN_METERS = 100_000.0
 MAP_PIN_DISTANCE_WARNING_BUFFER_METERS = 50_000.0
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
+SCRAPER_BLOCK_ERROR_MARKERS = (
+    "429",
+    "403",
+    "automated queries",
+    "blocked",
+    "captcha",
+    "challenge",
+    "denied",
+    "forbidden",
+    "rate limit",
+    "rate-limit",
+    "recaptcha",
+    "robot",
+    "sorry",
+    "too many requests",
+    "unusual traffic",
+)
+SCRAPER_SESSION_RESET_ERROR_MARKERS = SCRAPER_BLOCK_ERROR_MARKERS + (
+    "failed to load http cookie jar",
+)
 COUNTRY_LOCALITY_ALIASES = (
     "England",
     "Scotland",
@@ -316,7 +340,14 @@ except ModuleNotFoundError:
     )
 
 try:
-    from google_saved_lists import ParseError, ScrapeError, scrape_saved_list
+    from gmaps_scraper import (
+        BrowserSessionConfig,
+        HttpSessionConfig,
+        ParseError,
+        ScrapeError,
+        scrape_place,
+        scrape_saved_list,
+    )
 except ImportError:
     class ParseError(RuntimeError):
         pass
@@ -324,9 +355,147 @@ except ImportError:
     class ScrapeError(RuntimeError):
         pass
 
+    BrowserSessionConfig = None
+    HttpSessionConfig = None
+    scrape_place = None
     scrape_saved_list = None
 
 RECOVERABLE_REFRESH_ERRORS = (ScrapeError, ParseError)
+
+
+@dataclass(slots=True, frozen=True)
+class ScraperSessionState:
+    identity_key: str
+    identity_dir: Path
+    browser_profile_dir: Path
+    http_cookie_jar_path: Path
+    metadata_path: Path
+
+
+def current_scraper_proxy() -> str | None:
+    value = os.environ.get("GMAPS_SCRAPER_PROXY")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized
+
+
+def scraper_session_identity_key(proxy: str | None) -> str:
+    if proxy is None:
+        return "direct"
+    digest = hashlib.sha256(proxy.encode("utf-8")).hexdigest()[:16]
+    return f"proxy-{digest}"
+
+
+def build_scraper_session_state(proxy: str | None) -> ScraperSessionState:
+    identity_key = scraper_session_identity_key(proxy)
+    identity_dir = SCRAPER_STATE_DIR / identity_key
+    return ScraperSessionState(
+        identity_key=identity_key,
+        identity_dir=identity_dir,
+        browser_profile_dir=identity_dir / "browser" / f"pid-{os.getpid()}",
+        http_cookie_jar_path=identity_dir / "http-cookies.txt",
+        metadata_path=identity_dir / "metadata.json",
+    )
+
+
+def ensure_scraper_session_state(
+    proxy: str | None,
+    *,
+    now: datetime | None = None,
+) -> ScraperSessionState:
+    state = build_scraper_session_state(proxy)
+    reference_time = now or datetime.now(UTC)
+    if scraper_session_is_stale(state, now=reference_time):
+        clear_scraper_session_state(state)
+    state.identity_dir.mkdir(parents=True, exist_ok=True)
+    return state
+
+
+def load_scraper_session_metadata(state: ScraperSessionState) -> dict[str, str] | None:
+    if not state.metadata_path.exists():
+        return None
+    try:
+        payload = json.loads(state.metadata_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    metadata = {key: value for key, value in payload.items() if isinstance(key, str) and isinstance(value, str)}
+    return metadata or None
+
+
+def scraper_session_is_stale(
+    state: ScraperSessionState,
+    *,
+    now: datetime | None = None,
+) -> bool:
+    metadata = load_scraper_session_metadata(state)
+    if metadata is None:
+        return False
+    timestamp = metadata.get("last_used_at") or metadata.get("created_at")
+    if timestamp is None:
+        return False
+    try:
+        last_used_at = parse_metadata_datetime(timestamp)
+    except ValueError:
+        return True
+    reference_time = now or datetime.now(UTC)
+    return reference_time - last_used_at >= SCRAPER_SESSION_MAX_AGE
+
+
+def record_scraper_session_use(
+    state: ScraperSessionState,
+    *,
+    proxy: str | None,
+    now: datetime | None = None,
+) -> None:
+    state.identity_dir.mkdir(parents=True, exist_ok=True)
+    existing = load_scraper_session_metadata(state) or {}
+    timestamp = (now or datetime.now(UTC)).isoformat()
+    payload = {
+        "identity_key": state.identity_key,
+        "created_at": existing.get("created_at", timestamp),
+        "last_used_at": timestamp,
+        "proxy_kind": "proxy" if proxy is not None else "direct",
+    }
+    state.metadata_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def clear_scraper_session_state(state: ScraperSessionState) -> None:
+    if state.identity_dir.exists():
+        shutil.rmtree(state.identity_dir)
+
+
+def should_reset_scraper_session(exc: Exception) -> bool:
+    message = str(exc).lower()
+    return any(marker in message for marker in SCRAPER_SESSION_RESET_ERROR_MARKERS)
+
+
+def build_scraper_sessions(
+    proxy: str | None,
+    *,
+    now: datetime | None = None,
+) -> tuple[ScraperSessionState, Any, Any]:
+    session_state = ensure_scraper_session_state(proxy, now=now)
+    browser_session = None
+    http_session = None
+    if BrowserSessionConfig is not None:
+        browser_session = BrowserSessionConfig(
+            profile_dir=session_state.browser_profile_dir,
+            proxy=proxy,
+        )
+    if HttpSessionConfig is not None:
+        http_session = HttpSessionConfig(
+            cookie_jar_path=session_state.http_cookie_jar_path,
+            proxy=proxy,
+        )
+    return session_state, browser_session, http_session
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -379,12 +548,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--enrich",
         action="store_true",
-        help="Fill missing or stale Google Places enrichment cache entries.",
+        help="Fill missing or stale place enrichment cache entries from Google Maps place pages, with Places API fallback when configured.",
     )
     parser.add_argument(
         "--refresh-enrichment",
         action="store_true",
-        help="Force-refresh Google Places enrichment cache entries for every place.",
+        help="Force-refresh place enrichment cache entries for every place.",
     )
     return parser
 
@@ -551,7 +720,7 @@ def refresh_raw_sources(
 def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedList:
     if scrape_saved_list is None:
         raise RuntimeError(
-            "Could not import google_saved_lists. "
+            "Could not import gmaps_scraper. "
             "Run `uv sync` to install the scraper dependency before using --refresh."
         )
 
@@ -559,7 +728,29 @@ def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedLis
     if not source_url:
         raise RuntimeError(f"Configured source {source.slug} is missing a URL.")
 
-    result = scrape_saved_list(source_url, headless=not headed)
+    proxy = current_scraper_proxy()
+    session_state, browser_session, http_session = build_scraper_sessions(proxy)
+
+    try:
+        result = scrape_saved_list(
+            source_url,
+            headless=not headed,
+            browser_session=browser_session,
+            http_session=http_session,
+        )
+    except RECOVERABLE_REFRESH_ERRORS as exc:
+        if not should_reset_scraper_session(exc):
+            raise
+        clear_scraper_session_state(session_state)
+        session_state, browser_session, http_session = build_scraper_sessions(proxy)
+        result = scrape_saved_list(
+            source_url,
+            headless=not headed,
+            browser_session=browser_session,
+            http_session=http_session,
+        )
+
+    record_scraper_session_use(session_state, proxy=proxy)
     payload = RawSavedList.model_validate(result.to_dict())
     if source.title and not payload.title:
         payload.title = source.title
@@ -1095,9 +1286,12 @@ def google_list_field(value: Any, raw: RawSavedList) -> PlaceField:
 
 
 def google_places_field(value: Any, cache_entry: EnrichmentCacheEntry | None) -> PlaceField:
+    source = "google_places"
+    if cache_entry is not None and cache_entry.source == "google_maps_page":
+        source = "google_maps_page"
     return PlaceField(
         value=value,
-        source="google_places",
+        source=source,
         fetched_at=cache_entry.fetched_at if cache_entry else None,
         expires_at=cache_entry.refresh_after if cache_entry else None,
     )
@@ -1239,10 +1433,6 @@ def percentile(sorted_values: list[float], fraction: float) -> float:
 
 def enrich_raw_sources(*, force_refresh: bool) -> None:
     api_key = google_places_api_key()
-    if api_key is None:
-        raise RuntimeError(
-            "Google Places enrichment needs GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY in the environment."
-        )
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
@@ -2044,6 +2234,7 @@ def cache_refresh_ttl(cache_entry: EnrichmentCacheEntry) -> timedelta:
 def build_cache_entry(
     place: RawPlace,
     *,
+    source: str | None = None,
     query: str,
     matched: bool | None = None,
     score: int | None = None,
@@ -2055,6 +2246,7 @@ def build_cache_entry(
     cache_entry = EnrichmentCacheEntry(
         fetched_at=fetched_at.isoformat(),
         last_verified_at=fetched_at.isoformat(),
+        source=source,
         query=query,
         input_signature=place_input_signature(place),
         matched=matched,
@@ -2080,7 +2272,153 @@ def save_places_cache(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> No
     write_json(PLACES_CACHE_DIR / f"{slug}.json", payload)
 
 
-def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCacheEntry:
+def fetch_places_enrichment(place: RawPlace, *, api_key: str | None) -> EnrichmentCacheEntry:
+    page_entry = fetch_place_page_enrichment(place)
+    if page_entry.error is None and page_entry.place is not None:
+        if api_key is None or not should_fallback_to_places_api(page_entry):
+            return page_entry
+
+    if api_key is not None:
+        return fetch_places_api_enrichment(place, api_key=api_key)
+
+    return page_entry
+
+
+def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
+    query = build_text_query(place)
+    if scrape_place is None:
+        return build_cache_entry(
+            place,
+            source="google_maps_page",
+            query=query,
+            error="gmaps_scraper_unavailable",
+        )
+
+    proxy = current_scraper_proxy()
+    session_state, browser_session, http_session = build_scraper_sessions(proxy)
+    try:
+        details = scrape_place(
+            place.maps_url,
+            headless=True,
+            browser_session=browser_session,
+            http_session=http_session,
+        )
+    except RECOVERABLE_REFRESH_ERRORS as exc:
+        if should_reset_scraper_session(exc):
+            clear_scraper_session_state(session_state)
+            session_state, browser_session, http_session = build_scraper_sessions(proxy)
+            try:
+                details = scrape_place(
+                    place.maps_url,
+                    headless=True,
+                    browser_session=browser_session,
+                    http_session=http_session,
+                )
+            except RECOVERABLE_REFRESH_ERRORS as retry_exc:
+                return build_cache_entry(
+                    place,
+                    source="google_maps_page",
+                    query=query,
+                    error=f"scrape_error:{retry_exc}",
+                )
+        else:
+            return build_cache_entry(
+                place,
+                source="google_maps_page",
+                query=query,
+                error=f"scrape_error:{exc}",
+            )
+
+    record_scraper_session_use(session_state, proxy=proxy)
+    enrichment_place = normalize_place_page_enrichment(details)
+    matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+    return build_cache_entry(
+        place,
+        source="google_maps_page",
+        query=query,
+        matched=matched,
+        score=STRONG_MATCH_SCORE if matched else None,
+        enrichment_place=enrichment_place if matched else None,
+    )
+
+
+def should_fallback_to_places_api(entry: EnrichmentCacheEntry) -> bool:
+    place = entry.place
+    if place is None:
+        return True
+    if entry.source != "google_maps_page":
+        return False
+    if place.limited_view:
+        return True
+    if place.business_status is None and place.rating is None and place.user_rating_count is None:
+        if not place.primary_type_display_name:
+            return True
+    return False
+
+
+def place_page_has_meaningful_enrichment(
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    if (
+        enrichment_place.display_name
+        or enrichment_place.formatted_address
+        or enrichment_place.primary_type_display_name
+        or enrichment_place.rating is not None
+        or enrichment_place.user_rating_count is not None
+        or enrichment_place.google_maps_uri
+    ):
+        return True
+    return not bool(getattr(details, "limited_view", False)) and bool(
+        enrichment_place.website or enrichment_place.phone or enrichment_place.plus_code
+    )
+
+
+def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
+    category = as_string(getattr(details, "category", None))
+    primary_type = None
+    types: list[str] = []
+    if category is not None:
+        primary_type = slugify(category).replace("-", "_")
+        if primary_type:
+            types.append(primary_type)
+
+    maps_uri = as_string(getattr(details, "resolved_url", None)) or as_string(
+        getattr(details, "source_url", None)
+    )
+    return EnrichmentPlace(
+        display_name=as_string(getattr(details, "name", None)),
+        formatted_address=as_string(getattr(details, "address", None)),
+        google_maps_uri=maps_uri,
+        rating=as_float(getattr(details, "rating", None)),
+        user_rating_count=as_int(getattr(details, "review_count", None)),
+        primary_type=primary_type,
+        primary_type_display_name=category,
+        types=types,
+        business_status=normalize_place_page_business_status(as_string(getattr(details, "status", None))),
+        website=as_string(getattr(details, "website", None)),
+        phone=as_string(getattr(details, "phone", None)),
+        plus_code=as_string(getattr(details, "plus_code", None)),
+        description=as_string(getattr(details, "description", None)),
+        limited_view=bool(getattr(details, "limited_view", False)),
+    )
+
+
+def normalize_place_page_business_status(status: str | None) -> str | None:
+    normalized = as_string(status)
+    if normalized is None:
+        return None
+    lowered = normalized.lower()
+    if "permanently closed" in lowered:
+        return "CLOSED_PERMANENTLY"
+    if "temporarily closed" in lowered:
+        return "CLOSED_TEMPORARILY"
+    if lowered.startswith("open") or lowered.startswith("closed") or "opens " in lowered:
+        return "OPERATIONAL"
+    return None
+
+
+def fetch_places_api_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCacheEntry:
     query = build_text_query(place)
     request_body = {
         "textQuery": query,
@@ -2116,6 +2454,7 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCache
         body = exc.read().decode("utf-8", errors="replace")
         return build_cache_entry(
             place,
+            source="google_places_api",
             query=query,
             error=f"http_{exc.code}",
             error_body=body[:500],
@@ -2123,6 +2462,7 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCache
     except URLError as exc:
         return build_cache_entry(
             place,
+            source="google_places_api",
             query=query,
             error=f"url_error:{exc.reason}",
         )
@@ -2131,6 +2471,7 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCache
     if not isinstance(matches, list) or not matches:
         return build_cache_entry(
             place,
+            source="google_places_api",
             query=query,
             matched=False,
         )
@@ -2145,6 +2486,7 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str) -> EnrichmentCache
 
     result = build_cache_entry(
         place,
+        source="google_places_api",
         query=query,
         matched=best_score >= 25,
         score=best_score,

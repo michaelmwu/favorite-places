@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from google_saved_lists.parser import (
+from gmaps_scraper.parser import (
     JSONValue,
     _candidate_nodes,
     _collect_roots,
@@ -19,7 +19,7 @@ from google_saved_lists.parser import (
     _parse_candidate_node,
     _walk_json,
 )
-from google_saved_lists.url_tools import extract_list_id
+from gmaps_scraper.url_tools import extract_list_id
 
 
 @dataclass(slots=True)
