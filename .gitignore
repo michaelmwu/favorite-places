@@ -5,6 +5,7 @@ dist/
 .astro/
 .venv/
 __pycache__/
+.context/
 .env
 .DS_Store
 src/data/generated/

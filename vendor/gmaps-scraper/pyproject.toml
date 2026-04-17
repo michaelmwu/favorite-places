@@ -3,18 +3,19 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "google-saved-list-scraper"
+name = "gmaps-scraper"
 version = "0.1.0"
-description = "Extract places from Google Maps saved lists."
+description = "Extract data from Google Maps saved lists and place pages."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.14,<3.15"
 dependencies = [
   "cloakbrowser",
+  "curl-cffi>=0.15.0",
 ]
 
 [project.scripts]
-google-saved-lists = "google_saved_lists.cli:main"
+gmaps-scraper = "gmaps_scraper.cli:main"
 
 [dependency-groups]
 dev = [
@@ -23,7 +24,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/google_saved_lists"]
+packages = ["src/gmaps_scraper"]
 
 [tool.mypy]
 files = ["src"]
@@ -38,4 +39,4 @@ target-version = "py314"
 select = ["B", "E", "F", "I", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["google_saved_lists"]
+known-first-party = ["gmaps_scraper"]

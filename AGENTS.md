@@ -6,7 +6,7 @@
 
 - Frontend: Astro + TypeScript
 - Data pipeline: Python + `uv`
-- Source scraper: vendored git subtree at `vendor/google-saved-lists/` from `https://github.com/michaelmwu/google-saved-list-scraper`
+- Source scraper: vendored git subtree at `vendor/gmaps-scraper/` from `https://github.com/michaelmwu/gmaps-scraper`
 - Hosting target: static deploys on Cloudflare Pages or GitHub Pages
 
 ## Working Rules
@@ -22,8 +22,9 @@
 ## Environment Variables
 
 - `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and emitted into the page only when the Google map provider is active. Treat it as the browser Google Maps display key: production usage should be on a separate key restricted by HTTP referrer and limited to `Maps JavaScript API`.
-- `GOOGLE_PLACES_API_KEY` is the server/build-time Places enrichment key. Do not expose it to the browser.
+- `GOOGLE_PLACES_API_KEY` is the optional server/build-time fallback key for Places enrichment when Google Maps place-page scraping cannot recover enough data. Do not expose it to the browser.
 - `PUBLIC_MAP_PROVIDER=leaflet` forces the Leaflet/OpenStreetMap fallback even when `GOOGLE_MAPS_JS_API_KEY` is present.
+- `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/` and rotates them when they go stale or get blocked.
 
 ## Data Practices
 
@@ -98,11 +99,13 @@ Guide pages default to Google Maps when `GOOGLE_MAPS_JS_API_KEY` is present at b
 
 ## Notes For Future Agents
 
-- Cloudflare Pages should not use its default `pip install .` auto-detection for this repo; the data pipeline depends on `uv` to resolve the vendored scraper from `vendor/google-saved-lists`.
+- Cloudflare Pages should not use its default `pip install .` auto-detection for this repo; the data pipeline depends on `uv` to resolve the vendored scraper from `vendor/gmaps-scraper`.
 - Raw place `note` should flow through as the default place note.
 - Raw place `is_favorite` should flow through as the default top-pick signal.
 - Manual `note` and `top_pick` overrides still win.
 - Manual `vibe_tags` overrides win over rule-derived browser search vibe tags.
-- Google Places cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
+- Place enrichment cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
 - Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature`; URL sources skip network refreshes until the refresh window expires unless the source config changes, while CSV sources can skip rewrites when the input hash is unchanged.
+- The raw-list scraper now uses `gmaps-scraper`, which defaults to `curl_cffi` with browser fallback and supports place-page scraping. The pipeline reuses repo-local scraper sessions, rotates to a fresh identity when `GMAPS_SCRAPER_PROXY` changes, clears sessions after obvious block/cookie-jar failures, and expires idle sessions after 14 days.
+- Enrichment now prefers `gmaps-scraper` place-page scraping and uses `GOOGLE_PLACES_API_KEY` only as a fallback when a place page is blocked, limited, or too thin to trust.
 - Do not reintroduce tracked generated JSON unless the user explicitly asks for fixture-style examples in git.

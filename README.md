@@ -4,7 +4,7 @@ Static-first personal travel guides built from Google Maps saved lists.
 
 Frontend package management and script execution use `bun`.
 The scraper dependency is vendored into this repo as a git subtree at
-`vendor/google-saved-lists/`, and `uv` installs it from that in-repo path.
+`vendor/gmaps-scraper/`, and `uv` installs it from that in-repo path.
 
 ## Stack
 
@@ -38,7 +38,7 @@ Recommended split:
 # Browser Google Maps display only.
 GOOGLE_MAPS_JS_API_KEY=...
 
-# Server/build-time Google Places enrichment only.
+# Optional backup for server/build-time enrichment fallback.
 GOOGLE_PLACES_API_KEY=...
 
 # Optional: force the old non-Google map path.
@@ -48,9 +48,10 @@ PUBLIC_MAP_PROVIDER=leaflet
 Notes:
 
 - `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and embedded into the page only when the Google map provider is active. Treat it as a browser key: restrict the production key by HTTP referrer and allow only `Maps JavaScript API`.
-- `GOOGLE_PLACES_API_KEY` should never be exposed to the browser. Use it only for local/build/server enrichment flows.
+- `GOOGLE_PLACES_API_KEY` should never be exposed to the browser. Use it only as a server/build-time fallback when place-page enrichment cannot recover enough data.
 - Use a separate production browser key instead of reusing a local dev key.
 - `PUBLIC_MAP_PROVIDER=leaflet` is an escape hatch if you need to force the Leaflet fallback while keeping the Google Maps codepath in the repo.
+- `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/`, clears them after obvious block/cookie-jar failures, and expires idle sessions after 14 days.
 
 Populate local raw data from public Google Maps lists:
 
@@ -88,7 +89,7 @@ bun run build:data
 Use this when `data/raw/` is already up to date and you only want to regenerate site inputs and search data.
 Configured local CSV sources are auto-imported before rebuild. Public Google Maps URL sources are not refreshed here.
 
-Fill missing or stale Google Places enrichment cache entries, then rebuild:
+Fill missing or stale place enrichment cache entries, then rebuild:
 
 ```bash
 GOOGLE_PLACES_API_KEY=... bun run enrich:data
@@ -96,7 +97,7 @@ GOOGLE_PLACES_API_KEY=... bun run enrich:data
 
 The same key can live in `.env` as `GOOGLE_PLACES_API_KEY=...`.
 
-Force-refresh all Google Places enrichment cache entries:
+Force-refresh all place enrichment cache entries:
 
 ```bash
 GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
@@ -140,7 +141,7 @@ Why this is necessary:
 
 - `bun ci` installs the frontend dependencies from `bun.lock`
 - `pipx install uv==0.11.6` makes `uv` available in the Pages build image
-- `uv sync` installs Python dependencies, including the vendored scraper from `vendor/google-saved-lists`
+- `uv sync` installs Python dependencies, including the vendored scraper from `vendor/gmaps-scraper`
 - `bun run build:data` generates `src/data/generated/`, which Astro reads at build time
 - `bun run build` builds the static site
 

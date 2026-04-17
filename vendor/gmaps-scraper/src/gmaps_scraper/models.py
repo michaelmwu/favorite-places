@@ -1,4 +1,4 @@
-"""Data models for parsed saved lists."""
+"""Data models for parsed Google Maps results."""
 
 from __future__ import annotations
 
@@ -60,3 +60,49 @@ class SavedList:
             "description": self.description,
             "places": [place.to_dict() for place in self.places],
         }
+
+
+@dataclass(slots=True)
+class PlaceDetails:
+    """A parsed Google Maps place page."""
+
+    source_url: str
+    resolved_url: str | None
+    name: str | None
+    category: str | None
+    rating: float | None
+    review_count: int | None
+    address: str | None
+    located_in: str | None = None
+    status: str | None = None
+    website: str | None = None
+    phone: str | None = None
+    plus_code: str | None = None
+    description: str | None = None
+    secondary_name: str | None = None
+    lat: float | None = None
+    lng: float | None = None
+    limited_view: bool = False
+
+    def to_dict(self) -> dict[str, object]:
+        """Convert place details into a JSON-serializable dictionary."""
+        result: dict[str, object] = {
+            "source_url": self.source_url,
+            "resolved_url": self.resolved_url,
+            "name": self.name,
+            "category": self.category,
+            "rating": self.rating,
+            "review_count": self.review_count,
+            "address": self.address,
+            "located_in": self.located_in,
+            "status": self.status,
+            "website": self.website,
+            "phone": self.phone,
+            "plus_code": self.plus_code,
+            "description": self.description,
+            "secondary_name": self.secondary_name,
+            "lat": self.lat,
+            "lng": self.lng,
+            "limited_view": self.limited_view,
+        }
+        return {key: value for key, value in result.items() if value is not None and value != ""}

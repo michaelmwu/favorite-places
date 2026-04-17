@@ -5,11 +5,11 @@ description = "Data pipeline for favorite-places."
 license = { file = "LICENSE" }
 requires-python = ">=3.14,<3.15"
 dependencies = [
-  "google-saved-list-scraper",
+  "gmaps-scraper",
   "pycountry>=24.6.1,<25.0.0",
   "pydantic>=2.11.0,<3.0.0",
   "pydantic-settings>=2.10.0,<3.0.0",
 ]
 
 [tool.uv.sources]
-google-saved-list-scraper = { path = "vendor/google-saved-lists" }
+gmaps-scraper = { path = "vendor/gmaps-scraper" }

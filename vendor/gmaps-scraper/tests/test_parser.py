@@ -4,7 +4,7 @@ import copy
 import json
 import unittest
 
-from google_saved_lists.parser import ParseError, parse_saved_list_artifacts
+from gmaps_scraper.parser import ParseError, parse_saved_list_artifacts
 
 _LIST_URL = (
     "https://www.google.com/maps/@35.6501307,139.6868459,15z/"
