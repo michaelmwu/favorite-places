@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import unittest
 from contextlib import redirect_stderr
 from datetime import UTC, datetime, timedelta
@@ -1011,6 +1012,15 @@ class BuildDataTests(unittest.TestCase):
             self.assertFalse(refreshed.browser_profile_dir.exists())
             build_data.release_scraper_session_lock(refreshed)
 
+    def test_scraper_session_is_stale_without_metadata_when_artifacts_exist(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            state_dir = Path(tmpdir)
+            with patch.object(build_data, "SCRAPER_STATE_DIR", state_dir):
+                state = build_data.build_scraper_session_state(None)
+                state.browser_profile_dir.mkdir(parents=True, exist_ok=True)
+
+            self.assertTrue(build_data.scraper_session_is_stale(state))
+
     def test_build_scraper_session_state_uses_stable_slot_state_files(self) -> None:
         state = build_data.build_scraper_session_state("http://proxy.example:8080")
         self.assertEqual(state.slot_key, "slot-0")
@@ -1081,6 +1091,24 @@ class BuildDataTests(unittest.TestCase):
             self.assertFalse(stale_state.metadata_path.exists())
             build_data.release_scraper_session_lock(current_state)
 
+    def test_scraper_session_lock_is_active_for_new_unreadable_lock(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            lock_path = Path(tmpdir) / "slot-0.lock"
+            lock_path.write_text("", encoding="utf-8")
+
+            self.assertTrue(build_data.scraper_session_lock_is_active(lock_path))
+
+    def test_scraper_session_lock_is_inactive_for_old_unreadable_lock(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            lock_path = Path(tmpdir) / "slot-0.lock"
+            lock_path.write_text("", encoding="utf-8")
+            old_timestamp = (
+                datetime.now(UTC) - build_data.SCRAPER_SESSION_LOCK_WRITE_GRACE - timedelta(seconds=1)
+            ).timestamp()
+            os.utime(lock_path, (old_timestamp, old_timestamp))
+
+            self.assertFalse(build_data.scraper_session_lock_is_active(lock_path))
+
     def test_scrape_google_list_url_passes_persistent_sessions_to_scraper(self) -> None:
         source = SourceConfig(
             slug="tokyo-japan",
@@ -1111,12 +1139,13 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(payload.title, "Tokyo")
         kwargs = scrape.call_args.kwargs
         self.assertTrue(kwargs["headless"])
+        self.assertEqual(kwargs["collection_mode"], "curl")
         self.assertEqual(kwargs["browser_session"].proxy, "http://proxy.example:8080")
         self.assertEqual(kwargs["http_session"].proxy, "http://proxy.example:8080")
         self.assertIn("proxy-", str(kwargs["browser_session"].profile_dir))
         self.assertIn("proxy-", str(kwargs["http_session"].cookie_jar_path))
 
-    def test_scrape_google_list_url_clears_session_after_block_and_retries(self) -> None:
+    def test_scrape_google_list_url_clears_session_after_curl_block_and_falls_back_to_browser(self) -> None:
         source = SourceConfig(
             slug="tokyo-japan",
             type="google_list_url",
@@ -1156,6 +1185,8 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(payload.title, "Tokyo")
         self.assertEqual(scrape.call_count, 2)
+        self.assertEqual(scrape.call_args_list[0].kwargs["collection_mode"], "curl")
+        self.assertEqual(scrape.call_args_list[1].kwargs["collection_mode"], "browser")
         clear_state.assert_called_once()
 
     def test_fetch_places_enrichment_uses_place_page_without_api_key(self) -> None:

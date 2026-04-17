@@ -40,6 +40,7 @@ DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
 DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
 SCRAPER_SESSION_SLOT_COUNT = 8
+SCRAPER_SESSION_LOCK_WRITE_GRACE = timedelta(seconds=5)
 SCRAPER_SESSION_MAX_AGE = timedelta(days=14)
 ERROR_CACHE_TTL = timedelta(days=1)
 UNMATCHED_CACHE_TTL = timedelta(days=3)
@@ -452,7 +453,11 @@ def scraper_session_is_stale(
 ) -> bool:
     metadata = load_scraper_session_metadata(state)
     if metadata is None:
-        return state.metadata_path.exists()
+        return (
+            state.metadata_path.exists()
+            or state.browser_profile_dir.exists()
+            or state.http_cookie_jar_path.exists()
+        )
     timestamp = metadata.get("last_used_at") or metadata.get("created_at")
     if timestamp is None:
         return True
@@ -588,8 +593,14 @@ def scraper_session_lock_is_active(lock_path: Path) -> bool:
     try:
         owner_text = lock_path.read_text(encoding="utf-8").strip()
         owner_pid = int(owner_text)
-    except (OSError, ValueError):
-        return False
+    except OSError:
+        return True
+    except ValueError:
+        try:
+            modified_at = datetime.fromtimestamp(lock_path.stat().st_mtime, tz=UTC)
+        except OSError:
+            return True
+        return datetime.now(UTC) - modified_at < SCRAPER_SESSION_LOCK_WRITE_GRACE
     try:
         os.kill(owner_pid, 0)
     except ProcessLookupError:
@@ -864,17 +875,18 @@ def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedLis
             result = scrape_saved_list(
                 source_url,
                 headless=not headed,
+                collection_mode="curl",
                 browser_session=browser_session,
                 http_session=http_session,
             )
         except RECOVERABLE_REFRESH_ERRORS as exc:
-            if not should_reset_scraper_session(exc):
-                raise
-            clear_scraper_session_state(session_state)
-            browser_session, http_session = build_scraper_configs(session_state, proxy)
+            if should_reset_scraper_session(exc):
+                clear_scraper_session_state(session_state)
+                browser_session, http_session = build_scraper_configs(session_state, proxy)
             result = scrape_saved_list(
                 source_url,
                 headless=not headed,
+                collection_mode="browser",
                 browser_session=browser_session,
                 http_session=http_session,
             )
