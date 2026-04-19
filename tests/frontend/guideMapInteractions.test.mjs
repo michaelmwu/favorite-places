@@ -75,4 +75,36 @@ describe("guide map interactions", () => {
     expect(css).toContain('.map-icon-button[data-location-state="checking"]');
     expect(css).toContain(".map-icon-button[data-busy=\"true\"] svg");
   });
+
+  it("renders map pins from normalized place-type icons instead of generic circles", () => {
+    const guideMap = readSource("src/components/GuideMap.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(guideMap).toContain("markerIcon: place.marker_icon");
+    expect(guideMap).toContain("buildMapMarkerDataUrl");
+    expect(guideMap).toContain("buildMapMarkerSvg");
+    expect(guideMap).toContain('className: "guide-map-marker"');
+    expect(guideMap).not.toContain("google.maps.SymbolPath.CIRCLE");
+    expect(css).toContain(".guide-map-marker");
+    expect(css).toContain(".guide-map-marker svg");
+    expect(css).toContain("width: 100%;");
+    expect(css).toContain("height: 100%;");
+  });
+
+  it("keeps the home guide map event contract in sync with the home browser", () => {
+    const homePage = readSource("src/pages/index.astro");
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
+    const homeBrowser = readSource("public/scripts/home-browser.js");
+
+    expect(homePage).toContain("<HomeGuideMap guides={locationGuideCandidates} />");
+    expect(homeMap).toContain("data-home-guide-map");
+    expect(homeMap).toContain("data-guides={JSON.stringify(mapGuides).replace(/</g, \"\\\\u003c\")}");
+    expect(homeBrowser).toContain('root.querySelector("[data-home-guide-map]")');
+    expect(homeBrowser).toContain('new CustomEvent("favorite-places:home-map-update"');
+    expect(homeMap).toContain('document.addEventListener(\n      "favorite-places:home-map-update"');
+    expect(homeMap).toContain("pendingState");
+    expect(homeMap).toContain("runtime?.setVisibleGuides(currentVisibleGuideSlugs)");
+    expect(homeMap).toContain("runtime?.fitGuides(currentVisibleGuides)");
+    expect(homeMap).toContain("applyVisibility(\n      pendingState.visibleGuideSlugs,");
+  });
 });

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none" aria-hidden="true">
+      <title>Shopping</title>
+      
+      <circle cx="20" cy="20" r="14.9" fill="#db2777" stroke="#9d174d" stroke-width="2.15" />
+      <circle cx="20" cy="20" r="9.15" fill="#fce7f3" fill-opacity="0.18" />
+      <g transform="translate(8 8)" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        
+    <path d="M8 10.25h8l-.7 7.5H8.7L8 10.25Z" />
+    <path d="M10.2 10.25V9a1.8 1.8 0 0 1 3.6 0v1.25" />
+  
+      </g>
+    </svg>

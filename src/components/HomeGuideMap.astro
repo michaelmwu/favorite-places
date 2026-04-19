@@ -1,0 +1,512 @@
+---
+interface HomeMapGuide {
+  slug: string;
+  title: string;
+  country: string;
+  countryName: string;
+  countryCode: string | null;
+  cityName: string;
+  lat: number;
+  lng: number;
+  markerLabel: string;
+  placeCount: number;
+  url: string;
+}
+
+interface Props {
+  guides: HomeMapGuide[];
+}
+
+const { guides } = Astro.props;
+const configuredGoogleMapsApiKey = process.env.GOOGLE_MAPS_JS_API_KEY || "";
+const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
+const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
+const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
+const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.isFinite(guide.lng));
+---
+
+{
+  mapGuides.length > 0 && (
+    <aside class="map-panel home-map-panel" aria-label="Guide map">
+      <div class="home-map-head">
+        <div>
+          <p class="eyebrow">Map view</p>
+          <h3 class="section-title">Guide locations</h3>
+        </div>
+        <p class="small-copy" data-home-map-summary>
+          Showing {mapGuides.length} guide{mapGuides.length === 1 ? "" : "s"} on the map.
+        </p>
+      </div>
+
+      <div
+        class="guide-map"
+        data-home-guide-map
+        data-map-provider={mapProvider}
+        data-google-maps-api-key={googleMapsApiKey}
+        data-guides={JSON.stringify(mapGuides).replace(/</g, "\\u003c")}
+      />
+
+      <noscript>
+        <div class="map-fallback">
+          {mapGuides.slice(0, 8).map((guide) => (
+            <a href={guide.url}>{guide.title}</a>
+          ))}
+        </div>
+      </noscript>
+    </aside>
+  )
+}
+
+<script>
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
+
+  interface HomeMapGuide {
+    slug: string;
+    title: string;
+    country: string;
+    countryName: string;
+    countryCode: string | null;
+    cityName: string;
+    lat: number;
+    lng: number;
+    markerLabel: string;
+    placeCount: number;
+    url: string;
+  }
+
+  interface Coordinates {
+    lat: number;
+    lng: number;
+  }
+
+  interface HomeGuideMapElement extends HTMLElement {
+    homeGuideMapInitialized?: boolean;
+  }
+
+  interface HomeMapRuntime {
+    fitGuides: (guides: HomeMapGuide[]) => void;
+    setVisibleGuides: (visibleGuideSlugs: Set<string>) => void;
+  }
+
+  interface HomeMapUpdateEvent extends CustomEvent {
+    detail: {
+      activeCountry?: string;
+      query?: string;
+      visibleGuideCount: number;
+      visibleGuideSlugs: string[];
+    };
+  }
+
+  interface GoogleMapsApi {
+    maps: {
+      InfoWindow: new (options?: { content?: string }) => {
+        close: () => void;
+        open: (options: { anchor: unknown; map: unknown; shouldFocus?: boolean }) => void;
+        setContent: (content: string) => void;
+      };
+      LatLngBounds: new () => {
+        extend: (coordinates: Coordinates) => void;
+      };
+      Map: new (
+        element: HTMLElement,
+        options: Record<string, unknown>,
+      ) => {
+        fitBounds: (bounds: unknown, padding?: number | { top: number; right: number; bottom: number; left: number }) => void;
+        setCenter: (coordinates: Coordinates) => void;
+        setZoom: (zoom: number) => void;
+      };
+      Marker: new (options: Record<string, unknown>) => {
+        addListener: (eventName: string, handler: () => void) => void;
+        getMap: () => unknown;
+        setMap: (map: unknown | null) => void;
+      };
+      SymbolPath: {
+        CIRCLE: unknown;
+      };
+    };
+  }
+
+  const MARKER_COLOR = "#c4312d";
+  const favoritePlacesWindow = window as Window & {
+    __favoritePlacesGoogleMapsInit?: () => void;
+    __favoritePlacesGoogleMapsLoader?: Promise<unknown>;
+    google?: unknown;
+  };
+
+  const escapeHtml = (value: string) =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const safeUrl = (value: string) => {
+    try {
+      const url = new URL(value, window.location.origin);
+      return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const popupHtml = (guide: HomeMapGuide) => {
+    const safeGuideUrl = safeUrl(guide.url);
+    const meta = [guide.cityName, guide.countryName].filter(Boolean).join(", ");
+
+    return `
+      <div class="guide-map-popup-content">
+        <strong>${escapeHtml(guide.title)}</strong>
+        <span>${escapeHtml(meta)}</span>
+        <span>${guide.placeCount} saved place${guide.placeCount === 1 ? "" : "s"}</span>
+        ${safeGuideUrl ? `<a href="${escapeHtml(safeGuideUrl)}">Open guide</a>` : ""}
+      </div>
+    `;
+  };
+
+  const markerHtml = (guide: HomeMapGuide) => `
+    <span class="home-guide-marker-badge" aria-hidden="true">${escapeHtml(guide.markerLabel)}</span>
+  `;
+
+  const markerLabelUnits = (label: string) => Array.from(label).length;
+
+  const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
+    if (guides.length === 0) return;
+
+    if (guides.length === 1) {
+      map.setView([guides[0].lat, guides[0].lng], 5);
+      return;
+    }
+
+    const bounds = L.latLngBounds(guides.map((guide) => [guide.lat, guide.lng]));
+    map.fitBounds(bounds, {
+      maxZoom: 6,
+      padding: [28, 28],
+    });
+  };
+
+  const loadGoogleMapsApi = (apiKey: string) => {
+    const cachedGoogleMaps = favoritePlacesWindow.google as GoogleMapsApi | undefined;
+    if (cachedGoogleMaps?.maps) {
+      return Promise.resolve(cachedGoogleMaps);
+    }
+
+    if (favoritePlacesWindow.__favoritePlacesGoogleMapsLoader) {
+      return favoritePlacesWindow.__favoritePlacesGoogleMapsLoader as Promise<GoogleMapsApi>;
+    }
+
+    const loader = new Promise<GoogleMapsApi>((resolve, reject) => {
+      const existingScript = document.querySelector<HTMLScriptElement>('script[data-google-maps-loader="favorite-places"]');
+      if (existingScript) {
+        const existingGoogleMaps = favoritePlacesWindow.google as GoogleMapsApi | undefined;
+        if (existingGoogleMaps?.maps) {
+          resolve(existingGoogleMaps);
+          return;
+        }
+        if (
+          existingScript.dataset.googleMapsStatus === "loaded" ||
+          existingScript.dataset.googleMapsStatus === "error"
+        ) {
+          existingScript.remove();
+          delete favoritePlacesWindow.__favoritePlacesGoogleMapsInit;
+        } else {
+          existingScript.addEventListener(
+            "load",
+            () => {
+              const loadedGoogleMaps = favoritePlacesWindow.google as GoogleMapsApi | undefined;
+              if (loadedGoogleMaps?.maps) {
+                resolve(loadedGoogleMaps);
+                return;
+              }
+              reject(new Error("Google Maps loaded without the Maps API namespace"));
+            },
+            { once: true },
+          );
+          existingScript.addEventListener("error", () => reject(new Error("Google Maps failed to load")), {
+            once: true,
+          });
+          return;
+        }
+      }
+
+      const callbackName = "__favoritePlacesGoogleMapsInit";
+      favoritePlacesWindow[callbackName] = () => {
+        const loadedGoogleMaps = favoritePlacesWindow.google as GoogleMapsApi | undefined;
+        if (loadedGoogleMaps?.maps) {
+          script.dataset.googleMapsStatus = "loaded";
+          delete favoritePlacesWindow.__favoritePlacesGoogleMapsInit;
+          resolve(loadedGoogleMaps);
+          return;
+        }
+
+        script.dataset.googleMapsStatus = "loaded";
+        delete favoritePlacesWindow.__favoritePlacesGoogleMapsInit;
+        reject(new Error("Google Maps loaded without the Maps API namespace"));
+      };
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.dataset.googleMapsLoader = "favorite-places";
+      script.dataset.googleMapsStatus = "loading";
+      script.src =
+        "https://maps.googleapis.com/maps/api/js?" +
+        new URLSearchParams({
+          key: apiKey,
+          loading: "async",
+          callback: callbackName,
+          v: "weekly",
+          auth_referrer_policy: "origin",
+        }).toString();
+      script.addEventListener("error", () => {
+        script.dataset.googleMapsStatus = "error";
+        delete favoritePlacesWindow.__favoritePlacesGoogleMapsInit;
+        reject(new Error("Google Maps failed to load"));
+      });
+      document.head.append(script);
+    }).catch((error) => {
+      delete favoritePlacesWindow.__favoritePlacesGoogleMapsLoader;
+      throw error;
+    });
+
+    ((favoritePlacesWindow as unknown) as Record<string, unknown>).__favoritePlacesGoogleMapsLoader = loader;
+
+    return loader;
+  };
+
+  const initLeafletRuntime = (element: HTMLElement, guides: HomeMapGuide[]): HomeMapRuntime => {
+    const map = L.map(element, {
+      dragging: true,
+      maxZoom: 12,
+      scrollWheelZoom: false,
+      touchZoom: "center",
+      zoomControl: true,
+      zoomSnap: 0.25,
+    });
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const markers = new Map<string, L.Marker>();
+    guides.forEach((guide) => {
+      const marker = L.marker([guide.lat, guide.lng], {
+        icon: L.divIcon({
+          className: "home-guide-marker",
+          html: markerHtml(guide),
+          iconSize: [40, 40],
+          iconAnchor: [20, 20],
+          popupAnchor: [0, -18],
+        }),
+        title: guide.title,
+      }).bindPopup(popupHtml(guide), {
+        className: "guide-map-popup-shell",
+        closeButton: false,
+      });
+      marker.addTo(map);
+      markers.set(guide.slug, marker);
+    });
+
+    return {
+      fitGuides: (visibleGuides) => fitGuides(map, visibleGuides),
+      setVisibleGuides: (visibleGuideSlugs) => {
+        markers.forEach((marker, guideSlug) => {
+          if (visibleGuideSlugs.has(guideSlug)) {
+            marker.addTo(map);
+          } else {
+            marker.removeFrom(map);
+          }
+        });
+      },
+    };
+  };
+
+  const initGoogleRuntime = async (
+    element: HTMLElement,
+    guides: HomeMapGuide[],
+    apiKey: string,
+  ): Promise<HomeMapRuntime> => {
+    const googleMaps = (await loadGoogleMapsApi(apiKey)) as GoogleMapsApi;
+    const map = new googleMaps.maps.Map(element, {
+      center: { lat: guides[0].lat, lng: guides[0].lng },
+      clickableIcons: false,
+      disableDefaultUI: true,
+      gestureHandling: "greedy",
+      keyboardShortcuts: true,
+      zoom: 4,
+      zoomControl: true,
+    });
+    const infoWindow = new googleMaps.maps.InfoWindow();
+    const markers = new Map<string, any>();
+
+    guides.forEach((guide) => {
+      const marker = new googleMaps.maps.Marker({
+        icon: {
+          fillColor: "#fffaf1",
+          fillOpacity: 0.96,
+          path: googleMaps.maps.SymbolPath.CIRCLE,
+          scale: 18,
+          strokeColor: MARKER_COLOR,
+          strokeOpacity: 0.98,
+          strokeWeight: 2,
+        },
+        label: {
+          color: "#1f1a16",
+          fontFamily: '"Avenir Next", "Segoe UI", sans-serif',
+          fontSize: markerLabelUnits(guide.markerLabel) <= 2 ? "14px" : "18px",
+          fontWeight: "800",
+          text: guide.markerLabel,
+        },
+        map,
+        position: { lat: guide.lat, lng: guide.lng },
+        title: guide.title,
+      });
+      marker.addListener("click", () => {
+        infoWindow.setContent(popupHtml(guide));
+        infoWindow.open({ anchor: marker, map, shouldFocus: false });
+      });
+      markers.set(guide.slug, marker);
+    });
+
+    return {
+      fitGuides: (visibleGuides) => {
+        if (visibleGuides.length === 0) return;
+
+        if (visibleGuides.length === 1) {
+          map.setCenter({ lat: visibleGuides[0].lat, lng: visibleGuides[0].lng });
+          map.setZoom(5);
+          return;
+        }
+
+        const bounds = new googleMaps.maps.LatLngBounds();
+        visibleGuides.forEach((guide) => bounds.extend({ lat: guide.lat, lng: guide.lng }));
+        map.fitBounds(bounds, 28);
+      },
+      setVisibleGuides: (visibleGuideSlugs) => {
+        markers.forEach((marker, guideSlug) => marker.setMap(visibleGuideSlugs.has(guideSlug) ? map : null));
+        infoWindow.close();
+      },
+    };
+  };
+
+  const updateSummary = (
+    summary: HTMLElement | null,
+    count: number,
+    activeCountry: string,
+    query: string,
+  ) => {
+    if (!summary) return;
+
+    if (count === 0) {
+      summary.textContent = "No matching guides are visible on the map.";
+      return;
+    }
+
+    if (query && activeCountry) {
+      summary.textContent = `Showing ${count} matching guide${count === 1 ? "" : "s"} in ${activeCountry}.`;
+      return;
+    }
+
+    if (query) {
+      summary.textContent = `Showing ${count} matching guide${count === 1 ? "" : "s"} on the map.`;
+      return;
+    }
+
+    if (activeCountry) {
+      summary.textContent = `Showing ${count} guide${count === 1 ? "" : "s"} in ${activeCountry}.`;
+      return;
+    }
+
+    summary.textContent = `Showing ${count} guide${count === 1 ? "" : "s"} on the map.`;
+  };
+
+  const initMap = async (element: HomeGuideMapElement) => {
+    if (element.homeGuideMapInitialized) {
+      return;
+    }
+
+    const guides = JSON.parse(element.dataset.guides || "[]") as HomeMapGuide[];
+    if (guides.length === 0) {
+      return;
+    }
+
+    const summary = document.querySelector<HTMLElement>("[data-home-map-summary]");
+    const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
+    const apiKey = element.dataset.googleMapsApiKey || "";
+    let runtime: HomeMapRuntime | null = null;
+    let currentVisibleGuideSlugs = new Set(guides.map((guide) => guide.slug));
+    let currentVisibleGuides = guides;
+    let pendingState = {
+      activeCountry: "",
+      query: "",
+      visibleGuideCount: guides.length,
+      visibleGuideSlugs: guides.map((guide) => guide.slug),
+    };
+
+    const applyVisibility = (
+      visibleGuideSlugs: string[],
+      visibleGuideCount: number,
+      activeCountry = "",
+      query = "",
+    ) => {
+      currentVisibleGuideSlugs =
+        visibleGuideCount === 0
+          ? new Set()
+          : new Set(visibleGuideSlugs.length > 0 ? visibleGuideSlugs : guides.map((guide) => guide.slug));
+      currentVisibleGuides = guides.filter((guide) => currentVisibleGuideSlugs.has(guide.slug));
+      runtime?.setVisibleGuides(currentVisibleGuideSlugs);
+      runtime?.fitGuides(currentVisibleGuides);
+      updateSummary(summary, currentVisibleGuides.length, activeCountry, query);
+    };
+
+    const handleHomeMapUpdate = ((event: HomeMapUpdateEvent) => {
+      pendingState = {
+        activeCountry: event.detail.activeCountry || "",
+        query: event.detail.query || "",
+        visibleGuideCount: event.detail.visibleGuideCount,
+        visibleGuideSlugs: event.detail.visibleGuideSlugs,
+      };
+      applyVisibility(
+        pendingState.visibleGuideSlugs,
+        pendingState.visibleGuideCount,
+        pendingState.activeCountry,
+        pendingState.query,
+      );
+    }) as EventListener;
+
+    document.addEventListener(
+      "favorite-places:home-map-update",
+      handleHomeMapUpdate,
+    );
+
+    try {
+      runtime =
+        requestedProvider === "google" && apiKey
+          ? await initGoogleRuntime(element, guides, apiKey).catch(() => initLeafletRuntime(element, guides))
+          : initLeafletRuntime(element, guides);
+    } catch {
+      runtime = initLeafletRuntime(element, guides);
+    }
+
+    applyVisibility(
+      pendingState.visibleGuideSlugs,
+      pendingState.visibleGuideCount,
+      pendingState.activeCountry,
+      pendingState.query,
+    );
+    element.homeGuideMapInitialized = true;
+  };
+
+  const initMaps = () => {
+    document.querySelectorAll<HomeGuideMapElement>("[data-home-guide-map]").forEach((element) => {
+      void initMap(element);
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMaps, { once: true });
+  } else {
+    initMaps();
+  }
+</script>
