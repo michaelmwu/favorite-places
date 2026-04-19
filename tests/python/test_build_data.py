@@ -25,6 +25,20 @@ from scripts.pipeline_models import (
 
 
 class BuildDataTests(unittest.TestCase):
+    def test_default_refresh_workers_scales_down_to_cpu_count(self) -> None:
+        with patch.object(build_data.os, "cpu_count", return_value=2):
+            self.assertEqual(build_data.default_refresh_workers(), 2)
+
+    def test_default_refresh_workers_caps_at_four(self) -> None:
+        with patch.object(build_data.os, "cpu_count", return_value=16):
+            self.assertEqual(build_data.default_refresh_workers(), 4)
+
+    def test_parser_uses_auto_refresh_worker_default(self) -> None:
+        parser = build_data.build_parser()
+        args = parser.parse_args([])
+
+        self.assertEqual(args.refresh_workers, build_data.DEFAULT_REFRESH_WORKERS)
+
     def test_parser_rejects_negative_refresh_retry_values(self) -> None:
         invalid_args = [
             ["--refresh-retries", "-1"],
@@ -684,6 +698,44 @@ class BuildDataTests(unittest.TestCase):
             ),
             "default",
         )
+
+    def test_derive_place_tags_prefers_curated_enrichment_tags(self) -> None:
+        tags = build_data.derive_place_tags(
+            RawPlace(
+                name="Coffee Counter",
+                address="123 Main St, Williamsburg, Brooklyn, United States",
+                maps_url="https://maps.google.com/?cid=1",
+            ),
+            "New York",
+            enrichment=EnrichmentPlace(
+                primary_type="coffee_shop",
+                primary_type_display_name="Coffee shop",
+                types=["coffee_shop", "food", "point_of_interest", "establishment"],
+            ),
+            category="Coffee shop",
+        )
+
+        self.assertIn("cafe", tags)
+        self.assertIn("coffee-shop", tags)
+        self.assertIn("food", tags)
+        self.assertNotIn("point-of-interest", tags)
+        self.assertNotIn("establishment", tags)
+
+    def test_derive_place_tags_downweights_broad_localities_when_enrichment_is_specific(self) -> None:
+        tags = build_data.derive_place_tags(
+            RawPlace(
+                name="Neighborhood Cafe",
+                address="123 Main St, Williamsburg, Brooklyn, United States",
+                maps_url="https://maps.google.com/?cid=1",
+            ),
+            "New York",
+            enrichment=EnrichmentPlace(primary_type="cafe", types=["cafe", "food"]),
+            category="Cafe",
+        )
+
+        self.assertIn("williamsburg", tags)
+        self.assertNotIn("brooklyn", tags)
+        self.assertIn("cafe", tags)
 
     def test_vibe_keyword_matching_uses_token_boundaries(self) -> None:
         self.assertFalse(build_data.vibe_keyword_matches("barcelona cafe", "bar"))
@@ -1780,7 +1832,7 @@ class BuildDataTests(unittest.TestCase):
                 def __exit__(self, *args):
                     return False
 
-                def submit(self, _fn, place_payload, **kwargs):
+                def submit(self, _fn, _slug, _place_id, _place_name, _refresh_reason, place_payload, **kwargs):
                     test_case.assertIsNone(kwargs["api_key"])
                     test_case.assertEqual(kwargs["refresh_startup_jitter_seconds"], 0)
                     return futures_by_cid[place_payload["cid"]]
@@ -1803,6 +1855,42 @@ class BuildDataTests(unittest.TestCase):
             self.assertIn(second_place_id, cache_text)
             self.assertIn("First Place", cache_text)
             self.assertIn("Second Place", cache_text)
+
+    def test_enrich_place_job_logs_when_worker_starts(self) -> None:
+        entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(display_name="First Place"),
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter") as jitter_sleep,
+            patch.object(build_data, "fetch_places_enrichment", return_value=entry) as fetch_enrichment,
+            patch("builtins.print") as print_mock,
+        ):
+            result = build_data.enrich_place_job(
+                "tokyo-japan",
+                "cid:111",
+                "First Place",
+                "forced",
+                {
+                    "name": "First Place",
+                    "address": "1 Example St, Tokyo",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key=None,
+                refresh_startup_jitter_seconds=3,
+            )
+
+        self.assertIs(result, entry)
+        print_mock.assert_called_once_with(
+            "Enriching tokyo-japan:cid:111 [First Place] (forced)",
+            flush=True,
+        )
+        jitter_sleep.assert_called_once_with(3)
+        fetch_enrichment.assert_called_once()
 
     def test_refresh_retries_transient_parse_failure(self) -> None:
         source = SourceConfig(

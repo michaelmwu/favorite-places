@@ -599,7 +599,8 @@ def _clean_name_text(value: object) -> str | None:
         return None
     if _looks_like_search_results_label(normalized):
         return None
-    if _parse_rating(normalized) is not None and not any(character.isalpha() for character in normalized):
+    has_rating = _parse_rating(normalized) is not None
+    if has_rating and not any(character.isalpha() for character in normalized):
         return None
     if "·" in normalized and any(character.isdigit() for character in normalized):
         return None

@@ -6,8 +6,8 @@ import unittest
 from gmaps_scraper.place_scraper import (
     _build_place_details,
     _extract_address_from_lines,
-    _extract_preview_phone,
     _extract_preview_coordinates,
+    _extract_preview_phone,
     _extract_preview_place_enrichment,
     _merge_place_sources,
     _normalize_preview_website,

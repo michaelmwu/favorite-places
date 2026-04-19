@@ -35,7 +35,7 @@ PUBLIC_DATA_DIR = ROOT / "public" / "data"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
-DEFAULT_REFRESH_WORKERS = 4
+AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
 DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
@@ -88,6 +88,16 @@ COUNTRY_LOCALITY_ALIASES = (
     "Ivory Coast",
 )
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
+
+
+def default_refresh_workers() -> int:
+    cpu_count = os.cpu_count() or AUTO_REFRESH_WORKER_CAP
+    return max(1, min(AUTO_REFRESH_WORKER_CAP, SCRAPER_SESSION_SLOT_COUNT, cpu_count))
+
+
+DEFAULT_REFRESH_WORKERS = default_refresh_workers()
+
+
 PLACES_FIELD_MASK = ",".join(
     [
         "places.id",
@@ -475,6 +485,19 @@ MARKER_ICON_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
             "hot-spring",
         ),
     ),
+)
+GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
+    {
+        "establishment",
+        "point-of-interest",
+        "store",
+        "premise",
+        "subpremise",
+        "street-address",
+        "route",
+        "political",
+        "item",
+    }
 )
 MARKER_ICON_TEXT_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
@@ -981,7 +1004,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--refresh-workers",
         type=int,
         default=DEFAULT_REFRESH_WORKERS,
-        help="Maximum parallel workers for headless raw list refreshes. Headed refreshes stay single-worker.",
+        help=(
+            "Maximum parallel workers for headless refreshes and enrichment jobs. "
+            "Defaults to an auto-derived value capped at 4; headed raw list refreshes stay single-worker."
+        ),
     )
     parser.add_argument(
         "--refresh-retries",
@@ -1711,8 +1737,12 @@ def build_tag_provenance(
     if city_name:
         tag = slugify(city_name)
         put_tag(tag, google_list_field(tag, raw), priority=10)
-    for locality in infer_address_localities(raw_place.address, city_name=city_name):
-        tag = slugify(locality)
+    for tag in derive_locality_tags(
+        raw_place.address,
+        city_name=city_name,
+        enrichment=enrichment,
+        category=primary_category,
+    ):
         put_tag(tag, google_list_field(tag, raw), priority=10)
     if primary_category:
         tag = slugify(primary_category)
@@ -1721,8 +1751,7 @@ def build_tag_provenance(
             source_place_field(tag, primary_category_field),
             priority=30 if primary_category_field and primary_category_field.source == "manual" else 20,
         )
-    for place_type in enrichment.types[:4]:
-        tag = slugify(place_type.replace("_", "-"))
+    for tag in derive_enrichment_type_tags(enrichment):
         put_tag(tag, google_places_field(tag, enrichment_cache_entry), priority=20)
 
     return [ranked_fields[tag][1] for tag in tags if tag in ranked_fields]
@@ -1906,7 +1935,7 @@ def enrich_raw_sources(
 ) -> None:
     api_key = google_places_api_key()
     cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
-    enrich_jobs: list[tuple[str, str, dict[str, Any]]] = []
+    enrich_jobs: list[tuple[str, str, str, str, dict[str, Any]]] = []
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
@@ -1919,11 +1948,15 @@ def enrich_raw_sources(
             if not force_refresh and refresh_reason is None:
                 continue
 
-            if force_refresh:
-                print(f"Enriching {raw_path.stem}:{place_id} (forced)")
-            else:
-                print(f"Enriching {raw_path.stem}:{place_id} ({refresh_reason})")
-            enrich_jobs.append((raw_path.stem, place_id, place.model_dump(mode="json")))
+            enrich_jobs.append(
+                (
+                    raw_path.stem,
+                    place_id,
+                    place.name,
+                    refresh_reason or "forced",
+                    place.model_dump(mode="json"),
+                )
+            )
 
     if not enrich_jobs:
         return
@@ -1933,8 +1966,12 @@ def enrich_raw_sources(
     )
     max_workers = max(1, min(refresh_workers, len(enrich_jobs)))
     if max_workers == 1 or len(enrich_jobs) == 1:
-        for slug, place_id, place_payload in enrich_jobs:
+        for slug, place_id, place_name, refresh_reason, place_payload in enrich_jobs:
             entry = enrich_place_job(
+                slug,
+                place_id,
+                place_name,
+                refresh_reason,
                 place_payload,
                 api_key=api_key,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
@@ -1948,11 +1985,15 @@ def enrich_raw_sources(
         future_map = {
             executor.submit(
                 enrich_place_job,
+                slug,
+                place_id,
+                place_name,
+                refresh_reason,
                 place_payload,
                 api_key=api_key,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
             ): (slug, place_id)
-            for slug, place_id, place_payload in enrich_jobs
+            for slug, place_id, place_name, refresh_reason, place_payload in enrich_jobs
         }
         for future in as_completed(future_map):
             slug, place_id = future_map[future]
@@ -1961,11 +2002,19 @@ def enrich_raw_sources(
 
 
 def enrich_place_job(
+    slug: str,
+    place_id: str,
+    place_name: str,
+    refresh_reason: str,
     place_payload: dict[str, Any],
     *,
     api_key: str | None,
     refresh_startup_jitter_seconds: float,
 ) -> EnrichmentCacheEntry:
+    print(
+        f"Enriching {slug}:{place_id} [{place_name}] ({refresh_reason})",
+        flush=True,
+    )
     sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
     place = RawPlace.model_validate(place_payload)
     return fetch_places_enrichment(place, api_key=api_key)
@@ -2016,13 +2065,72 @@ def derive_place_tags(
     tags: set[str] = set()
     if city_name:
         tags.add(slugify(city_name))
-    for locality in infer_address_localities(place.address, city_name=city_name):
-        tags.add(slugify(locality))
+    tags.update(
+        derive_locality_tags(
+            place.address,
+            city_name=city_name,
+            enrichment=enrichment,
+            category=category,
+        )
+    )
     if category:
         tags.add(slugify(category))
-    for place_type in enrichment.types[:4]:
-        tags.add(slugify(place_type.replace("_", "-")))
+    tags.update(derive_enrichment_type_tags(enrichment))
     return sorted(tag for tag in tags if tag)
+
+
+def derive_locality_tags(
+    address: str | None,
+    *,
+    city_name: str | None,
+    enrichment: EnrichmentPlace,
+    category: str | None,
+) -> list[str]:
+    locality_tags: list[str] = []
+    for locality in infer_address_localities(address, city_name=city_name):
+        tag = slugify(locality)
+        if tag:
+            append_unique_tag(locality_tags, tag)
+
+    if not locality_tags:
+        return []
+
+    has_specific_enrichment = bool(category or derive_enrichment_type_tags(enrichment))
+    if has_specific_enrichment:
+        return locality_tags[:1]
+    return locality_tags[:2]
+
+
+def derive_enrichment_type_tags(enrichment: EnrichmentPlace) -> list[str]:
+    tags: list[str] = []
+    primary_type_tag = normalize_enrichment_type_tag(enrichment.primary_type)
+    if primary_type_tag:
+        for marker_icon, phrases in MARKER_ICON_RULES:
+            if any(slug_phrase_matches(primary_type_tag, phrase) for phrase in phrases):
+                append_unique_tag(tags, marker_icon)
+                break
+        append_unique_tag(tags, primary_type_tag)
+
+    for raw_value in enrichment.types:
+        tag = normalize_enrichment_type_tag(raw_value)
+        if tag:
+            append_unique_tag(tags, tag)
+
+    return tags
+
+
+def normalize_enrichment_type_tag(value: str | None) -> str | None:
+    if not value:
+        return None
+    tag = slugify(value.replace("_", "-"))
+    if not tag or tag in GENERIC_ENRICHMENT_TYPE_TAGS:
+        return None
+    return tag
+
+
+def append_unique_tag(tags: list[str], candidate: str) -> None:
+    if candidate and candidate not in tags:
+        tags.append(candidate)
 
 
 def derive_marker_icon(
