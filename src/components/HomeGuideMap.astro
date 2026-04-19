@@ -169,6 +169,8 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     <span class="home-guide-marker-badge" aria-hidden="true">${escapeHtml(guide.markerLabel)}</span>
   `;
 
+  const markerLabelUnits = (label: string) => Array.from(label).length;
+
   const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
     if (guides.length === 0) return;
 
@@ -352,7 +354,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         label: {
           color: "#1f1a16",
           fontFamily: '"Avenir Next", "Segoe UI", sans-serif',
-          fontSize: guide.markerLabel.length <= 2 ? "14px" : "18px",
+          fontSize: markerLabelUnits(guide.markerLabel) <= 2 ? "14px" : "18px",
           fontWeight: "800",
           text: guide.markerLabel,
         },
