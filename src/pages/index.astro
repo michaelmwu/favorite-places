@@ -34,6 +34,57 @@ const guidesByCountry = countryEntries.map(([countryName, countryGuides]) => ({
   countryName,
   countryFlag: getCountryFlag(countryGuides),
 }));
+const cityMarkerEmoji: Record<string, string> = {
+  amsterdam: "🚲",
+  bangkok: "🛺",
+  barcelona: "🏖️",
+  belfast: "🛳️",
+  berlin: "🪩",
+  "cape-town": "⛰️",
+  chicago: "🌆",
+  copenhagen: "🚲",
+  dubai: "🏙️",
+  florence: "🎨",
+  fukuoka: "🍜",
+  hakodate: "🌃",
+  hanoi: "🛵",
+  "hong-kong": "🌃",
+  ibiza: "🎧",
+  ishigaki: "🌺",
+  kanazawa: "🍵",
+  karuizawa: "🌲",
+  kyoto: "⛩️",
+  "las-vegas": "🎰",
+  london: "🎡",
+  "los-angeles": "🎬",
+  madrid: "💃",
+  melbourne: "☕",
+  "mexico-city": "🌮",
+  monaco: "🏎️",
+  nagasaki: "⛪",
+  nagoya: "🏯",
+  "new-york": "🗽",
+  oahu: "🏄",
+  oaxaca: "🌮",
+  paris: "🥐",
+  sapporo: "🍺",
+  seoul: "🎧",
+  singapore: "🦁",
+  sydney: "🎭",
+  taipei: "🥟",
+  takayama: "🏯",
+  tokyo: "🗼",
+  venice: "🛶",
+  vienna: "🎼",
+  yufuin: "♨️",
+  zurich: "🏔️",
+};
+const normalizeCityMarkerKey = (cityName: string) =>
+  cityName
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 const countryCodeToFlag = (countryCode: string | null) =>
   countryCode
     ? countryCode
@@ -49,7 +100,8 @@ const cityInitials = (cityName: string) =>
     .join("") || cityName.slice(0, 2).toUpperCase();
 const guideMarkerLabel = (guide: (typeof guides)[number]) => {
   const titleFlags = [...guide.title.matchAll(flagPattern)].map(([flag]) => flag);
-  return titleFlags.at(-1) || countryCodeToFlag(guide.country_code) || cityInitials(guide.city_name);
+  const cityEmoji = cityMarkerEmoji[normalizeCityMarkerKey(guide.city_name)];
+  return cityEmoji || titleFlags.at(-1) || countryCodeToFlag(guide.country_code) || cityInitials(guide.city_name);
 };
 const locationGuideCandidates = guides
   .filter((guide) => typeof guide.center_lat === "number" && typeof guide.center_lng === "number")
