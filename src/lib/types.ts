@@ -1,4 +1,17 @@
 export type FieldSource = "manual" | "google_list" | "google_places" | "osm" | "wikidata" | "website";
+export type MarkerIcon =
+  | "default"
+  | "cafe"
+  | "restaurant"
+  | "bar"
+  | "bakery"
+  | "museum"
+  | "attraction"
+  | "park"
+  | "beach"
+  | "shopping"
+  | "hotel"
+  | "spa";
 
 export interface PlaceField<T> {
   value: T;
@@ -40,6 +53,7 @@ export interface Place {
   google_place_id: string | null;
   google_place_resource_name: string | null;
   primary_category: string | null;
+  marker_icon: MarkerIcon;
   tags: string[];
   vibe_tags: string[];
   neighborhood: string | null;

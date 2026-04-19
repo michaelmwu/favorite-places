@@ -234,6 +234,7 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(first_place.id, first_place_id)
         self.assertEqual(first_place.primary_category, "Bakery")
+        self.assertEqual(first_place.marker_icon, "bakery")
         self.assertEqual(first_place.note, "Manual note")
         self.assertEqual(first_place.maps_url, "https://maps.google.com/?cid=override")
         self.assertEqual(first_place.neighborhood, "Shibuya")
@@ -402,6 +403,97 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("cozy", vibes)
         self.assertIn("slow-afternoon", vibes)
         self.assertIn("solo-friendly", vibes)
+
+    def test_derive_marker_icon_prefers_specific_type_matches(self) -> None:
+        test_cases = [
+            (
+                "coffee-shop",
+                EnrichmentPlace(primary_type="restaurant", types=["coffee_shop", "restaurant"]),
+                "cafe",
+            ),
+            (
+                "art-gallery",
+                EnrichmentPlace(types=["art_gallery"]),
+                "museum",
+            ),
+            (
+                None,
+                EnrichmentPlace(types=["historical_landmark"]),
+                "attraction",
+            ),
+            (
+                None,
+                EnrichmentPlace(types=["spa"]),
+                "spa",
+            ),
+            (
+                "night market",
+                EnrichmentPlace(),
+                "shopping",
+            ),
+        ]
+
+        for category, enrichment, expected_icon in test_cases:
+            with self.subTest(category=category, expected_icon=expected_icon):
+                self.assertEqual(
+                    build_data.derive_marker_icon(
+                        RawPlace(name="Plain Place", maps_url="https://maps.google.com/?cid=1"),
+                        enrichment=enrichment,
+                        category=category,
+                        note=None,
+                        why_recommended=None,
+                    ),
+                    expected_icon,
+                )
+
+    def test_derive_marker_icon_falls_back_to_default_without_type_signal(self) -> None:
+        self.assertEqual(
+            build_data.derive_marker_icon(
+                RawPlace(name="Plain Place", maps_url="https://maps.google.com/?cid=1"),
+                enrichment=EnrichmentPlace(),
+                category=None,
+                note=None,
+                why_recommended=None,
+            ),
+            "default",
+        )
+
+    def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
+        test_cases = [
+            ("Bar Rooster", "bar"),
+            ("Bear Pond Espresso", "cafe"),
+            ("Ameyoko Shopping District", "shopping"),
+            ("Pizza Strada", "restaurant"),
+        ]
+
+        for place_name, expected_icon in test_cases:
+            with self.subTest(place_name=place_name):
+                self.assertEqual(
+                    build_data.derive_marker_icon(
+                        RawPlace(name=place_name, maps_url="https://maps.google.com/?cid=1"),
+                        enrichment=EnrichmentPlace(),
+                        category=None,
+                        note=None,
+                        why_recommended=None,
+                    ),
+                    expected_icon,
+                )
+
+    def test_derive_marker_icon_does_not_use_locality_tags_as_type_fallback(self) -> None:
+        self.assertEqual(
+            build_data.derive_marker_icon(
+                RawPlace(
+                    name="Plain Place",
+                    address="1 Ocean Drive, Miami Beach, Park City",
+                    maps_url="https://maps.google.com/?cid=1",
+                ),
+                enrichment=EnrichmentPlace(),
+                category=None,
+                note=None,
+                why_recommended=None,
+            ),
+            "default",
+        )
 
     def test_vibe_keyword_matching_uses_token_boundaries(self) -> None:
         self.assertFalse(build_data.vibe_keyword_matches("barcelona cafe", "bar"))

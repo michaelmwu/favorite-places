@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Favorite Places Marker Icons</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7efe3;
+        --card: rgba(255, 250, 241, 0.92);
+        --line: rgba(39, 26, 22, 0.12);
+        --ink: #1f1a16;
+        --muted: #6e5e53;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(196, 166, 133, 0.28), transparent 38%),
+          linear-gradient(180deg, #fbf6ef 0%, var(--bg) 100%);
+        color: var(--ink);
+      }
+
+      main {
+        width: min(72rem, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 2rem 0 3rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        line-height: 1.05;
+      }
+
+      p {
+        max-width: 42rem;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .card {
+        display: grid;
+        gap: 0.75rem;
+        justify-items: center;
+        padding: 1.1rem 1rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 1.1rem;
+        background: var(--card);
+        box-shadow: 0 14px 40px rgba(31, 26, 22, 0.06);
+        text-align: center;
+      }
+
+      .card img {
+        width: 54px;
+        height: 72px;
+      }
+
+      .card strong {
+        font-size: 0.96rem;
+      }
+
+      .card code {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Marker Icons</h1>
+      <p>Static SVG exports generated from the same marker source used by the guide map. Grab any file directly from this folder or use the manifest for programmatic lookups.</p>
+      <section class="grid">
+        <article class="card">
+                <img src="./default.svg" alt="Saved place" />
+                <strong>Saved place</strong>
+                <code>default.svg</code>
+              </article>
+        <article class="card">
+                <img src="./cafe.svg" alt="Cafe" />
+                <strong>Cafe</strong>
+                <code>cafe.svg</code>
+              </article>
+        <article class="card">
+                <img src="./restaurant.svg" alt="Restaurant" />
+                <strong>Restaurant</strong>
+                <code>restaurant.svg</code>
+              </article>
+        <article class="card">
+                <img src="./bar.svg" alt="Bar" />
+                <strong>Bar</strong>
+                <code>bar.svg</code>
+              </article>
+        <article class="card">
+                <img src="./bakery.svg" alt="Bakery" />
+                <strong>Bakery</strong>
+                <code>bakery.svg</code>
+              </article>
+        <article class="card">
+                <img src="./museum.svg" alt="Museum" />
+                <strong>Museum</strong>
+                <code>museum.svg</code>
+              </article>
+        <article class="card">
+                <img src="./attraction.svg" alt="Tourist attraction" />
+                <strong>Tourist attraction</strong>
+                <code>attraction.svg</code>
+              </article>
+        <article class="card">
+                <img src="./park.svg" alt="Park" />
+                <strong>Park</strong>
+                <code>park.svg</code>
+              </article>
+        <article class="card">
+                <img src="./beach.svg" alt="Beach" />
+                <strong>Beach</strong>
+                <code>beach.svg</code>
+              </article>
+        <article class="card">
+                <img src="./shopping.svg" alt="Shopping" />
+                <strong>Shopping</strong>
+                <code>shopping.svg</code>
+              </article>
+        <article class="card">
+                <img src="./hotel.svg" alt="Hotel" />
+                <strong>Hotel</strong>
+                <code>hotel.svg</code>
+              </article>
+        <article class="card">
+                <img src="./spa.svg" alt="Spa" />
+                <strong>Spa</strong>
+                <code>spa.svg</code>
+              </article>
+      </section>
+    </main>
+  </body>
+</html>
+

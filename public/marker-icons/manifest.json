@@ -1,0 +1,62 @@
+[
+  {
+    "file": "default.svg",
+    "key": "default",
+    "label": "Saved place"
+  },
+  {
+    "file": "cafe.svg",
+    "key": "cafe",
+    "label": "Cafe"
+  },
+  {
+    "file": "restaurant.svg",
+    "key": "restaurant",
+    "label": "Restaurant"
+  },
+  {
+    "file": "bar.svg",
+    "key": "bar",
+    "label": "Bar"
+  },
+  {
+    "file": "bakery.svg",
+    "key": "bakery",
+    "label": "Bakery"
+  },
+  {
+    "file": "museum.svg",
+    "key": "museum",
+    "label": "Museum"
+  },
+  {
+    "file": "attraction.svg",
+    "key": "attraction",
+    "label": "Tourist attraction"
+  },
+  {
+    "file": "park.svg",
+    "key": "park",
+    "label": "Park"
+  },
+  {
+    "file": "beach.svg",
+    "key": "beach",
+    "label": "Beach"
+  },
+  {
+    "file": "shopping.svg",
+    "key": "shopping",
+    "label": "Shopping"
+  },
+  {
+    "file": "hotel.svg",
+    "key": "hotel",
+    "label": "Hotel"
+  },
+  {
+    "file": "spa.svg",
+    "key": "spa",
+    "label": "Spa"
+  }
+]

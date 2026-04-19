@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none" aria-hidden="true">
+      <title>Museum</title>
+      
+      <circle cx="20" cy="20" r="14.9" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2.15" />
+      <circle cx="20" cy="20" r="9.15" fill="#dbeafe" fill-opacity="0.18" />
+      <g transform="translate(8 8)" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        
+    <path d="M6.5 10.1 12 7l5.5 3.1" />
+    <path d="M7.4 10.35h9.2" />
+    <path d="M8.75 10.35v6" />
+    <path d="M12 10.35v6" />
+    <path d="M15.25 10.35v6" />
+    <path d="M6.75 16.75h10.5" />
+  
+      </g>
+    </svg>

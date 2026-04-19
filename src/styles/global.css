@@ -974,6 +974,21 @@ select {
   font-family: "Avenir Next", "Segoe UI", sans-serif;
 }
 
+.guide-map-marker {
+  background: transparent;
+  border: 0;
+}
+
+.guide-map-marker svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter:
+    drop-shadow(0 2px 0 rgba(255, 255, 255, 0.92))
+    drop-shadow(0 5px 12px rgba(17, 12, 8, 0.28));
+}
+
 .guide-map .leaflet-control-zoom a {
   color: var(--ink);
 }
