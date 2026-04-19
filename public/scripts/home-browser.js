@@ -262,7 +262,7 @@ if (root) {
     );
   };
 
-  const renderGlobalSearch = (query) => {
+  const renderGlobalSearch = (query, placeSearchState, filteredResults) => {
     if (!globalResults || !globalResultsList || !groupedResultsList || !globalResultsEmpty) {
       return;
     }
@@ -324,19 +324,19 @@ if (root) {
       return;
     }
 
-    const state = searchPlaces(query, { index: searchIndex, scope: "all" });
-    const filteredResults = state.results.filter(
-      (result) => !activeCountry || normalizeCountry(result.entry.country) === activeCountry,
-    );
-    const groupedResults = groupSearchResults(filteredResults);
-    const visibleIndividualResults = filteredResults.slice(0, INDIVIDUAL_RESULT_LIMIT);
+    const state = placeSearchState || searchPlaces(query, { index: searchIndex, scope: "all" });
+    const visibleResults =
+      filteredResults ||
+      state.results.filter((result) => !activeCountry || normalizeCountry(result.entry.country) === activeCountry);
+    const groupedResults = groupSearchResults(visibleResults);
+    const visibleIndividualResults = visibleResults.slice(0, INDIVIDUAL_RESULT_LIMIT);
 
     globalResultsList.replaceChildren(...visibleIndividualResults.map((result) => createSearchResultCard(result, query)));
     groupedResultsList.replaceChildren(...groupedResults.map((group) => createGroupedCountryCard(group, query)));
 
     globalResultsList.hidden = searchResultView !== "individual";
     groupedResultsList.hidden = searchResultView !== "grouped";
-    globalResultsEmpty.dataset.visible = filteredResults.length === 0 ? "true" : "false";
+    globalResultsEmpty.dataset.visible = visibleResults.length === 0 ? "true" : "false";
     globalResultsEmpty.textContent = activeCountry
       ? `No matching places in ${countryLabel(activeCountry)}. Try a broader search.`
       : "No matching places. Try a broader search.";
@@ -348,12 +348,12 @@ if (root) {
     if (globalResultsTitle) {
       globalResultsTitle.textContent =
         searchResultView === "grouped"
-          ? `${pluralize(filteredResults.length, "matching place")} across ${pluralize(
+          ? `${pluralize(visibleResults.length, "matching place")} across ${pluralize(
               groupedResults.length,
               "country",
               "countries",
             )}`
-          : `${pluralize(filteredResults.length, "matching place")}`;
+          : `${pluralize(visibleResults.length, "matching place")}`;
     }
 
     if (globalResultsSummary) {
@@ -371,9 +371,9 @@ if (root) {
         summaryBits.push(`Filtered to ${countryLabel(activeCountry)}`);
       }
 
-      if (searchResultView === "grouped" && filteredResults.length > 0) {
+      if (searchResultView === "grouped" && visibleResults.length > 0) {
         summaryBits.push(`Showing up to ${GROUP_LIMIT} places per country`);
-      } else if (searchResultView === "individual" && filteredResults.length > INDIVIDUAL_RESULT_LIMIT) {
+      } else if (searchResultView === "individual" && visibleResults.length > INDIVIDUAL_RESULT_LIMIT) {
         summaryBits.push(`Showing top ${INDIVIDUAL_RESULT_LIMIT} individual matches`);
       }
 
@@ -402,6 +402,15 @@ if (root) {
 
   const update = () => {
     const query = (searchInput?.value || "").trim().toLowerCase();
+    const placeSearchState = searchIndex && query ? searchPlaces(query, { index: searchIndex, scope: "all" }) : null;
+    const filteredPlaceResults = placeSearchState
+      ? placeSearchState.results.filter(
+          (result) => !activeCountry || normalizeCountry(result.entry.country) === activeCountry,
+        )
+      : [];
+    const placeMatchGuideSlugs = placeSearchState
+      ? new Set(filteredPlaceResults.map((result) => result.entry.guide_slug))
+      : null;
     const guideMatches =
       searchIndex && query
         ? new Set(searchGuides(query, { index: searchIndex }).map((result) => result.guide.slug))
@@ -419,7 +428,12 @@ if (root) {
         if (!query) {
           return true;
         }
-        return (card.dataset.search || "").includes(query) || guideMatches?.has(card.dataset.guideSlug || "");
+        const guideSlug = card.dataset.guideSlug || "";
+        return (
+          placeMatchGuideSlugs?.has(guideSlug) ||
+          (card.dataset.search || "").includes(query) ||
+          guideMatches?.has(guideSlug)
+        );
       });
       const matchingCardSet = new Set(matchingCards);
 
@@ -465,7 +479,7 @@ if (root) {
     }
 
     dispatchMapUpdate([...new Set(visibleGuideSlugs)], visibleGuideCount, query);
-    renderGlobalSearch(query);
+    renderGlobalSearch(query, placeSearchState, filteredPlaceResults);
   };
 
   const selectCountry = (country, { fromLocation = false, scroll = false } = {}) => {
