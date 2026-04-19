@@ -16,6 +16,7 @@ const mapPlaces = places
     id: place.id,
     name: place.name,
     category: place.primary_category ?? "Saved place",
+    markerIcon: place.marker_icon,
     neighborhood: place.neighborhood,
     lat: place.lat,
     lng: place.lng,
@@ -76,11 +77,19 @@ const mapPlaces = places
 <script>
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
+  import {
+    buildMapMarkerDataUrl,
+    buildMapMarkerSvg,
+    getMapMarkerColors,
+    getMapMarkerSize,
+  } from "../lib/mapMarkerIcons";
+  import type { MarkerIcon } from "../lib/types";
 
   interface MapPlace {
     id: string;
     name: string;
     category: string;
+    markerIcon: MarkerIcon;
     neighborhood: string | null;
     lat: number;
     lng: number;
@@ -156,6 +165,8 @@ const mapPlaces = places
         setMap: (map: unknown | null) => void;
         setZIndex: (zIndex: number) => void;
       };
+      Point: new (x: number, y: number) => unknown;
+      Size: new (width: number, height: number) => unknown;
       SymbolPath: {
         CIRCLE: unknown;
       };
@@ -172,9 +183,6 @@ const mapPlaces = places
 
   const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
 
-  const DEFAULT_MARKER_COLOR = "#1f1a16";
-  const TOP_PICK_MARKER_COLOR = "#b64d1f";
-  const ACTIVE_MARKER_COLOR = "#c4312d";
   const LOCATION_PROXIMITY_BUFFER_KM = 25;
   const LOCATION_PROXIMITY_MULTIPLIER = 1.8;
   const LOCATION_OUTLIER_MIN_DISTANCE_KM = 50;
@@ -208,17 +216,32 @@ const mapPlaces = places
     `;
   };
 
-  const markerStyle = (place: MapPlace, active = false): L.CircleMarkerOptions => ({
-    radius: active ? (place.topPick ? 11 : 9) : place.topPick ? 8 : 6,
-    color: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : DEFAULT_MARKER_COLOR,
-    fillColor: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : "#fffaf1",
-    fillOpacity: active ? 0.96 : place.topPick ? 0.92 : 0.86,
-    opacity: 0.95,
-    weight: active ? 3 : 2,
-  });
+  const markerColors = (place: MapPlace, active = false) =>
+    getMapMarkerColors(place.markerIcon, {
+      active,
+      topPick: place.topPick,
+    });
 
-  const placeCircle = (place: MapPlace) =>
-    L.circleMarker([place.lat, place.lng], markerStyle(place)).bindPopup(popupHtml(place), {
+  const markerSvg = (place: MapPlace, active = false) =>
+    buildMapMarkerSvg(place.markerIcon, {
+      active,
+      ...markerColors(place, active),
+      topPick: place.topPick,
+    });
+
+  const leafletMarkerIcon = (place: MapPlace, active = false) => {
+    const size = getMapMarkerSize(place.markerIcon, place.topPick, active);
+    return L.divIcon({
+      className: "guide-map-marker",
+      html: markerSvg(place, active),
+      iconAnchor: [size.anchorX, size.anchorY],
+      iconSize: [size.width, size.height],
+      popupAnchor: [0, -size.popupOffsetY],
+    });
+  };
+
+  const placeMarker = (place: MapPlace) =>
+    L.marker([place.lat, place.lng], { icon: leafletMarkerIcon(place) }).bindPopup(popupHtml(place), {
       className: "guide-map-popup-shell",
       closeButton: false,
     });
@@ -513,9 +536,9 @@ const mapPlaces = places
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    const markers = new Map<string, L.CircleMarker>();
+    const markers = new Map<string, L.Marker>();
     places.forEach((place) => {
-      const marker = placeCircle(place).addTo(map);
+      const marker = placeMarker(place).addTo(map);
       marker.on("click", () => onSelectPlace(place.id));
       markers.set(place.id, marker);
     });
@@ -530,10 +553,8 @@ const mapPlaces = places
       highlightPlace: (place, active) => {
         const marker = markers.get(place.id);
         if (!marker) return;
-        marker.setStyle(markerStyle(place, active));
-        if (active && map.hasLayer(marker)) {
-          marker.bringToFront();
-        }
+        marker.setIcon(leafletMarkerIcon(place, active));
+        marker.setZIndexOffset(active ? 1000 : place.topPick ? 10 : 0);
       },
       invalidateSize: () => map.invalidateSize(),
       openPlace: (place) => {
@@ -577,15 +598,18 @@ const mapPlaces = places
     const infoWindow = new google.maps.InfoWindow();
     const markers = new Map<string, any>();
 
-    const markerIcon = (place: MapPlace, active = false) => ({
-      fillColor: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : "#fffaf1",
-      fillOpacity: active ? 0.96 : place.topPick ? 0.92 : 0.86,
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: active ? (place.topPick ? 11 : 9) : place.topPick ? 8 : 6,
-      strokeColor: active ? ACTIVE_MARKER_COLOR : place.topPick ? TOP_PICK_MARKER_COLOR : DEFAULT_MARKER_COLOR,
-      strokeOpacity: 0.95,
-      strokeWeight: active ? 3 : 2,
-    });
+    const markerIcon = (place: MapPlace, active = false) => {
+      const size = getMapMarkerSize(place.markerIcon, place.topPick, active);
+      return {
+        anchor: new google.maps.Point(size.anchorX, size.anchorY),
+        scaledSize: new google.maps.Size(size.width, size.height),
+        url: buildMapMarkerDataUrl(place.markerIcon, {
+          active,
+          ...markerColors(place, active),
+          topPick: place.topPick,
+        }),
+      };
+    };
 
     places.forEach((place) => {
       const marker = new google.maps.Marker({

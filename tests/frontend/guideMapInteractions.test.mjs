@@ -75,4 +75,17 @@ describe("guide map interactions", () => {
     expect(css).toContain('.map-icon-button[data-location-state="checking"]');
     expect(css).toContain(".map-icon-button[data-busy=\"true\"] svg");
   });
+
+  it("renders map pins from normalized place-type icons instead of generic circles", () => {
+    const guideMap = readSource("src/components/GuideMap.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(guideMap).toContain("markerIcon: place.marker_icon");
+    expect(guideMap).toContain("buildMapMarkerDataUrl");
+    expect(guideMap).toContain("buildMapMarkerSvg");
+    expect(guideMap).toContain('className: "guide-map-marker"');
+    expect(guideMap).not.toContain("google.maps.SymbolPath.CIRCLE");
+    expect(css).toContain(".guide-map-marker");
+    expect(css).toContain(".guide-map-marker svg");
+  });
 });

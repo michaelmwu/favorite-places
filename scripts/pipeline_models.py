@@ -170,6 +170,21 @@ FieldSource = Literal[
     "website",
 ]
 
+MarkerIcon = Literal[
+    "default",
+    "cafe",
+    "restaurant",
+    "bar",
+    "bakery",
+    "museum",
+    "attraction",
+    "park",
+    "beach",
+    "shopping",
+    "hotel",
+    "spa",
+]
+
 
 class PlaceField(PipelineModel):
     value: Any
@@ -211,6 +226,7 @@ class NormalizedPlace(PipelineModel):
     google_place_id: str | None = None
     google_place_resource_name: str | None = None
     primary_category: str | None = None
+    marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
     neighborhood: str | None = None

@@ -311,6 +311,320 @@ VIBE_CATEGORY_RULES: dict[str, tuple[str, ...]] = {
     "park": ("scenic", "family-friendly"),
     "tourist-attraction": ("touristy-but-worth-it", "scenic"),
 }
+MARKER_ICON_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    (
+        "cafe",
+        (
+            "cafe",
+            "coffee",
+            "coffee-shop",
+            "coffee-roasters",
+            "espresso-bar",
+            "tea",
+            "tea-house",
+            "tea-room",
+            "bubble-tea",
+        ),
+    ),
+    (
+        "bakery",
+        (
+            "bakery",
+            "patisserie",
+            "pastry",
+            "pastry-shop",
+            "dessert",
+            "dessert-shop",
+            "confectionery",
+            "chocolate-shop",
+            "ice-cream",
+            "donut-shop",
+        ),
+    ),
+    (
+        "bar",
+        (
+            "bar",
+            "pub",
+            "cocktail-bar",
+            "wine-bar",
+            "beer-hall",
+            "brewery",
+            "sports-bar",
+            "night-club",
+            "izakaya",
+            "karaoke",
+            "live-music-venue",
+        ),
+    ),
+    (
+        "restaurant",
+        (
+            "restaurant",
+            "food",
+            "food-court",
+            "meal-takeaway",
+            "meal-delivery",
+            "pizza",
+            "ramen",
+            "sushi",
+            "noodle",
+            "steakhouse",
+            "barbecue",
+            "brunch",
+            "diner",
+            "bistro",
+            "cafeteria",
+            "fast-food",
+            "seafood",
+            "tapas",
+            "grill",
+        ),
+    ),
+    (
+        "museum",
+        (
+            "museum",
+            "gallery",
+            "library",
+            "archive",
+            "planetarium",
+            "cultural-center",
+        ),
+    ),
+    (
+        "attraction",
+        (
+            "tourist-attraction",
+            "landmark",
+            "monument",
+            "historical-landmark",
+            "observation-deck",
+            "visitor-center",
+            "church",
+            "cathedral",
+            "basilica",
+            "temple",
+            "shrine",
+            "mosque",
+            "synagogue",
+            "castle",
+            "palace",
+            "aquarium",
+            "zoo",
+            "amusement-park",
+            "ferris-wheel",
+        ),
+    ),
+    (
+        "park",
+        (
+            "park",
+            "botanical-garden",
+            "garden",
+            "hiking-area",
+            "campground",
+            "picnic-ground",
+            "nature-preserve",
+            "national-park",
+            "trailhead",
+        ),
+    ),
+    (
+        "beach",
+        (
+            "beach",
+            "marina",
+            "waterfront",
+            "pier",
+            "swimming",
+            "surf",
+        ),
+    ),
+    (
+        "shopping",
+        (
+            "store",
+            "market",
+            "shopping-mall",
+            "gift-shop",
+            "book-store",
+            "clothing-store",
+            "department-store",
+            "antique-store",
+        ),
+    ),
+    (
+        "hotel",
+        (
+            "lodging",
+            "hotel",
+            "hostel",
+            "resort",
+            "inn",
+            "ryokan",
+        ),
+    ),
+    (
+        "spa",
+        (
+            "spa",
+            "sauna",
+            "onsen",
+            "massage",
+            "hot-spring",
+        ),
+    ),
+)
+MARKER_ICON_TEXT_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    (
+        "cafe",
+        (
+            "cafe",
+            "coffee",
+            "espresso",
+            "kissaten",
+            "tea",
+            "matcha",
+            "roastery",
+        ),
+    ),
+    (
+        "bakery",
+        (
+            "bakery",
+            "baker",
+            "bread",
+            "pastry",
+            "patisserie",
+            "viennoiserie",
+            "dessert",
+            "gelato",
+            "ice cream",
+        ),
+    ),
+    (
+        "bar",
+        (
+            "bar",
+            "cocktail",
+            "wine",
+            "pub",
+            "taproom",
+            "speakeasy",
+            "izakaya",
+            "nightclub",
+            "karaoke",
+            "beer hall",
+        ),
+    ),
+    (
+        "restaurant",
+        (
+            "restaurant",
+            "pizza",
+            "ramen",
+            "sushi",
+            "udon",
+            "soba",
+            "yakitori",
+            "yakiniku",
+            "grill",
+            "kitchen",
+            "diner",
+            "bistro",
+            "trattoria",
+            "osteria",
+            "taqueria",
+            "bbq",
+            "burger",
+            "curry",
+            "noodle",
+        ),
+    ),
+    (
+        "museum",
+        (
+            "museum",
+            "gallery",
+            "archive",
+            "exhibit",
+            "library",
+        ),
+    ),
+    (
+        "attraction",
+        (
+            "temple",
+            "shrine",
+            "church",
+            "cathedral",
+            "mosque",
+            "synagogue",
+            "castle",
+            "palace",
+            "tower",
+            "landmark",
+            "monument",
+            "observatory",
+            "observation deck",
+            "viewpoint",
+            "park entrance",
+        ),
+    ),
+    (
+        "park",
+        (
+            "park",
+            "garden",
+            "forest",
+            "hike",
+            "trail",
+        ),
+    ),
+    (
+        "beach",
+        (
+            "beach",
+            "coast",
+            "bay",
+            "surf",
+            "island",
+        ),
+    ),
+    (
+        "shopping",
+        (
+            "shopping",
+            "market",
+            "store",
+            "district",
+            "shotengai",
+            "mall",
+            "bookstore",
+        ),
+    ),
+    (
+        "hotel",
+        (
+            "hotel",
+            "hostel",
+            "ryokan",
+            "resort",
+            "inn",
+        ),
+    ),
+    (
+        "spa",
+        (
+            "spa",
+            "onsen",
+            "sauna",
+            "bathhouse",
+            "massage",
+        ),
+    ),
+)
 
 try:
     from pipeline_models import (
@@ -1161,6 +1475,14 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 why_recommended=why_recommended,
                 top_pick=top_pick,
             )
+        marker_icon = derive_marker_icon(
+            place,
+            enrichment=enrichment,
+            category=primary_category,
+            tags=tags,
+            note=note,
+            why_recommended=why_recommended,
+        )
         manual_rank = as_int(override.get("manual_rank")) or 0
         status = (
             as_string(override.get("status"))
@@ -1183,6 +1505,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             google_place_id=enrichment.google_place_id,
             google_place_resource_name=enrichment.google_place_resource_name,
             primary_category=primary_category,
+            marker_icon=marker_icon,
             tags=tags,
             vibe_tags=vibe_tags,
             neighborhood=neighborhood,
@@ -1653,6 +1976,55 @@ def derive_place_tags(
     return sorted(tag for tag in tags if tag)
 
 
+def derive_marker_icon(
+    place: RawPlace,
+    *,
+    enrichment: EnrichmentPlace,
+    category: str | None,
+    tags: list[str],
+    note: str | None,
+    why_recommended: str | None,
+) -> str:
+    candidate_slugs = [
+        slugify(term.replace("_", "-"))
+        for term in [
+            category,
+            enrichment.primary_type,
+            enrichment.primary_type_display_name,
+            *enrichment.types,
+            *tags,
+        ]
+        if term
+    ]
+
+    for candidate_slug in candidate_slugs:
+        for marker_icon, phrases in MARKER_ICON_RULES:
+            if any(slug_phrase_matches(candidate_slug, phrase) for phrase in phrases):
+                return marker_icon
+
+    lookup_text = normalize_vibe_lookup_text(
+        " ".join(
+            filter(
+                None,
+                [
+                    place.name,
+                    place.address,
+                    place.note,
+                    note,
+                    why_recommended,
+                    category,
+                    " ".join(tags),
+                ],
+            )
+        )
+    )
+    for marker_icon, keywords in MARKER_ICON_TEXT_RULES:
+        if any(vibe_keyword_matches(lookup_text, keyword) for keyword in keywords):
+            return marker_icon
+
+    return "default"
+
+
 def derive_vibe_tags(
     place: RawPlace,
     *,
@@ -1708,6 +2080,18 @@ def derive_vibe_tags(
 
 def normalize_vibe_lookup_text(value: str) -> str:
     return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ").lower()).strip()
+
+
+def slug_phrase_matches(candidate_slug: str, phrase: str) -> bool:
+    normalized_phrase = slugify(phrase.replace("_", "-"))
+    if not candidate_slug or not normalized_phrase:
+        return False
+    return (
+        candidate_slug == normalized_phrase
+        or candidate_slug.startswith(f"{normalized_phrase}-")
+        or candidate_slug.endswith(f"-{normalized_phrase}")
+        or f"-{normalized_phrase}-" in candidate_slug
+    )
 
 
 def vibe_keyword_matches(lookup_text: str, keyword: str) -> bool:
