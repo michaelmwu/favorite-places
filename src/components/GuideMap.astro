@@ -587,7 +587,7 @@ const mapPlaces = places
     const google = await loadGoogleMapsApi(apiKey);
     const map = new google.maps.Map(mapElement, {
       center: { lat: places[0].lat, lng: places[0].lng },
-      clickableIcons: false,
+      clickableIcons: true,
       disableDefaultUI: true,
       gestureHandling: "greedy",
       keyboardShortcuts: true,
