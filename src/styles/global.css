@@ -238,6 +238,134 @@ img {
   border-top: 1px solid var(--line);
 }
 
+.search-results-toolbar,
+.home-map-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.search-results-toolbar {
+  margin-bottom: 1rem;
+}
+
+.search-view-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-strong);
+}
+
+.search-view-toggle {
+  min-height: 2.2rem;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-view-toggle:hover,
+.search-view-toggle:focus-visible {
+  color: var(--accent);
+}
+
+.search-view-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.search-view-toggle[data-active="true"] {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.search-country-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.search-country-card {
+  padding: 1rem;
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.search-country-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.search-country-card h4 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.14rem;
+  line-height: 1.25;
+}
+
+.search-country-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.search-country-item {
+  padding: 0.85rem 0.95rem;
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.search-country-item:hover,
+.search-country-item:focus-visible {
+  border-color: var(--accent);
+  background-color: #fffdfd;
+}
+
+.search-country-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.search-country-item-title {
+  color: var(--ink);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.search-country-item-meta,
+.search-country-overflow {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.search-country-overflow {
+  margin: 0;
+}
+
 .search-result-grid {
   display: grid;
   gap: 0.8rem;
@@ -636,6 +764,45 @@ select {
     width 180ms ease;
 }
 
+.home-map-panel {
+  position: relative;
+  top: auto;
+  order: 0;
+  padding: 1rem;
+}
+
+.home-map-panel .guide-map {
+  min-height: 12rem;
+  height: clamp(12rem, 34vh, 20rem);
+}
+
+.home-guide-marker {
+  background: transparent;
+  border: 0;
+}
+
+.home-guide-marker-badge {
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: rgba(255, 250, 241, 0.96);
+  box-shadow: 0 6px 18px rgba(31, 26, 22, 0.16);
+  color: var(--ink);
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Noto Color Emoji",
+    "Avenir Next",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .guide-map {
   width: 100%;
   min-height: 24rem;
@@ -956,6 +1123,10 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .search-country-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .top-picks-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -971,6 +1142,12 @@ select {
   .top-picks-grid,
   .controls-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .search-results-toolbar,
+  .home-map-head {
+    align-items: start;
+    flex-direction: column;
   }
 }
 
