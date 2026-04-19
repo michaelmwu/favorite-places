@@ -7,8 +7,10 @@ from gmaps_scraper.place_scraper import (
     _build_place_details,
     _extract_address_from_lines,
     _extract_preview_coordinates,
+    _extract_preview_phone,
     _extract_preview_place_enrichment,
     _merge_place_sources,
+    _normalize_preview_website,
     _parse_review_count,
     _seed_google_consent_cookies,
 )
@@ -248,6 +250,61 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(
             _extract_preview_coordinates(root),
             (35.6731762, 139.7127216),
+        )
+
+    def test_extract_preview_phone_rejects_cid_like_values(self) -> None:
+        self.assertEqual(
+            _extract_preview_phone(["5180951040094558101", "1776609428996", "+33 1 42 00 00 00"]),
+            "+33 1 42 00 00 00",
+        )
+
+    def test_build_place_details_ignores_placeholder_name_invalid_phone_and_status_description(
+        self,
+    ) -> None:
+        details = _build_place_details(
+            "https://maps.google.com/?cid=5180951040094558101",
+            resolved_url="https://www.google.com/maps/place//@48.8814703,2.340862,17z/data=!3m1!4b1",
+            snapshot={
+                "name": "",
+                "secondary_name": "",
+                "phone": "5180951040094558101",
+                "status": "営業時間外 · 営業開始: 18:00（火）",
+                "description": "営業時間外 · 営業開始: 18:00（火）",
+                "lat": 48.8814703,
+                "lng": 2.340862,
+                "body_text": "\n".join(["", "", "営業時間外 · 営業開始: 18:00（火）"]),
+            },
+        )
+
+        self.assertIsNone(details.name)
+        self.assertIsNone(details.secondary_name)
+        self.assertIsNone(details.phone)
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_rejects_search_results_labels_and_rating_categories(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Bianchetto",
+            resolved_url="https://www.google.com/maps/search/?api=1&query=Bianchetto",
+            snapshot={
+                "name": "結果",
+                "category": "5.0(8)",
+                "address": "バー · 26-28 Cotham Rd",
+                "body_text": "\n".join(["結果", "5.0(8)", "バー · 26-28 Cotham Rd"]),
+            },
+        )
+
+        self.assertIsNone(details.name)
+
+    def test_normalize_preview_website_rejects_streetview_thumbnail_urls(self) -> None:
+        self.assertIsNone(
+            _normalize_preview_website(
+                "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=abc"
+            )
+        )
+        self.assertIsNone(
+            _normalize_preview_website(
+                "https://inline.app/booking/foo?utm_source=ig"
+            )
         )
 
     def test_merge_place_sources_only_backfills_missing_fields(self) -> None:

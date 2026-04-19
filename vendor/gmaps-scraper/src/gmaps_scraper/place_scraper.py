@@ -37,6 +37,15 @@ _DESCRIPTION_STOP_MARKERS = {
     "limited view of google maps",
     "get the most out of google maps",
 }
+_SEARCH_RESULTS_LABELS = {
+    "result",
+    "results",
+    "search result",
+    "search results",
+    "share",
+    "共有",
+    "結果",
+}
 _CATEGORY_SUFFIX_PATTERN = re.compile(
     r"\b("
     r"restaurant|cafe|coffee shop|bar|bakery|hotel|lodging|museum|park|station|"
@@ -396,8 +405,10 @@ def _build_place_details(
     body_lines = _body_lines(snapshot.get("body_text"))
     search_lines = panel_lines or body_lines
     combined_lines = _dedupe_lines([*panel_lines, *body_lines])
-    name = _clean_text(snapshot.get("name")) or _first_nonempty(search_lines)
-    category = _clean_text(snapshot.get("category")) or _extract_category_from_lines(search_lines)
+    name = _clean_name_text(snapshot.get("name")) or _first_meaningful_name(search_lines)
+    category = _clean_category_text(snapshot.get("category")) or _extract_category_from_lines(
+        search_lines
+    )
     lat = _parse_float(snapshot.get("lat"))
     if lat is None:
         lat = _extract_coordinate_from_url(resolved_url or source_url, index=0)
@@ -408,7 +419,7 @@ def _build_place_details(
         source_url=source_url,
         resolved_url=resolved_url,
         name=name,
-        secondary_name=_clean_text(snapshot.get("secondary_name"))
+        secondary_name=_clean_name_text(snapshot.get("secondary_name"))
         or _extract_secondary_name(combined_lines, name=name),
         category=category,
         rating=_parse_rating(snapshot.get("rating")),
@@ -417,7 +428,8 @@ def _build_place_details(
         located_in=_clean_text(snapshot.get("located_in")),
         status=_clean_text(snapshot.get("status")) or _extract_status_from_lines(combined_lines),
         website=_normalize_website(snapshot.get("website")),
-        phone=_clean_text(snapshot.get("phone")) or _extract_phone_from_lines(combined_lines),
+        phone=_normalize_phone_candidate(snapshot.get("phone"))
+        or _extract_phone_from_lines(combined_lines),
         plus_code=_clean_text(snapshot.get("plus_code"))
         or _extract_plus_code_from_lines(combined_lines),
         description=_extract_description(snapshot, combined_lines),
@@ -579,10 +591,40 @@ def _clean_text(value: object) -> str | None:
     return normalized
 
 
-def _first_nonempty(lines: list[str]) -> str | None:
+def _clean_name_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    if _looks_like_status_text(normalized):
+        return None
+    if _looks_like_search_results_label(normalized):
+        return None
+    has_rating = _parse_rating(normalized) is not None
+    if has_rating and not any(character.isalpha() for character in normalized):
+        return None
+    if "·" in normalized and any(character.isdigit() for character in normalized):
+        return None
+    if any(character.isalnum() for character in normalized):
+        return normalized
+    return None
+
+
+def _clean_category_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    if _looks_like_status_text(normalized):
+        return None
+    if not any(character.isalpha() for character in normalized):
+        return None
+    return normalized
+
+
+def _first_meaningful_name(lines: list[str]) -> str | None:
     for line in lines:
-        if line:
-            return line
+        normalized = _clean_name_text(line)
+        if normalized is not None:
+            return normalized
     return None
 
 
@@ -611,13 +653,14 @@ def _extract_secondary_name(lines: list[str], *, name: str | None) -> str | None
     except ValueError:
         return None
     for line in lines[start + 1 : start + 4]:
-        if line == name:
+        normalized = _clean_name_text(line)
+        if normalized is None or normalized == name:
             continue
-        if _parse_rating(line) is not None:
+        if _parse_rating(normalized) is not None:
             return None
-        if _extract_category_from_lines([line]) is not None:
+        if _extract_category_from_lines([normalized]) is not None:
             return None
-        return line
+        return normalized
     return None
 
 
@@ -625,7 +668,7 @@ def _extract_category_from_lines(lines: list[str]) -> str | None:
     for line in lines:
         if "·" not in line:
             continue
-        category = line.split("·", 1)[0].strip()
+        category = _clean_category_text(line.split("·", 1)[0].strip())
         if category:
             return category
     return None
@@ -671,10 +714,10 @@ def _extract_status_from_lines(lines: list[str]) -> str | None:
 
 
 def _extract_phone_from_lines(lines: list[str]) -> str | None:
-    phone_pattern = re.compile(r"^\+?[0-9][0-9()\-\s]{7,}$")
     for line in lines:
-        if phone_pattern.match(line):
-            return line
+        normalized = _normalize_phone_candidate(line)
+        if normalized is not None:
+            return normalized
     return None
 
 
@@ -688,14 +731,17 @@ def _extract_plus_code_from_lines(lines: list[str]) -> str | None:
 
 def _extract_description(snapshot: Mapping[str, object], lines: list[str]) -> str | None:
     direct = _clean_text(snapshot.get("description"))
-    if direct is not None:
+    if direct is not None and not _looks_like_status_text(direct):
         return direct
     for index, line in enumerate(lines):
         if line.startswith("Seasonal ") or line.startswith("Modern setting "):
             return line
         if line == "Share" and index + 1 < len(lines):
             candidate = lines[index + 1]
-            if candidate.lower() not in _DESCRIPTION_STOP_MARKERS:
+            if (
+                candidate.lower() not in _DESCRIPTION_STOP_MARKERS
+                and not _looks_like_status_text(candidate)
+            ):
                 return candidate
     return None
 
@@ -721,15 +767,19 @@ def _normalize_preview_website(value: str) -> str | None:
         return _normalize_preview_website(unquote(target))
     if "googleusercontent.com" in parsed.netloc:
         return None
+    if "streetviewpixels-pa.googleapis.com" in parsed.netloc:
+        return None
+    if parsed.netloc.endswith("inline.app"):
+        return None
     return value
 
 
 def _extract_preview_phone(strings: list[str]) -> str | None:
     best_local: str | None = None
     for value in strings:
-        if not _PHONE_PATTERN.match(value.strip()):
+        normalized = _normalize_phone_candidate(value)
+        if normalized is None:
             continue
-        normalized = value.strip()
         if normalized.startswith("+"):
             return normalized
         if best_local is None:
@@ -775,14 +825,14 @@ def _extract_preview_category(root: list[object], strings: list[str]) -> str | N
             1 <= len(text_items) <= 4
             and all(_looks_like_category_text(item) for item in text_items)
         ):
-            return text_items[0]
+            return _clean_category_text(text_items[0])
 
     for value in strings:
         if not value.startswith("SearchResult.TYPE_"):
             continue
         category = value.removeprefix("SearchResult.TYPE_").replace("_", " ").strip().lower()
         if category:
-            return category.capitalize()
+            return _clean_category_text(category.capitalize())
     return None
 
 
@@ -809,10 +859,40 @@ def _extract_preview_description(strings: list[str]) -> str | None:
         and "〒" not in value
         and not value.startswith("Japan, ")
         and value.count(",") < 2
+        and not _looks_like_status_text(value)
     ]
     if not candidates:
         return None
     return max(candidates, key=len)
+
+
+def _normalize_phone_candidate(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None or not _PHONE_PATTERN.match(normalized):
+        return None
+    digit_count = sum(character.isdigit() for character in normalized)
+    if digit_count < 8 or digit_count > 15:
+        return None
+    if normalized.isdigit() and digit_count > 11:
+        return None
+    return normalized
+
+
+def _looks_like_status_text(value: str) -> bool:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return False
+    lowered = normalized.lower()
+    if lowered.startswith(("open", "closed")) or "opens " in lowered or "closes " in lowered:
+        return True
+    return any(marker in normalized for marker in ("営業時間", "営業開始", "営業終了"))
+
+
+def _looks_like_search_results_label(value: str) -> bool:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return False
+    return normalized.casefold() in _SEARCH_RESULTS_LABELS
 
 
 def _extract_preview_coordinates(root: list[object]) -> tuple[float, float] | None:

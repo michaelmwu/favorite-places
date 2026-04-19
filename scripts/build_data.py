@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from statistics import median
 from typing import Any
-from urllib.parse import unquote
+from urllib.parse import quote_plus, unquote
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -35,7 +35,7 @@ PUBLIC_DATA_DIR = ROOT / "public" / "data"
 LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
-DEFAULT_REFRESH_WORKERS = 4
+AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
 DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
@@ -88,6 +88,16 @@ COUNTRY_LOCALITY_ALIASES = (
     "Ivory Coast",
 )
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
+
+
+def default_refresh_workers() -> int:
+    cpu_count = os.cpu_count() or AUTO_REFRESH_WORKER_CAP
+    return max(1, min(AUTO_REFRESH_WORKER_CAP, SCRAPER_SESSION_SLOT_COUNT, cpu_count))
+
+
+DEFAULT_REFRESH_WORKERS = default_refresh_workers()
+
+
 PLACES_FIELD_MASK = ",".join(
     [
         "places.id",
@@ -475,6 +485,19 @@ MARKER_ICON_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
             "hot-spring",
         ),
     ),
+)
+GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
+    {
+        "establishment",
+        "point-of-interest",
+        "store",
+        "premise",
+        "subpremise",
+        "street-address",
+        "route",
+        "political",
+        "item",
+    }
 )
 MARKER_ICON_TEXT_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     (
@@ -981,7 +1004,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--refresh-workers",
         type=int,
         default=DEFAULT_REFRESH_WORKERS,
-        help="Maximum parallel workers for headless raw list refreshes. Headed refreshes stay single-worker.",
+        help=(
+            "Maximum parallel workers for headless refreshes and enrichment jobs. "
+            "Defaults to an auto-derived value capped at 4; headed raw list refreshes stay single-worker."
+        ),
     )
     parser.add_argument(
         "--refresh-retries",
@@ -1711,8 +1737,12 @@ def build_tag_provenance(
     if city_name:
         tag = slugify(city_name)
         put_tag(tag, google_list_field(tag, raw), priority=10)
-    for locality in infer_address_localities(raw_place.address, city_name=city_name):
-        tag = slugify(locality)
+    for tag in derive_locality_tags(
+        raw_place.address,
+        city_name=city_name,
+        enrichment=enrichment,
+        category=primary_category,
+    ):
         put_tag(tag, google_list_field(tag, raw), priority=10)
     if primary_category:
         tag = slugify(primary_category)
@@ -1721,8 +1751,7 @@ def build_tag_provenance(
             source_place_field(tag, primary_category_field),
             priority=30 if primary_category_field and primary_category_field.source == "manual" else 20,
         )
-    for place_type in enrichment.types[:4]:
-        tag = slugify(place_type.replace("_", "-"))
+    for tag in derive_enrichment_type_tags(enrichment):
         put_tag(tag, google_places_field(tag, enrichment_cache_entry), priority=20)
 
     return [ranked_fields[tag][1] for tag in tags if tag in ranked_fields]
@@ -1898,13 +1927,20 @@ def percentile(sorted_values: list[float], fraction: float) -> float:
     return lower_value + (upper_value - lower_value) * (position - lower_index)
 
 
-def enrich_raw_sources(*, force_refresh: bool) -> None:
+def enrich_raw_sources(
+    *,
+    force_refresh: bool,
+    refresh_workers: int = DEFAULT_REFRESH_WORKERS,
+    refresh_startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+) -> None:
     api_key = google_places_api_key()
+    cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
+    enrich_jobs: list[tuple[str, str, str, str, dict[str, Any]]] = []
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
         cache_payload = load_places_cache(raw_path.stem)
-        changed = False
+        cache_payloads[raw_path.stem] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
             cache_entry = cache_payload.get(place_id)
@@ -1912,15 +1948,76 @@ def enrich_raw_sources(*, force_refresh: bool) -> None:
             if not force_refresh and refresh_reason is None:
                 continue
 
-            if force_refresh:
-                print(f"Enriching {raw_path.stem}:{place_id} (forced)")
-            else:
-                print(f"Enriching {raw_path.stem}:{place_id} ({refresh_reason})")
-            cache_payload[place_id] = fetch_places_enrichment(place, api_key=api_key)
-            changed = True
+            enrich_jobs.append(
+                (
+                    raw_path.stem,
+                    place_id,
+                    place.name,
+                    refresh_reason or "forced",
+                    place.model_dump(mode="json"),
+                )
+            )
 
-        if changed:
-            save_places_cache(raw_path.stem, cache_payload)
+    if not enrich_jobs:
+        return
+
+    effective_startup_jitter_seconds = (
+        refresh_startup_jitter_seconds if len(enrich_jobs) > 1 else 0
+    )
+    max_workers = max(1, min(refresh_workers, len(enrich_jobs)))
+    if max_workers == 1 or len(enrich_jobs) == 1:
+        for slug, place_id, place_name, refresh_reason, place_payload in enrich_jobs:
+            entry = enrich_place_job(
+                slug,
+                place_id,
+                place_name,
+                refresh_reason,
+                place_payload,
+                api_key=api_key,
+                refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
+            )
+            cache_payloads[slug][place_id] = entry
+            save_places_cache(slug, cache_payloads[slug])
+        return
+
+    print(f"Running {len(enrich_jobs)} enrichment jobs with {max_workers} workers")
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        future_map = {
+            executor.submit(
+                enrich_place_job,
+                slug,
+                place_id,
+                place_name,
+                refresh_reason,
+                place_payload,
+                api_key=api_key,
+                refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
+            ): (slug, place_id)
+            for slug, place_id, place_name, refresh_reason, place_payload in enrich_jobs
+        }
+        for future in as_completed(future_map):
+            slug, place_id = future_map[future]
+            cache_payloads[slug][place_id] = future.result()
+            save_places_cache(slug, cache_payloads[slug])
+
+
+def enrich_place_job(
+    slug: str,
+    place_id: str,
+    place_name: str,
+    refresh_reason: str,
+    place_payload: dict[str, Any],
+    *,
+    api_key: str | None,
+    refresh_startup_jitter_seconds: float,
+) -> EnrichmentCacheEntry:
+    print(
+        f"Enriching {slug}:{place_id} [{place_name}] ({refresh_reason})",
+        flush=True,
+    )
+    sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
+    place = RawPlace.model_validate(place_payload)
+    return fetch_places_enrichment(place, api_key=api_key)
 
 
 def stable_place_id(place: RawPlace, *, source_type: str | None = None) -> str:
@@ -1968,13 +2065,72 @@ def derive_place_tags(
     tags: set[str] = set()
     if city_name:
         tags.add(slugify(city_name))
-    for locality in infer_address_localities(place.address, city_name=city_name):
-        tags.add(slugify(locality))
+    tags.update(
+        derive_locality_tags(
+            place.address,
+            city_name=city_name,
+            enrichment=enrichment,
+            category=category,
+        )
+    )
     if category:
         tags.add(slugify(category))
-    for place_type in enrichment.types[:4]:
-        tags.add(slugify(place_type.replace("_", "-")))
+    tags.update(derive_enrichment_type_tags(enrichment))
     return sorted(tag for tag in tags if tag)
+
+
+def derive_locality_tags(
+    address: str | None,
+    *,
+    city_name: str | None,
+    enrichment: EnrichmentPlace,
+    category: str | None,
+) -> list[str]:
+    locality_tags: list[str] = []
+    for locality in infer_address_localities(address, city_name=city_name):
+        tag = slugify(locality)
+        if tag:
+            append_unique_tag(locality_tags, tag)
+
+    if not locality_tags:
+        return []
+
+    has_specific_enrichment = bool(category or derive_enrichment_type_tags(enrichment))
+    if has_specific_enrichment:
+        return locality_tags[:1]
+    return locality_tags[:2]
+
+
+def derive_enrichment_type_tags(enrichment: EnrichmentPlace) -> list[str]:
+    tags: list[str] = []
+    primary_type_tag = normalize_enrichment_type_tag(enrichment.primary_type)
+    if primary_type_tag:
+        for marker_icon, phrases in MARKER_ICON_RULES:
+            if any(slug_phrase_matches(primary_type_tag, phrase) for phrase in phrases):
+                append_unique_tag(tags, marker_icon)
+                break
+        append_unique_tag(tags, primary_type_tag)
+
+    for raw_value in enrichment.types:
+        tag = normalize_enrichment_type_tag(raw_value)
+        if tag:
+            append_unique_tag(tags, tag)
+
+    return tags
+
+
+def normalize_enrichment_type_tag(value: str | None) -> str | None:
+    if not value:
+        return None
+    tag = slugify(value.replace("_", "-"))
+    if not tag or tag in GENERIC_ENRICHMENT_TYPE_TAGS:
+        return None
+    return tag
+
+
+def append_unique_tag(tags: list[str], candidate: str) -> None:
+    if candidate and candidate not in tags:
+        tags.append(candidate)
 
 
 def derive_marker_icon(
@@ -2496,10 +2652,7 @@ def load_raw_saved_list(path: Path) -> RawSavedList | None:
 
 def write_json(path: Path, payload: Any, *, compact: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    if hasattr(payload, "model_dump"):
-        payload = payload.model_dump(mode="json")
-    elif isinstance(payload, list):
-        payload = [item.model_dump(mode="json") if hasattr(item, "model_dump") else item for item in payload]
+    payload = normalize_json_payload(payload)
     tmp_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     if compact:
         text = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -2507,6 +2660,16 @@ def write_json(path: Path, payload: Any, *, compact: bool = False) -> None:
         text = json.dumps(payload, indent=2, ensure_ascii=False)
     tmp_path.write_text(f"{text}\n", encoding="utf-8")
     tmp_path.replace(path)
+
+
+def normalize_json_payload(payload: Any) -> Any:
+    if hasattr(payload, "model_dump"):
+        return normalize_json_payload(payload.model_dump(mode="json"))
+    if isinstance(payload, dict):
+        return {key: normalize_json_payload(value) for key, value in payload.items()}
+    if isinstance(payload, list):
+        return [normalize_json_payload(item) for item in payload]
+    return payload
 
 
 def as_string(value: Any) -> str | None:
@@ -2828,49 +2991,67 @@ def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
     proxy = current_scraper_proxy()
     session_state, browser_session, http_session = build_scraper_sessions(proxy)
     try:
-        try:
-            details = scrape_place(
-                place.maps_url,
-                headless=True,
-                browser_session=browser_session,
-                http_session=http_session,
-            )
-        except RECOVERABLE_REFRESH_ERRORS as exc:
-            if should_reset_scraper_session(exc):
-                clear_scraper_session_state(session_state)
-                browser_session, http_session = build_scraper_configs(session_state, proxy)
-                try:
-                    details = scrape_place(
-                        place.maps_url,
-                        headless=True,
-                        browser_session=browser_session,
-                        http_session=http_session,
-                    )
-                except RECOVERABLE_REFRESH_ERRORS as retry_exc:
-                    return build_cache_entry(
-                        place,
-                        source="google_maps_page",
-                        query=query,
-                        error=f"scrape_error:{retry_exc}",
-                    )
-            else:
+        last_error: str | None = None
+        saw_non_error_result = False
+        for scrape_url in build_place_page_candidate_urls(place):
+            try:
+                details = scrape_place(
+                    scrape_url,
+                    headless=True,
+                    browser_session=browser_session,
+                    http_session=http_session,
+                )
+            except RECOVERABLE_REFRESH_ERRORS as exc:
+                if should_reset_scraper_session(exc):
+                    clear_scraper_session_state(session_state)
+                    browser_session, http_session = build_scraper_configs(session_state, proxy)
+                    try:
+                        details = scrape_place(
+                            scrape_url,
+                            headless=True,
+                            browser_session=browser_session,
+                            http_session=http_session,
+                        )
+                    except RECOVERABLE_REFRESH_ERRORS as retry_exc:
+                        last_error = f"scrape_error:{retry_exc}"
+                        continue
+                else:
+                    last_error = f"scrape_error:{exc}"
+                    continue
+
+            saw_non_error_result = True
+            record_scraper_session_use(session_state, proxy=proxy)
+            enrichment_place = normalize_place_page_enrichment(details)
+            matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+            if matched:
                 return build_cache_entry(
                     place,
                     source="google_maps_page",
                     query=query,
-                    error=f"scrape_error:{exc}",
+                    matched=True,
+                    score=STRONG_MATCH_SCORE,
+                    enrichment_place=enrichment_place,
                 )
 
-        record_scraper_session_use(session_state, proxy=proxy)
-        enrichment_place = normalize_place_page_enrichment(details)
-        matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+        if saw_non_error_result:
+            return build_cache_entry(
+                place,
+                source="google_maps_page",
+                query=query,
+                matched=False,
+            )
+        if last_error is not None:
+            return build_cache_entry(
+                place,
+                source="google_maps_page",
+                query=query,
+                error=last_error,
+            )
         return build_cache_entry(
             place,
             source="google_maps_page",
             query=query,
-            matched=matched,
-            score=STRONG_MATCH_SCORE if matched else None,
-            enrichment_place=enrichment_place if matched else None,
+            matched=False,
         )
     finally:
         release_scraper_session_lock(session_state)
@@ -2884,6 +3065,11 @@ def should_fallback_to_places_api(entry: EnrichmentCacheEntry) -> bool:
         return False
     if place.limited_view:
         return True
+    is_search_result = bool(place.google_maps_uri and "/maps/search/" in place.google_maps_uri)
+    has_reputation = place.rating is not None or place.user_rating_count is not None
+    has_contact = bool(place.website or place.phone)
+    if is_search_result and not has_reputation and not has_contact:
+        return True
     if place.business_status is None and place.rating is None and place.user_rating_count is None:
         if not place.primary_type_display_name:
             return True
@@ -2894,20 +3080,68 @@ def place_page_has_meaningful_enrichment(
     details: Any,
     enrichment_place: EnrichmentPlace,
 ) -> bool:
-    if (
-        enrichment_place.display_name
-        or enrichment_place.formatted_address
-        or enrichment_place.primary_type_display_name
-        or enrichment_place.rating is not None
+    has_identity = bool(enrichment_place.display_name and enrichment_place.formatted_address)
+    has_reputation = (
+        enrichment_place.rating is not None
         or enrichment_place.user_rating_count is not None
-    ):
-        return True
-    return not bool(getattr(details, "limited_view", False)) and bool(
-        enrichment_place.website
+    )
+    has_contact_or_context = bool(
+        enrichment_place.primary_type_display_name
+        or enrichment_place.website
         or enrichment_place.phone
         or enrichment_place.plus_code
         or enrichment_place.description
     )
+    if has_identity and (has_reputation or has_contact_or_context):
+        return True
+    if (
+        enrichment_place.display_name
+        and has_contact_or_context
+        and not bool(getattr(details, "limited_view", False))
+    ):
+        return True
+    return not bool(getattr(details, "limited_view", False)) and bool(
+        has_reputation and enrichment_place.formatted_address
+    )
+
+
+def build_place_page_candidate_urls(place: RawPlace) -> list[str]:
+    maps_url = as_string(place.maps_url)
+    if maps_url is None:
+        return []
+
+    query = build_text_query(place)
+    search_url = build_google_maps_search_url(query) if query else None
+
+    candidates: list[str] = []
+    if should_prefer_search_place_url(maps_url) and search_url is not None:
+        candidates.append(search_url)
+    candidates.append(maps_url)
+    if not should_prefer_search_place_url(maps_url) and search_url is not None:
+        candidates.append(search_url)
+    return dedupe_urls(candidates)
+
+
+def build_google_maps_search_url(query: str) -> str:
+    return f"https://www.google.com/maps/search/?api=1&query={quote_plus(query)}"
+
+
+def should_prefer_search_place_url(maps_url: str) -> bool:
+    normalized = maps_url.strip().lower()
+    if "/maps/place/" in normalized or "/maps/search/" in normalized:
+        return False
+    return "?cid=" in normalized or "?q=" in normalized or "&cid=" in normalized or "&q=" in normalized
+
+
+def dedupe_urls(urls: list[str]) -> list[str]:
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for url in urls:
+        if url in seen:
+            continue
+        deduped.append(url)
+        seen.add(url)
+    return deduped
 
 
 def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
@@ -2919,6 +3153,9 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         if primary_type:
             types.append(primary_type)
 
+    source_url = as_string(getattr(details, "source_url", None))
+    resolved_url = as_string(getattr(details, "resolved_url", None))
+    from_search_url = bool(source_url and "/maps/search/" in source_url)
     display_name = as_string(getattr(details, "name", None))
     formatted_address = as_string(getattr(details, "address", None))
     rating = as_float(getattr(details, "rating", None))
@@ -2927,6 +3164,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     phone = as_string(getattr(details, "phone", None))
     plus_code = as_string(getattr(details, "plus_code", None))
     description = as_string(getattr(details, "description", None))
+    if from_search_url:
+        description = None
     limited_view = bool(getattr(details, "limited_view", False))
     has_meaningful_fields = any(
         (
@@ -2944,9 +3183,7 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     )
     maps_uri = None
     if limited_view or has_meaningful_fields:
-        maps_uri = as_string(getattr(details, "resolved_url", None)) or as_string(
-            getattr(details, "source_url", None)
-        )
+        maps_uri = source_url if from_search_url else resolved_url or source_url
     return EnrichmentPlace(
         display_name=display_name,
         formatted_address=formatted_address,
@@ -3201,7 +3438,11 @@ def main() -> int:
 
     if args.enrich or args.refresh_enrichment:
         sync_local_csv_sources()
-        enrich_raw_sources(force_refresh=args.refresh_enrichment)
+        enrich_raw_sources(
+            force_refresh=args.refresh_enrichment,
+            refresh_workers=args.refresh_workers,
+            refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
+        )
 
     rebuild_generated_data()
     print("Generated list data, manifests, and search index.")
