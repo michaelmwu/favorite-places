@@ -106,19 +106,23 @@ const guideMarkerLabel = (guide: (typeof guides)[number]) => {
 };
 const locationGuideCandidates = guides
   .filter((guide) => typeof guide.center_lat === "number" && typeof guide.center_lng === "number")
-  .map((guide) => ({
-    cityName: guide.city_name,
-    countryCode: guide.country_code,
-    slug: guide.slug,
-    title: guide.title,
-    country: guide.country_name.toLowerCase(),
-    countryName: guide.country_name,
-    lat: guide.center_lat as number,
-    lng: guide.center_lng as number,
-    markerLabel: guideMarkerLabel(guide),
-    placeCount: guide.place_count,
-    url: `/guides/${guide.slug}/`,
-  }));
+  .map((guide) => {
+    const countryName = guide.country_name || "Unknown";
+
+    return {
+      cityName: guide.city_name || "",
+      countryCode: guide.country_code,
+      slug: guide.slug,
+      title: guide.title,
+      country: countryName.toLowerCase(),
+      countryName,
+      lat: guide.center_lat as number,
+      lng: guide.center_lng as number,
+      markerLabel: guideMarkerLabel(guide),
+      placeCount: guide.place_count,
+      url: `/guides/${guide.slug}/`,
+    };
+  });
 const countryCount = guidesByCountry.length;
 const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0);
 ---

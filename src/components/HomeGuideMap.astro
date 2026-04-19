@@ -432,18 +432,15 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     const summary = document.querySelector<HTMLElement>("[data-home-map-summary]");
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
     const apiKey = element.dataset.googleMapsApiKey || "";
-    let runtime: HomeMapRuntime;
+    let runtime: HomeMapRuntime | null = null;
     let currentVisibleGuideSlugs = new Set(guides.map((guide) => guide.slug));
     let currentVisibleGuides = guides;
-
-    try {
-      runtime =
-        requestedProvider === "google" && apiKey
-          ? await initGoogleRuntime(element, guides, apiKey).catch(() => initLeafletRuntime(element, guides))
-          : initLeafletRuntime(element, guides);
-    } catch {
-      runtime = initLeafletRuntime(element, guides);
-    }
+    let pendingState = {
+      activeCountry: "",
+      query: "",
+      visibleGuideCount: guides.length,
+      visibleGuideSlugs: guides.map((guide) => guide.slug),
+    };
 
     const applyVisibility = (
       visibleGuideSlugs: string[],
@@ -456,25 +453,46 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
           ? new Set()
           : new Set(visibleGuideSlugs.length > 0 ? visibleGuideSlugs : guides.map((guide) => guide.slug));
       currentVisibleGuides = guides.filter((guide) => currentVisibleGuideSlugs.has(guide.slug));
-      runtime.setVisibleGuides(currentVisibleGuideSlugs);
-      runtime.fitGuides(currentVisibleGuides);
+      runtime?.setVisibleGuides(currentVisibleGuideSlugs);
+      runtime?.fitGuides(currentVisibleGuides);
       updateSummary(summary, currentVisibleGuides.length, activeCountry, query);
     };
 
+    const handleHomeMapUpdate = ((event: HomeMapUpdateEvent) => {
+      pendingState = {
+        activeCountry: event.detail.activeCountry || "",
+        query: event.detail.query || "",
+        visibleGuideCount: event.detail.visibleGuideCount,
+        visibleGuideSlugs: event.detail.visibleGuideSlugs,
+      };
+      applyVisibility(
+        pendingState.visibleGuideSlugs,
+        pendingState.visibleGuideCount,
+        pendingState.activeCountry,
+        pendingState.query,
+      );
+    }) as EventListener;
+
     document.addEventListener(
       "favorite-places:home-map-update",
-      ((event: HomeMapUpdateEvent) => {
-        applyVisibility(
-          event.detail.visibleGuideSlugs,
-          event.detail.visibleGuideCount,
-          event.detail.activeCountry || "",
-          event.detail.query || "",
-        );
-      }) as EventListener,
+      handleHomeMapUpdate,
     );
 
-    runtime.fitGuides(currentVisibleGuides);
-    updateSummary(summary, currentVisibleGuides.length, "", "");
+    try {
+      runtime =
+        requestedProvider === "google" && apiKey
+          ? await initGoogleRuntime(element, guides, apiKey).catch(() => initLeafletRuntime(element, guides))
+          : initLeafletRuntime(element, guides);
+    } catch {
+      runtime = initLeafletRuntime(element, guides);
+    }
+
+    applyVisibility(
+      pendingState.visibleGuideSlugs,
+      pendingState.visibleGuideCount,
+      pendingState.activeCountry,
+      pendingState.query,
+    );
     element.homeGuideMapInitialized = true;
   };
 

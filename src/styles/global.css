@@ -329,6 +329,7 @@ img {
   gap: 0.25rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
+  background-color: var(--surface);
   color: inherit;
   text-decoration: none;
   transition:
@@ -339,7 +340,7 @@ img {
 .search-country-item:hover,
 .search-country-item:focus-visible {
   border-color: var(--accent);
-  background: #fffdfd;
+  background-color: #fffdfd;
 }
 
 .search-country-item:focus-visible {

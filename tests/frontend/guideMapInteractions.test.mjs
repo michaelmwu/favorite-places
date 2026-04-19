@@ -75,4 +75,21 @@ describe("guide map interactions", () => {
     expect(css).toContain('.map-icon-button[data-location-state="checking"]');
     expect(css).toContain(".map-icon-button[data-busy=\"true\"] svg");
   });
+
+  it("keeps the home guide map event contract in sync with the home browser", () => {
+    const homePage = readSource("src/pages/index.astro");
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
+    const homeBrowser = readSource("public/scripts/home-browser.js");
+
+    expect(homePage).toContain("<HomeGuideMap guides={locationGuideCandidates} />");
+    expect(homeMap).toContain("data-home-guide-map");
+    expect(homeMap).toContain("data-guides={JSON.stringify(mapGuides).replace(/</g, \"\\\\u003c\")}");
+    expect(homeBrowser).toContain('root.querySelector("[data-home-guide-map]")');
+    expect(homeBrowser).toContain('new CustomEvent("favorite-places:home-map-update"');
+    expect(homeMap).toContain('document.addEventListener(\n      "favorite-places:home-map-update"');
+    expect(homeMap).toContain("pendingState");
+    expect(homeMap).toContain("runtime?.setVisibleGuides(currentVisibleGuideSlugs)");
+    expect(homeMap).toContain("runtime?.fitGuides(currentVisibleGuides)");
+    expect(homeMap).toContain("applyVisibility(\n      pendingState.visibleGuideSlugs,");
+  });
 });
