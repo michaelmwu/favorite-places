@@ -87,5 +87,7 @@ describe("guide map interactions", () => {
     expect(guideMap).not.toContain("google.maps.SymbolPath.CIRCLE");
     expect(css).toContain(".guide-map-marker");
     expect(css).toContain(".guide-map-marker svg");
+    expect(css).toContain("width: 100%;");
+    expect(css).toContain("height: 100%;");
   });
 });

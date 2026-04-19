@@ -632,13 +632,14 @@ try:
         EnrichmentPlace,
         Guide,
         GuideManifest,
+        MarkerIcon,
         NormalizedPlace,
         PlacesSettings,
+        PlaceField,
+        PlaceProvenance,
         RawPlace,
         RawSavedList,
         SourceConfig,
-        PlaceField,
-        PlaceProvenance,
     )
 except ModuleNotFoundError:
     from scripts.pipeline_models import (
@@ -646,13 +647,14 @@ except ModuleNotFoundError:
         EnrichmentPlace,
         Guide,
         GuideManifest,
+        MarkerIcon,
         NormalizedPlace,
         PlacesSettings,
+        PlaceField,
+        PlaceProvenance,
         RawPlace,
         RawSavedList,
         SourceConfig,
-        PlaceField,
-        PlaceProvenance,
     )
 
 try:
@@ -1479,7 +1481,6 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             place,
             enrichment=enrichment,
             category=primary_category,
-            tags=tags,
             note=note,
             why_recommended=why_recommended,
         )
@@ -1981,10 +1982,9 @@ def derive_marker_icon(
     *,
     enrichment: EnrichmentPlace,
     category: str | None,
-    tags: list[str],
     note: str | None,
     why_recommended: str | None,
-) -> str:
+) -> MarkerIcon:
     candidate_slugs = [
         slugify(term.replace("_", "-"))
         for term in [
@@ -1992,7 +1992,6 @@ def derive_marker_icon(
             enrichment.primary_type,
             enrichment.primary_type_display_name,
             *enrichment.types,
-            *tags,
         ]
         if term
     ]
@@ -2008,12 +2007,10 @@ def derive_marker_icon(
                 None,
                 [
                     place.name,
-                    place.address,
                     place.note,
                     note,
                     why_recommended,
                     category,
-                    " ".join(tags),
                 ],
             )
         )

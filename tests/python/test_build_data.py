@@ -409,43 +409,37 @@ class BuildDataTests(unittest.TestCase):
             (
                 "coffee-shop",
                 EnrichmentPlace(primary_type="restaurant", types=["coffee_shop", "restaurant"]),
-                ["restaurant"],
                 "cafe",
             ),
             (
                 "art-gallery",
                 EnrichmentPlace(types=["art_gallery"]),
-                [],
                 "museum",
             ),
             (
                 None,
                 EnrichmentPlace(types=["historical_landmark"]),
-                [],
                 "attraction",
             ),
             (
                 None,
                 EnrichmentPlace(types=["spa"]),
-                [],
                 "spa",
             ),
             (
-                None,
+                "night market",
                 EnrichmentPlace(),
-                ["night-market"],
                 "shopping",
             ),
         ]
 
-        for category, enrichment, tags, expected_icon in test_cases:
+        for category, enrichment, expected_icon in test_cases:
             with self.subTest(category=category, expected_icon=expected_icon):
                 self.assertEqual(
                     build_data.derive_marker_icon(
                         RawPlace(name="Plain Place", maps_url="https://maps.google.com/?cid=1"),
                         enrichment=enrichment,
                         category=category,
-                        tags=tags,
                         note=None,
                         why_recommended=None,
                     ),
@@ -458,7 +452,6 @@ class BuildDataTests(unittest.TestCase):
                 RawPlace(name="Plain Place", maps_url="https://maps.google.com/?cid=1"),
                 enrichment=EnrichmentPlace(),
                 category=None,
-                tags=["tokyo", "shibuya"],
                 note=None,
                 why_recommended=None,
             ),
@@ -480,12 +473,27 @@ class BuildDataTests(unittest.TestCase):
                         RawPlace(name=place_name, maps_url="https://maps.google.com/?cid=1"),
                         enrichment=EnrichmentPlace(),
                         category=None,
-                        tags=["tokyo"],
                         note=None,
                         why_recommended=None,
                     ),
                     expected_icon,
                 )
+
+    def test_derive_marker_icon_does_not_use_locality_tags_as_type_fallback(self) -> None:
+        self.assertEqual(
+            build_data.derive_marker_icon(
+                RawPlace(
+                    name="Plain Place",
+                    address="1 Ocean Drive, Miami Beach, Park City",
+                    maps_url="https://maps.google.com/?cid=1",
+                ),
+                enrichment=EnrichmentPlace(),
+                category=None,
+                note=None,
+                why_recommended=None,
+            ),
+            "default",
+        )
 
     def test_vibe_keyword_matching_uses_token_boundaries(self) -> None:
         self.assertFalse(build_data.vibe_keyword_matches("barcelona cafe", "bar"))
