@@ -236,7 +236,10 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(first_place.primary_category, "Bakery")
         self.assertEqual(first_place.marker_icon, "bakery")
         self.assertEqual(first_place.note, "Manual note")
-        self.assertEqual(first_place.maps_url, "https://maps.google.com/?cid=override")
+        self.assertEqual(
+            first_place.maps_url,
+            "https://www.google.com/maps/search/?api=1&query=Coffee+House%2C+1+Shibuya%2C+Tokyo%2C+Japan",
+        )
         self.assertEqual(first_place.neighborhood, "Shibuya")
         self.assertTrue(first_place.top_pick)
         self.assertIn("local-favorite", first_place.vibe_tags)
@@ -928,7 +931,10 @@ class BuildDataTests(unittest.TestCase):
         place = guide.places[0]
         self.assertEqual(place.name, "Modern Tea House")
         self.assertEqual(place.address, "1 Songshan, Taipei, Taiwan")
-        self.assertEqual(place.maps_url, "https://maps.google.com/?cid=override")
+        self.assertEqual(
+            place.maps_url,
+            "https://www.google.com/maps/search/?api=1&query=Modern+Tea+House%2C+1+Songshan%2C+Taipei%2C+Taiwan",
+        )
         self.assertEqual(place.provenance.name.source, "google_places")
         self.assertEqual(place.provenance.name.fetched_at, "2026-04-16T00:00:00+00:00")
         self.assertEqual(place.provenance.address.source, "google_places")
@@ -940,6 +946,47 @@ class BuildDataTests(unittest.TestCase):
                 "taipei": "google_list",
                 "tea-house": "google_places",
             },
+        )
+
+    def test_normalize_guide_prefers_place_id_search_url_when_available(self) -> None:
+        raw = RawSavedList(
+            title="Sydney, Australia",
+            places=[
+                RawPlace(
+                    name="Cantina OK!",
+                    address="Council Pl, Sydney NSW 2000, Australia",
+                    lat=-33.8702175,
+                    lng=151.2051413,
+                    maps_url="https://maps.google.com/?cid=7715422616180689913",
+                    cid="7715422616180689913",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-16T00:00:00+00:00",
+                query="Cantina OK!, Sydney",
+                matched=True,
+                score=88,
+                place=EnrichmentPlace(
+                    display_name="Cantina OK!",
+                    formatted_address="Council Pl, Sydney NSW 2000, Australia",
+                    google_maps_uri="https://maps.google.com/?cid=7715422616180689913",
+                    google_place_id="ChIJGcmcg7ZC1moRAOacd3HoEwM",
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("sydney-australia", raw, enrichment_cache=enrichment_cache)
+
+        self.assertEqual(
+            guide.places[0].maps_url,
+            (
+                "https://www.google.com/maps/search/?api=1"
+                "&query=Cantina+OK%21%2C+Council+Pl%2C+Sydney+NSW+2000%2C+Australia"
+                "&query_place_id=ChIJGcmcg7ZC1moRAOacd3HoEwM"
+            ),
         )
 
     def test_resolve_refresh_sources_matches_csv_path_selector(self) -> None:
@@ -1313,6 +1360,49 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(entry.place.primary_type, "japanese_restaurant")
         self.assertEqual(entry.place.user_rating_count, 324)
         self.assertEqual(entry.place.business_status, "OPERATIONAL")
+
+    def test_fetch_place_page_enrichment_rewrites_cid_url_before_scraping(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            lat=-33.8702175,
+            lng=151.2051413,
+            maps_url="https://maps.google.com/?cid=7715422616180689913",
+            cid="7715422616180689913",
+        )
+        details = SimpleNamespace(
+            source_url=(
+                "https://www.google.com/maps/search/?api=1"
+                "&query=Cantina+OK%21%2C+Council+Pl%2C+Sydney+NSW+2000%2C+Australia"
+            ),
+            resolved_url="https://www.google.com/maps/place/Cantina+OK!/@-33.8702175,151.2051413,17z",
+            name="Cantina OK!",
+            category="Cocktail bar",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            status="Open",
+            limited_view=False,
+        )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", return_value=details) as scrape,
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        scrape.assert_called_once_with(
+            (
+                "https://www.google.com/maps/search/?api=1"
+                "&query=Cantina+OK%21%2C+Council+Pl%2C+Sydney+NSW+2000%2C+Australia"
+            ),
+            headless=True,
+            browser_session=None,
+            http_session=None,
+        )
+        self.assertTrue(entry.matched)
+        self.assertEqual(entry.place.display_name, "Cantina OK!")
 
     def test_fetch_places_enrichment_falls_back_to_api_when_page_is_limited(self) -> None:
         place = RawPlace(

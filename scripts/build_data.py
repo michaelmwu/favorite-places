@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from statistics import median
 from typing import Any
-from urllib.parse import unquote
+from urllib.parse import unquote, urlencode
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -1493,14 +1493,25 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         preferred_name = place.name
         if prefer_enrichment_names and enrichment.display_name:
             preferred_name = enrichment.display_name
+        normalized_name = as_string(override.get("name")) or preferred_name
+        normalized_address = place.address or enrichment.formatted_address
+        maps_url = build_public_google_maps_url(
+            name=normalized_name,
+            address=normalized_address,
+            lat=place.lat,
+            lng=place.lng,
+            raw_maps_url=place.maps_url,
+            google_maps_uri=enrichment.google_maps_uri,
+            google_place_id=enrichment.google_place_id,
+        )
 
         normalized = NormalizedPlace(
             id=place_id,
-            name=as_string(override.get("name")) or preferred_name,
-            address=place.address or enrichment.formatted_address,
+            name=normalized_name,
+            address=normalized_address,
             lat=place.lat,
             lng=place.lng,
-            maps_url=enrichment.google_maps_uri or place.maps_url,
+            maps_url=maps_url,
             cid=place.cid,
             google_id=place.google_id,
             google_place_id=enrichment.google_place_id,
@@ -2817,6 +2828,13 @@ def fetch_places_enrichment(place: RawPlace, *, api_key: str | None) -> Enrichme
 
 def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
     query = build_text_query(place)
+    place_url = build_public_google_maps_url(
+        name=place.name,
+        address=place.address,
+        lat=place.lat,
+        lng=place.lng,
+        raw_maps_url=place.maps_url,
+    )
     if scrape_place is None:
         return build_cache_entry(
             place,
@@ -2830,7 +2848,7 @@ def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
     try:
         try:
             details = scrape_place(
-                place.maps_url,
+                place_url,
                 headless=True,
                 browser_session=browser_session,
                 http_session=http_session,
@@ -2841,7 +2859,7 @@ def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
                 browser_session, http_session = build_scraper_configs(session_state, proxy)
                 try:
                     details = scrape_place(
-                        place.maps_url,
+                        place_url,
                         headless=True,
                         browser_session=browser_session,
                         http_session=http_session,
@@ -3061,6 +3079,63 @@ def build_text_query(place: RawPlace) -> str:
     address = place.address or ""
     query = f"{name}, {address}".strip(", ")
     return query or name or address
+
+
+def build_maps_link_query(
+    *,
+    name: str | None,
+    address: str | None,
+    lat: float | None,
+    lng: float | None,
+) -> str | None:
+    text_parts = [part.strip() for part in (name, address) if isinstance(part, str) and part.strip()]
+    if text_parts:
+        return ", ".join(dict.fromkeys(text_parts))
+    if lat is not None and lng is not None:
+        return f"{lat:.7f},{lng:.7f}"
+    return None
+
+
+def build_google_maps_search_url(query: str, *, google_place_id: str | None = None) -> str:
+    params = {"api": "1", "query": query}
+    if google_place_id:
+        params["query_place_id"] = google_place_id
+    return f"https://www.google.com/maps/search/?{urlencode(params)}"
+
+
+def should_rebuild_google_maps_url(maps_url: str | None) -> bool:
+    normalized_url = as_string(maps_url)
+    if normalized_url is None:
+        return True
+    if re.search(r"[?&]cid=[^&#]+", normalized_url):
+        return True
+    if "google." not in normalized_url:
+        return False
+    return bool(re.search(r"[?&]q=-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?(?:[&#]|$)", normalized_url))
+
+
+def build_public_google_maps_url(
+    *,
+    name: str | None,
+    address: str | None,
+    lat: float | None,
+    lng: float | None,
+    raw_maps_url: str | None,
+    google_maps_uri: str | None = None,
+    google_place_id: str | None = None,
+) -> str:
+    query = build_maps_link_query(name=name, address=address, lat=lat, lng=lng)
+    if query and google_place_id:
+        return build_google_maps_search_url(query, google_place_id=google_place_id)
+
+    preferred_url = as_string(google_maps_uri) or as_string(raw_maps_url)
+    if preferred_url and not should_rebuild_google_maps_url(preferred_url):
+        return preferred_url
+
+    if query:
+        return build_google_maps_search_url(query)
+
+    return preferred_url or raw_maps_url or "https://www.google.com/maps"
 
 
 def score_text_search_candidate(raw_place: RawPlace, candidate: dict[str, Any]) -> int:
