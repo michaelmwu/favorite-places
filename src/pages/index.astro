@@ -1,5 +1,6 @@
 ---
 import GuideCard from "../components/GuideCard.astro";
+import HomeGuideMap from "../components/HomeGuideMap.astro";
 import Layout from "../components/Layout.astro";
 import { siteConfig } from "../data/site";
 import { getGuideManifests } from "../lib/data";
@@ -36,14 +37,16 @@ const guidesByCountry = countryEntries.map(([countryName, countryGuides]) => ({
 const locationGuideCandidates = guides
   .filter((guide) => typeof guide.center_lat === "number" && typeof guide.center_lng === "number")
   .map((guide) => ({
+    cityName: guide.city_name,
     slug: guide.slug,
     title: guide.title,
     country: guide.country_name.toLowerCase(),
     countryName: guide.country_name,
-    lat: guide.center_lat,
-    lng: guide.center_lng,
+    lat: guide.center_lat as number,
+    lng: guide.center_lng as number,
+    placeCount: guide.place_count,
+    url: `/guides/${guide.slug}/`,
   }));
-const locationGuideJson = JSON.stringify(locationGuideCandidates).replace(/</g, "\\u003c");
 const countryCount = guidesByCountry.length;
 const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0);
 ---
@@ -84,6 +87,8 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
         More travel notes at <a href={siteConfig.demFlyersUrl}>DEM Flyers</a>.
       </p>
     </div>
+
+    <HomeGuideMap guides={locationGuideCandidates} />
 
     <div class="controls-panel country-browser" data-home-browser-controls>
       <div class="controls-grid">
@@ -177,9 +182,32 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
           <p class="eyebrow">Search results</p>
           <h3 class="section-title" data-global-search-title>Matching places</h3>
         </div>
-        <p class="small-copy" data-global-search-summary></p>
       </div>
-      <div class="search-result-grid" data-global-search-list aria-live="polite"></div>
+      <div class="search-results-toolbar" data-global-search-toolbar>
+        <p class="small-copy" data-global-search-summary></p>
+        <div class="search-view-toggle-group" role="group" aria-label="Search results view">
+          <button
+            class="search-view-toggle"
+            type="button"
+            data-search-view-toggle
+            data-search-view="grouped"
+            aria-pressed="true"
+          >
+            By country
+          </button>
+          <button
+            class="search-view-toggle"
+            type="button"
+            data-search-view-toggle
+            data-search-view="individual"
+            aria-pressed="false"
+          >
+            Individual
+          </button>
+        </div>
+      </div>
+      <div class="search-country-grid" data-grouped-search-list aria-live="polite"></div>
+      <div class="search-result-grid" data-global-search-list aria-live="polite" hidden></div>
       <div class="empty-state" data-global-search-empty role="status" aria-live="polite">
         No matching places. Try a broader search.
       </div>
@@ -203,6 +231,5 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
     ))}
   </section>
 
-  <script is:inline type="application/json" data-location-guide-index set:html={locationGuideJson}></script>
   <script is:inline type="module" src="/scripts/home-browser.js"></script>
 </Layout>
