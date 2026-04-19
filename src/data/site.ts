@@ -3,6 +3,11 @@ export interface SiteConfig {
   ownerName: string;
   siteDescription: string;
   defaultSeoImage: string | null;
+  favicon: {
+    href: string;
+    type?: string;
+    sizes?: string;
+  } | null;
   demFlyersUrl: string;
   home: {
     eyebrow: string;
@@ -21,6 +26,11 @@ export const siteConfig: SiteConfig = {
   ownerName: "Michael Wu",
   siteDescription: "Michael's city bookmarks from DEM Flyers, organized for quick trip planning.",
   defaultSeoImage: null,
+  favicon: {
+    href: "/demflyers-favicon.png",
+    type: "image/png",
+    sizes: "32x32",
+  },
   demFlyersUrl: "https://www.demflyers.com/",
   home: {
     eyebrow: "DEM Flyers",

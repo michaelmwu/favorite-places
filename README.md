@@ -292,7 +292,7 @@ The key is to keep "replace me" files obvious and colocated with the real paths 
 
 - `scripts/config/list_sources.json` is your real source list config.
 - `scripts/config/list_sources.example.json` is the starter file for template users.
-- `src/data/site.ts` is the site-level branding and copy config for this instance.
+- `src/data/site.ts` is the site-level branding, favicon, and copy config for this instance.
 - `src/data/site.example.ts` shows the expected shape for a new instance.
 - `src/data/overrides/lists/*.json` and `src/data/overrides/places/*.json` are real handwritten curation files, excluding `*.example.json`.
 - `src/data/overrides/lists/list.example.json` and `src/data/overrides/places/list.example.json` are starter examples showing the expected override shapes.
