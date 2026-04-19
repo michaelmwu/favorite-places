@@ -770,6 +770,38 @@ select {
   padding: 1rem;
 }
 
+.home-map-panel .guide-map {
+  min-height: 12rem;
+  height: clamp(12rem, 34vh, 20rem);
+}
+
+.home-guide-marker {
+  background: transparent;
+  border: 0;
+}
+
+.home-guide-marker-badge {
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: rgba(255, 250, 241, 0.96);
+  box-shadow: 0 6px 18px rgba(31, 26, 22, 0.16);
+  color: var(--ink);
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Noto Color Emoji",
+    "Avenir Next",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .guide-map {
   width: 100%;
   min-height: 24rem;

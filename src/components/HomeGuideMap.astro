@@ -4,9 +4,11 @@ interface HomeMapGuide {
   title: string;
   country: string;
   countryName: string;
+  countryCode: string | null;
   cityName: string;
   lat: number;
   lng: number;
+  markerLabel: string;
   placeCount: number;
   url: string;
 }
@@ -64,9 +66,11 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     title: string;
     country: string;
     countryName: string;
+    countryCode: string | null;
     cityName: string;
     lat: number;
     lng: number;
+    markerLabel: string;
     placeCount: number;
     url: string;
   }
@@ -117,6 +121,9 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         getMap: () => unknown;
         setMap: (map: unknown | null) => void;
       };
+      SymbolPath: {
+        CIRCLE: unknown;
+      };
     };
   }
 
@@ -157,6 +164,10 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       </div>
     `;
   };
+
+  const markerHtml = (guide: HomeMapGuide) => `
+    <span class="home-guide-marker-badge" aria-hidden="true">${escapeHtml(guide.markerLabel)}</span>
+  `;
 
   const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
     if (guides.length === 0) return;
@@ -276,15 +287,17 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       maxZoom: 19,
     }).addTo(map);
 
-    const markers = new Map<string, L.CircleMarker>();
+    const markers = new Map<string, L.Marker>();
     guides.forEach((guide) => {
-      const marker = L.circleMarker([guide.lat, guide.lng], {
-        color: MARKER_COLOR,
-        fillColor: "#fffaf1",
-        fillOpacity: 0.9,
-        opacity: 0.95,
-        radius: 7,
-        weight: 2,
+      const marker = L.marker([guide.lat, guide.lng], {
+        icon: L.divIcon({
+          className: "home-guide-marker",
+          html: markerHtml(guide),
+          iconSize: [40, 40],
+          iconAnchor: [20, 20],
+          popupAnchor: [0, -18],
+        }),
+        title: guide.title,
       }).bindPopup(popupHtml(guide), {
         className: "guide-map-popup-shell",
         closeButton: false,
@@ -327,6 +340,22 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
 
     guides.forEach((guide) => {
       const marker = new googleMaps.maps.Marker({
+        icon: {
+          fillColor: "#fffaf1",
+          fillOpacity: 0.96,
+          path: googleMaps.maps.SymbolPath.CIRCLE,
+          scale: 18,
+          strokeColor: MARKER_COLOR,
+          strokeOpacity: 0.98,
+          strokeWeight: 2,
+        },
+        label: {
+          color: "#1f1a16",
+          fontFamily: '"Avenir Next", "Segoe UI", sans-serif',
+          fontSize: guide.markerLabel.length <= 2 ? "14px" : "18px",
+          fontWeight: "800",
+          text: guide.markerLabel,
+        },
         map,
         position: { lat: guide.lat, lng: guide.lng },
         title: guide.title,

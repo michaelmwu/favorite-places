@@ -34,16 +34,35 @@ const guidesByCountry = countryEntries.map(([countryName, countryGuides]) => ({
   countryName,
   countryFlag: getCountryFlag(countryGuides),
 }));
+const countryCodeToFlag = (countryCode: string | null) =>
+  countryCode
+    ? countryCode
+        .toUpperCase()
+        .replace(/./g, (character) => String.fromCodePoint(127397 + character.charCodeAt(0)))
+    : "";
+const cityInitials = (cityName: string) =>
+  cityName
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || cityName.slice(0, 2).toUpperCase();
+const guideMarkerLabel = (guide: (typeof guides)[number]) => {
+  const titleFlags = [...guide.title.matchAll(flagPattern)].map(([flag]) => flag);
+  return titleFlags.at(-1) || countryCodeToFlag(guide.country_code) || cityInitials(guide.city_name);
+};
 const locationGuideCandidates = guides
   .filter((guide) => typeof guide.center_lat === "number" && typeof guide.center_lng === "number")
   .map((guide) => ({
     cityName: guide.city_name,
+    countryCode: guide.country_code,
     slug: guide.slug,
     title: guide.title,
     country: guide.country_name.toLowerCase(),
     countryName: guide.country_name,
     lat: guide.center_lat as number,
     lng: guide.center_lng as number,
+    markerLabel: guideMarkerLabel(guide),
     placeCount: guide.place_count,
     url: `/guides/${guide.slug}/`,
   }));
