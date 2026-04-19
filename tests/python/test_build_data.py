@@ -119,6 +119,196 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertIn("Google My Maps URLs are not supported", str(context.exception))
 
+    def test_build_place_page_candidate_urls_prefers_search_for_cid_inputs(self) -> None:
+        place = RawPlace(
+            name="Sister Midnight",
+            address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+            maps_url="https://maps.google.com/?cid=5180951040094558101",
+        )
+
+        self.assertEqual(
+            build_data.build_place_page_candidate_urls(place),
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
+                ),
+                "https://maps.google.com/?cid=5180951040094558101",
+            ],
+        )
+
+    def test_fetch_place_page_enrichment_prefers_search_candidate_for_cid_inputs(self) -> None:
+        place = RawPlace(
+            name="Sister Midnight",
+            address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+            maps_url="https://maps.google.com/?cid=5180951040094558101",
+            lat=48.8814703,
+            lng=2.340862,
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url=(
+                    "https://www.google.com/maps/place/Sister+Midnight/"
+                    "@48.8814703,2.340862,17z/data=!3m1!4b1"
+                ),
+                name="Sister Midnight",
+                category="Cocktail bar",
+                rating=4.7,
+                review_count=321,
+                address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+                located_in=None,
+                status=None,
+                website="https://sistermidnightparis.com/",
+                phone="+33 1 42 00 00 00",
+                plus_code=None,
+                description=None,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(
+            called_urls,
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
+                )
+            ],
+        )
+        self.assertTrue(entry.matched)
+        self.assertIsNotNone(entry.place)
+        assert entry.place is not None
+        self.assertEqual(entry.place.display_name, "Sister Midnight")
+        self.assertEqual(entry.place.primary_type_display_name, "Cocktail bar")
+
+    def test_normalize_place_page_enrichment_prefers_stable_search_source_url(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url=(
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
+                ),
+                resolved_url=(
+                    "https://www.google.com/maps/place/Sister+Midnight/"
+                    "@48.8814703,2.340862,17z/data=!3m1!4b1"
+                ),
+                name="Sister Midnight",
+                category="Cocktail bar",
+                rating=4.7,
+                review_count=288,
+                address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+                website="https://sistermidnightparis.com/",
+                phone=None,
+                plus_code=None,
+                description="Volatile review text",
+                limited_view=False,
+                status=None,
+            )
+        )
+
+        self.assertEqual(
+            enrichment.google_maps_uri,
+            (
+                "https://www.google.com/maps/search/?api=1&query="
+                "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
+            ),
+        )
+        self.assertIsNone(enrichment.description)
+
+    def test_place_page_has_meaningful_enrichment_rejects_address_only_false_positive(self) -> None:
+        self.assertFalse(
+            build_data.place_page_has_meaningful_enrichment(
+                SimpleNamespace(limited_view=False),
+                EnrichmentPlace(
+                    display_name=None,
+                    formatted_address="バー · 26-28 Cotham Rd",
+                ),
+            )
+        )
+
+    def test_place_page_has_meaningful_enrichment_accepts_name_address_and_reputation(self) -> None:
+        self.assertTrue(
+            build_data.place_page_has_meaningful_enrichment(
+                SimpleNamespace(limited_view=False),
+                EnrichmentPlace(
+                    display_name="Bianchetto",
+                    formatted_address="26-28 Cotham Rd, Kew VIC 3101, Australia",
+                    rating=5.0,
+                    user_rating_count=8,
+                ),
+            )
+        )
+
+    def test_place_page_has_meaningful_enrichment_rejects_ui_label_false_positive(self) -> None:
+        self.assertFalse(
+            build_data.place_page_has_meaningful_enrichment(
+                SimpleNamespace(limited_view=False),
+                EnrichmentPlace(
+                    display_name=None,
+                    formatted_address="バー · 26-28 Cotham Rd",
+                    primary_type_display_name="バー",
+                ),
+            )
+        )
+
+    def test_should_fallback_to_places_api_for_sparse_search_result(self) -> None:
+        entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Bianchetto, 26-28 Cotham Rd, Kew VIC 3101, Australia",
+            source="google_maps_page",
+            matched=True,
+            score=45,
+            place=EnrichmentPlace(
+                display_name="Bianchetto",
+                formatted_address="バー · 26-28 Cotham Rd",
+                google_maps_uri=(
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Bianchetto%2C+26-28+Cotham+Rd%2C+Kew+VIC+3101%2C+Australia"
+                ),
+                primary_type_display_name="バー",
+            ),
+        )
+
+        self.assertTrue(build_data.should_fallback_to_places_api(entry))
+
+    def test_should_not_fallback_to_places_api_for_rich_search_result(self) -> None:
+        entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Sister Midnight, 4 Rue Viollet-le-Duc, 75009 Paris, France",
+            source="google_maps_page",
+            matched=True,
+            score=45,
+            place=EnrichmentPlace(
+                display_name="Sister Midnight",
+                formatted_address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+                google_maps_uri=(
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
+                ),
+                rating=4.7,
+                user_rating_count=288,
+                website="https://sistermidnightparis.com/",
+                primary_type_display_name="Cocktail bar",
+            ),
+        )
+
+        self.assertFalse(build_data.should_fallback_to_places_api(entry))
+
     def test_normalize_guide_applies_overrides_and_hides_places_from_counts(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
@@ -1420,6 +1610,107 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(scrape.call_count, 2)
         self.assertEqual(startup_sleep.call_count, 2)
         retry_sleep.assert_called_once_with(10)
+
+    def test_enrich_raw_sources_parallel_writes_cache_incrementally(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(
+                    name="First Place",
+                    address="1 Example St, Tokyo",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+                RawPlace(
+                    name="Second Place",
+                    address="2 Example St, Tokyo",
+                    maps_url="https://maps.google.com/?cid=222",
+                    cid="222",
+                ),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            first_place_id = build_data.stable_place_id(raw.places[0])
+            second_place_id = build_data.stable_place_id(raw.places[1])
+
+            class FakeFuture:
+                def __init__(self, result):
+                    self._result = result
+
+                def result(self):
+                    return self._result()
+
+            first_future = FakeFuture(
+                lambda: EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query="First Place, Tokyo",
+                    matched=True,
+                    place=EnrichmentPlace(display_name="First Place"),
+                )
+            )
+
+            def second_result() -> EnrichmentCacheEntry:
+                cache_text = (cache_dir / "tokyo-japan.json").read_text(encoding="utf-8")
+                self.assertIn(first_place_id, cache_text)
+                self.assertNotIn(second_place_id, cache_text)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:01+00:00",
+                    query="Second Place, Tokyo",
+                    matched=True,
+                    place=EnrichmentPlace(display_name="Second Place"),
+                )
+
+            second_future = FakeFuture(second_result)
+            futures_by_cid = {
+                "111": first_future,
+                "222": second_future,
+            }
+            test_case = self
+
+            class FakeExecutor:
+                def __init__(self, max_workers):
+                    test_case.assertEqual(max_workers, 2)
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+
+                def submit(self, _fn, place_payload, **kwargs):
+                    test_case.assertIsNone(kwargs["api_key"])
+                    test_case.assertEqual(kwargs["refresh_startup_jitter_seconds"], 0)
+                    return futures_by_cid[place_payload["cid"]]
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "ProcessPoolExecutor", FakeExecutor),
+                patch.object(build_data, "as_completed", return_value=[first_future, second_future]),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=True,
+                    refresh_workers=2,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            cache_text = (cache_dir / "tokyo-japan.json").read_text(encoding="utf-8")
+            self.assertIn(first_place_id, cache_text)
+            self.assertIn(second_place_id, cache_text)
+            self.assertIn("First Place", cache_text)
+            self.assertIn("Second Place", cache_text)
 
     def test_refresh_retries_transient_parse_failure(self) -> None:
         source = SourceConfig(
