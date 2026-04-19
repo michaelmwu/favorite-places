@@ -5,6 +5,11 @@ export const siteConfig: SiteConfig = {
   ownerName: "Your Name",
   siteDescription: "City bookmarks organized for trip planning.",
   defaultSeoImage: "/social-card.png",
+  favicon: {
+    href: "/favicon.png",
+    type: "image/png",
+    sizes: "32x32",
+  },
   demFlyersUrl: "https://www.demflyers.com/",
   home: {
     eyebrow: "DEM Flyers",

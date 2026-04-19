@@ -23,6 +23,14 @@ const metaDescription = description ?? siteConfig.siteDescription;
     <meta property="og:description" content={metaDescription} />
     <meta property="og:site_name" content={siteConfig.siteName} />
     {siteConfig.defaultSeoImage && <meta property="og:image" content={siteConfig.defaultSeoImage} />}
+    {siteConfig.favicon && (
+      <link
+        rel="icon"
+        href={siteConfig.favicon.href}
+        type={siteConfig.favicon.type}
+        sizes={siteConfig.favicon.sizes}
+      />
+    )}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
