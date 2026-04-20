@@ -13,8 +13,10 @@ interface Props {
 }
 
 const { guideContext = {}, place } = Astro.props;
-const displayTags = getDisplayGuideTags(getDisplayPlaceTags(place.tags), guideContext);
-const displayVibeTags = getDisplayPlaceTags(place.vibe_tags);
+const placeTags = place.tags ?? [];
+const placeVibeTags = place.vibe_tags ?? [];
+const displayTags = getDisplayGuideTags(getDisplayPlaceTags(placeTags), guideContext);
+const displayVibeTags = getDisplayPlaceTags(placeVibeTags);
 const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
 const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
 const whyRecommendedHtml = renderRichText(place.why_recommended);
@@ -40,8 +42,8 @@ const noteHtml = renderRichText(place.note);
     place.why_recommended ?? "",
     place.primary_category ?? "",
     place.neighborhood ?? "",
-    place.tags.join(" "),
-    place.vibe_tags.join(" "),
+    placeTags.join(" "),
+    placeVibeTags.join(" "),
   ].join(" ").toLowerCase()}
 >
   <div class="place-card-title">

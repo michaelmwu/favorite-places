@@ -4,6 +4,7 @@ import {
   buildAreaFilterStatusMessage,
   buildEmptyStateMessage,
   cardHasTag,
+  cardMatchesType,
   countMatchingCards,
 } from "../../public/scripts/guide-filters.js";
 
@@ -53,6 +54,16 @@ describe("guide filters", () => {
     expect(cardHasTag(card, "bakery")).toBe(true);
     expect(cardHasTag(card, "scenic")).toBe(true);
     expect(cardHasTag(card, "date-night")).toBe(true);
+  });
+
+  it("normalizes multi-word categories before type matching", () => {
+    const card = makeCard({ placeId: "1" });
+    card.dataset.category = "Apartment Building";
+
+    expect(cardMatchesType(card, {
+      activeTypeValue: "apartment-building",
+      activeTypeSeedValues: [],
+    })).toBe(true);
   });
 
   it("builds area-aware status and empty messages when broader matches exist", () => {

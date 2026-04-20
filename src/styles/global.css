@@ -150,12 +150,29 @@ img {
   gap: 0.75rem;
 }
 
+.section-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
 .section-stack,
 .rich-copy,
 .small-copy,
 .meta-copy {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .section-stack {
@@ -171,7 +188,6 @@ img {
 }
 
 .stat-pill,
-.tag-pill,
 .action-pill {
   display: inline-flex;
   align-items: center;
@@ -189,7 +205,19 @@ img {
 }
 
 .tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.3rem;
+  padding: 0.18rem 0.72rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface-strong);
   color: var(--muted);
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.15;
+  text-decoration: none;
 }
 
 .tag-pill-count {
@@ -591,6 +619,10 @@ img {
     box-shadow 160ms ease;
 }
 
+.place-card[hidden] {
+  display: none;
+}
+
 .place-card[data-top-pick="true"] {
   background: #fffafa;
   border-color: rgba(255, 112, 108, 0.4);
@@ -722,12 +754,6 @@ img {
   gap: 0.45rem;
 }
 
-.controls-panel .tag-row {
-  max-height: 13rem;
-  overflow: auto;
-  padding-bottom: 0.15rem;
-}
-
 .control-label {
   font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 0.78rem;
@@ -735,6 +761,28 @@ img {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.control-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.search-hint {
+  color: var(--muted);
+}
+
+.search-shell {
+  position: relative;
+}
+
+.selected-tag-row[hidden],
+.tag-autocomplete[hidden],
+.control-group[hidden] {
+  display: none;
 }
 
 input[type="search"],
@@ -747,6 +795,84 @@ select {
   padding: 0.8rem 0.95rem;
   color: var(--ink);
   font: inherit;
+}
+
+.selected-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.selected-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.1rem;
+  padding: 0.18rem 0.35rem 0.18rem 0.72rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  line-height: 1.15;
+}
+
+.selected-tag-chip-label {
+  font-weight: 700;
+}
+
+.selected-tag-chip-remove {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(196, 49, 45, 0.12);
+  color: var(--accent-strong);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+}
+
+.selected-tag-chip-remove:hover,
+.selected-tag-chip-remove:focus-visible {
+  background: rgba(196, 49, 45, 0.22);
+  outline: none;
+}
+
+.tag-autocomplete {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(39, 47, 56, 0.08);
+}
+
+.tag-autocomplete-option {
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  padding: 0.65rem 0.7rem;
+  text-align: left;
+}
+
+.tag-autocomplete-option[data-active="true"],
+.tag-autocomplete-option:hover,
+.tag-autocomplete-option:focus-visible {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  outline: none;
 }
 
 .empty-state {
