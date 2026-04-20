@@ -1,3 +1,4 @@
+import { parseHomeBrowserHash, serializeHomeBrowserHash } from "./home-browser-state.js";
 import { loadSearchIndex, searchGuides, searchPlaces } from "./place-search.js";
 
 const GROUP_LIMIT = 5;
@@ -23,6 +24,9 @@ if (root) {
   const groupedResultsList = root.querySelector("[data-grouped-search-list]");
   const globalResultsEmpty = root.querySelector("[data-global-search-empty]");
   const searchViewToggles = Array.from(root.querySelectorAll("[data-search-view-toggle]"));
+  const validCountries = countryButtons
+    .map((button) => button.dataset.country || "")
+    .filter((country) => Boolean(country));
 
   let activeCountry = "";
   let locationMatchCountry = "";
@@ -43,6 +47,32 @@ if (root) {
     const button = countryButtons.find((candidate) => (candidate.dataset.country || "") === country);
     const label = button?.querySelector("span")?.textContent || country;
     return label.replace(FLAG_SUFFIX_PATTERN, "").trim();
+  };
+
+  const syncUrlState = () => {
+    const nextHash = serializeHomeBrowserHash({
+      country: activeCountry,
+      query: searchInput?.value || "",
+      view: searchResultView,
+    });
+    if (window.location.hash === nextHash) {
+      return;
+    }
+
+    history.replaceState(history.state, "", `${window.location.pathname}${window.location.search}${nextHash}`);
+  };
+
+  const applyUrlState = () => {
+    const state = parseHomeBrowserHash(window.location.hash, validCountries);
+
+    activeCountry = state.country;
+    searchResultView = state.view;
+    locationMatchCountry = "";
+    setLocationStatus("");
+
+    if (searchInput) {
+      searchInput.value = state.query;
+    }
   };
 
   const guideLocations = (() => {
@@ -401,8 +431,10 @@ if (root) {
   };
 
   const update = () => {
-    const query = (searchInput?.value || "").trim().toLowerCase();
-    const placeSearchState = searchIndex && query ? searchPlaces(query, { index: searchIndex, scope: "all" }) : null;
+    const rawQuery = (searchInput?.value || "").trim();
+    const normalizedQuery = rawQuery.toLowerCase();
+    const placeSearchState =
+      searchIndex && rawQuery ? searchPlaces(rawQuery, { index: searchIndex, scope: "all" }) : null;
     const filteredPlaceResults = placeSearchState
       ? placeSearchState.results.filter(
           (result) => !activeCountry || normalizeCountry(result.entry.country) === activeCountry,
@@ -412,8 +444,8 @@ if (root) {
       ? new Set(filteredPlaceResults.map((result) => result.entry.guide_slug))
       : null;
     const guideMatches =
-      searchIndex && query
-        ? new Set(searchGuides(query, { index: searchIndex }).map((result) => result.guide.slug))
+      searchIndex && rawQuery
+        ? new Set(searchGuides(rawQuery, { index: searchIndex }).map((result) => result.guide.slug))
         : null;
     const matchingGuidesByCountry = new Map();
     const visibleGuideSlugs = [];
@@ -425,13 +457,13 @@ if (root) {
       const country = block.dataset.country || "";
       const cards = Array.from(block.querySelectorAll("[data-guide-card]"));
       const matchingCards = cards.filter((card) => {
-        if (!query) {
+        if (!normalizedQuery) {
           return true;
         }
         const guideSlug = card.dataset.guideSlug || "";
         return (
           placeMatchGuideSlugs?.has(guideSlug) ||
-          (card.dataset.search || "").includes(query) ||
+          (card.dataset.search || "").includes(normalizedQuery) ||
           guideMatches?.has(guideSlug)
         );
       });
@@ -478,8 +510,9 @@ if (root) {
       emptyState.dataset.visible = visibleGuideCount === 0 ? "true" : "false";
     }
 
-    dispatchMapUpdate([...new Set(visibleGuideSlugs)], visibleGuideCount, query);
-    renderGlobalSearch(query, placeSearchState, filteredPlaceResults);
+    dispatchMapUpdate([...new Set(visibleGuideSlugs)], visibleGuideCount, rawQuery);
+    renderGlobalSearch(rawQuery, placeSearchState, filteredPlaceResults);
+    syncUrlState();
   };
 
   const selectCountry = (country, { fromLocation = false, scroll = false } = {}) => {
@@ -528,6 +561,12 @@ if (root) {
     toggle.addEventListener("click", () => {
       setSearchView(toggle.dataset.searchView || "grouped");
     });
+  });
+
+  window.addEventListener("hashchange", () => {
+    applyUrlState();
+    updateSearchViewButtons();
+    update();
   });
 
   if (locationButton) {
@@ -581,6 +620,7 @@ if (root) {
     }
   }
 
+  applyUrlState();
   updateSearchViewButtons();
   update();
 
