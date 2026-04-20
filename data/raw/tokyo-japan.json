@@ -1,13 +1,51 @@
 {
-  "fetched_at": "2026-04-14T08:50:28.590800+00:00",
-  "refresh_after": "2026-04-28T08:50:28.590800+00:00",
-  "source_signature": "4576888f6a193580ec6d91da41f5cd91731589be212bdbf897ce73faec91285f",
+  "fetched_at": "2026-04-20T13:20:28.097012+00:00",
+  "refresh_after": "2026-05-06T04:57:35.097012+00:00",
+  "source_signature": "8b374f38f5952f5f0f206dcb676eb2a2aa34a4ed5fa3a5486425f4f09f00c189",
+  "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18",
+  "configured_source_path": null,
   "source_url": "https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18",
   "list_id": "UGEPbA20Qd-OH4uoWjmDgQ",
   "title": "Tokyo, Japan 🇯🇵",
   "description": "Michael’s Tokyo bookmarks. See https://beacons.ai/demflyers for more.\n\nWanderlog: https://wanderlog.com/view/byplqatuyc/dem-flyers-tokyo-recommendations",
   "places": [
+    {
+      "name": "Torigin Honten",
+      "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−5−7 ニューギンザビル６号館",
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.6712742,
+      "lng": 139.763679,
+      "maps_url": "https://maps.google.com/?cid=6924438246536460181",
+      "cid": "6924438246536460181",
+      "google_id": "/g/1tdbqw0v",
+      "maps_place_token": null
+    },
+    {
+      "name": "Nihonryori Yamazaki",
+      "address": "2 Chome-6-7 Kyobashi, Chuo City, Tokyo 104-0031",
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.6764959,
+      "lng": 139.77142519999998,
+      "maps_url": "https://maps.google.com/?cid=6915154327249119873",
+      "cid": "6915154327249119873",
+      "google_id": "/g/1th23nf6",
+      "maps_place_token": null
+    },
+    {
+      "name": "Kewpie Mayo Terrace Museum",
+      "address": "〒182-0002 Tokyo, Chofu, Sengawacho, 2 Chome−５−7",
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.6613675,
+      "lng": 139.58133949999998,
+      "maps_url": "https://maps.google.com/?cid=6924550209089344145",
+      "cid": "6924550209089344145",
+      "google_id": "/g/11b6llbkhk",
+      "maps_place_token": null
+    },
     {
       "name": "Yakumo Saryō",
       "address": "3 Chome-4-7 Yakumo, Meguro City, Tokyo 152-0023, Japan",
@@ -17,7 +55,8 @@
       "lng": 139.6675385,
       "maps_url": "https://maps.google.com/?cid=6924553706554696757",
       "cid": "6924553706554696757",
-      "google_id": "/g/11b7q55fjw"
+      "google_id": "/g/11b7q55fjw",
+      "maps_place_token": null
     },
     {
       "name": "NÉN TOKYO",
@@ -28,7 +67,8 @@
       "lng": 139.70337809999998,
       "maps_url": "https://maps.google.com/?cid=6924438284137214567",
       "cid": "6924438284137214567",
-      "google_id": "/g/11yfn6y1lw"
+      "google_id": "/g/11yfn6y1lw",
+      "maps_place_token": null
     },
     {
       "name": "MARU",
@@ -39,7 +79,8 @@
       "lng": 139.6988208,
       "maps_url": "https://maps.google.com/?cid=6924437575605096209",
       "cid": "6924437575605096209",
-      "google_id": "/g/1pty5xgj1"
+      "google_id": "/g/1pty5xgj1",
+      "maps_place_token": null
     },
     {
       "name": "Quaro",
@@ -50,7 +91,8 @@
       "lng": 139.708272,
       "maps_url": "https://maps.google.com/?cid=6924440279717478581",
       "cid": "6924440279717478581",
-      "google_id": "/g/11yvbj97cn"
+      "google_id": "/g/11yvbj97cn",
+      "maps_place_token": null
     },
     {
       "name": "Tsukishima Monja Kuuya Shibuya",
@@ -61,7 +103,8 @@
       "lng": 139.7014739,
       "maps_url": "https://maps.google.com/?cid=6924437484155879327",
       "cid": "6924437484155879327",
-      "google_id": "/g/11hdprpcqh"
+      "google_id": "/g/11hdprpcqh",
+      "maps_place_token": null
     },
     {
       "name": "GANSO EBIDASHI MONJANO EBISEN SHIBUYA",
@@ -72,7 +115,8 @@
       "lng": 139.7032908,
       "maps_url": "https://maps.google.com/?cid=6924438025798932869",
       "cid": "6924438025798932869",
-      "google_id": "/g/11vd43t_dc"
+      "google_id": "/g/11vd43t_dc",
+      "maps_place_token": null
     },
     {
       "name": "Matsue Shibuya Scramble Square Store",
@@ -83,7 +127,8 @@
       "lng": 139.7020523,
       "maps_url": "https://maps.google.com/?cid=6924437778661536599",
       "cid": "6924437778661536599",
-      "google_id": "/g/11h7q3pn7p"
+      "google_id": "/g/11h7q3pn7p",
+      "maps_place_token": null
     },
     {
       "name": "Moheji Shibuya Scramble Square",
@@ -94,7 +139,8 @@
       "lng": 139.7022323,
       "maps_url": "https://maps.google.com/?cid=6924438044199040927",
       "cid": "6924438044199040927",
-      "google_id": "/g/11j0pvppyw"
+      "google_id": "/g/11j0pvppyw",
+      "maps_place_token": null
     },
     {
       "name": "Oyster Shack Shimbashi",
@@ -105,7 +151,8 @@
       "lng": 139.7583747,
       "maps_url": "https://maps.google.com/?cid=6924437657044365307",
       "cid": "6924437657044365307",
-      "google_id": "/g/11s7wdwyrb"
+      "google_id": "/g/11s7wdwyrb",
+      "maps_place_token": null
     },
     {
       "name": "Osoba no Kouga",
@@ -116,7 +163,8 @@
       "lng": 139.72276879999998,
       "maps_url": "https://maps.google.com/?cid=6924437786327444989",
       "cid": "6924437786327444989",
-      "google_id": "/g/1tg2dgzq"
+      "google_id": "/g/1tg2dgzq",
+      "maps_place_token": null
     },
     {
       "name": "Kushikatsu Bon Ginza",
@@ -127,7 +175,8 @@
       "lng": 139.7596012,
       "maps_url": "https://maps.google.com/?cid=6924438284938732457",
       "cid": "6924438284938732457",
-      "google_id": "/g/11bbxkwb2_"
+      "google_id": "/g/11bbxkwb2_",
+      "maps_place_token": null
     },
     {
       "name": "Yakumo",
@@ -138,7 +187,8 @@
       "lng": 139.68684589999998,
       "maps_url": "https://maps.google.com/?cid=6924553449319447065",
       "cid": "6924553449319447065",
-      "google_id": "/g/1z44b5xkd"
+      "google_id": "/g/1z44b5xkd",
+      "maps_place_token": null
     },
     {
       "name": "RistoPizza by Napoli sta ca",
@@ -149,7 +199,8 @@
       "lng": 139.7403807,
       "maps_url": "https://maps.google.com/?cid=6924437475692541043",
       "cid": "6924437475692541043",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Trattoria L'insieme",
@@ -160,7 +211,8 @@
       "lng": 139.78361089999999,
       "maps_url": "https://maps.google.com/?cid=6924435392596317521",
       "cid": "6924435392596317521",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushi Muto",
@@ -171,7 +223,8 @@
       "lng": 139.7746068,
       "maps_url": "https://maps.google.com/?cid=6924435399802894503",
       "cid": "6924435399802894503",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushi Azabujuban Hatano Yoshiki",
@@ -182,7 +235,8 @@
       "lng": 139.7347168,
       "maps_url": "https://maps.google.com/?cid=6924438063171275821",
       "cid": "6924438063171275821",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Tomidokoro",
@@ -193,7 +247,8 @@
       "lng": 139.7540636,
       "maps_url": "https://maps.google.com/?cid=6924437271696398267",
       "cid": "6924437271696398267",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushisho Masa",
@@ -204,7 +259,8 @@
       "lng": 139.723112,
       "maps_url": "https://maps.google.com/?cid=6924437740415815817",
       "cid": "6924437740415815817",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushi Ya",
@@ -215,7 +271,8 @@
       "lng": 139.7614256,
       "maps_url": "https://maps.google.com/?cid=6924438285695582209",
       "cid": "6924438285695582209",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushi Taira",
@@ -226,7 +283,8 @@
       "lng": 139.7247061,
       "maps_url": "https://maps.google.com/?cid=6924437329036792287",
       "cid": "6924437329036792287",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Aoyama sushi Umi",
@@ -237,7 +295,8 @@
       "lng": 139.7179121,
       "maps_url": "https://maps.google.com/?cid=6924439036965005939",
       "cid": "6924439036965005939",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushi Hōseki, Bvlgari Hotel Tokyo",
@@ -248,18 +307,8 @@
       "lng": 139.7689311,
       "maps_url": "https://maps.google.com/?cid=6924438199655968139",
       "cid": "6924438199655968139",
-      "google_id": null
-    },
-    {
-      "name": "BEMO Café",
-      "address": "105, Taipei City, Songshan District, Alley 3, Lane 346, Section 2, Bade Rd, 4號1F",
-      "note": null,
-      "is_favorite": false,
-      "lat": 25.0474672,
-      "lng": 121.5452914,
-      "maps_url": "https://maps.google.com/?cid=3765761341221826207",
-      "cid": "3765761341221826207",
-      "google_id": "/g/11wvc3tr7s"
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "HIGASHIYA GINZA",
@@ -270,7 +319,8 @@
       "lng": 139.76794999999998,
       "maps_url": "https://maps.google.com/?cid=6924438236502276659",
       "cid": "6924438236502276659",
-      "google_id": "/g/120_rv25"
+      "google_id": "/g/120_rv25",
+      "maps_place_token": null
     },
     {
       "name": "Kojimachi Nihee",
@@ -281,7 +331,8 @@
       "lng": 139.7391559,
       "maps_url": "https://maps.google.com/?cid=6924439459368339141",
       "cid": "6924439459368339141",
-      "google_id": "/g/11m5vh_l_f"
+      "google_id": "/g/11m5vh_l_f",
+      "maps_place_token": null
     },
     {
       "name": "Yakinikuya Tecchan",
@@ -292,7 +343,8 @@
       "lng": 139.6858292,
       "maps_url": "https://maps.google.com/?cid=6924554245568067605",
       "cid": "6924554245568067605",
-      "google_id": "/g/11jz1rvzkn"
+      "google_id": "/g/11jz1rvzkn",
+      "maps_place_token": null
     },
     {
       "name": "fileja",
@@ -303,7 +355,8 @@
       "lng": 139.7743502,
       "maps_url": "https://maps.google.com/?cid=6924442060206694923",
       "cid": "6924442060206694923",
-      "google_id": "/g/11s179w0cv"
+      "google_id": "/g/11s179w0cv",
+      "maps_place_token": null
     },
     {
       "name": "Sushi Keita",
@@ -314,7 +367,8 @@
       "lng": 139.77366179999999,
       "maps_url": "https://maps.google.com/?cid=6924435481357576535",
       "cid": "6924435481357576535",
-      "google_id": "/g/11f11fzvhl"
+      "google_id": "/g/11f11fzvhl",
+      "maps_place_token": null
     },
     {
       "name": "Vowz Bar",
@@ -325,7 +379,8 @@
       "lng": 139.7225642,
       "maps_url": "https://maps.google.com/?cid=6924439399763544265",
       "cid": "6924439399763544265",
-      "google_id": "/g/1thq58ss"
+      "google_id": "/g/1thq58ss",
+      "maps_place_token": null
     },
     {
       "name": "Takumi Sushi Owana",
@@ -336,7 +391,8 @@
       "lng": 139.7104181,
       "maps_url": "https://maps.google.com/?cid=6924437533850424661",
       "cid": "6924437533850424661",
-      "google_id": "/g/11g9jn9l6y"
+      "google_id": "/g/11g9jn9l6y",
+      "maps_place_token": null
     },
     {
       "name": "Kien",
@@ -347,7 +403,8 @@
       "lng": 139.7398426,
       "maps_url": "https://maps.google.com/?cid=6924437833321154069",
       "cid": "6924437833321154069",
-      "google_id": "/g/1tqnlm8b"
+      "google_id": "/g/1tqnlm8b",
+      "maps_place_token": null
     },
     {
       "name": "Kankoku Shokudo Iru Zaka Agaru",
@@ -358,7 +415,8 @@
       "lng": 139.7104905,
       "maps_url": "https://maps.google.com/?cid=6924437259659653635",
       "cid": "6924437259659653635",
-      "google_id": "/g/11h37wsysl"
+      "google_id": "/g/11h37wsysl",
+      "maps_place_token": null
     },
     {
       "name": "Tokimeki",
@@ -369,7 +427,8 @@
       "lng": 139.649984,
       "maps_url": "https://maps.google.com/?cid=6924551646633040173",
       "cid": "6924551646633040173",
-      "google_id": "/g/11v3tn82_8"
+      "google_id": "/g/11v3tn82_8",
+      "maps_place_token": null
     },
     {
       "name": "New Korean HASUO",
@@ -380,7 +439,8 @@
       "lng": 139.721027,
       "maps_url": "https://maps.google.com/?cid=6924437721643136945",
       "cid": "6924437721643136945",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Chungsol",
@@ -391,7 +451,8 @@
       "lng": 139.7384373,
       "maps_url": "https://maps.google.com/?cid=6924437838586952545",
       "cid": "6924437838586952545",
-      "google_id": "/g/1tn016m8"
+      "google_id": "/g/1tn016m8",
+      "maps_place_token": null
     },
     {
       "name": "Jinkoge",
@@ -402,7 +463,8 @@
       "lng": 139.7046928,
       "maps_url": "https://maps.google.com/?cid=6924439658610789903",
       "cid": "6924439658610789903",
-      "google_id": "/g/11p_17d_q0"
+      "google_id": "/g/11p_17d_q0",
+      "maps_place_token": null
     },
     {
       "name": "solfa",
@@ -413,7 +475,8 @@
       "lng": 139.6981379,
       "maps_url": "https://maps.google.com/?cid=6924437598351221319",
       "cid": "6924437598351221319",
-      "google_id": "/g/11b6_hbs8x"
+      "google_id": "/g/11b6_hbs8x",
+      "maps_place_token": null
     },
     {
       "name": "Hone",
@@ -424,7 +487,8 @@
       "lng": 139.6942459,
       "maps_url": "https://maps.google.com/?cid=6924440061049404677",
       "cid": "6924440061049404677",
-      "google_id": "/g/11s1qq_s8p"
+      "google_id": "/g/11s1qq_s8p",
+      "maps_place_token": null
     },
     {
       "name": "Thai Gohan Senshu Yatai",
@@ -435,7 +499,8 @@
       "lng": 139.7514253,
       "maps_url": "https://maps.google.com/?cid=6924438232766979607",
       "cid": "6924438232766979607",
-      "google_id": "/g/11f0_g8bl1"
+      "google_id": "/g/11f0_g8bl1",
+      "maps_place_token": null
     },
     {
       "name": "Tachigui Sushi Tonari",
@@ -446,7 +511,8 @@
       "lng": 139.7347368,
       "maps_url": "https://maps.google.com/?cid=6924437390387306805",
       "cid": "6924437390387306805",
-      "google_id": "/g/11smk5nkk9"
+      "google_id": "/g/11smk5nkk9",
+      "maps_place_token": null
     },
     {
       "name": "Sushi Meino",
@@ -457,7 +523,8 @@
       "lng": 139.7343922,
       "maps_url": "https://maps.google.com/?cid=6924437260767358215",
       "cid": "6924437260767358215",
-      "google_id": "/g/11y2dxh6m7"
+      "google_id": "/g/11y2dxh6m7",
+      "maps_place_token": null
     },
     {
       "name": "Sushi Take",
@@ -468,7 +535,8 @@
       "lng": 139.7619463,
       "maps_url": "https://maps.google.com/?cid=6924438258772251241",
       "cid": "6924438258772251241",
-      "google_id": "/g/11bbw_y93b"
+      "google_id": "/g/11bbw_y93b",
+      "maps_place_token": null
     },
     {
       "name": "Sushidan",
@@ -479,7 +547,8 @@
       "lng": 139.72190469999998,
       "maps_url": "https://maps.google.com/?cid=6924437429805350437",
       "cid": "6924437429805350437",
-      "google_id": "/g/11ny1m7gxj"
+      "google_id": "/g/11ny1m7gxj",
+      "maps_place_token": null
     },
     {
       "name": "Bánh Mi Sandwich Tokyo",
@@ -490,7 +559,8 @@
       "lng": 139.7556301,
       "maps_url": "https://maps.google.com/?cid=6924439731824836803",
       "cid": "6924439731824836803",
-      "google_id": "/g/11g4jh7wrn"
+      "google_id": "/g/11g4jh7wrn",
+      "maps_place_token": null
     },
     {
       "name": "Banh Mi Sandwich",
@@ -501,7 +571,8 @@
       "lng": 139.7562785,
       "maps_url": "https://maps.google.com/?cid=6924440460347132745",
       "cid": "6924440460347132745",
-      "google_id": "/g/11txvnzkxt"
+      "google_id": "/g/11txvnzkxt",
+      "maps_place_token": null
     },
     {
       "name": "Craft Burger & Grill JIRO",
@@ -512,7 +583,8 @@
       "lng": 139.78560769999999,
       "maps_url": "https://maps.google.com/?cid=6924442103746244083",
       "cid": "6924442103746244083",
-      "google_id": "/g/11hdvv6wqn"
+      "google_id": "/g/11hdvv6wqn",
+      "maps_place_token": null
     },
     {
       "name": "Yakitori Toriyoshi Nakameguro",
@@ -523,7 +595,8 @@
       "lng": 139.6990932,
       "maps_url": "https://maps.google.com/?cid=6924437569752984353",
       "cid": "6924437569752984353",
-      "google_id": "/g/1thx8l_j"
+      "google_id": "/g/1thx8l_j",
+      "maps_place_token": null
     },
     {
       "name": "Yakitori Toriyoshi Nishiazabu",
@@ -534,7 +607,8 @@
       "lng": 139.7233779,
       "maps_url": "https://maps.google.com/?cid=6924437741373055243",
       "cid": "6924437741373055243",
-      "google_id": "/g/1vr1wmbh"
+      "google_id": "/g/1vr1wmbh",
+      "maps_place_token": null
     },
     {
       "name": "Hinotori",
@@ -545,7 +619,8 @@
       "lng": 139.6955837,
       "maps_url": "https://maps.google.com/?cid=6924439638906931277",
       "cid": "6924439638906931277",
-      "google_id": "/g/11c0rny309"
+      "google_id": "/g/11c0rny309",
+      "maps_place_token": null
     },
     {
       "name": "TOLO PAN TOKYO",
@@ -556,7 +631,8 @@
       "lng": 139.6855138,
       "maps_url": "https://maps.google.com/?cid=6924553435328612483",
       "cid": "6924553435328612483",
-      "google_id": "/g/1td4k4lk"
+      "google_id": "/g/1td4k4lk",
+      "maps_place_token": null
     },
     {
       "name": "Joto Curry",
@@ -567,7 +643,8 @@
       "lng": 139.70380079999998,
       "maps_url": "https://maps.google.com/?cid=6924437644095436227",
       "cid": "6924437644095436227",
-      "google_id": "/g/1yg5789sl"
+      "google_id": "/g/1yg5789sl",
+      "maps_place_token": null
     },
     {
       "name": "Philly Tokyo",
@@ -578,7 +655,8 @@
       "lng": 139.7715378,
       "maps_url": "https://maps.google.com/?cid=6924438346173325907",
       "cid": "6924438346173325907",
-      "google_id": "/g/1tdbwrcv"
+      "google_id": "/g/1tdbwrcv",
+      "maps_place_token": null
     },
     {
       "name": "Hot Sauce Bar Tokyo",
@@ -589,7 +667,8 @@
       "lng": 139.7073225,
       "maps_url": "https://maps.google.com/?cid=6924439858657200133",
       "cid": "6924439858657200133",
-      "google_id": "/g/11wppfg7qb"
+      "google_id": "/g/11wppfg7qb",
+      "maps_place_token": null
     },
     {
       "name": "Mizunara: In Tokyo",
@@ -600,7 +679,8 @@
       "lng": 139.74084349999998,
       "maps_url": "https://maps.google.com/?cid=6924440101817120157",
       "cid": "6924440101817120157",
-      "google_id": "/g/11vzdjt1qk"
+      "google_id": "/g/11vzdjt1qk",
+      "maps_place_token": null
     },
     {
       "name": "金陵一絶 王氏湯包",
@@ -611,7 +691,8 @@
       "lng": 139.7100605,
       "maps_url": "https://maps.google.com/?cid=6924545101123869109",
       "cid": "6924545101123869109",
-      "google_id": "/g/11j38477md"
+      "google_id": "/g/11j38477md",
+      "maps_place_token": null
     },
     {
       "name": "Miyashita Cafe",
@@ -622,7 +703,8 @@
       "lng": 139.70172,
       "maps_url": "https://maps.google.com/?cid=6924360950884350273",
       "cid": "6924360950884350273",
-      "google_id": "/g/11hf8qp_fn"
+      "google_id": "/g/11hf8qp_fn",
+      "maps_place_token": null
     },
     {
       "name": "ASAKUSA BAR SMOKED KOTOBUKI",
@@ -633,7 +715,8 @@
       "lng": 139.7923203,
       "maps_url": "https://maps.google.com/?cid=6924442365236510981",
       "cid": "6924442365236510981",
-      "google_id": "/g/11fjz_wlcn"
+      "google_id": "/g/11fjz_wlcn",
+      "maps_place_token": null
     },
     {
       "name": "Pizzeria Parentesi",
@@ -644,7 +727,8 @@
       "lng": 139.687245,
       "maps_url": "https://maps.google.com/?cid=6924553446832663393",
       "cid": "6924553446832663393",
-      "google_id": "/g/1tgfwnzw"
+      "google_id": "/g/1tgfwnzw",
+      "maps_place_token": null
     },
     {
       "name": "PST Higashi Azabu (Pizza Studio Tamaki Higashi Azabu)",
@@ -655,18 +739,20 @@
       "lng": 139.7443631,
       "maps_url": "https://maps.google.com/?cid=6924438070696235229",
       "cid": "6924438070696235229",
-      "google_id": "/g/11c2y937d0"
+      "google_id": "/g/11c2y937d0",
+      "maps_place_token": null
     },
     {
-      "name": "Cignale Enoteca, 1 Chome-5-11 Komaba, Meguro City, Tokyo 153-0041",
+      "name": "Cignale Enoteca",
       "address": "1 Chome-5-11 Komaba, Meguro City, Tokyo 153-0041",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.655665299999995,
       "lng": 139.6891824,
       "maps_url": "https://maps.google.com/?cid=6924552482495954607",
       "cid": "6924552482495954607",
-      "google_id": "/g/11bx8kqpt8"
+      "google_id": "/g/11bx8kqpt8",
+      "maps_place_token": null
     },
     {
       "name": "Sushi Gotoku",
@@ -677,7 +763,8 @@
       "lng": 139.6940862,
       "maps_url": "https://maps.google.com/?cid=6924439104579039345",
       "cid": "6924439104579039345",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "AOYAMA ASADA",
@@ -688,7 +775,8 @@
       "lng": 139.7179424,
       "maps_url": "https://maps.google.com/?cid=6924439028913778527",
       "cid": "6924439028913778527",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Mama",
@@ -699,7 +787,8 @@
       "lng": 139.71514109999998,
       "maps_url": "https://maps.google.com/?cid=6924437698409223509",
       "cid": "6924437698409223509",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Imakoko",
@@ -710,7 +799,8 @@
       "lng": 139.6934755,
       "maps_url": "https://maps.google.com/?cid=6924437626257392907",
       "cid": "6924437626257392907",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "No Code",
@@ -721,18 +811,20 @@
       "lng": 139.7205043,
       "maps_url": "https://maps.google.com/?cid=6924437453624729267",
       "cid": "6924437453624729267",
-      "google_id": "/g/11t49_3mbn"
+      "google_id": "/g/11t49_3mbn",
+      "maps_place_token": null
     },
     {
       "name": "Marcy Land Omotesando〜😃表参道初上陸・マーシーのラーメン屋台〜",
       "address": "〒107-0061 Tokyo, Minato City, Kita-Aoyama, 3 Chome−5−44 H・T青山ビル 1F 屋台",
       "note": null,
       "is_favorite": false,
-      "lat": 35.6669154,
-      "lng": 139.7120353,
+      "lat": 35.666917999999995,
+      "lng": 139.7120376,
       "maps_url": "https://maps.google.com/?cid=6924439676310613723",
       "cid": "6924439676310613723",
-      "google_id": "/g/11q21hjdkh"
+      "google_id": "/g/11q21hjdkh",
+      "maps_place_token": null
     },
     {
       "name": "ピッツェリア トラットリア ダ オカピート",
@@ -743,7 +835,8 @@
       "lng": 139.6187306,
       "maps_url": "https://maps.google.com/?cid=6924545410373580981",
       "cid": "6924545410373580981",
-      "google_id": "/g/11r0wq_nwz"
+      "google_id": "/g/11r0wq_nwz",
+      "maps_place_token": null
     },
     {
       "name": "Pizzeria Ciro",
@@ -754,7 +847,8 @@
       "lng": 139.6826437,
       "maps_url": "https://maps.google.com/?cid=6924551368876615395",
       "cid": "6924551368876615395",
-      "google_id": "/g/1v6wpc6b"
+      "google_id": "/g/1v6wpc6b",
+      "maps_place_token": null
     },
     {
       "name": "Massimotavio",
@@ -765,7 +859,8 @@
       "lng": 139.6427919,
       "maps_url": "https://maps.google.com/?cid=6924550868816489487",
       "cid": "6924550868816489487",
-      "google_id": "/g/1w04k42n"
+      "google_id": "/g/1w04k42n",
+      "maps_place_token": null
     },
     {
       "name": "400℃ Pizza Tokyo",
@@ -776,7 +871,8 @@
       "lng": 139.7393865,
       "maps_url": "https://maps.google.com/?cid=6924439458827835439",
       "cid": "6924439458827835439",
-      "google_id": "/g/11vt52fy76"
+      "google_id": "/g/11vt52fy76",
+      "maps_place_token": null
     },
     {
       "name": "Okajoki",
@@ -787,7 +883,8 @@
       "lng": 139.6660992,
       "maps_url": "https://maps.google.com/?cid=6924551156748094883",
       "cid": "6924551156748094883",
-      "google_id": "/g/1v83144c"
+      "google_id": "/g/1v83144c",
+      "maps_place_token": null
     },
     {
       "name": "Ramen Oyster And Shell",
@@ -798,7 +895,8 @@
       "lng": 139.77119159999998,
       "maps_url": "https://maps.google.com/?cid=6924437833688832783",
       "cid": "6924437833688832783",
-      "google_id": "/g/11v67tvz4h"
+      "google_id": "/g/11v67tvz4h",
+      "maps_place_token": null
     },
     {
       "name": "Ukiyo",
@@ -809,7 +907,8 @@
       "lng": 139.6803813,
       "maps_url": "https://maps.google.com/?cid=6924552447345323421",
       "cid": "6924552447345323421",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Hitsumabushi Bincho",
@@ -820,7 +919,8 @@
       "lng": 139.7653544,
       "maps_url": "https://maps.google.com/?cid=6924438242737147845",
       "cid": "6924438242737147845",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Qwang",
@@ -831,18 +931,20 @@
       "lng": 139.72644409999998,
       "maps_url": "https://maps.google.com/?cid=6924437743158945629",
       "cid": "6924437743158945629",
-      "google_id": "/g/1tnbl3j3"
+      "google_id": "/g/1tnbl3j3",
+      "maps_place_token": null
     },
     {
-      "name": "〒166-0004 Tokyo, Suginami City, Asagayaminami, 2 Chome−18−1 サンフラワー １ 階 １０１ 台湾小菜スタンド《珍珠しんじゅbyジェニー》",
+      "name": "台湾小菜スタンド《珍珠しんじゅbyジェニー》",
       "address": "〒166-0004 Tokyo, Suginami City, Asagayaminami, 2 Chome−18−1 サンフラワー １ 階 １０１",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.70448,
       "lng": 139.6378384,
       "maps_url": "https://maps.google.com/?cid=6924551886149977023",
       "cid": "6924551886149977023",
-      "google_id": "/g/11tn8jpxp7"
+      "google_id": "/g/11tn8jpxp7",
+      "maps_place_token": null
     },
     {
       "name": "GOOD MUSIC BAR",
@@ -853,7 +955,8 @@
       "lng": 139.71051409999998,
       "maps_url": "https://maps.google.com/?cid=6924439753936156477",
       "cid": "6924439753936156477",
-      "google_id": "/g/11vljm6cg0"
+      "google_id": "/g/11vljm6cg0",
+      "maps_place_token": null
     },
     {
       "name": "Stage",
@@ -864,7 +967,8 @@
       "lng": 139.7906449,
       "maps_url": "https://maps.google.com/?cid=6924442302797671961",
       "cid": "6924442302797671961",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "INC cocktails",
@@ -875,7 +979,8 @@
       "lng": 139.7060282,
       "maps_url": "https://maps.google.com/?cid=6924437561844857981",
       "cid": "6924437561844857981",
-      "google_id": "/g/11gwj945t1"
+      "google_id": "/g/11gwj945t1",
+      "maps_place_token": null
     },
     {
       "name": "Tofu Cuisine Sorano Shibuya",
@@ -886,7 +991,8 @@
       "lng": 139.7038608,
       "maps_url": "https://maps.google.com/?cid=6924437653039264913",
       "cid": "6924437653039264913",
-      "google_id": "/g/11b76lwjfv"
+      "google_id": "/g/11b76lwjfv",
+      "maps_place_token": null
     },
     {
       "name": "Ten",
@@ -897,7 +1003,8 @@
       "lng": 139.7032573,
       "maps_url": "https://maps.google.com/?cid=6924438186569777033",
       "cid": "6924438186569777033",
-      "google_id": "/g/11gmsk1q30"
+      "google_id": "/g/11gmsk1q30",
+      "maps_place_token": null
     },
     {
       "name": "Sumibi Kappō Shirosaka",
@@ -908,7 +1015,8 @@
       "lng": 139.73557169999998,
       "maps_url": "https://maps.google.com/?cid=6924437813637026895",
       "cid": "6924437813637026895",
-      "google_id": "/g/11b6ml3msl"
+      "google_id": "/g/11b6ml3msl",
+      "maps_place_token": null
     },
     {
       "name": "Bar Starman",
@@ -919,7 +1027,8 @@
       "lng": 139.7343419,
       "maps_url": "https://maps.google.com/?cid=6924438076647566505",
       "cid": "6924438076647566505",
-      "google_id": "/g/11gxs5kpwp"
+      "google_id": "/g/11gxs5kpwp",
+      "maps_place_token": null
     },
     {
       "name": "ST LOUIS BAR by KEI",
@@ -930,7 +1039,8 @@
       "lng": 139.76237989999998,
       "maps_url": "https://maps.google.com/?cid=6924437410395335991",
       "cid": "6924437410395335991",
-      "google_id": "/g/11vwl550dn"
+      "google_id": "/g/11vwl550dn",
+      "maps_place_token": null
     },
     {
       "name": "Punch Room Tokyo",
@@ -941,7 +1051,8 @@
       "lng": 139.7675633,
       "maps_url": "https://maps.google.com/?cid=6924437259450877643",
       "cid": "6924437259450877643",
-      "google_id": "/g/11y3bvzpq2"
+      "google_id": "/g/11y3bvzpq2",
+      "maps_place_token": null
     },
     {
       "name": "Kiwamiya",
@@ -952,7 +1063,8 @@
       "lng": 139.6988646,
       "maps_url": "https://maps.google.com/?cid=6924440411091144559",
       "cid": "6924440411091144559",
-      "google_id": "/g/11h89h50k8"
+      "google_id": "/g/11h89h50k8",
+      "maps_place_token": null
     },
     {
       "name": "Sake Fun Zokkon",
@@ -963,7 +1075,8 @@
       "lng": 139.6958027,
       "maps_url": "https://maps.google.com/?cid=6924439097780603695",
       "cid": "6924439097780603695",
-      "google_id": "/g/11b7hqvtgy"
+      "google_id": "/g/11b7hqvtgy",
+      "maps_place_token": null
     },
     {
       "name": "LIQUID FACTORY",
@@ -974,7 +1087,8 @@
       "lng": 139.695448,
       "maps_url": "https://maps.google.com/?cid=6924439856017309565",
       "cid": "6924439856017309565",
-      "google_id": "/g/11h_4jn1tn"
+      "google_id": "/g/11h_4jn1tn",
+      "maps_place_token": null
     },
     {
       "name": "山形蕎麦茶寮 月の山",
@@ -985,7 +1099,8 @@
       "lng": 139.7004182,
       "maps_url": "https://maps.google.com/?cid=6924439220219742313",
       "cid": "6924439220219742313",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Bli Made",
@@ -996,7 +1111,8 @@
       "lng": 139.7153688,
       "maps_url": "https://maps.google.com/?cid=6924439040399855105",
       "cid": "6924439040399855105",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "WALL Aoyama",
@@ -1007,7 +1123,8 @@
       "lng": 139.71401799999998,
       "maps_url": "https://maps.google.com/?cid=6924437675313281647",
       "cid": "6924437675313281647",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "niko and ... TOKYO",
@@ -1018,7 +1135,8 @@
       "lng": 139.7044202,
       "maps_url": "https://maps.google.com/?cid=6924439074319564801",
       "cid": "6924439074319564801",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "PST Roppongi (Pizza Studio Tamaki Roppongi)",
@@ -1029,18 +1147,20 @@
       "lng": 139.72833989999998,
       "maps_url": "https://maps.google.com/?cid=6924437624705726571",
       "cid": "6924437624705726571",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "natuRe tokyo, 5-1 Kasumigaokamachi, Shinjuku City, Tokyo 160-0013",
+      "name": "natuRe tokyo",
       "address": "5-1 Kasumigaokamachi, Shinjuku City, Tokyo 160-0013",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.675269199999995,
       "lng": 139.7144346,
       "maps_url": "https://maps.google.com/?cid=6924439458894554499",
       "cid": "6924439458894554499",
-      "google_id": "/g/11vs97d0hk"
+      "google_id": "/g/11vs97d0hk",
+      "maps_place_token": null
     },
     {
       "name": "Pizza Strada",
@@ -1051,7 +1171,8 @@
       "lng": 139.7345713,
       "maps_url": "https://maps.google.com/?cid=6924437953599216243",
       "cid": "6924437953599216243",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Pizzeria e Braceria L'INSIEME",
@@ -1062,40 +1183,44 @@
       "lng": 139.82567799999998,
       "maps_url": "https://maps.google.com/?cid=6924434798516414991",
       "cid": "6924434798516414991",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Trattoria Niwa, 表参道LAB 1F 3 Chome-5-43 Kita-Aoyama, Minato City, Tokyo 107-0061",
+      "name": "Trattoria Niwa",
       "address": "〒107-0061 Tokyo, Minato City, Kita-Aoyama, 3 Chome−5−43 表参道LAB 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.667049399999996,
       "lng": 139.7118686,
       "maps_url": "https://maps.google.com/?cid=6924439896456533599",
       "cid": "6924439896456533599",
-      "google_id": "/g/11ny4b6bys"
+      "google_id": "/g/11ny4b6bys",
+      "maps_place_token": null
     },
     {
-      "name": "THE CARNE tokyo, 3 Chome-1-34 Minamiaoyama, Minato City, Tokyo 107-0062",
+      "name": "THE CARNE tokyo",
       "address": "3 Chome-1-34 Minamiaoyama, Minato City, Tokyo 107-0062",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.668459999999996,
       "lng": 139.71598799999998,
       "maps_url": "https://maps.google.com/?cid=6924439502703434203",
       "cid": "6924439502703434203",
-      "google_id": "/g/11l68w7d8j"
+      "google_id": "/g/11l68w7d8j",
+      "maps_place_token": null
     },
     {
-      "name": "Gantetsu Ramen, 1 Chome-10-4 Nishiwaseda, Shinjuku City, Tokyo 169-0051",
+      "name": "Gantetsu Ramen",
       "address": "1 Chome-10-4 Nishiwaseda, Shinjuku City, Tokyo 169-0051",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7111393,
       "lng": 139.7218638,
       "maps_url": "https://maps.google.com/?cid=6924439478847764493",
       "cid": "6924439478847764493",
-      "google_id": "/g/11b7f2vzrn"
+      "google_id": "/g/11b7f2vzrn",
+      "maps_place_token": null
     },
     {
       "name": "Pho Trung Ikebukuro Vietnamese Dining",
@@ -1106,7 +1231,8 @@
       "lng": 139.7071392,
       "maps_url": "https://maps.google.com/?cid=6924439853658705285",
       "cid": "6924439853658705285",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Viet Nhat",
@@ -1117,7 +1243,8 @@
       "lng": 139.712109,
       "maps_url": "https://maps.google.com/?cid=6924440464239380329",
       "cid": "6924440464239380329",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Stand Banh Mi",
@@ -1128,7 +1255,8 @@
       "lng": 139.68776409999998,
       "maps_url": "https://maps.google.com/?cid=6924554827820222897",
       "cid": "6924554827820222897",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Banh Xeo Saigon Ebisu",
@@ -1139,7 +1267,8 @@
       "lng": 139.752049,
       "maps_url": "https://maps.google.com/?cid=6924437584028532987",
       "cid": "6924437584028532987",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Bánh mì Bà Ba Nakameguro",
@@ -1150,7 +1279,8 @@
       "lng": 139.69877119999998,
       "maps_url": "https://maps.google.com/?cid=6924437753117816723",
       "cid": "6924437753117816723",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Bánh mì Bà Ba Shimokitazawa",
@@ -1161,7 +1291,8 @@
       "lng": 139.66573169999998,
       "maps_url": "https://maps.google.com/?cid=6924552069565231169",
       "cid": "6924552069565231169",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "333 Vietnamese Restaurant",
@@ -1172,7 +1303,8 @@
       "lng": 139.7776886,
       "maps_url": "https://maps.google.com/?cid=6924435135869723097",
       "cid": "6924435135869723097",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Bia Hoi Chop",
@@ -1183,7 +1315,8 @@
       "lng": 139.66667379999998,
       "maps_url": "https://maps.google.com/?cid=6924551158493079903",
       "cid": "6924551158493079903",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "PHC' DRAGON",
@@ -1194,7 +1327,8 @@
       "lng": 139.72417819999998,
       "maps_url": "https://maps.google.com/?cid=6924437785483595527",
       "cid": "6924437785483595527",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Pho Thin Tokyo",
@@ -1205,7 +1339,8 @@
       "lng": 139.6984266,
       "maps_url": "https://maps.google.com/?cid=6924439848932872253",
       "cid": "6924439848932872253",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Maru Cafe",
@@ -1216,7 +1351,8 @@
       "lng": 139.6863712,
       "maps_url": "https://maps.google.com/?cid=6924551823902498089",
       "cid": "6924551823902498089",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Thi-Thi",
@@ -1227,51 +1363,56 @@
       "lng": 139.720136,
       "maps_url": "https://maps.google.com/?cid=6924390367338672303",
       "cid": "6924390367338672303",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Spring Valley Brewery Tokyo, ログロード代官山 内 13-1 Daikanyamacho, Shibuya City, Tokyo 150-0034",
+      "name": "Spring Valley Brewery Tokyo",
       "address": "〒150-0034 Tokyo, Shibuya City, Daikanyamacho, 13−1 ログロード代官山 内",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6498747,
       "lng": 139.7047505,
       "maps_url": "https://maps.google.com/?cid=6924437555384450067",
       "cid": "6924437555384450067",
-      "google_id": "/g/11bv3mqcys"
+      "google_id": "/g/11bv3mqcys",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0013 Tokyo, Shibuya City, Ebisu, 1 Chome−6−6 JAPANESE ICE OUCA ジャパニーズアイス櫻花",
+      "name": "JAPANESE ICE OUCA ジャパニーズアイス櫻花",
       "address": "1 Chome-6-6 Ebisu, Shibuya City, Tokyo 150-0013",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.647701999999995,
       "lng": 139.710861,
       "maps_url": "https://maps.google.com/?cid=6924437534838005829",
       "cid": "6924437534838005829",
-      "google_id": "/g/1th23swk"
+      "google_id": "/g/1th23swk",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 4 Chome−11−14 地階A フレッグ西麻布ヴェルジュ Usukifugu Yamadaya",
+      "name": "Usukifugu Yamadaya",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 4 Chome−11−14 地階A フレッグ西麻布ヴェルジュ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6583544,
       "lng": 139.72267779999999,
       "maps_url": "https://maps.google.com/?cid=6924437740610772949",
       "cid": "6924437740610772949",
-      "google_id": "/g/1tfshd0q"
+      "google_id": "/g/1tfshd0q",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0001 Tokyo, Shibuya City, Jingumae, 3 Chome−41−2 岡本ビル ２階 嘉麟香",
+      "name": "嘉麟香",
       "address": "〒150-0001 Tokyo, Shibuya City, Jingumae, 3 Chome−41−2 岡本ビル ２階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671048899999995,
       "lng": 139.71362929999998,
       "maps_url": "https://maps.google.com/?cid=6924439015373741503",
       "cid": "6924439015373741503",
-      "google_id": "/g/11h3kcx70g"
+      "google_id": "/g/11h3kcx70g",
+      "maps_place_token": null
     },
     {
       "name": "LATURE",
@@ -1282,128 +1423,140 @@
       "lng": 139.708599,
       "maps_url": "https://maps.google.com/?cid=6924437667281645285",
       "cid": "6924437667281645285",
-      "google_id": "/g/1tf8t2jz"
+      "google_id": "/g/1tf8t2jz",
+      "maps_place_token": null
     },
     {
-      "name": "Hashiguchi, 1 Chome-5-20 Motoakasaka, Minato City, Tokyo 107-0051",
+      "name": "Hashiguchi",
       "address": "1 Chome-5-20 Motoakasaka, Minato City, Tokyo 107-0051",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.677616199999996,
-      "lng": 139.73230519999998,
+      "is_favorite": false,
+      "lat": 35.6776194,
+      "lng": 139.7323102,
       "maps_url": "https://maps.google.com/?cid=6924438894868429603",
       "cid": "6924438894868429603",
-      "google_id": "/g/1tfl9n8x"
+      "google_id": "/g/1tfl9n8x",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0011 Tokyo, Shibuya City, Higashi, 3 Chome−25−3, Lions Plaza Ebisu, unknown",
+      "name": "unknown",
       "address": "Lions Plaza Ebisu, 3 Chome-25-3 Higashi, Shibuya City, Tokyo 150-0011",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6485517,
       "lng": 139.7098028,
       "maps_url": "https://maps.google.com/?cid=6924437957584997665",
       "cid": "6924437957584997665",
-      "google_id": "/g/11kpvpb57b"
+      "google_id": "/g/11kpvpb57b",
+      "maps_place_token": null
     },
     {
-      "name": "Singapore Holic Laksa, 2階 37-15 Udagawacho, Shibuya City, Tokyo 150-0042",
+      "name": "Singapore Holic Laksa",
       "address": "〒150-0042 Tokyo, Shibuya City, Udagawacho, 37−15 2階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6625483,
       "lng": 139.6951092,
       "maps_url": "https://maps.google.com/?cid=6924439068068987229",
       "cid": "6924439068068987229",
-      "google_id": "/g/11bx2lk9f_"
+      "google_id": "/g/11bx2lk9f_",
+      "maps_place_token": null
     },
     {
-      "name": "Handmade buckwheat Matsunaga, 2 Chome-19-12 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Handmade buckwheat Matsunaga",
       "address": "2 Chome-19-12 Jingumae, Shibuya City, Tokyo 150-0001",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6734647,
       "lng": 139.71011959999998,
       "maps_url": "https://maps.google.com/?cid=6924439171407900503",
       "cid": "6924439171407900503",
-      "google_id": "/g/1xtf1kjf"
+      "google_id": "/g/1xtf1kjf",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Kuriyagawa, ヒルサイドレジデンス 地下１階 4 Chome-23-10 Ebisu, Shibuya City, Tokyo 150-0013",
+      "name": "Sushi Kuriyagawa",
       "address": "〒150-0013 Tokyo, Shibuya City, Ebisu, 4 Chome−23−10 ヒルサイドレジデンス 地下１階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.644444,
       "lng": 139.7155481,
       "maps_url": "https://maps.google.com/?cid=6924437346841034845",
       "cid": "6924437346841034845",
-      "google_id": "/g/1hc7w633w"
+      "google_id": "/g/1hc7w633w",
+      "maps_place_token": null
     },
     {
-      "name": "翠月 / Mitsuki, 長島第一ビル B1 1 Chome-22-12 Dogenzaka, Shibuya City, Tokyo 150-0043",
+      "name": "翠月 / Mitsuki",
       "address": "〒150-0043 Tokyo, Shibuya City, Dogenzaka, 1 Chome−22−12 長島第一ビル B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6565897,
       "lng": 139.69574649999998,
       "maps_url": "https://maps.google.com/?cid=6924437466634316197",
       "cid": "6924437466634316197",
-      "google_id": "/g/11hzhvm1xf"
+      "google_id": "/g/11hzhvm1xf",
+      "maps_place_token": null
     },
     {
-      "name": "Bistro Tonerico, 2 Chome-7-9 Daizawa, Setagaya City, Tokyo 155-0032",
+      "name": "Bistro Tonerico",
       "address": "2 Chome-7-9 Daizawa, Setagaya City, Tokyo 155-0032",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6585487,
       "lng": 139.67279159999998,
       "maps_url": "https://maps.google.com/?cid=6924551895577356135",
       "cid": "6924551895577356135",
-      "google_id": "/g/11g6qzs69r"
+      "google_id": "/g/11g6qzs69r",
+      "maps_place_token": null
     },
     {
-      "name": "bacon, Tonchang Building, 2F, 1 Chome-17-5 Okubo, Tokyo 169-0072",
+      "name": "bacon",
       "address": "Tonchang Building, 2F, 1 Chome-17-5 Okubo, Tokyo 169-0072",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6985405,
       "lng": 139.7025852,
       "maps_url": "https://maps.google.com/?cid=6924439571763394775",
       "cid": "6924439571763394775",
-      "google_id": "/g/11s7fwd_wk"
+      "google_id": "/g/11s7fwd_wk",
+      "maps_place_token": null
     },
     {
-      "name": "Yakiniku Futago Shinjuku Kabukicho (bbq japanese), 京屋ビル 1 Chome-26-2 Kabukicho, Shinjuku City, Tokyo 160-0021",
+      "name": "Yakiniku Futago Shinjuku Kabukicho (bbq japanese)",
       "address": "〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome−26−2 京屋ビル",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6948593,
       "lng": 139.7004665,
       "maps_url": "https://maps.google.com/?cid=6924439811774894905",
       "cid": "6924439811774894905",
-      "google_id": "/g/11rmrzbx7c"
+      "google_id": "/g/11rmrzbx7c",
+      "maps_place_token": null
     },
     {
-      "name": "Chiisha, 3 Chome-9-9 Aobadai, Meguro City, Tokyo 153-0042",
+      "name": "Chiisha",
       "address": "3 Chome-9-9 Aobadai, Meguro City, Tokyo 153-0042",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6512446,
       "lng": 139.6903879,
       "maps_url": "https://maps.google.com/?cid=6924554661846533331",
       "cid": "6924554661846533331",
-      "google_id": "/g/1tmqltyn"
+      "google_id": "/g/1tmqltyn",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Isshin, 2 Chome-5-6 Akasaka, Minato City, Tokyo 107-0052",
+      "name": "Sushi Isshin",
       "address": "2 Chome-5-6 Akasaka, Minato City, Tokyo 107-0052",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6727874,
       "lng": 139.7397296,
       "maps_url": "https://maps.google.com/?cid=6924437838897513719",
       "cid": "6924437838897513719",
-      "google_id": "/g/1tld04t_"
+      "google_id": "/g/1tld04t_",
+      "maps_place_token": null
     },
     {
       "name": "Kuma Cantina Mexican Food & Cocktails",
@@ -1414,7 +1567,8 @@
       "lng": 139.6804927,
       "maps_url": "https://maps.google.com/?cid=6924552042670612515",
       "cid": "6924552042670612515",
-      "google_id": "/g/11vz922zy_"
+      "google_id": "/g/11vz922zy_",
+      "maps_place_token": null
     },
     {
       "name": "CENSU TOKYO",
@@ -1425,7 +1579,8 @@
       "lng": 139.7123974,
       "maps_url": "https://maps.google.com/?cid=6924440118467315661",
       "cid": "6924440118467315661",
-      "google_id": "/g/11v05m3nhf"
+      "google_id": "/g/11v05m3nhf",
+      "maps_place_token": null
     },
     {
       "name": "Tokyo Confidential",
@@ -1436,7 +1591,8 @@
       "lng": 139.7344004,
       "maps_url": "https://maps.google.com/?cid=6924438047413351935",
       "cid": "6924438047413351935",
-      "google_id": "/g/11l2xzpr0k"
+      "google_id": "/g/11l2xzpr0k",
+      "maps_place_token": null
     },
     {
       "name": "igu＆peace",
@@ -1447,117 +1603,128 @@
       "lng": 139.6995074,
       "maps_url": "https://maps.google.com/?cid=6924437635951318357",
       "cid": "6924437635951318357",
-      "google_id": "/g/11bbw_w4wt"
+      "google_id": "/g/11bbw_w4wt",
+      "maps_place_token": null
     },
     {
-      "name": "Tokyu Kabukicho Tower, 1 Chome-29-1 Kabukicho, Shinjuku City, Tokyo 160-0021",
+      "name": "Tokyu Kabukicho Tower",
       "address": "1 Chome-29-1 Kabukicho, Shinjuku City, Tokyo 160-0021",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6957513,
       "lng": 139.70058939999998,
       "maps_url": "https://maps.google.com/?cid=6924440547032214079",
       "cid": "6924440547032214079",
-      "google_id": "/g/11s18b39qm"
+      "google_id": "/g/11s18b39qm",
+      "maps_place_token": null
     },
     {
-      "name": "Miyaba, 2 Chome-11-8 Hamamatsucho, Minato City, Tokyo 105-0013",
+      "name": "Miyaba",
       "address": "2 Chome-11-8 Hamamatsucho, Minato City, Tokyo 105-0013",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.6536263,
-      "lng": 139.7558956,
+      "is_favorite": false,
+      "lat": 35.6536275,
+      "lng": 139.75587489999998,
       "maps_url": "https://maps.google.com/?cid=6924438120617650251",
       "cid": "6924438120617650251",
-      "google_id": "/g/1v1sl6dz"
+      "google_id": "/g/1v1sl6dz",
+      "maps_place_token": null
     },
     {
-      "name": "Jazz Bar Samurai, 守ビル 5F 3 Chome-35-5 Shinjuku, Shinjuku City, Tokyo 160-0022",
+      "name": "Jazz Bar Samurai",
       "address": "〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome−35−5 守ビル 5F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.689755399999996,
       "lng": 139.7023757,
       "maps_url": "https://maps.google.com/?cid=6924439297391030247",
       "cid": "6924439297391030247",
-      "google_id": "/g/1tg9spfv"
+      "google_id": "/g/1tg9spfv",
+      "maps_place_token": null
     },
     {
-      "name": "Some Time, B1F 1 Chome-11-31 Kichijoji Honcho, Musashino, Tokyo 180-0004",
+      "name": "Some Time",
       "address": "〒180-0004 Tokyo, Musashino, Kichijoji Honcho, 1 Chome−11−31 B1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7047399,
       "lng": 139.5801205,
       "maps_url": "https://maps.google.com/?cid=6924546419149711675",
       "cid": "6924546419149711675",
-      "google_id": "/g/1tdbl092"
+      "google_id": "/g/1tdbl092",
+      "maps_place_token": null
     },
     {
-      "name": "Yakiniku Futago, Hulic &New Shinbashi, 2F 2 Chome-11-10 Shinbashi, Minato City, Tokyo 105-0004",
+      "name": "Yakiniku Futago",
       "address": "〒105-0004 Tokyo, Minato City, Shinbashi, 2 Chome−11−10, Hulic &New Shinbashi, 2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6673178,
       "lng": 139.7553589,
       "maps_url": "https://maps.google.com/?cid=6924437997901162221",
       "cid": "6924437997901162221",
-      "google_id": "/g/11w8y9x36m"
+      "google_id": "/g/11w8y9x36m",
+      "maps_place_token": null
     },
     {
-      "name": "Ippei Hanten, 3 Chome-12-41 Motoazabu, Minato City, Tokyo 106-0046",
+      "name": "Ippei Hanten",
       "address": "3 Chome-12-41 Motoazabu, Minato City, Tokyo 106-0046",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6564163,
       "lng": 139.7317761,
       "maps_url": "https://maps.google.com/?cid=6924438013716101665",
       "cid": "6924438013716101665",
-      "google_id": "/g/11pz1ty0p4"
+      "google_id": "/g/11pz1ty0p4",
+      "maps_place_token": null
     },
     {
-      "name": "Yakinikuen, My Square Bldg, 地下１階, 2 Chome-10-3 Azabujuban, Minato City, Tokyo 106-0045",
+      "name": "Yakinikuen",
       "address": "My Square Bldg, 地下１階, 2 Chome-10-3 Azabujuban, Minato City, Tokyo 106-0045",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6546003,
       "lng": 139.7347164,
       "maps_url": "https://maps.google.com/?cid=6924437954235066273",
       "cid": "6924437954235066273",
-      "google_id": "/g/1tgqjdr6"
+      "google_id": "/g/1tgqjdr6",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0045 Tokyo, Minato City, Azabujuban, 2 Chome−8−10 Ｐａｔｉｏ６F Soul Food House",
+      "name": "Soul Food House",
       "address": "〒106-0045 Tokyo, Minato City, Azabujuban, 2 Chome−8−10 Ｐａｔｉｏ６F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.655364,
       "lng": 139.73457299999998,
       "maps_url": "https://maps.google.com/?cid=6924437944120115199",
       "cid": "6924437944120115199",
-      "google_id": "/g/1234cz67j"
+      "google_id": "/g/1234cz67j",
+      "maps_place_token": null
     },
     {
-      "name": "Gen Yamamoto, アニバーサリービル 1F 1 Chome-6-4 Azabujuban, Minato City, Tokyo 106-0045",
+      "name": "Gen Yamamoto",
       "address": "〒106-0045 Tokyo, Minato City, Azabujuban, 1 Chome−6−4 アニバーサリービル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6564771,
       "lng": 139.7343098,
       "maps_url": "https://maps.google.com/?cid=6924437944889850379",
       "cid": "6924437944889850379",
-      "google_id": "/g/1hm4f02ym"
+      "google_id": "/g/1hm4f02ym",
+      "maps_place_token": null
     },
     {
-      "name": "Hinomarushokudo Shinbashi Sohonten, 十合ビル １階Ａ号室 4 Chome-18-4 Shinbashi, Minato City, Tokyo 105-0004",
+      "name": "Hinomarushokudo Shinbashi Sohonten",
       "address": "〒105-0004 Tokyo, Minato City, Shinbashi, 4 Chome−18−4 十合ビル １階Ａ号室",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.664297399999995,
       "lng": 139.7571519,
       "maps_url": "https://maps.google.com/?cid=6924438264332387415",
       "cid": "6924438264332387415",
-      "google_id": "/g/1w0j45f7"
+      "google_id": "/g/1w0j45f7",
+      "maps_place_token": null
     },
     {
       "name": "LUONTO ルオント",
@@ -1568,29 +1735,32 @@
       "lng": 139.7727736,
       "maps_url": "https://maps.google.com/?cid=6924437798826507425",
       "cid": "6924437798826507425",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "TORA, 2 Chome-19-10 Dogenzaka, Shibuya City, Tokyo 150-0043",
+      "name": "TORA",
       "address": "2 Chome-19-10 Dogenzaka, Shibuya City, Tokyo 150-0043",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6593763,
       "lng": 139.6959669,
       "maps_url": "https://maps.google.com/?cid=6924439794532738559",
       "cid": "6924439794532738559",
-      "google_id": "/g/11rcgdywll"
+      "google_id": "/g/11rcgdywll",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−15−12 カルテットビル 1F Ｂ１ THESE",
+      "name": "THESE",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−15−12 カルテットビル 1F Ｂ１",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6610012,
       "lng": 139.7222658,
       "maps_url": "https://maps.google.com/?cid=6924437786704605133",
       "cid": "6924437786704605133",
-      "google_id": "/g/1tj96dn0"
+      "google_id": "/g/1tj96dn0",
+      "maps_place_token": null
     },
     {
       "name": "Zakuro Ginza",
@@ -1601,7 +1771,8 @@
       "lng": 139.766189,
       "maps_url": "https://maps.google.com/?cid=6924438249579547585",
       "cid": "6924438249579547585",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "mixology heritage",
@@ -1612,7 +1783,8 @@
       "lng": 139.7591266,
       "maps_url": "https://maps.google.com/?cid=6924437858195469861",
       "cid": "6924437858195469861",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Sushi Ginza Onodera - Souhonten",
@@ -1623,370 +1795,404 @@
       "lng": 139.7669052,
       "maps_url": "https://maps.google.com/?cid=6924438252491591071",
       "cid": "6924438252491591071",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Umasakababoburi, 暖香園ビル 3 Chome-2-4 Shinbashi, Minato City, Tokyo 105-0004",
+      "name": "Umasakababoburi",
       "address": "〒105-0004 Tokyo, Minato City, Shinbashi, 3 Chome−2−4 暖香園ビル",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6663172,
       "lng": 139.7545848,
       "maps_url": "https://maps.google.com/?cid=6924438268726745755",
       "cid": "6924438268726745755",
-      "google_id": "/g/11bbxjvyt6"
+      "google_id": "/g/11bbxjvyt6",
+      "maps_place_token": null
     },
     {
-      "name": "Tonkatsu Aoki Daimon, 1 Chome-11-12 Hamamatsucho, Minato City, Tokyo 105-0013",
+      "name": "Tonkatsu Aoki Daimon",
       "address": "1 Chome-11-12 Hamamatsucho, Minato City, Tokyo 105-0013",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.658798499999996,
       "lng": 139.7557589,
       "maps_url": "https://maps.google.com/?cid=6924438113042912597",
       "cid": "6924438113042912597",
-      "google_id": "/g/11bxg5_ybj"
+      "google_id": "/g/11bxg5_ybj",
+      "maps_place_token": null
     },
     {
-      "name": "Land Bar Artisan (New), New Shimbashi, Bldg 412, Japan, 〒105-0004, 2 Chome-16-1 Shinbashi, Minato City, Tokyo 4F",
+      "name": "Land Bar Artisan (New)",
       "address": "New Shimbashi, Bldg 412, Japan, 〒105-0004, 2 Chome-16-1 Shinbashi, Minato City, Tokyo 4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.666423099999996,
       "lng": 139.7573577,
       "maps_url": "https://maps.google.com/?cid=6924437661135199837",
       "cid": "6924437661135199837",
-      "google_id": "/g/11t2b3fsp4"
+      "google_id": "/g/11t2b3fsp4",
+      "maps_place_token": null
     },
     {
-      "name": "Ginza Steak Ginza Honten, グランベル銀座Ⅱ 8F・9F 1 Chome-5-5 Shinbashi, Minato City, Tokyo 105-0004",
+      "name": "Ginza Steak Ginza Honten",
       "address": "〒105-0004 Tokyo, Minato City, Shinbashi, 1 Chome−5−5 グランベル銀座Ⅱ 8F・9F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6675965,
       "lng": 139.76007339999998,
       "maps_url": "https://maps.google.com/?cid=6924438259918722695",
       "cid": "6924438259918722695",
-      "google_id": "/g/11b77w6fb5"
+      "google_id": "/g/11b77w6fb5",
+      "maps_place_token": null
     },
     {
-      "name": "SHU, 5階 5 Chome-10-10 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "SHU",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−10−10 5階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6697577,
       "lng": 139.76536199999998,
       "maps_url": "https://maps.google.com/?cid=6924438251318652805",
       "cid": "6924438251318652805",
-      "google_id": "/g/11bwq922d8"
+      "google_id": "/g/11bwq922d8",
+      "maps_place_token": null
     },
     {
-      "name": "Cafe Paulista, 長崎センタービル 1F 8 Chome-9-16 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Cafe Paulista",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 8 Chome−9−16 長崎センタービル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6680858,
       "lng": 139.7620312,
       "maps_url": "https://maps.google.com/?cid=6924438257736833401",
       "cid": "6924438257736833401",
-      "google_id": "/g/1tdx8ps9"
+      "google_id": "/g/1tdx8ps9",
+      "maps_place_token": null
     },
     {
-      "name": "Oniku Karyu, LOUIS 7F 1 Chome-14-6 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Oniku Karyu",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 1 Chome−14−6 7F LOUIS",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.673043799999995,
       "lng": 139.76985109999998,
       "maps_url": "https://maps.google.com/?cid=6924435420716023137",
       "cid": "6924435420716023137",
-      "google_id": "/g/1tx4pbl_"
+      "google_id": "/g/1tx4pbl_",
+      "maps_place_token": null
     },
     {
-      "name": "Ichiyanagi, 銀座コスミオンビル 1F 1 Chome-5-14 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Ichiyanagi",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 1 Chome−5−14 銀座コスミオンビル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6749416,
       "lng": 139.7670896,
       "maps_url": "https://maps.google.com/?cid=6924438240105442883",
       "cid": "6924438240105442883",
-      "google_id": "/g/12qgdm8d7"
+      "google_id": "/g/12qgdm8d7",
+      "maps_place_token": null
     },
     {
-      "name": "rece Nihonbashi, ブリリアンビル 1F 2 Chome-16-3 Nihonbashi, Chuo City, Tokyo 103-0027",
+      "name": "rece Nihonbashi",
       "address": "〒103-0027 Tokyo, Chuo City, Nihonbashi, 2 Chome−16−3 ブリリアンビル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.679745,
       "lng": 139.7755813,
       "maps_url": "https://maps.google.com/?cid=6924435653281978463",
       "cid": "6924435653281978463",
-      "google_id": "/g/11fjbnmn9h"
+      "google_id": "/g/11fjbnmn9h",
+      "maps_place_token": null
     },
     {
-      "name": "Sembikiya-Sohonten Nihonbashi Flagship Store, 2 Chome-1-2 Nihonbashimuromachi, Chuo City, Tokyo 103-0022",
+      "name": "Sembikiya-Sohonten Nihonbashi Flagship Store",
       "address": "2 Chome-1-2 Nihonbashimuromachi, Chuo City, Tokyo 103-0022",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.687263099999996,
       "lng": 139.7732302,
       "maps_url": "https://maps.google.com/?cid=6924435426933983275",
       "cid": "6924435426933983275",
-      "google_id": "/g/12ltx1vd9"
+      "google_id": "/g/12ltx1vd9",
+      "maps_place_token": null
     },
     {
-      "name": "〒103-0002 Tokyo, Chuo City, Nihonbashimuromachi, 2 Chome−1−1 三井二号館 1F aca",
+      "name": "aca",
       "address": "〒103-0002 Tokyo, Chuo City, Nihonbashimuromachi, 2 Chome−1−1 三井二号館 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.686865,
       "lng": 139.7723438,
       "maps_url": "https://maps.google.com/?cid=6924438134979571583",
       "cid": "6924438134979571583",
-      "google_id": "/g/11bbx01t9w"
+      "google_id": "/g/11bbx01t9w",
+      "maps_place_token": null
     },
     {
-      "name": "DevilCraft Kanda, 石川ビル 4 Chome-2-3 Nihonbashimuromachi, Chuo City, Tokyo 103-0022",
+      "name": "DevilCraft Kanda",
       "address": "〒103-0022 Tokyo, Chuo City, Nihonbashimuromachi, 4 Chome−2−3 石川ビル",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.689592999999995,
       "lng": 139.77115129999999,
       "maps_url": "https://maps.google.com/?cid=6924438359856250985",
       "cid": "6924438359856250985",
-      "google_id": "/g/1vxz9m3s"
+      "google_id": "/g/1vxz9m3s",
+      "maps_place_token": null
     },
     {
-      "name": "GLITCH COFFEE & ROASTERS, 香村ビル １階 3 Chome-16 Kanda Nishikicho, Chiyoda City, Tokyo 101-0054",
+      "name": "GLITCH COFFEE & ROASTERS",
       "address": "〒101-0054 Tokyo, Chiyoda City, Kanda Nishikicho, 3 Chome−16 香村ビル １階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6938005,
       "lng": 139.7613086,
       "maps_url": "https://maps.google.com/?cid=6924438428000589327",
       "cid": "6924438428000589327",
-      "google_id": "/g/11b7k1xvjl"
+      "google_id": "/g/11b7k1xvjl",
+      "maps_place_token": null
     },
     {
-      "name": "Bondy, 翔和内神田ビル B1 1 Chome-12-3 Uchikanda, Chiyoda City, Tokyo 101-0047",
+      "name": "Bondy",
       "address": "〒101-0047 Tokyo, Chiyoda City, Uchikanda, 1 Chome−12−3 翔和内神田ビル B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.690881,
       "lng": 139.7653943,
       "maps_url": "https://maps.google.com/?cid=6924438376730188049",
       "cid": "6924438376730188049",
-      "google_id": "/g/1ptxgly60"
+      "google_id": "/g/1ptxgly60",
+      "maps_place_token": null
     },
     {
-      "name": "Kanda Ponchiken, Ougi Building, 1階 2 Chome-8 Kanda Ogawamachi, Chiyoda City, Tokyo 101-0052",
+      "name": "Kanda Ponchiken",
       "address": "〒101-0052 Tokyo, Chiyoda City, Kanda Ogawamachi, 2 Chome−8, Ougi Building, 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6949128,
       "lng": 139.76396689999999,
       "maps_url": "https://maps.google.com/?cid=6924438473588982057",
       "cid": "6924438473588982057",
-      "google_id": "/g/11cffk4y8"
+      "google_id": "/g/11cffk4y8",
+      "maps_place_token": null
     },
     {
-      "name": "〒101-0046 Tokyo, Chiyoda City, Kanda Tacho, 2 Chome−3−1 第1ニサワビル キングラムリカー 神田店",
+      "name": "キングラムリカー 神田店",
       "address": "〒101-0046 Tokyo, Chiyoda City, Kanda Tacho, 2 Chome−3−1 第1ニサワビル",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.692747499999996,
       "lng": 139.7692214,
       "maps_url": "https://maps.google.com/?cid=6924439957822710071",
       "cid": "6924439957822710071",
-      "google_id": "/g/11hlwk0_pb"
+      "google_id": "/g/11hlwk0_pb",
+      "maps_place_token": null
     },
     {
-      "name": "VIRTÙ, 1 Chome-2-1 Ōtemachi, Chiyoda City, Tokyo 100-0004",
+      "name": "VIRTÙ",
       "address": "1 Chome-2-1 Ōtemachi, Chiyoda City, Tokyo 100-0004",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6879978,
       "lng": 139.7632237,
       "maps_url": "https://maps.google.com/?cid=6924439652957010581",
       "cid": "6924439652957010581",
-      "google_id": "/g/11kxk1ch88"
+      "google_id": "/g/11kxk1ch88",
+      "maps_place_token": null
     },
     {
-      "name": "THE UPPER, 丸の内テラス 10F 1 Chome-3-4 Marunouchi, Chiyoda City, Tokyo 100-0005",
+      "name": "THE UPPER",
       "address": "〒100-0005 Tokyo, Chiyoda City, Marunouchi, 1 Chome−3−4 丸の内テラス 10F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.684410299999996,
       "lng": 139.7640883,
       "maps_url": "https://maps.google.com/?cid=6924437746582573057",
       "cid": "6924437746582573057",
-      "google_id": "/g/11ljj8q5sq"
+      "google_id": "/g/11ljj8q5sq",
+      "maps_place_token": null
     },
     {
-      "name": "La Pesquera MARISQUERIA, 1 Chome-5-5 Ōtemachi, Chiyoda City, Tokyo 100-0004",
+      "name": "La Pesquera MARISQUERIA",
       "address": "1 Chome-5-5 Ōtemachi, Chiyoda City, Tokyo 100-0004",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6854775,
       "lng": 139.7656705,
       "maps_url": "https://maps.google.com/?cid=6924438326517343429",
       "cid": "6924438326517343429",
-      "google_id": "/g/1yfjn5pdw"
+      "google_id": "/g/1yfjn5pdw",
+      "maps_place_token": null
     },
     {
-      "name": "Esterre, 1 Chome-1-1 Marunouchi, Chiyoda City, Tokyo 100-0005",
+      "name": "Esterre",
       "address": "1 Chome-1-1 Marunouchi, Chiyoda City, Tokyo 100-0005",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6845001,
       "lng": 139.7612211,
       "maps_url": "https://maps.google.com/?cid=6924439837143847101",
       "cid": "6924439837143847101",
-      "google_id": "/g/11h7g2nx9x"
+      "google_id": "/g/11h7g2nx9x",
+      "maps_place_token": null
     },
     {
-      "name": "Usukifugu Yamadaya Marunouchi, Marunouchi Building, 35階 2 Chome-4-1 Marunouchi, Chiyoda City, Tokyo 100-0005",
+      "name": "Usukifugu Yamadaya Marunouchi",
       "address": "〒100-0005 Tokyo, Chiyoda City, Marunouchi, 2 Chome−4−1, Marunouchi Building, 35階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.681197499999996,
       "lng": 139.7637454,
       "maps_url": "https://maps.google.com/?cid=6924438331107526691",
       "cid": "6924438331107526691",
-      "google_id": "/g/11f25jg6ky"
+      "google_id": "/g/11f25jg6ky",
+      "maps_place_token": null
     },
     {
-      "name": "〒100-0005 Tokyo, Chiyoda City, Marunouchi, 1 Chome−9−1 JR東日本東京駅構内1F グランスタ東京（丸の内北口側 MAISON CACAO Gransta Tokyo Store",
+      "name": "MAISON CACAO Gransta Tokyo Store",
       "address": "〒100-0005 Tokyo, Chiyoda City, Marunouchi, 1 Chome−9−1 JR東日本東京駅構内1F グランスタ東京（丸の内北口側",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.682027399999996,
       "lng": 139.76682839999998,
       "maps_url": "https://maps.google.com/?cid=6924438137821735385",
       "cid": "6924438137821735385",
-      "google_id": "/g/11jkssyzh0"
+      "google_id": "/g/11jkssyzh0",
+      "maps_place_token": null
     },
     {
-      "name": "Kaitenzushi Nemuro Hanamaru KITTE Marunouchi, JPタワ 7番2号 5F 2 Chome Marunouchi, Chiyoda City, Tokyo 100-7005",
+      "name": "Kaitenzushi Nemuro Hanamaru KITTE Marunouchi",
       "address": "〒100-7005 Tokyo, Chiyoda City, Marunouchi, 2 Chome, 7番2号 5F JPタワ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6795237,
       "lng": 139.7649491,
       "maps_url": "https://maps.google.com/?cid=6924438334192041147",
       "cid": "6924438334192041147",
-      "google_id": "/g/12hp18yfh"
+      "google_id": "/g/12hp18yfh",
+      "maps_place_token": null
     },
     {
-      "name": "Manten Sushi Marunouchi, ブリックスクエア B1 2 Chome-6-1 Marunouchi, Chiyoda City, Tokyo 100-6990",
+      "name": "Manten Sushi Marunouchi",
       "address": "〒100-6990 Tokyo, Chiyoda City, Marunouchi, 2 Chome−6−1 ブリックスクエア B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6787845,
       "lng": 139.7627699,
       "maps_url": "https://maps.google.com/?cid=6924438333155246715",
       "cid": "6924438333155246715",
-      "google_id": "/g/1vk6z6gy"
+      "google_id": "/g/1vk6z6gy",
+      "maps_place_token": null
     },
     {
-      "name": "YAUMAY, 二重橋スクエアビル 2F 3 Chome-2-3 Marunouchi, Chiyoda City, Tokyo 100-0005",
+      "name": "YAUMAY",
       "address": "〒100-0005 Tokyo, Chiyoda City, Marunouchi, 3 Chome−2−3 二重橋スクエアビル 2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6776993,
       "lng": 139.7617349,
       "maps_url": "https://maps.google.com/?cid=6924438121773761581",
       "cid": "6924438121773761581",
-      "google_id": "/g/11gsly2jww"
+      "google_id": "/g/11gsly2jww",
+      "maps_place_token": null
     },
     {
-      "name": "Dhaba India, 相模ビル １F 2 Chome-7-9 Yaesu, Chuo City, Tokyo 103-0028",
+      "name": "Dhaba India",
       "address": "〒103-0028 Tokyo, Chuo City, Yaesu, 2 Chome−7−9 相模ビル １F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6771162,
       "lng": 139.7686373,
       "maps_url": "https://maps.google.com/?cid=6924438235320914815",
       "cid": "6924438235320914815",
-      "google_id": "/g/1td7n9b_"
+      "google_id": "/g/1td7n9b_",
+      "maps_place_token": null
     },
     {
-      "name": "The Cave De Oyster by Gumbo & Oyster Bar, 八重洲地下南1号 2 Chome-1 Yaesu, Chuo City, Tokyo 104-0028",
+      "name": "The Cave De Oyster by Gumbo & Oyster Bar",
       "address": "〒104-0028 Tokyo, Chuo City, Yaesu, 2 Chome−1 八重洲地下南1号",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6792355,
       "lng": 139.7678334,
       "maps_url": "https://maps.google.com/?cid=6924438345555306481",
       "cid": "6924438345555306481",
-      "google_id": "/g/1v9tzx5m"
+      "google_id": "/g/1v9tzx5m",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 2 Chome−6−5 GINZA TRECIOUS 12F Aroma Fresca",
+      "name": "Aroma Fresca",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 2 Chome−6−5 GINZA TRECIOUS 12F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6736888,
       "lng": 139.767161,
       "maps_url": "https://maps.google.com/?cid=6924438238668940633",
       "cid": "6924438238668940633",
-      "google_id": "/g/1tdn421z"
+      "google_id": "/g/1tdn421z",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Ishiyama, 森田ビル 4F 3 Chome-3-6 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Sushi Ishiyama",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 3 Chome−3−6 森田ビル 4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6731203,
       "lng": 139.7655234,
       "maps_url": "https://maps.google.com/?cid=6924437395577302925",
       "cid": "6924437395577302925",
-      "google_id": "/g/11g1p1tr__"
+      "google_id": "/g/11g1p1tr__",
+      "maps_place_token": null
     },
     {
-      "name": "Jojoen, ロイヤルクリスタル銀座 6F 5 Chome-4-6 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Jojoen",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−4−6 ロイヤルクリスタル銀座 6F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6716749,
       "lng": 139.7633836,
       "maps_url": "https://maps.google.com/?cid=6924438246774371243",
       "cid": "6924438246774371243",
-      "google_id": "/g/1vv2s714"
+      "google_id": "/g/1vv2s714",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 4 Chome−2−15 塚本総業ビルB1階 Sukiyabashi Jiro",
+      "name": "Sukiyabashi Jiro",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 4 Chome−2−15 塚本総業ビルB1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.672740399999995,
       "lng": 139.7639378,
       "maps_url": "https://maps.google.com/?cid=6924438245962792021",
       "cid": "6924438245962792021",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−4−15 Efflore Ginza5 Bldg, B1F High Five",
+      "name": "High Five",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−4−15 Efflore Ginza5 Bldg, B1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671641,
       "lng": 139.762943,
       "maps_url": "https://maps.google.com/?cid=6924438285050819773",
       "cid": "6924438285050819773",
-      "google_id": "/g/119wjwkcp"
+      "google_id": "/g/119wjwkcp",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−7−10 EXIT MELSA 8階 Air",
+      "name": "Air",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−7−10 EXIT MELSA 8階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.670671999999996,
       "lng": 139.763948,
       "maps_url": "https://maps.google.com/?cid=6924437716844929553",
       "cid": "6924437716844929553",
-      "google_id": "/g/1v5frx68"
+      "google_id": "/g/1v5frx68",
+      "maps_place_token": null
     },
     {
       "name": "Tír na nÓg",
@@ -1997,40 +2203,44 @@
       "lng": 139.76568319999998,
       "maps_url": "https://maps.google.com/?cid=6924438251242788269",
       "cid": "6924438251242788269",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Seamon Ginza, 5 Chome-5-13 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Seamon Ginza",
       "address": "5 Chome-5-13 Ginza, Chuo City, Tokyo 104-0061",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6711228,
       "lng": 139.7630816,
       "maps_url": "https://maps.google.com/?cid=6924438246992339807",
       "cid": "6924438246992339807",
-      "google_id": "/g/1tvrzqby"
+      "google_id": "/g/1tvrzqby",
+      "maps_place_token": null
     },
     {
-      "name": "Sawada, 銀座ＭＣビル 5 Chome-9-19 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Sawada",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−9−19 銀座ＭＣビル",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6704625,
       "lng": 139.7652439,
       "maps_url": "https://maps.google.com/?cid=6924438251165436981",
       "cid": "6924438251165436981",
-      "google_id": "/g/1vd3vsqc"
+      "google_id": "/g/1vd3vsqc",
+      "maps_place_token": null
     },
     {
-      "name": "Ginza Komon, GINZA7BLDG 9階 7 Chome-6-4 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Ginza Komon",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 7 Chome−6−4 GINZA7BLDG 9階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6697996,
       "lng": 139.7620059,
       "maps_url": "https://maps.google.com/?cid=6924437943754925931",
       "cid": "6924437943754925931",
-      "google_id": "/g/11j5bpj7ny"
+      "google_id": "/g/11j5bpj7ny",
+      "maps_place_token": null
     },
     {
       "name": "MIXOLOGY SALON",
@@ -2041,161 +2251,176 @@
       "lng": 139.76376539999998,
       "maps_url": "https://maps.google.com/?cid=6924438247916223737",
       "cid": "6924438247916223737",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "USHIGORO S. GINZA, Ginza 777 Adc Building, 6階 7 Chome-7-7 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "USHIGORO S. GINZA",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 7 Chome−7−7, Ginza 777 Adc Building, 6階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6693111,
       "lng": 139.76202229999998,
       "maps_url": "https://maps.google.com/?cid=6924437584057050949",
       "cid": "6924437584057050949",
-      "google_id": "/g/11g0trygys"
+      "google_id": "/g/11g0trygys",
+      "maps_place_token": null
     },
     {
-      "name": "Hamasaku, 7 Chome-7-4 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Hamasaku",
       "address": "7 Chome-7-4 Ginza, Chuo City, Tokyo 104-0061",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6695493,
       "lng": 139.7623971,
       "maps_url": "https://maps.google.com/?cid=6924438258304326933",
       "cid": "6924438258304326933",
-      "google_id": "/g/1tjz7yfb"
+      "google_id": "/g/1tjz7yfb",
+      "maps_place_token": null
     },
     {
-      "name": "Ginza Katsukami, ミヤコビル ５階 5 Chome-6-10 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Ginza Katsukami",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−6−10 ミヤコビル ５階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6707126,
       "lng": 139.76362559999998,
       "maps_url": "https://maps.google.com/?cid=6924438344294716305",
       "cid": "6924438344294716305",
-      "google_id": "/g/11f8msh46r"
+      "google_id": "/g/11f8msh46r",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−8−7 交詢ビル 4階 CALI STYLE YUZAN by KEIICHIRO KUROBE",
+      "name": "CALI STYLE YUZAN by KEIICHIRO KUROBE",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−8−7 交詢ビル 4階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6703471,
       "lng": 139.76286629999998,
       "maps_url": "https://maps.google.com/?cid=6924438247551557605",
       "cid": "6924438247551557605",
-      "google_id": "/g/11h9vqg5yc"
+      "google_id": "/g/11h9vqg5yc",
+      "maps_place_token": null
     },
     {
-      "name": "Bifteck Kawamura Ginza, Brioni Ginza Bldg., ８階 6 Chome-5-1 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Bifteck Kawamura Ginza",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−5−1, Brioni Ginza Bldg., ８階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6709989,
       "lng": 139.7618419,
       "maps_url": "https://maps.google.com/?cid=6924438287207587445",
       "cid": "6924438287207587445",
-      "google_id": "/g/1tdft3qp"
+      "google_id": "/g/1tdft3qp",
+      "maps_place_token": null
     },
     {
-      "name": "Ginza Kojyu, 銀座カリオカビル 4F 5 Chome-4-8 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Ginza Kojyu",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−4−8 銀座カリオカビル 4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671386999999996,
       "lng": 139.7630787,
       "maps_url": "https://maps.google.com/?cid=6924438259318218837",
       "cid": "6924438259318218837",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−6−5 HULIC&New GINZA NAMIKI６ ７F まとい 銀座",
+      "name": "まとい 銀座",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−6−5 HULIC&New GINZA NAMIKI６ ７F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6708962,
       "lng": 139.7625741,
       "maps_url": "https://maps.google.com/?cid=6924437304318964849",
       "cid": "6924437304318964849",
-      "google_id": "/g/11jzfmbvdv"
+      "google_id": "/g/11jzfmbvdv",
+      "maps_place_token": null
     },
     {
-      "name": "Bar Rooster, 6 Chome-4-18 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Bar Rooster",
       "address": "6 Chome-4-18 Ginza, Chuo City, Tokyo 104-0061",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671597299999995,
       "lng": 139.76163979999998,
       "maps_url": "https://maps.google.com/?cid=6924438287474935491",
       "cid": "6924438287474935491",
-      "google_id": "/g/11b5wl4xj8"
+      "google_id": "/g/11b5wl4xj8",
+      "maps_place_token": null
     },
     {
-      "name": "Les Copains de Dominique Bouchet, 5 Chome-1-8 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Les Copains de Dominique Bouchet",
       "address": "5 Chome-1-8 Ginza, Chuo City, Tokyo 104-0061",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6720028,
       "lng": 139.7617613,
       "maps_url": "https://maps.google.com/?cid=6924438287556367701",
       "cid": "6924438287556367701",
-      "google_id": "/g/11bzy6hrlx"
+      "google_id": "/g/11bzy6hrlx",
+      "maps_place_token": null
     },
     {
-      "name": "SPICE LAB TOKYO, Gicros Ginza Gems, 10F 6 Chome-4-3 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "SPICE LAB TOKYO",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−4−3, Gicros Ginza Gems, 10F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671510399999995,
       "lng": 139.76184569999998,
       "maps_url": "https://maps.google.com/?cid=6924437500906166647",
       "cid": "6924437500906166647",
-      "google_id": "/g/11fp7srgj1"
+      "google_id": "/g/11fp7srgj1",
+      "maps_place_token": null
     },
     {
-      "name": "Ginza Yamashina, Gicros Ginza Gems, 7/8F 6 Chome-4-3 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Ginza Yamashina",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−4−3, Gicros Ginza Gems, 7/8F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671602299999996,
       "lng": 139.7619734,
       "maps_url": "https://maps.google.com/?cid=6924437550391235555",
       "cid": "6924437550391235555",
-      "google_id": "/g/11j3w6n3rl"
+      "google_id": "/g/11j3w6n3rl",
+      "maps_place_token": null
     },
     {
-      "name": "Marugin, コリドー街 105 7 Chome-2番先 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Marugin",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 7 Chome−2番先 コリドー街 105",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6712001,
       "lng": 139.7600962,
       "maps_url": "https://maps.google.com/?cid=6924438285798677707",
       "cid": "6924438285798677707",
-      "google_id": "/g/1th7yb99"
+      "google_id": "/g/1th7yb99",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−4−12 KNビル B2F LITTLE SMITH",
+      "name": "LITTLE SMITH",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−4−12 KNビル B2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6709743,
       "lng": 139.7610861,
       "maps_url": "https://maps.google.com/?cid=6924438286747663971",
       "cid": "6924438286747663971",
-      "google_id": "/g/11gsmvwpwp"
+      "google_id": "/g/11gsmvwpwp",
+      "maps_place_token": null
     },
     {
-      "name": "Motenashi Kuroki, 1 Chome-28-9 Asakusabashi, Taito City, Tokyo 111-0053",
+      "name": "Motenashi Kuroki",
       "address": "1 Chome-28-9 Asakusabashi, Taito City, Tokyo 111-0053",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6979944,
       "lng": 139.7854666,
       "maps_url": "https://maps.google.com/?cid=1524111636131988299",
       "cid": "1524111636131988299",
-      "google_id": "/g/1v_nchw6"
+      "google_id": "/g/1v_nchw6",
+      "maps_place_token": null
     },
     {
       "name": "Sushi Tokami",
@@ -2206,117 +2431,128 @@
       "lng": 139.7596685,
       "maps_url": "https://maps.google.com/?cid=6924438260690188301",
       "cid": "6924438260690188301",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Tsuru Ton Tan, 六本木三丁目ビル 3 Chome-14-12 Roppongi, Minato City, Tokyo 106-0032",
+      "name": "Tsuru Ton Tan",
       "address": "〒106-0032 Tokyo, Minato City, Roppongi, 3 Chome−14−12 六本木三丁目ビル",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6650086,
       "lng": 139.7298423,
       "maps_url": "https://maps.google.com/?cid=6924437924943927665",
       "cid": "6924437924943927665",
-      "google_id": "/g/1tcw84wy"
+      "google_id": "/g/1tcw84wy",
+      "maps_place_token": null
     },
     {
-      "name": "〒171-0014 Tokyo, Toshima City, Ikebukuro, 2 Chome−2−6 Palace池袋 4F Music Cafe Bar \"ONE's\"",
+      "name": "Music Cafe Bar \"ONE's\"",
       "address": "〒171-0014 Tokyo, Toshima City, Ikebukuro, 2 Chome−2−6 Palace池袋 4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.732101,
       "lng": 139.70801319999998,
       "maps_url": "https://maps.google.com/?cid=6924439864530348733",
       "cid": "6924439864530348733",
-      "google_id": "/g/11gf8f5dbv"
+      "google_id": "/g/11gf8f5dbv",
+      "maps_place_token": null
     },
     {
-      "name": "Chūka Soba Ginza Hachigo, 第一はなぶさビル 1階 3 Chome-14-2 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Chūka Soba Ginza Hachigo",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 3 Chome−14−2 第一はなぶさビル 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6705477,
       "lng": 139.77015,
       "maps_url": "https://maps.google.com/?cid=6924438248725106271",
       "cid": "6924438248725106271",
-      "google_id": "/g/11f9x3zj8t"
+      "google_id": "/g/11f9x3zj8t",
+      "maps_place_token": null
     },
     {
-      "name": "Hotel's, ２F 3 Chome-4-3 Kita-Aoyama, Minato City, Tokyo 107-0061",
+      "name": "Hotel's",
       "address": "〒107-0061 Tokyo, Minato City, Kita-Aoyama, 3 Chome−4−3 ２F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.667591,
       "lng": 139.71335689999998,
       "maps_url": "https://maps.google.com/?cid=6924440109694699165",
       "cid": "6924440109694699165",
-      "google_id": "/g/11rcd7528z"
+      "google_id": "/g/11rcd7528z",
+      "maps_place_token": null
     },
     {
-      "name": "〒142-0062 Tokyo, Shinagawa City, Koyama, 4 Chome−10−1, Be-Re Musashikoyama, 1F 鮨 季らく",
+      "name": "鮨 季らく",
       "address": "〒142-0062 Tokyo, Shinagawa City, Koyama, 4 Chome−10−1, Be-Re Musashikoyama, 1F",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.619137099999996,
-      "lng": 139.7023918,
+      "is_favorite": false,
+      "lat": 35.619134599999995,
+      "lng": 139.7023897,
       "maps_url": "https://maps.google.com/?cid=6924437395488928277",
       "cid": "6924437395488928277",
-      "google_id": "/g/11twhtr141"
+      "google_id": "/g/11twhtr141",
+      "maps_place_token": null
     },
     {
-      "name": "Sakurai Japanese Tea Experience, スパイラルビル 5F, 5 Chome-6-23 Minamiaoyama, Minato City, Tokyo 107-0062",
+      "name": "Sakurai Japanese Tea Experience",
       "address": "スパイラルビル 5F, 5 Chome-6-23 Minamiaoyama, Minato City, Tokyo 107-0062",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.663573,
       "lng": 139.71176,
       "maps_url": "https://maps.google.com/?cid=6924437743991632461",
       "cid": "6924437743991632461",
-      "google_id": "/g/11bzt0rqy9"
+      "google_id": "/g/11bzt0rqy9",
+      "maps_place_token": null
     },
     {
-      "name": "Tadenoha, ダイアンクレストビル 2F, 3 Chome-2-3 Minamiaoyama, Minato City, Tokyo 107-0062",
+      "name": "Tadenoha",
       "address": "ダイアンクレストビル 2F, 3 Chome-2-3 Minamiaoyama, Minato City, Tokyo 107-0062",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.667988699999995,
       "lng": 139.7172424,
       "maps_url": "https://maps.google.com/?cid=6924439036692077407",
       "cid": "6924439036692077407",
-      "google_id": "/g/11g9jmjr61"
+      "google_id": "/g/11g9jmjr61",
+      "maps_place_token": null
     },
     {
-      "name": "〒107-0062 Tokyo, Minato City, Minamiaoyama, 2 Chome−27−18 AOYAMA M’s TOWER（青山エムズタワ パサージュ青山2F Ristorante ACQUA PAZZA",
+      "name": "Ristorante ACQUA PAZZA",
       "address": "〒107-0062 Tokyo, Minato City, Minamiaoyama, 2 Chome−27−18 AOYAMA M’s TOWER（青山エムズタワ パサージュ青山2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6691013,
       "lng": 139.7166933,
       "maps_url": "https://maps.google.com/?cid=6924440247350835599",
       "cid": "6924440247350835599",
-      "google_id": "/g/1tg9hj_7"
+      "google_id": "/g/1tg9hj_7",
+      "maps_place_token": null
     },
     {
-      "name": "ALDO アルド, 3 Chome-3-23 Minamiaoyama, Minato City, Tokyo 107-0062",
+      "name": "ALDO アルド",
       "address": "3 Chome-3-23 Minamiaoyama, Minato City, Tokyo 107-0062",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6676766,
       "lng": 139.7164496,
       "maps_url": "https://maps.google.com/?cid=6924439045958714563",
       "cid": "6924439045958714563",
-      "google_id": "/g/11cmtryj2w"
+      "google_id": "/g/11cmtryj2w",
+      "maps_place_token": null
     },
     {
-      "name": "LATTEST, 3 Chome-5-2 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "LATTEST",
       "address": "3 Chome-5-2 Jingumae, Shibuya City, Tokyo 150-0001",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6689308,
       "lng": 139.7123818,
       "maps_url": "https://maps.google.com/?cid=6924439042901299119",
       "cid": "6924439042901299119",
-      "google_id": "/g/11b6x7c_4v"
+      "google_id": "/g/11b6x7c_4v",
+      "maps_place_token": null
     },
     {
       "name": "Tokyo Metropolitan Government Building",
@@ -2327,7 +2563,8 @@
       "lng": 139.6916863,
       "maps_url": "https://maps.google.com/?cid=6924439272315041697",
       "cid": "6924439272315041697",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Soba House Konjiki-Hototogisu",
@@ -2338,227 +2575,248 @@
       "lng": 139.7083092,
       "maps_url": "https://maps.google.com/?cid=6924551766975255865",
       "cid": "6924551766975255865",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Obicà Mozzarella Bar Nishi Shinjuku, Nishi-Shinjuku Mitsui Bldg., 1F 6 Chome-24-1 Nishishinjuku, Shinjuku City, Tokyo 160-0023",
+      "name": "Obicà Mozzarella Bar Nishi Shinjuku",
       "address": "〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 6 Chome−24−1, Nishi-Shinjuku Mitsui Bldg., 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6946198,
       "lng": 139.6889158,
       "maps_url": "https://maps.google.com/?cid=6924551675927926199",
       "cid": "6924551675927926199",
-      "google_id": "/g/11frns8ny_"
+      "google_id": "/g/11frns8ny_",
+      "maps_place_token": null
     },
     {
-      "name": "Soba Osame, 3 Chome-21-5 Shimoochiai, Shinjuku City, Tokyo 161-0033",
+      "name": "Soba Osame",
       "address": "3 Chome-21-5 Shimoochiai, Shinjuku City, Tokyo 161-0033",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.722621499999995,
       "lng": 139.7009995,
       "maps_url": "https://maps.google.com/?cid=6924437466611677657",
       "cid": "6924437466611677657",
-      "google_id": "/g/11g__57nb3"
+      "google_id": "/g/11g__57nb3",
+      "maps_place_token": null
     },
     {
-      "name": "Morutoya, ＤＫＹ１２ビル 1F 1 Chome-8-6 Higashiikebukuro, Toshima City, Tokyo 170-0013",
+      "name": "Morutoya",
       "address": "〒170-0013 Tokyo, Toshima City, Higashiikebukuro, 1 Chome−8−6 ＤＫＹ１２ビル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7318144,
       "lng": 139.7145339,
       "maps_url": "https://maps.google.com/?cid=6924439900590380121",
       "cid": "6924439900590380121",
-      "google_id": "/g/1tfl063n"
+      "google_id": "/g/1tfl063n",
+      "maps_place_token": null
     },
     {
-      "name": "Mala Youhuo, ＦＩＮＯビル 1F、2F 2 Chome-43-2 Ikebukuro, Toshima City, Tokyo 171-0014",
+      "name": "Mala Youhuo",
       "address": "〒171-0014 Tokyo, Toshima City, Ikebukuro, 2 Chome−43−2 ＦＩＮＯビル 1F、2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7331966,
       "lng": 139.7101404,
       "maps_url": "https://maps.google.com/?cid=6924439863770882077",
       "cid": "6924439863770882077",
-      "google_id": "/g/1tffzhk9"
+      "google_id": "/g/1tffzhk9",
+      "maps_place_token": null
     },
     {
-      "name": "〒171-0022 Tokyo, Toshima City, Minamiikebukuro, 1 Chome−17−1 崎本ビル1F Mutekiya",
+      "name": "Mutekiya",
       "address": "〒171-0022 Tokyo, Toshima City, Minamiikebukuro, 1 Chome−17−1 崎本ビル1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7269046,
       "lng": 139.7116557,
       "maps_url": "https://maps.google.com/?cid=6924439905553152375",
       "cid": "6924439905553152375",
-      "google_id": "/g/11b72mlbrk"
+      "google_id": "/g/11b72mlbrk",
+      "maps_place_token": null
     },
     {
-      "name": "〒162-0825 Tokyo, Shinjuku City, Kagurazaka, 3 Chome−2−4 クレール神楽坂 1階 Lantern burger",
+      "name": "Lantern burger",
       "address": "〒162-0825 Tokyo, Shinjuku City, Kagurazaka, 3 Chome−2−4 クレール神楽坂 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7012043,
       "lng": 139.7409533,
       "maps_url": "https://maps.google.com/?cid=6924438747802576643",
       "cid": "6924438747802576643",
-      "google_id": "/g/1tdjw_ks"
+      "google_id": "/g/1tdjw_ks",
+      "maps_place_token": null
     },
     {
-      "name": "Shabuya, 4 Chome-４ Kagurazaka, Shinjuku City, Tokyo 162-0825",
+      "name": "Shabuya",
       "address": "〒162-0825 Tokyo, Shinjuku City, Kagurazaka, 4 Chome−４",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7022117,
       "lng": 139.7399354,
       "maps_url": "https://maps.google.com/?cid=6924438747648072655",
       "cid": "6924438747648072655",
-      "google_id": "/g/1v4k6hrd"
+      "google_id": "/g/1v4k6hrd",
+      "maps_place_token": null
     },
     {
-      "name": "Le Bretagne Creperie, 4 Chome-2 Kagurazaka, Shinjuku City, Tokyo 162-0825",
+      "name": "Le Bretagne Creperie",
       "address": "4 Chome-2 Kagurazaka, Shinjuku City, Tokyo 162-0825",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7018811,
       "lng": 139.73970409999998,
       "maps_url": "https://maps.google.com/?cid=6924438747581386527",
       "cid": "6924438747581386527",
-      "google_id": "/g/11bysjpx01"
+      "google_id": "/g/11bysjpx01",
+      "maps_place_token": null
     },
     {
-      "name": "Kamikura, 3 Chome-１ Kagurazaka, Shinjuku City, Tokyo 162-0825",
+      "name": "Kamikura",
       "address": "〒162-0825 Tokyo, Shinjuku City, Kagurazaka, 3 Chome−１",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.701960299999996,
       "lng": 139.7409123,
       "maps_url": "https://maps.google.com/?cid=6924438748528235661",
       "cid": "6924438748528235661",
-      "google_id": "/g/1tdr396d"
+      "google_id": "/g/1tdr396d",
+      "maps_place_token": null
     },
     {
-      "name": "Rakuzan Kagurazaka, 4 Chome-3 Kagurazaka, Shinjuku City, Tokyo 162-0825",
+      "name": "Rakuzan Kagurazaka",
       "address": "4 Chome-3 Kagurazaka, Shinjuku City, Tokyo 162-0825",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7016451,
       "lng": 139.73993249999998,
       "maps_url": "https://maps.google.com/?cid=6924438749352190823",
       "cid": "6924438749352190823",
-      "google_id": "/g/1tdmdwkv"
+      "google_id": "/g/1tdmdwkv",
+      "maps_place_token": null
     },
     {
-      "name": "Cafe Luigi, 4 Chome-31-1 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Cafe Luigi",
       "address": "4 Chome-31-1 Jingumae, Shibuya City, Tokyo 150-0001",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6690312,
       "lng": 139.7066653,
       "maps_url": "https://maps.google.com/?cid=6924439060939987671",
       "cid": "6924439060939987671",
-      "google_id": "/g/1xgrmy6x"
+      "google_id": "/g/1xgrmy6x",
+      "maps_place_token": null
     },
     {
-      "name": "Kamiya Bar, 1 Chome-1-1 Asakusa, Taito City, Tokyo 111-0032",
+      "name": "Kamiya Bar",
       "address": "1 Chome-1-1 Asakusa, Taito City, Tokyo 111-0032",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7108814,
       "lng": 139.7974925,
       "maps_url": "https://maps.google.com/?cid=6924441379038500533",
       "cid": "6924441379038500533",
-      "google_id": "/g/121s4gqt"
+      "google_id": "/g/121s4gqt",
+      "maps_place_token": null
     },
     {
-      "name": "〒103-0013 Tokyo, Chuo City, Nihonbashiningyocho, 2 Chome−10−11 7階 KYOE PLAZA 柳燕",
+      "name": "柳燕",
       "address": "〒103-0013 Tokyo, Chuo City, Nihonbashiningyocho, 2 Chome−10−11 7階 KYOE PLAZA",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.685561899999996,
       "lng": 139.7839933,
       "maps_url": "https://maps.google.com/?cid=6924435956366086005",
       "cid": "6924435956366086005",
-      "google_id": "/g/11n88k56kw"
+      "google_id": "/g/11n88k56kw",
+      "maps_place_token": null
     },
     {
-      "name": "Virtus wine, １１−１９ 1F 2 Chome-11-19 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Virtus wine",
       "address": "〒150-0001 Tokyo, Shibuya City, Jingumae, 2 Chome−11−19 １１−１９ 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6743824,
       "lng": 139.7122384,
       "maps_url": "https://maps.google.com/?cid=6924439011101415671",
       "cid": "6924439011101415671",
-      "google_id": "/g/11cn69tk56"
+      "google_id": "/g/11cn69tk56",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Yuu, 寿司勇 1 Chome-4-15 Nishiazabu, Minato City, Tokyo 106-0031",
+      "name": "Sushi Yuu",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 1 Chome−4−15 寿司勇",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6618298,
       "lng": 139.7251878,
       "maps_url": "https://maps.google.com/?cid=6924437784326732759",
       "cid": "6924437784326732759",
-      "google_id": "/g/1tglyzgy"
+      "google_id": "/g/1tglyzgy",
+      "maps_place_token": null
     },
     {
-      "name": "Sougo 宗胡, Roppongi Green Building, 3F 6 Chome-1-8 Roppongi, Minato City, Tokyo 106-0032",
+      "name": "Sougo 宗胡",
       "address": "〒106-0032 Tokyo, Minato City, Roppongi, 6 Chome−1−8, Roppongi Green Building, 3F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.662515899999995,
       "lng": 139.7322145,
       "maps_url": "https://maps.google.com/?cid=6924437935013099361",
       "cid": "6924437935013099361",
-      "google_id": "/g/11b77zz79p"
+      "google_id": "/g/11b77zz79p",
+      "maps_place_token": null
     },
     {
-      "name": "TASUICHI, 33-14 Udagawacho, Shibuya City, Tokyo 150-0042",
+      "name": "TASUICHI",
       "address": "33-14 Udagawacho, Shibuya City, Tokyo 150-0042",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6610051,
       "lng": 139.6970442,
       "maps_url": "https://maps.google.com/?cid=6924439086453654627",
       "cid": "6924439086453654627",
-      "google_id": "/g/11bwyxf913"
+      "google_id": "/g/11bwyxf913",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0001 Tokyo, Shibuya City, Jingumae, 3 Chome−41−2 岡本ビル 1階 gnudi",
+      "name": "gnudi",
       "address": "〒150-0001 Tokyo, Shibuya City, Jingumae, 3 Chome−41−2 岡本ビル 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.671048899999995,
       "lng": 139.71362929999998,
       "maps_url": "https://maps.google.com/?cid=6924440441527530477",
       "cid": "6924440441527530477",
-      "google_id": "/g/11t4b6tql0"
+      "google_id": "/g/11t4b6tql0",
+      "maps_place_token": null
     },
     {
-      "name": "Ryuzu, Vort六本木Dual's B1F 4 Chome-2-35 Roppongi, Minato City, Tokyo 106-0032",
+      "name": "Ryuzu",
       "address": "〒106-0032 Tokyo, Minato City, Roppongi, 4 Chome−2−35 Vort六本木Dual's B1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6647551,
       "lng": 139.7334715,
       "maps_url": "https://maps.google.com/?cid=6924437820782657561",
       "cid": "6924437820782657561",
-      "google_id": "/g/1tcxjrw7"
+      "google_id": "/g/1tcxjrw7",
+      "maps_place_token": null
     },
     {
-      "name": "Warayakiya Roppongi, 六本木ゴーディビル 1F 6 Chome-8-8 Roppongi, Minato City, Tokyo 106-0032",
+      "name": "Warayakiya Roppongi",
       "address": "〒106-0032 Tokyo, Minato City, Roppongi, 6 Chome−8−8 六本木ゴーディビル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6615032,
       "lng": 139.7327091,
       "maps_url": "https://maps.google.com/?cid=6924437935402841973",
       "cid": "6924437935402841973",
-      "google_id": "/g/1vj5_5q6"
+      "google_id": "/g/1vj5_5q6",
+      "maps_place_token": null
     },
     {
       "name": "Le Sputnik",
@@ -2569,7 +2827,8 @@
       "lng": 139.7298765,
       "maps_url": "https://maps.google.com/?cid=6924437776054794911",
       "cid": "6924437776054794911",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Ristorante L'OSTERIA",
@@ -2580,7 +2839,8 @@
       "lng": 139.73125389999998,
       "maps_url": "https://maps.google.com/?cid=6924437774200201981",
       "cid": "6924437774200201981",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "FREY's Famous Pizzeria",
@@ -2591,7 +2851,8 @@
       "lng": 139.732619,
       "maps_url": "https://maps.google.com/?cid=6924437819780169315",
       "cid": "6924437819780169315",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Hyoutan ya 6choume ten",
@@ -2602,7 +2863,8 @@
       "lng": 139.7646328,
       "maps_url": "https://maps.google.com/?cid=6924438254240310731",
       "cid": "6924438254240310731",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Nodaiwa Azabu Iikura Honten",
@@ -2613,7 +2875,8 @@
       "lng": 139.7433584,
       "maps_url": "https://maps.google.com/?cid=6924438071719879597",
       "cid": "6924438071719879597",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Ginza Shinohara",
@@ -2624,282 +2887,308 @@
       "lng": 139.7678429,
       "maps_url": "https://maps.google.com/?cid=6924438238444125255",
       "cid": "6924438238444125255",
-      "google_id": "/g/11cs5pgcby"
+      "google_id": "/g/11cs5pgcby",
+      "maps_place_token": null
     },
     {
-      "name": "Hatou, 5 Chome-7 Kagurazaka, Shinjuku City, Tokyo 162-0825",
+      "name": "Hatou",
       "address": "5 Chome-7 Kagurazaka, Shinjuku City, Tokyo 162-0825",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7032909,
       "lng": 139.7369952,
       "maps_url": "https://maps.google.com/?cid=6924440102696312783",
       "cid": "6924440102696312783",
-      "google_id": "/g/11j1_xtlj5"
+      "google_id": "/g/11j1_xtlj5",
+      "maps_place_token": null
     },
     {
-      "name": "Wasa, ベルザ恵比寿ビル 1F 3 Chome-16-1 Higashi, Shibuya City, Tokyo 150-0011",
+      "name": "Wasa",
       "address": "〒150-0011 Tokyo, Shibuya City, Higashi, 3 Chome−16−1 ベルザ恵比寿ビル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.649799699999996,
       "lng": 139.7100875,
       "maps_url": "https://maps.google.com/?cid=6924438097092144711",
       "cid": "6924438097092144711",
-      "google_id": "/g/11mmjl41p6"
+      "google_id": "/g/11mmjl41p6",
+      "maps_place_token": null
     },
     {
-      "name": "Saffron Ikebukuro, タクト ＴＯビル 201 1 Chome-28-1 Higashiikebukuro, Toshima City, Tokyo 170-0013",
+      "name": "Saffron Ikebukuro",
       "address": "〒170-0013 Tokyo, Toshima City, Higashiikebukuro, 1 Chome−28−1 ＴＯビル 201 タクト",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7294293,
       "lng": 139.7165137,
       "maps_url": "https://maps.google.com/?cid=6924439907925943325",
       "cid": "6924439907925943325",
-      "google_id": "/g/1tnqg_16"
+      "google_id": "/g/1tnqg_16",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0012 Tokyo, Shibuya City, Hiroo, 5 Chome−2−25 本国 ビル 3F Priya The Indian Restaurant",
+      "name": "Priya The Indian Restaurant",
       "address": "〒150-0012 Tokyo, Shibuya City, Hiroo, 5 Chome−2−25 本国 ビル 3F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6502686,
       "lng": 139.7202833,
       "maps_url": "https://maps.google.com/?cid=6924437728396354689",
       "cid": "6924437728396354689",
-      "google_id": "/g/1tdjw_fy"
+      "google_id": "/g/1tdjw_fy",
+      "maps_place_token": null
     },
     {
-      "name": "Mandala, 集英社共同ビル 地下１階 2 Chome-17 Kanda Jinbocho, Chiyoda City, Tokyo 101-0051",
+      "name": "Mandala",
       "address": "〒101-0051 Tokyo, Chiyoda City, Kanda Jinbocho, 2 Chome−17 集英社共同ビル 地下１階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.695223999999996,
       "lng": 139.7576918,
       "maps_url": "https://maps.google.com/?cid=6924438433363578117",
       "cid": "6924438433363578117",
-      "google_id": "/g/1tl_lq8q"
+      "google_id": "/g/1tl_lq8q",
+      "maps_place_token": null
     },
     {
-      "name": "Ajanta, Vort二番町 3-11 Nibancho, Chiyoda City, Tokyo 102-0084",
+      "name": "Ajanta",
       "address": "〒102-0084 Tokyo, Chiyoda City, Nibancho, 3−11 Vort二番町",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6861406,
       "lng": 139.7369243,
       "maps_url": "https://maps.google.com/?cid=6924438786175692825",
       "cid": "6924438786175692825",
-      "google_id": "/g/121g7pdl"
+      "google_id": "/g/121g7pdl",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0032 Tokyo, Minato City, Roppongi, 7 Chome−6−20 1階 長谷川栄雅 六本木 -日本酒体験-",
+      "name": "長谷川栄雅 六本木 -日本酒体験-",
       "address": "〒106-0032 Tokyo, Minato City, Roppongi, 7 Chome−6−20 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6647414,
       "lng": 139.72814309999998,
       "maps_url": "https://maps.google.com/?cid=6924437966635305591",
       "cid": "6924437966635305591",
-      "google_id": "/g/11gzmj75mb"
+      "google_id": "/g/11gzmj75mb",
+      "maps_place_token": null
     },
     {
-      "name": "SUIGIAN, 福徳の森 地下, 1階, 2 Chome-5-10 Nihonbashimuromachi, Chuo City, Tokyo 103-0022",
+      "name": "SUIGIAN",
       "address": "福徳の森 地下, 1階, 2 Chome-5-10 Nihonbashimuromachi, Chuo City, Tokyo 103-0022",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6873319,
       "lng": 139.7747314,
       "maps_url": "https://maps.google.com/?cid=6924435118397936703",
       "cid": "6924435118397936703",
-      "google_id": "/g/11g0gb50tc"
+      "google_id": "/g/11g0gb50tc",
+      "maps_place_token": null
     },
     {
-      "name": "Celaravird, TWIZA上原 １階 2 Chome-8-11 Uehara, Shibuya City, Tokyo 151-0064",
+      "name": "Celaravird",
       "address": "〒151-0064 Tokyo, Shibuya City, Uehara, 2 Chome−8−11 TWIZA上原 １階",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.6657578,
-      "lng": 139.6842665,
+      "is_favorite": false,
+      "lat": 35.665754899999996,
+      "lng": 139.6842729,
       "maps_url": "https://maps.google.com/?cid=6924551946900521811",
       "cid": "6924551946900521811",
-      "google_id": "/g/11b76tvnr4"
+      "google_id": "/g/11b76tvnr4",
+      "maps_place_token": null
     },
     {
-      "name": "Soba Yamato, ideerooms上原 101 3 Chome-1-17 Uehara, Shibuya City, Tokyo 151-0064",
+      "name": "Soba Yamato",
       "address": "〒151-0064 Tokyo, Shibuya City, Uehara, 3 Chome−1−17 ideerooms上原 101",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.667974,
       "lng": 139.6817321,
       "maps_url": "https://maps.google.com/?cid=6924551919895911015",
       "cid": "6924551919895911015",
-      "google_id": "/g/1tglmyhl"
+      "google_id": "/g/1tglmyhl",
+      "maps_place_token": null
     },
     {
-      "name": "Hakuryu, 2 Chome-48-10 Uehara, Shibuya City, Tokyo 151-0064",
+      "name": "Hakuryu",
       "address": "2 Chome-48-10 Uehara, Shibuya City, Tokyo 151-0064",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.667698,
       "lng": 139.68179999999998,
       "maps_url": "https://maps.google.com/?cid=6924551920031749739",
       "cid": "6924551920031749739",
-      "google_id": "/g/1tjg_dfc"
+      "google_id": "/g/1tjg_dfc",
+      "maps_place_token": null
     },
     {
-      "name": "Bon, 1 Chome-2-11 Ryusen, Taito City, Tokyo 110-0012",
+      "name": "Bon",
       "address": "1 Chome-2-11 Ryusen, Taito City, Tokyo 110-0012",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7229178,
       "lng": 139.7903969,
       "maps_url": "https://maps.google.com/?cid=6924441186877562283",
       "cid": "6924441186877562283",
-      "google_id": "/g/1tmxfk9l"
+      "google_id": "/g/1tmxfk9l",
+      "maps_place_token": null
     },
     {
-      "name": "Bassanova, 1 Chome-4-18 Hanegi, Setagaya City, Tokyo 156-0042",
+      "name": "Bassanova",
       "address": "1 Chome-4-18 Hanegi, Setagaya City, Tokyo 156-0042",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6635996,
       "lng": 139.6603379,
       "maps_url": "https://maps.google.com/?cid=6924551666336249461",
       "cid": "6924551666336249461",
-      "google_id": "/g/1tvyltc4"
+      "google_id": "/g/1tvyltc4",
+      "maps_place_token": null
     },
     {
-      "name": "Bear Pond Espresso, ベアーポンド 2 Chome-36-12 Kitazawa, Setagaya City, Tokyo 155-0031",
+      "name": "Bear Pond Espresso",
       "address": "〒155-0031 Tokyo, Setagaya City, Kitazawa, 2 Chome−36−12 ベアーポンド",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6639737,
       "lng": 139.6678886,
       "maps_url": "https://maps.google.com/?cid=6924552068566003711",
       "cid": "6924552068566003711",
-      "google_id": "/g/1tfh4psn"
+      "google_id": "/g/1tfh4psn",
+      "maps_place_token": null
     },
     {
-      "name": "Salmon & Trout, 4 Chome-42-7 Daizawa, Setagaya City, Tokyo 155-0032",
+      "name": "Salmon & Trout",
       "address": "4 Chome-42-7 Daizawa, Setagaya City, Tokyo 155-0032",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6543962,
       "lng": 139.6672999,
       "maps_url": "https://maps.google.com/?cid=6924552047698217675",
       "cid": "6924552047698217675",
-      "google_id": "/g/11b7hhwmh2"
+      "google_id": "/g/11b7hhwmh2",
+      "maps_place_token": null
     },
     {
-      "name": "Coaster Craft Beer & Burgers, Kosei Haimu, １F 5 Chome-19-13 Daizawa, Setagaya City, Tokyo 155-0032",
+      "name": "Coaster Craft Beer & Burgers",
       "address": "〒155-0032 Tokyo, Setagaya City, Daizawa, 5 Chome−19−13, Kosei Haimu, １F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6573701,
       "lng": 139.6676226,
       "maps_url": "https://maps.google.com/?cid=6924552630185780203",
       "cid": "6924552630185780203",
-      "google_id": "/g/11fjsyv957"
+      "google_id": "/g/11fjsyv957",
+      "maps_place_token": null
     },
     {
-      "name": "Good Heavens, 5 Chome-32-5 Daizawa, Setagaya City, Tokyo 155-0032",
+      "name": "Good Heavens",
       "address": "5 Chome-32-5 Daizawa, Setagaya City, Tokyo 155-0032",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6589118,
       "lng": 139.6676161,
       "maps_url": "https://maps.google.com/?cid=6924552059607966785",
       "cid": "6924552059607966785",
-      "google_id": "/g/11b7xwd33_"
+      "google_id": "/g/11b7xwd33_",
+      "maps_place_token": null
     },
     {
       "name": "Dogberry Shimokitazawa",
       "address": "〒155-0031 Tokyo, Setagaya City, Kitazawa, 2 Chome−29−16 高木ビル",
       "note": null,
       "is_favorite": false,
-      "lat": 35.663112399999996,
-      "lng": 139.6669696,
+      "lat": 35.663063099999995,
+      "lng": 139.6669497,
       "maps_url": "https://maps.google.com/?cid=6924551648426771721",
       "cid": "6924551648426771721",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "TauLa ~Platos de España~, 北沢グリーンビル １Ｆ 3 Chome-34-6 Kitazawa, Setagaya City, Tokyo 155-0031",
+      "name": "TauLa ~Platos de España~",
       "address": "〒155-0031 Tokyo, Setagaya City, Kitazawa, 3 Chome−34−6 北沢グリーンビル １Ｆ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6651374,
       "lng": 139.66558469999998,
       "maps_url": "https://maps.google.com/?cid=6924552179909073849",
       "cid": "6924552179909073849",
-      "google_id": "/g/11j2lsmtpx"
+      "google_id": "/g/11j2lsmtpx",
+      "maps_place_token": null
     },
     {
-      "name": "PepeRosso, エクセル桃井 1F 2 Chome-46-7 Daizawa, Setagaya City, Tokyo 155-0032",
+      "name": "PepeRosso",
       "address": "〒155-0032 Tokyo, Setagaya City, Daizawa, 2 Chome−46−7 エクセル桃井 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.660993999999995,
       "lng": 139.6727914,
       "maps_url": "https://maps.google.com/?cid=6924551893100527617",
       "cid": "6924551893100527617",
-      "google_id": "/g/1tmpdzkm"
+      "google_id": "/g/1tmpdzkm",
+      "maps_place_token": null
     },
     {
-      "name": "Ogawa Coffee Laboratory Shimokitazawa, reload1-1 3 Chome-19-20 Kitazawa, Setagaya City, Tokyo 155-0031",
+      "name": "Ogawa Coffee Laboratory Shimokitazawa",
       "address": "〒155-0031 Tokyo, Setagaya City, Kitazawa, 3 Chome−19−20 reload1-1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6633394,
       "lng": 139.6698648,
       "maps_url": "https://maps.google.com/?cid=6924552633798362179",
       "cid": "6924552633798362179",
-      "google_id": "/g/11p4qhxqg0"
+      "google_id": "/g/11p4qhxqg0",
+      "maps_place_token": null
     },
     {
-      "name": "Tepito, 3 Chome-19-9 Kitazawa, Setagaya City, Tokyo 155-0031",
+      "name": "Tepito",
       "address": "3 Chome-19-9 Kitazawa, Setagaya City, Tokyo 155-0031",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6640821,
       "lng": 139.67002449999998,
       "maps_url": "https://maps.google.com/?cid=6924552066091804541",
       "cid": "6924552066091804541",
-      "google_id": "/g/11c46hjcjh"
+      "google_id": "/g/11c46hjcjh",
+      "maps_place_token": null
     },
     {
-      "name": "〒155-0031 Tokyo, Setagaya City, Kitazawa, 2 Chome−31−12 モスバーガー下北沢北口店 2F 燻製 Dining Bar U7",
+      "name": "燻製 Dining Bar U7",
       "address": "〒155-0031 Tokyo, Setagaya City, Kitazawa, 2 Chome−31−12 モスバーガー下北沢北口店 2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.662898,
       "lng": 139.6683782,
       "maps_url": "https://maps.google.com/?cid=6924552067953053413",
       "cid": "6924552067953053413",
-      "google_id": "/g/11c8083mzg"
+      "google_id": "/g/11c8083mzg",
+      "maps_place_token": null
     },
     {
-      "name": "Kan Coffee Fujifuji, 10-14 Arakicho, Shinjuku City, Tokyo 160-0007",
+      "name": "Kan Coffee Fujifuji",
       "address": "10-14 Arakicho, Shinjuku City, Tokyo 160-0007",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6895433,
       "lng": 139.7226511,
       "maps_url": "https://maps.google.com/?cid=6924439399776212309",
       "cid": "6924439399776212309",
-      "google_id": "/g/11dxqg5kxf"
+      "google_id": "/g/11dxqg5kxf",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−24−7 サンハイム南青山 1階 AZUR et MASA UEKI",
+      "name": "AZUR et MASA UEKI",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−24−7 サンハイム南青山 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.661014099999996,
       "lng": 139.7218249,
       "maps_url": "https://maps.google.com/?cid=6924437786729621903",
       "cid": "6924437786729621903",
-      "google_id": "/g/11g6p0k0gc"
+      "google_id": "/g/11g6p0k0gc",
+      "maps_place_token": null
     },
     {
       "name": "Tonta",
@@ -2910,7 +3199,8 @@
       "lng": 139.7066146,
       "maps_url": "https://maps.google.com/?cid=6924439729652286011",
       "cid": "6924439729652286011",
-      "google_id": "/g/1tkf0zkh"
+      "google_id": "/g/1tkf0zkh",
+      "maps_place_token": null
     },
     {
       "name": "Kitade Tacos COMMISSARY",
@@ -2921,7 +3211,8 @@
       "lng": 139.7774513,
       "maps_url": "https://maps.google.com/?cid=6924435916920177979",
       "cid": "6924435916920177979",
-      "google_id": "/g/11kzggvmmh"
+      "google_id": "/g/11kzggvmmh",
+      "maps_place_token": null
     },
     {
       "name": "Jiromaru Akihabara",
@@ -2932,7 +3223,8 @@
       "lng": 139.77058929999998,
       "maps_url": "https://maps.google.com/?cid=6924438483734022043",
       "cid": "6924438483734022043",
-      "google_id": "/g/11bv3mp9gh"
+      "google_id": "/g/11bv3mp9gh",
+      "maps_place_token": null
     },
     {
       "name": "Udon Maruka",
@@ -2943,7 +3235,8 @@
       "lng": 139.7601228,
       "maps_url": "https://maps.google.com/?cid=6924438431054663881",
       "cid": "6924438431054663881",
-      "google_id": "/g/1hc363lyz"
+      "google_id": "/g/1hc363lyz",
+      "maps_place_token": null
     },
     {
       "name": "Tachiguizushi Akira Shinbashi",
@@ -2954,7 +3247,8 @@
       "lng": 139.755674,
       "maps_url": "https://maps.google.com/?cid=6924437851081985935",
       "cid": "6924437851081985935",
-      "google_id": "/g/11mb0fnggv"
+      "google_id": "/g/11mb0fnggv",
+      "maps_place_token": null
     },
     {
       "name": "Kotaro",
@@ -2965,7 +3259,8 @@
       "lng": 139.699272,
       "maps_url": "https://maps.google.com/?cid=6924437633459336057",
       "cid": "6924437633459336057",
-      "google_id": "/g/12hkr32xb"
+      "google_id": "/g/12hkr32xb",
+      "maps_place_token": null
     },
     {
       "name": "SéRieUX? セリュー 六本木 モダンフレンチ",
@@ -2976,7 +3271,8 @@
       "lng": 139.72878359999999,
       "maps_url": "https://maps.google.com/?cid=6924437989071554653",
       "cid": "6924437989071554653",
-      "google_id": "/g/11sth4cpjd"
+      "google_id": "/g/11sth4cpjd",
+      "maps_place_token": null
     },
     {
       "name": "Burari",
@@ -2987,7 +3283,8 @@
       "lng": 139.7722841,
       "maps_url": "https://maps.google.com/?cid=6924440375065119871",
       "cid": "6924440375065119871",
-      "google_id": "/g/1xg5sny_"
+      "google_id": "/g/1xg5sny_",
+      "maps_place_token": null
     },
     {
       "name": "SLICE of LIFE （スライスオブライフ）",
@@ -2998,51 +3295,56 @@
       "lng": 139.70847,
       "maps_url": "https://maps.google.com/?cid=6924440274300968155",
       "cid": "6924440274300968155",
-      "google_id": "/g/11t6z39_7p"
+      "google_id": "/g/11t6z39_7p",
+      "maps_place_token": null
     },
     {
-      "name": "〒105-0001 Tokyo, Minato City, Toranomon, 2 Chome−6−2 ヒルズ ステーションタワ 8・45・46・49F TOKYO NODE｜東京ノード",
+      "name": "TOKYO NODE｜東京ノード",
       "address": "〒105-0001 Tokyo, Minato City, Toranomon, 2 Chome−6−2 ヒルズ ステーションタワ 8・45・46・49F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6679141,
       "lng": 139.7466215,
       "maps_url": "https://maps.google.com/?cid=6924438043364206645",
       "cid": "6924438043364206645",
-      "google_id": "/g/11k9l77cr6"
+      "google_id": "/g/11k9l77cr6",
+      "maps_place_token": null
     },
     {
-      "name": "Faro, 8 Chome-8-3 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "Faro",
       "address": "8 Chome-8-3 Ginza, Chuo City, Tokyo 104-0061",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.668557,
       "lng": 139.7618936,
       "maps_url": "https://maps.google.com/?cid=6924438258033218651",
       "cid": "6924438258033218651",
-      "google_id": "/g/11gdkpbwbx"
+      "google_id": "/g/11gdkpbwbx",
+      "maps_place_token": null
     },
     {
-      "name": "Ameyoko Shopping District, 6 Chome-10 Ueno, Taito City, Tokyo 110-0005",
+      "name": "Ameyoko Shopping District",
       "address": "6 Chome-10 Ueno, Taito City, Tokyo 110-0005",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.709004,
       "lng": 139.7746258,
       "maps_url": "https://maps.google.com/?cid=6924441660189554567",
       "cid": "6924441660189554567",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Mara daigaku, レイクサイドビル 7F 2 Chome-14-31 Ueno, Taito City, Tokyo 110-0005",
+      "name": "Mara daigaku",
       "address": "〒110-0005 Tokyo, Taito City, Ueno, 2 Chome−14−31 レイクサイドビル 7F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7105818,
       "lng": 139.7730884,
       "maps_url": "https://maps.google.com/?cid=6924441236910338099",
       "cid": "6924441236910338099",
-      "google_id": "/g/11g9gkhg_5"
+      "google_id": "/g/11g9gkhg_5",
+      "maps_place_token": null
     },
     {
       "name": "apéro. wine bar AOYAMA",
@@ -3053,7 +3355,8 @@
       "lng": 139.7153352,
       "maps_url": "https://maps.google.com/?cid=6924437684024675849",
       "cid": "6924437684024675849",
-      "google_id": "/g/11b6c8xbxp"
+      "google_id": "/g/11b6c8xbxp",
+      "maps_place_token": null
     },
     {
       "name": "CICADA",
@@ -3064,7 +3367,8 @@
       "lng": 139.71263629999999,
       "maps_url": "https://maps.google.com/?cid=6924437746930170071",
       "cid": "6924437746930170071",
-      "google_id": "/g/1thvy80y"
+      "google_id": "/g/1thvy80y",
+      "maps_place_token": null
     },
     {
       "name": "L'AS",
@@ -3075,7 +3379,8 @@
       "lng": 139.7171079,
       "maps_url": "https://maps.google.com/?cid=6924437680186914907",
       "cid": "6924437680186914907",
-      "google_id": "/g/11b73r7rjb"
+      "google_id": "/g/11b73r7rjb",
+      "maps_place_token": null
     },
     {
       "name": "RESTAURANT HYÉNE",
@@ -3086,7 +3391,8 @@
       "lng": 139.7069262,
       "maps_url": "https://maps.google.com/?cid=6924439616326287315",
       "cid": "6924439616326287315",
-      "google_id": "/g/11rxh2mcrj"
+      "google_id": "/g/11rxh2mcrj",
+      "maps_place_token": null
     },
     {
       "name": "Tonkatsu Maisen Aoyama",
@@ -3097,7 +3403,8 @@
       "lng": 139.7115365,
       "maps_url": "https://maps.google.com/?cid=6924439654626716011",
       "cid": "6924439654626716011",
-      "google_id": "/g/1thcsb95"
+      "google_id": "/g/1thcsb95",
+      "maps_place_token": null
     },
     {
       "name": "JULIA",
@@ -3108,29 +3415,32 @@
       "lng": 139.71393079999999,
       "maps_url": "https://maps.google.com/?cid=6924437533840318985",
       "cid": "6924437533840318985",
-      "google_id": "/g/11g6qpwgfm"
+      "google_id": "/g/11g6qpwgfm",
+      "maps_place_token": null
     },
     {
-      "name": "Tonkatsu Narikura, 4 Chome-33-9 Naritahigashi, Suginami City, Tokyo 166-0015",
+      "name": "Tonkatsu Narikura",
       "address": "4 Chome-33-9 Naritahigashi, Suginami City, Tokyo 166-0015",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6976645,
       "lng": 139.63871799999998,
       "maps_url": "https://maps.google.com/?cid=6924552123836130233",
       "cid": "6924552123836130233",
-      "google_id": "/g/11j3wlxhq6"
+      "google_id": "/g/11j3wlxhq6",
+      "maps_place_token": null
     },
     {
-      "name": "Chatei Hatou, 1 Chome-15-19 Shibuya, Shibuya City, Tokyo 150-0002",
+      "name": "Chatei Hatou",
       "address": "1 Chome-15-19 Shibuya, Shibuya City, Tokyo 150-0002",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.660461399999996,
       "lng": 139.7027761,
       "maps_url": "https://maps.google.com/?cid=6924437637334763545",
       "cid": "6924437637334763545",
-      "google_id": "/g/11b778b46g"
+      "google_id": "/g/11b778b46g",
+      "maps_place_token": null
     },
     {
       "name": "Den",
@@ -3141,51 +3451,56 @@
       "lng": 139.71272159999998,
       "maps_url": "https://maps.google.com/?cid=6924439011939849003",
       "cid": "6924439011939849003",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "挽肉と米 渋谷店 椎津ビル ３F 2 Chome-28-1 Dogenzaka, Shibuya City, Tokyo 150-0043",
+      "name": "挽肉と米 渋谷店",
       "address": "〒150-0043 Tokyo, Shibuya City, Dogenzaka, 2 Chome−28−1 椎津ビル ３F",
-      "note": null,
-      "is_favorite": true,
+      "note": "Reservations only. Reservations for the next week open the previous Friday at 9am JST on Tablecheck - phone reservations are not taken. Deposit of 1600 yen/pp",
+      "is_favorite": false,
       "lat": 35.6593105,
       "lng": 139.69755379999998,
       "maps_url": "https://maps.google.com/?cid=6924440526871356081",
       "cid": "6924440526871356081",
-      "google_id": "/g/11nrw_gmv8"
+      "google_id": "/g/11nrw_gmv8",
+      "maps_place_token": null
     },
     {
-      "name": "Zoetrope, ガイアビル４ 3F 7 Chome-10-14 Nishishinjuku, Shinjuku City, Tokyo 160-0023",
+      "name": "Zoetrope",
       "address": "〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 7 Chome−10−14 ガイアビル４ 3F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6944997,
       "lng": 139.6984625,
       "maps_url": "https://maps.google.com/?cid=6924439278740166403",
       "cid": "6924439278740166403",
-      "google_id": "/g/1tfm6njl"
+      "google_id": "/g/1tfm6njl",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−3−6 栄ビル B1 BAR KAGE",
+      "name": "BAR KAGE",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−3−6 栄ビル B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6715126,
       "lng": 139.7613246,
       "maps_url": "https://maps.google.com/?cid=6924438286049220981",
       "cid": "6924438286049220981",
-      "google_id": "/g/1tgvdmhl"
+      "google_id": "/g/1tgvdmhl",
+      "maps_place_token": null
     },
     {
-      "name": "Daikokuya, 1 Chome-2-1 Yanagibashi, Taito City, Tokyo 111-0052, Japan",
+      "name": "Daikokuya",
       "address": "1 Chome-2-1 Yanagibashi, Taito City, Tokyo 111-0052, Japan",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.6954954,
-      "lng": 139.787354,
+      "is_favorite": false,
+      "lat": 35.6954931,
+      "lng": 139.7873529,
       "maps_url": "https://maps.google.com/?cid=6924441327643952605",
       "cid": "6924441327643952605",
-      "google_id": "/g/1tf65gtq"
+      "google_id": "/g/1tf65gtq",
+      "maps_place_token": null
     },
     {
       "name": "夜香港 Ye Xiang Gang",
@@ -3196,205 +3511,224 @@
       "lng": 139.7317761,
       "maps_url": "https://maps.google.com/?cid=6924437364464014205",
       "cid": "6924437364464014205",
-      "google_id": "/g/11rql5r3c1"
+      "google_id": "/g/11rql5r3c1",
+      "maps_place_token": null
     },
     {
-      "name": "CAFE REISSUE, 3 Chome-25-7 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "CAFE REISSUE",
       "address": "3 Chome-25-7 Jingumae, Shibuya City, Tokyo 150-0001",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6711763,
       "lng": 139.7079583,
       "maps_url": "https://maps.google.com/?cid=6924439059758327167",
       "cid": "6924439059758327167",
-      "google_id": "/g/11c55bqbws"
+      "google_id": "/g/11c55bqbws",
+      "maps_place_token": null
     },
     {
-      "name": "Tonkatsu Nanaido, ローザビアンカ 104 3 Chome-42-11 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Tonkatsu Nanaido",
       "address": "〒150-0001 Tokyo, Shibuya City, Jingumae, 3 Chome−42−11 ローザビアンカ 104",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6718214,
       "lng": 139.7139354,
       "maps_url": "https://maps.google.com/?cid=6924439694599485815",
       "cid": "6924439694599485815",
-      "google_id": "/g/11h241w0g5"
+      "google_id": "/g/11h241w0g5",
+      "maps_place_token": null
     },
     {
-      "name": "〒152-0035 Tokyo, Meguro City, Jiyugaoka, 2 Chome−8−8 LeCielBleu2F OIL&VINEGAR RESTAURANT 瑞穂",
+      "name": "OIL&VINEGAR RESTAURANT 瑞穂",
       "address": "〒152-0035 Tokyo, Meguro City, Jiyugaoka, 2 Chome−8−8 LeCielBleu2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6099397,
       "lng": 139.66826849999998,
       "maps_url": "https://maps.google.com/?cid=6924554322405352301",
       "cid": "6924554322405352301",
-      "google_id": "/g/11flr077x2"
+      "google_id": "/g/11flr077x2",
+      "maps_place_token": null
     },
     {
-      "name": "The National Art Center, Tokyo, 国立新美術館 7 Chome-22-2 Roppongi, Minato City, Tokyo 106-8558",
+      "name": "The National Art Center, Tokyo",
       "address": "〒106-8558 Tokyo, Minato City, Roppongi, 7 Chome−22−2 国立新美術館",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.665289,
       "lng": 139.726374,
       "maps_url": "https://maps.google.com/?cid=6924437791620131647",
       "cid": "6924437791620131647",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Matsukawa",
       "address": null,
       "note": null,
       "is_favorite": false,
-      "lat": 35.667452399999995,
-      "lng": 139.7424165,
+      "lat": 35.6674511,
+      "lng": 139.74242089999998,
       "maps_url": "https://maps.google.com/?cid=6924437877658919593",
       "cid": "6924437877658919593",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 3 Chome−21−3 二階 オリンピアード麻布霞坂 Ao Nishiazabu",
+      "name": "Ao Nishiazabu",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 3 Chome−21−3 二階 オリンピアード麻布霞坂",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.660046,
       "lng": 139.7252912,
       "maps_url": "https://maps.google.com/?cid=6924438067784485465",
       "cid": "6924438067784485465",
-      "google_id": "/g/11j7cmw774"
+      "google_id": "/g/11j7cmw774",
+      "maps_place_token": null
     },
     {
-      "name": "Suetomi, ２F 1 Chome-10-15 Mita, Minato City, Tokyo 108-0073",
+      "name": "Suetomi",
       "address": "〒108-0073 Tokyo, Minato City, Mita, 1 Chome−10−15 ２F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6542211,
       "lng": 139.73793949999998,
       "maps_url": "https://maps.google.com/?cid=6924438036834413239",
       "cid": "6924438036834413239",
-      "google_id": "/g/11t1jq4hzd"
+      "google_id": "/g/11t1jq4hzd",
+      "maps_place_token": null
     },
     {
-      "name": "Makitori Shinkōbe, 1 Chome-10-16 Mita, Minato City, Tokyo 108-0073",
+      "name": "Makitori Shinkōbe",
       "address": "1 Chome-10-16 Mita, Minato City, Tokyo 108-0073",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.677242899999996,
       "lng": 139.7360305,
       "maps_url": "https://maps.google.com/?cid=6924438333418682953",
       "cid": "6924438333418682953",
-      "google_id": "/g/11ph4l7v_r"
+      "google_id": "/g/11ph4l7v_r",
+      "maps_place_token": null
     },
     {
-      "name": "Ryu No Ko, メナー神宮前 B1Ｆ 1 Chome-8-5 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Ryu No Ko",
       "address": "〒150-0001 Tokyo, Shibuya City, Jingumae, 1 Chome−8−5 メナー神宮前 B1Ｆ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6702023,
       "lng": 139.7064737,
       "maps_url": "https://maps.google.com/?cid=6924439060393737885",
       "cid": "6924439060393737885",
-      "google_id": "/g/1thfffnk"
+      "google_id": "/g/1thfffnk",
+      "maps_place_token": null
     },
     {
-      "name": "〒154-0024 Tokyo, Setagaya City, Sangenjaya, 2 Chome−8−10 ルナパーク三軒茶屋 ラブルダイニング",
+      "name": "ラブルダイニング",
       "address": "〒154-0024 Tokyo, Setagaya City, Sangenjaya, 2 Chome−8−10 ルナパーク三軒茶屋",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.6426549,
-      "lng": 139.6675315,
+      "is_favorite": false,
+      "lat": 35.6426722,
+      "lng": 139.6675361,
       "maps_url": "https://maps.google.com/?cid=6924554318812438211",
       "cid": "6924554318812438211",
-      "google_id": "/g/11r10vqfc0"
+      "google_id": "/g/11r10vqfc0",
+      "maps_place_token": null
     },
     {
-      "name": "TAHONA Mezcal & Tequila Cafe Bar | タオナ メスカル&テキーラ カフェ バー, コクサイビルC館 ２F 13-4 Udagawacho, Shibuya City, Tokyo 150-0042",
+      "name": "TAHONA Mezcal & Tequila Cafe Bar | タオナ メスカル&テキーラ カフェ バー",
       "address": "〒150-0042 Tokyo, Shibuya City, Udagawacho, 13−4 コクサイビルC館 ２F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6612514,
       "lng": 139.6987805,
       "maps_url": "https://maps.google.com/?cid=6924440063755294411",
       "cid": "6924440063755294411",
-      "google_id": "/g/11pwswxvmy"
+      "google_id": "/g/11pwswxvmy",
+      "maps_place_token": null
     },
     {
-      "name": "FERRI’S（フェリーズ）広尾, ジュメイラビル 1F 4 Chome-11-11 Nishiazabu, Minato City, Tokyo 106-0031",
+      "name": "FERRI’S（フェリーズ）広尾",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 4 Chome−11−11 ジュメイラビル 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6581195,
       "lng": 139.7230622,
       "maps_url": "https://maps.google.com/?cid=6924437741319644713",
       "cid": "6924437741319644713",
-      "google_id": "/g/11c5b2gc4q"
+      "google_id": "/g/11c5b2gc4q",
+      "maps_place_token": null
     },
     {
-      "name": "MoDeRiTiOn PastaLeverreVino, 榮林ビル 5F 3 Chome-16-2 Akasaka, Minato City, Tokyo 107-0052",
+      "name": "MoDeRiTiOn PastaLeverreVino",
       "address": "〒107-0052 Tokyo, Minato City, Akasaka, 3 Chome−16−2 榮林ビル 5F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6635464,
       "lng": 139.7147207,
       "maps_url": "https://maps.google.com/?cid=6924440379683373659",
       "cid": "6924440379683373659",
-      "google_id": "/g/11h9234mfm"
+      "google_id": "/g/11h9234mfm",
+      "maps_place_token": null
     },
     {
-      "name": "〒108-0072 Tokyo, Minato City, Shirokane, 6 Chome−2−4 ナザレハイツ西館 101 kermistokyo",
+      "name": "kermistokyo",
       "address": "〒108-0072 Tokyo, Minato City, Shirokane, 6 Chome−2−4 ナザレハイツ西館 101",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.644428399999995,
       "lng": 139.7235823,
       "maps_url": "https://maps.google.com/?cid=6924437694385113601",
       "cid": "6924437694385113601",
-      "google_id": "/g/11rtk_4gwv"
+      "google_id": "/g/11rtk_4gwv",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Ryūjirō, ARISTO南青山 １階 2 Chome-11-11 Minamiaoyama, Minato City, Tokyo 107-0062",
+      "name": "Sushi Ryūjirō",
       "address": "〒107-0062 Tokyo, Minato City, Minamiaoyama, 2 Chome−11−11 ARISTO南青山 １階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6713126,
       "lng": 139.7210433,
       "maps_url": "https://maps.google.com/?cid=6924439803415668417",
       "cid": "6924439803415668417",
-      "google_id": "/g/11h9gvxfxb"
+      "google_id": "/g/11h9gvxfxb",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Mizukami, ３-8 Ichibancho, Chiyoda City, Tokyo 102-0082",
+      "name": "Sushi Mizukami",
       "address": "〒102-0082 Tokyo, Chiyoda City, Ichibancho, ３−8",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.687734899999995,
       "lng": 139.7433084,
       "maps_url": "https://maps.google.com/?cid=6924438837992882177",
       "cid": "6924438837992882177",
-      "google_id": "/g/11gh058d2k"
+      "google_id": "/g/11gh058d2k",
+      "maps_place_token": null
     },
     {
-      "name": "Saikoh, 3 Chome-10-5 Higashiazabu, Minato City, Tokyo 106-0044",
+      "name": "Saikoh",
       "address": "3 Chome-10-5 Higashiazabu, Minato City, Tokyo 106-0044",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6557898,
       "lng": 139.7392156,
       "maps_url": "https://maps.google.com/?cid=6924437648722632347",
       "cid": "6924437648722632347",
-      "google_id": "/g/11pz544yj0"
+      "google_id": "/g/11pz544yj0",
+      "maps_place_token": null
     },
     {
-      "name": "Modern Mexican CABOS, Gems田町 1F 5 Chome-9-8 Shiba, Minato City, Tokyo 108-0014",
+      "name": "Modern Mexican CABOS",
       "address": "〒108-0014 Tokyo, Minato City, Shiba, 5 Chome−9−8 Gems田町 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.648934,
       "lng": 139.74664199999998,
       "maps_url": "https://maps.google.com/?cid=6924438108123210415",
       "cid": "6924438108123210415",
-      "google_id": "/g/11h7rkwbhg"
+      "google_id": "/g/11h7rkwbhg",
+      "maps_place_token": null
     },
     {
       "name": "twiggy. cafe",
@@ -3405,29 +3739,32 @@
       "lng": 139.7121937,
       "maps_url": "https://maps.google.com/?cid=6924439013422131371",
       "cid": "6924439013422131371",
-      "google_id": "/g/11csqyh1n5"
+      "google_id": "/g/11csqyh1n5",
+      "maps_place_token": null
     },
     {
-      "name": "Mizuho, 6 Chome-8-7 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Mizuho",
       "address": "6 Chome-8-7 Jingumae, Shibuya City, Tokyo 150-0001",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6669765,
       "lng": 139.7056055,
       "maps_url": "https://maps.google.com/?cid=6924439063358949623",
       "cid": "6924439063358949623",
-      "google_id": "/g/11cmp59sh1"
+      "google_id": "/g/11cmp59sh1",
+      "maps_place_token": null
     },
     {
-      "name": "Micasadeco & Cafe Jingumae, １Ｆ 6 Chome-13-2 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Micasadeco & Cafe Jingumae",
       "address": "〒150-0001 Tokyo, Shibuya City, Jingumae, 6 Chome−13−2 １Ｆ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6665545,
       "lng": 139.7054272,
       "maps_url": "https://maps.google.com/?cid=6924439073819328013",
       "cid": "6924439073819328013",
-      "google_id": "/g/11cn94pmg7"
+      "google_id": "/g/11cn94pmg7",
+      "maps_place_token": null
     },
     {
       "name": "Goryonsan Nishiazabu",
@@ -3438,40 +3775,44 @@
       "lng": 139.72009309999999,
       "maps_url": "https://maps.google.com/?cid=6924437528580434281",
       "cid": "6924437528580434281",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "The INNOCENT CARVERY, カルハ西麻布 101 1 Chome-4-28 Nishiazabu, Minato City, Tokyo 106-0031",
+      "name": "The INNOCENT CARVERY",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 1 Chome−4−28 カルハ西麻布 101",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6618312,
       "lng": 139.7237678,
       "maps_url": "https://maps.google.com/?cid=6924437787426592363",
       "cid": "6924437787426592363",
-      "google_id": "/g/11clv6pq42"
+      "google_id": "/g/11clv6pq42",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Rizaki Ebisu, 楠ビル 3F 3 Chome-25-6 Higashi, Shibuya City, Tokyo 150-0011",
+      "name": "Sushi Rizaki Ebisu",
       "address": "〒150-0011 Tokyo, Shibuya City, Higashi, 3 Chome−25−6 楠ビル 3F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6485264,
       "lng": 139.7100783,
       "maps_url": "https://maps.google.com/?cid=6924437794676893589",
       "cid": "6924437794676893589",
-      "google_id": "/g/11s0wfpcgp"
+      "google_id": "/g/11s0wfpcgp",
+      "maps_place_token": null
     },
     {
-      "name": "Sushi Rizaki, 8-2 Kamiyamacho, Shibuya City, Tokyo 150-0047",
+      "name": "Sushi Rizaki",
       "address": "8-2 Kamiyamacho, Shibuya City, Tokyo 150-0047",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6641672,
       "lng": 139.6939261,
       "maps_url": "https://maps.google.com/?cid=6924440048782195141",
       "cid": "6924440048782195141",
-      "google_id": "/g/11flglgdbf"
+      "google_id": "/g/11flglgdbf",
+      "maps_place_token": null
     },
     {
       "name": "せろCERO",
@@ -3482,7 +3823,8 @@
       "lng": 139.7603869,
       "maps_url": "https://maps.google.com/?cid=6924438160481470997",
       "cid": "6924438160481470997",
-      "google_id": "/g/11gxmckzvr"
+      "google_id": "/g/11gxmckzvr",
+      "maps_place_token": null
     },
     {
       "name": "オレキス",
@@ -3493,62 +3835,68 @@
       "lng": 139.7432341,
       "maps_url": "https://maps.google.com/?cid=6924437981655129577",
       "cid": "6924437981655129577",
-      "google_id": "/g/1thqgr5c"
+      "google_id": "/g/1thqgr5c",
+      "maps_place_token": null
     },
     {
-      "name": "Fish Bank Tokyo, 汐留シティセンタ ４１F 1 Chome-5-2 Higashishinbashi, Minato City, Tokyo 105-7108",
+      "name": "Fish Bank Tokyo",
       "address": "〒105-7108 Tokyo, Minato City, Higashishinbashi, 1 Chome−5−2 汐留シティセンタ ４１F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6652875,
       "lng": 139.7609214,
       "maps_url": "https://maps.google.com/?cid=6924438095083229067",
       "cid": "6924438095083229067",
-      "google_id": "/g/1tjv3hlh"
+      "google_id": "/g/1tjv3hlh",
+      "maps_place_token": null
     },
     {
-      "name": "Yoshikawa Azabujuban, エフプラザ 1階 1 Chome-3-8 Azabujuban, Minato City, Tokyo 106-0045",
+      "name": "Yoshikawa Azabujuban",
       "address": "〒106-0045 Tokyo, Minato City, Azabujuban, 1 Chome−3−8 エフプラザ 1階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6567457,
       "lng": 139.735884,
       "maps_url": "https://maps.google.com/?cid=6924437924738134773",
       "cid": "6924437924738134773",
-      "google_id": "/g/11ns9qbpgk"
+      "google_id": "/g/11ns9qbpgk",
+      "maps_place_token": null
     },
     {
-      "name": "Sanda Roppongi Honten, 4 Chome-5-9 Roppongi, Minato City, Tokyo 106-0032",
+      "name": "Sanda Roppongi Honten",
       "address": "4 Chome-5-9 Roppongi, Minato City, Tokyo 106-0032",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.664602599999995,
       "lng": 139.7325627,
       "maps_url": "https://maps.google.com/?cid=6924437820096957537",
       "cid": "6924437820096957537",
-      "google_id": "/g/1tj45xbm"
+      "google_id": "/g/1tj45xbm",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0022 Tokyo, Shibuya City, Ebisuminami, 2 Chome−1−5 ES215ビル 5F Nakameguro Iguchi Ebisuten",
+      "name": "Nakameguro Iguchi Ebisuten",
       "address": "〒150-0022 Tokyo, Shibuya City, Ebisuminami, 2 Chome−1−5 ES215ビル 5F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6457733,
       "lng": 139.7070697,
       "maps_url": "https://maps.google.com/?cid=6924437537743652451",
       "cid": "6924437537743652451",
-      "google_id": "/g/11bbw_yhy5"
+      "google_id": "/g/11bbw_yhy5",
+      "maps_place_token": null
     },
     {
-      "name": "〒104-0061 Tokyo, Chuo City, Ginza, 2 Chome−4−6 ベルビア館 8階 MASIA",
+      "name": "MASIA",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 2 Chome−4−6 ベルビア館 8階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6740067,
       "lng": 139.7664474,
       "maps_url": "https://maps.google.com/?cid=6924437339828408547",
       "cid": "6924437339828408547",
-      "google_id": "/g/11s8z7g1n0"
+      "google_id": "/g/11s8z7g1n0",
+      "maps_place_token": null
     },
     {
       "name": "Sick！ NISHIAZABU",
@@ -3559,95 +3907,104 @@
       "lng": 139.72405129999999,
       "maps_url": "https://maps.google.com/?cid=6924438227885219713",
       "cid": "6924438227885219713",
-      "google_id": "/g/11s7c61f08"
+      "google_id": "/g/11s7c61f08",
+      "maps_place_token": null
     },
     {
-      "name": "Saido, 2 Chome-15-10 Jiyugaoka, Meguro City, Tokyo 152-0035",
+      "name": "Saido",
       "address": "2 Chome-15-10 Jiyugaoka, Meguro City, Tokyo 152-0035",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.607737799999995,
       "lng": 139.6662781,
       "maps_url": "https://maps.google.com/?cid=6924553841005131067",
       "cid": "6924553841005131067",
-      "google_id": "/g/11gr5y772q"
+      "google_id": "/g/11gr5y772q",
+      "maps_place_token": null
     },
     {
-      "name": "Sugahara Bar, 25-5 Maruyamacho, Shibuya City, Tokyo 150-0044",
+      "name": "Sugahara Bar",
       "address": "25-5 Maruyamacho, Shibuya City, Tokyo 150-0044",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6560037,
       "lng": 139.6935591,
       "maps_url": "https://maps.google.com/?cid=6924437626247470991",
       "cid": "6924437626247470991",
-      "google_id": "/g/1th0ybd1"
+      "google_id": "/g/1th0ybd1",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0045 Tokyo, Minato City, Azabujuban, 2 Chome−20−12 オリエント麻布 Savoy, Domi-LA",
+      "name": "Savoy, Domi-LA",
       "address": "〒106-0045 Tokyo, Minato City, Azabujuban, 2 Chome−20−12 オリエント麻布",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6537405,
       "lng": 139.73527579999998,
       "maps_url": "https://maps.google.com/?cid=6924437953813256067",
       "cid": "6924437953813256067",
-      "google_id": "/g/12qhfpyxc"
+      "google_id": "/g/12qhfpyxc",
+      "maps_place_token": null
     },
     {
-      "name": "Amanoya, 1-9 1F 3 Azabujuban, Tokyo 106-0045",
+      "name": "Amanoya",
       "address": "〒106-0045 Tokyo, Azabujuban, 3 1-9 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.653251999999995,
       "lng": 139.736379,
       "maps_url": "https://maps.google.com/?cid=6924437952685285999",
       "cid": "6924437952685285999",
-      "google_id": "/g/1tkmmk2g"
+      "google_id": "/g/1tkmmk2g",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−8−7 Sun Grata NishiAzabu Ⅰ 1F Ⅱ Le Api Osteria",
+      "name": "Le Api Osteria",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−8−7 Sun Grata NishiAzabu Ⅰ 1F Ⅱ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6618032,
       "lng": 139.7209018,
       "maps_url": "https://maps.google.com/?cid=6924438099415016961",
       "cid": "6924438099415016961",
-      "google_id": "/g/11s90mqj9t"
+      "google_id": "/g/11s90mqj9t",
+      "maps_place_token": null
     },
     {
-      "name": "鮨 m, アットホームスクエア 2F, 4 Chome-24-8 Minamiaoyama, Minato City, Tokyo 107-0062",
+      "name": "鮨 m",
       "address": "アットホームスクエア 2F, 4 Chome-24-8 Minamiaoyama, Minato City, Tokyo 107-0062",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.662316499999996,
       "lng": 139.7178219,
       "maps_url": "https://maps.google.com/?cid=6924437378606521375",
       "cid": "6924437378606521375",
-      "google_id": "/g/11h62vl4dp"
+      "google_id": "/g/11h62vl4dp",
+      "maps_place_token": null
     },
     {
-      "name": "Cristiano's, 1 Chome-51-10 Tomigaya, 渋谷区 Shibuya City, Tokyo 151-0063",
+      "name": "Cristiano's",
       "address": "1 Chome-51-10 Tomigaya, 渋谷区 Shibuya City, Tokyo 151-0063",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6686195,
       "lng": 139.6890123,
       "maps_url": "https://maps.google.com/?cid=6924551937033853077",
       "cid": "6924551937033853077",
-      "google_id": "/g/1tcy8y7k"
+      "google_id": "/g/1tcy8y7k",
+      "maps_place_token": null
     },
     {
-      "name": "〒151-0064 Tokyo, Shibuya City, Uehara, 1 Chome−35−3 sio",
+      "name": "sio",
       "address": "1 Chome-35-3 Uehara, Shibuya City, Tokyo 151-0064",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6695874,
       "lng": 139.6821732,
       "maps_url": "https://maps.google.com/?cid=6924551917999335903",
       "cid": "6924551917999335903",
-      "google_id": "/g/12qgg5g8d"
+      "google_id": "/g/12qgg5g8d",
+      "maps_place_token": null
     },
     {
       "name": "Bar Mimi",
@@ -3658,40 +4015,44 @@
       "lng": 139.7624179,
       "maps_url": "https://maps.google.com/?cid=6924438287154173269",
       "cid": "6924438287154173269",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "〒171-0022 Tokyo, Toshima City, Minamiikebukuro, 1 Chome−26−2 ７階 蜀魚記",
+      "name": "蜀魚記",
       "address": "〒171-0022 Tokyo, Toshima City, Minamiikebukuro, 1 Chome−26−2 ７階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.728873799999995,
       "lng": 139.7135824,
       "maps_url": "https://maps.google.com/?cid=6924439906938270887",
       "cid": "6924439906938270887",
-      "google_id": "/g/11rqtpm5l3"
+      "google_id": "/g/11rqtpm5l3",
+      "maps_place_token": null
     },
     {
-      "name": "〒169-0073 Tokyo, Shinjuku City, Hyakunincho, 2 Chome−4−2 ビルやまき B1F 四川料理 川覇王",
+      "name": "四川料理 川覇王",
       "address": "〒169-0073 Tokyo, Shinjuku City, Hyakunincho, 2 Chome−4−2 ビルやまき B1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.7017056,
       "lng": 139.6998926,
       "maps_url": "https://maps.google.com/?cid=6924439876092690583",
       "cid": "6924439876092690583",
-      "google_id": "/g/11qnb4fy3_"
+      "google_id": "/g/11qnb4fy3_",
+      "maps_place_token": null
     },
     {
-      "name": "〒153-0063 Tokyo, Meguro City, Meguro, 4 Chome−21−19 アイビーハイツ 1階 Ramen Break Beats",
+      "name": "Ramen Break Beats",
       "address": "〒153-0063 Tokyo, Meguro City, Meguro, 4 Chome−21−19 アイビーハイツ 1階",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.6335161,
-      "lng": 139.6987692,
+      "is_favorite": false,
+      "lat": 35.6335155,
+      "lng": 139.69876779999998,
       "maps_url": "https://maps.google.com/?cid=6924437948008024293",
       "cid": "6924437948008024293",
-      "google_id": "/g/11p5jd1k_8"
+      "google_id": "/g/11p5jd1k_8",
+      "maps_place_token": null
     },
     {
       "name": "NK(Nanpeidai Chef's table featuring Kakuland)",
@@ -3702,7 +4063,8 @@
       "lng": 139.7369952,
       "maps_url": "https://maps.google.com/?cid=6924440109068277301",
       "cid": "6924440109068277301",
-      "google_id": "/g/11jxrw7fwd"
+      "google_id": "/g/11jxrw7fwd",
+      "maps_place_token": null
     },
     {
       "name": "Hinabe Chouyou",
@@ -3713,7 +4075,8 @@
       "lng": 139.7392729,
       "maps_url": "https://maps.google.com/?cid=6924438012928009203",
       "cid": "6924438012928009203",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "ジョウモン 六本木店",
@@ -3724,7 +4087,8 @@
       "lng": 139.7329948,
       "maps_url": "https://maps.google.com/?cid=6924437935487333617",
       "cid": "6924437935487333617",
-      "google_id": "/g/1vmr1c9m"
+      "google_id": "/g/1vmr1c9m",
+      "maps_place_token": null
     },
     {
       "name": "TSURUTOKAME",
@@ -3735,18 +4099,20 @@
       "lng": 139.7624028,
       "maps_url": "https://maps.google.com/?cid=6924438258454189397",
       "cid": "6924438258454189397",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Botrus Italian Restaurant, Best Select Bldg., ２階 4 Chome-10-4 Sendagaya, Shibuya City, Tokyo 151-0051",
+      "name": "Botrus Italian Restaurant",
       "address": "〒151-0051 Tokyo, Shibuya City, Sendagaya, 4 Chome−10−4, Best Select Bldg., ２階",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.679915699999995,
       "lng": 139.7064577,
       "maps_url": "https://maps.google.com/?cid=6924439598522983361",
       "cid": "6924439598522983361",
-      "google_id": "/g/11g0tl_gmk"
+      "google_id": "/g/11g0tl_gmk",
+      "maps_place_token": null
     },
     {
       "name": "OXOMOCO (オショモコ)",
@@ -3757,7 +4123,8 @@
       "lng": 139.7219518,
       "maps_url": "https://maps.google.com/?cid=6924437840897977811",
       "cid": "6924437840897977811",
-      "google_id": "/g/11jhsydvhj"
+      "google_id": "/g/11jhsydvhj",
+      "maps_place_token": null
     },
     {
       "name": "twelv.",
@@ -3768,7 +4135,8 @@
       "lng": 139.7236252,
       "maps_url": "https://maps.google.com/?cid=6924437741391751887",
       "cid": "6924437741391751887",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "㐂邑",
@@ -3779,7 +4147,8 @@
       "lng": 139.624356,
       "maps_url": "https://maps.google.com/?cid=6924552782471120135",
       "cid": "6924552782471120135",
-      "google_id": "/g/119w2wd75"
+      "google_id": "/g/119w2wd75",
+      "maps_place_token": null
     },
     {
       "name": "アルデバラン",
@@ -3790,7 +4159,8 @@
       "lng": 139.7352952,
       "maps_url": "https://maps.google.com/?cid=6924438123803708183",
       "cid": "6924438123803708183",
-      "google_id": "/g/11jzgnf04v"
+      "google_id": "/g/11jzgnf04v",
+      "maps_place_token": null
     },
     {
       "name": "日本料理 久丹",
@@ -3801,29 +4171,32 @@
       "lng": 139.7740198,
       "maps_url": "https://maps.google.com/?cid=6924435656785389973",
       "cid": "6924435656785389973",
-      "google_id": "/g/11g0gwbg75"
+      "google_id": "/g/11g0gwbg75",
+      "maps_place_token": null
     },
     {
-      "name": "〒107-0052 Tokyo, Minato City, Akasaka, 2 Chome−12−25 １階 鮨 こまり 溜池山王",
+      "name": "鮨 こまり 溜池山王",
       "address": "〒107-0052 Tokyo, Minato City, Akasaka, 2 Chome−12−25 １階",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.6711138,
-      "lng": 139.74012399999998,
+      "is_favorite": false,
+      "lat": 35.6711035,
+      "lng": 139.7401068,
       "maps_url": "https://maps.google.com/?cid=6924438299493238573",
       "cid": "6924438299493238573",
-      "google_id": "/g/11rv6gqhlw"
+      "google_id": "/g/11rv6gqhlw",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0044 Tokyo, Minato City, Higashiazabu, 3 Chome−4−6 ASTILE麻布十番 B1F 麻布さとり",
+      "name": "麻布さとり",
       "address": "〒106-0044 Tokyo, Minato City, Higashiazabu, 3 Chome−4−6 ASTILE麻布十番 B1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.657418,
       "lng": 139.7376708,
       "maps_url": "https://maps.google.com/?cid=6924437631154351065",
       "cid": "6924437631154351065",
-      "google_id": "/g/11q4c_sn92"
+      "google_id": "/g/11q4c_sn92",
+      "maps_place_token": null
     },
     {
       "name": "Gas Light EVE",
@@ -3834,18 +4207,20 @@
       "lng": 139.7600491,
       "maps_url": "https://maps.google.com/?cid=6924438260597950695",
       "cid": "6924438260597950695",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
-      "name": "Tokyo meat shabu-shabu house, カーサ第二新宿 1F 1 Chome-12-3 Okubo, Shinjuku City, Tokyo 169-0072",
+      "name": "Tokyo meat shabu-shabu house",
       "address": "〒169-0072 Tokyo, Shinjuku City, Okubo, 1 Chome−12−3 1F カーサ第二新宿",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6983816,
       "lng": 139.7033524,
       "maps_url": "https://maps.google.com/?cid=6924439628294159491",
       "cid": "6924439628294159491",
-      "google_id": "/g/11cs0d5czp"
+      "google_id": "/g/11cs0d5czp",
+      "maps_place_token": null
     },
     {
       "name": "A.Y.L.I～お気にめすまま～",
@@ -3856,62 +4231,68 @@
       "lng": 139.69522569999998,
       "maps_url": "https://maps.google.com/?cid=6924439831138568905",
       "cid": "6924439831138568905",
-      "google_id": "/g/11splhd8h4"
+      "google_id": "/g/11splhd8h4",
+      "maps_place_token": null
     },
     {
-      "name": "Recte, サンビレッジ代官山 2F 2 Chome-17-5 Ebisunishi, Shibuya City, Tokyo 150-0021",
+      "name": "Recte",
       "address": "〒150-0021 Tokyo, Shibuya City, Ebisunishi, 2 Chome−17−5 サンビレッジ代官山 2F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.648923599999996,
       "lng": 139.7059578,
       "maps_url": "https://maps.google.com/?cid=6924437550969126913",
       "cid": "6924437550969126913",
-      "google_id": "/g/1tjdr9mk"
+      "google_id": "/g/1tjdr9mk",
+      "maps_place_token": null
     },
     {
-      "name": "Jyūban Ukyō, 2 Chome-8-8 Azabujuban, Minato City, Tokyo 106-0045",
+      "name": "Jyūban Ukyō",
       "address": "2 Chome-8-8 Azabujuban, Minato City, Tokyo 106-0045",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6553641,
       "lng": 139.7347608,
       "maps_url": "https://maps.google.com/?cid=6924437945460224223",
       "cid": "6924437945460224223",
-      "google_id": "/g/11bbswwswm"
+      "google_id": "/g/11bbswwswm",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0001 Tokyo, Shibuya-ku Jingūmae, 4 Chome−15-3 KOFFEE MAMEYA",
+      "name": "KOFFEE MAMEYA",
       "address": "〒150-0001 Tokyo, Shibuya-ku Jingūmae, 4 Chome−15-3",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6683658,
       "lng": 139.7108934,
       "maps_url": "https://maps.google.com/?cid=6924439060805409287",
       "cid": "6924439060805409287",
-      "google_id": "/g/12vtrmgjh"
+      "google_id": "/g/12vtrmgjh",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0002 Tokyo, Shibuya City, Shibuya, 3 Chome−27−5 東急ステイ渋谷新南口別館１F Churrascaria ALEGRIA Shibuya",
+      "name": "Churrascaria ALEGRIA Shibuya",
       "address": "〒150-0002 Tokyo, Shibuya City, Shibuya, 3 Chome−27−5 東急ステイ渋谷新南口別館１F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6557503,
       "lng": 139.7050267,
       "maps_url": "https://maps.google.com/?cid=6924438086961638159",
       "cid": "6924438086961638159",
-      "google_id": "/g/11j8w9xmjb"
+      "google_id": "/g/11j8w9xmjb",
+      "maps_place_token": null
     },
     {
-      "name": "Crony, ＦＵＮＧＯ ＢＵＮＧＡＬＯＩＤ 1 Chome-20-3 Higashiazabu, Minato City, Tokyo 106-0044",
+      "name": "Crony",
       "address": "〒106-0044 Tokyo, Minato City, Higashiazabu, 1 Chome−20−3 ＦＵＮＧＯ ＢＵＮＧＡＬＯＩＤ",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6557829,
       "lng": 139.7432984,
       "maps_url": "https://maps.google.com/?cid=6924437694221610959",
       "cid": "6924437694221610959",
-      "google_id": "/g/11css6y0ql"
+      "google_id": "/g/11css6y0ql",
+      "maps_place_token": null
     },
     {
       "name": "THE BELCOMO",
@@ -3922,7 +4303,8 @@
       "lng": 139.7159503,
       "maps_url": "https://maps.google.com/?cid=6924439824815895669",
       "cid": "6924439824815895669",
-      "google_id": "/g/11kgntbbmq"
+      "google_id": "/g/11kgntbbmq",
+      "maps_place_token": null
     },
     {
       "name": "WORLD BREAKFAST ALLDAY 外苑前",
@@ -3933,95 +4315,104 @@
       "lng": 139.7137873,
       "maps_url": "https://maps.google.com/?cid=6924439015205197339",
       "cid": "6924439015205197339",
-      "google_id": "/g/11btx0wvvz"
+      "google_id": "/g/11btx0wvvz",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0011 Tokyo, Shibuya City, Higashi, 3 Chome−20−4 Ray Quon EBISU4F BAR Marble",
+      "name": "BAR Marble",
       "address": "〒150-0011 Tokyo, Shibuya City, Higashi, 3 Chome−20−4 Ray Quon EBISU4F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6500398,
       "lng": 139.7091779,
       "maps_url": "https://maps.google.com/?cid=6924438072789106877",
       "cid": "6924438072789106877",
-      "google_id": "/g/11s38d3dfz"
+      "google_id": "/g/11s38d3dfz",
+      "maps_place_token": null
     },
     {
-      "name": "〒162-0825 Tokyo, Shinjuku City, Kagurazaka, 3 Chome−6-53 ＪＮＣ神楽坂寮 2F レテール L’ÉTERRE",
+      "name": "レテール L’ÉTERRE",
       "address": "〒162-0825 Tokyo, Shinjuku City, Kagurazaka, 3 Chome−6-53 ＪＮＣ神楽坂寮 2F",
       "note": null,
-      "is_favorite": true,
-      "lat": 35.7004703,
-      "lng": 139.739637,
+      "is_favorite": false,
+      "lat": 35.7004826,
+      "lng": 139.73967539999998,
       "maps_url": "https://maps.google.com/?cid=6924439641794732085",
       "cid": "6924439641794732085",
-      "google_id": "/g/11shdz7j0j"
+      "google_id": "/g/11shdz7j0j",
+      "maps_place_token": null
     },
     {
-      "name": "Brown Rice by Neals' Yard Remedies, 5 Chome-1-8 Jingumae, Shibuya City, Tokyo 150-0001",
+      "name": "Brown Rice by Neals' Yard Remedies",
       "address": "5 Chome-1-8 Jingumae, Shibuya City, Tokyo 150-0001",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.665638799999996,
       "lng": 139.7098518,
       "maps_url": "https://maps.google.com/?cid=6924439047180633945",
       "cid": "6924439047180633945",
-      "google_id": "/g/1tfrgrtf"
+      "google_id": "/g/1tfrgrtf",
+      "maps_place_token": null
     },
     {
-      "name": "〒150-0013 Tokyo, Shibuya City, Ebisu, 4 Chome−4−15 バルビゾン105 8F The Arty's Bar Mojito Laboratory",
+      "name": "The Arty's Bar Mojito Laboratory",
       "address": "〒150-0013 Tokyo, Shibuya City, Ebisu, 4 Chome−4−15 バルビゾン105 8F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.661349799999996,
       "lng": 139.7540276,
       "maps_url": "https://maps.google.com/?cid=6924437483044392977",
       "cid": "6924437483044392977",
-      "google_id": "/g/11jpgv5y80"
+      "google_id": "/g/11jpgv5y80",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−13−15 入り口は一方通行側にあります。 The entrance is on the one-way side 大山ビル B1F Boctok",
+      "name": "Boctok",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−13−15 入り口は一方通行側にあります。 The entrance is on the one-way side 大山ビル B1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6603753,
       "lng": 139.7229208,
       "maps_url": "https://maps.google.com/?cid=6924437786380050319",
       "cid": "6924437786380050319",
-      "google_id": "/g/11b6_nqcmr"
+      "google_id": "/g/11b6_nqcmr",
+      "maps_place_token": null
     },
     {
-      "name": "Kuwaharashoten, 2 Chome-29-2 Nishigotanda, Shinagawa City, Tokyo 141-0031",
+      "name": "Kuwaharashoten",
       "address": "2 Chome-29-2 Nishigotanda, Shinagawa City, Tokyo 141-0031",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6245767,
       "lng": 139.72060399999998,
       "maps_url": "https://maps.google.com/?cid=6924437142647751167",
       "cid": "6924437142647751167",
-      "google_id": "/g/11btrs5ks6"
+      "google_id": "/g/11btrs5ks6",
+      "maps_place_token": null
     },
     {
-      "name": "〒141-0031 Tokyo, Shinagawa City, Nishigotanda, 2 Chome−15-13, ニューハイツ西五反田１F Agefuku",
+      "name": "Agefuku",
       "address": "〒141-0031 Tokyo, Shinagawa City, Nishigotanda, 2 Chome−15-13, ニューハイツ西五反田１F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6260183,
       "lng": 139.7205643,
       "maps_url": "https://maps.google.com/?cid=6924437141658631199",
       "cid": "6924437141658631199",
-      "google_id": "/g/12m8zsvtz"
+      "google_id": "/g/12m8zsvtz",
+      "maps_place_token": null
     },
     {
-      "name": "いづく マドリガル銀座ビル １F 1 Chome-22-12 Ginza, Chuo City, Tokyo 104-0061",
+      "name": "いづく",
       "address": "〒104-0061 Tokyo, Chuo City, Ginza, 1 Chome−22−12 マドリガル銀座ビル １F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6719484,
       "lng": 139.7708312,
       "maps_url": "https://maps.google.com/?cid=6924437705512608633",
       "cid": "6924437705512608633",
-      "google_id": "/g/11p5_qnr1t"
+      "google_id": "/g/11p5_qnr1t",
+      "maps_place_token": null
     },
     {
       "name": "虎峰(こほう)",
@@ -4032,62 +4423,68 @@
       "lng": 139.7345968,
       "maps_url": "https://maps.google.com/?cid=6924437932968310241",
       "cid": "6924437932968310241",
-      "google_id": "/g/11cn9xkm1q"
+      "google_id": "/g/11cn9xkm1q",
+      "maps_place_token": null
     },
     {
-      "name": "Azuki to Kouri, グランデュオ代々木 1F 1 Chome-46-2 Yoyogi, Shibuya City, Tokyo 151-0053",
+      "name": "Azuki to Kouri",
       "address": "〒151-0053 Tokyo, Shibuya City, Yoyogi, 1 Chome−46−2 グランデュオ代々木 1F",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6822614,
       "lng": 139.6972058,
       "maps_url": "https://maps.google.com/?cid=6924440471571131657",
       "cid": "6924440471571131657",
-      "google_id": "/g/11pv1qc3_7"
+      "google_id": "/g/11pv1qc3_7",
+      "maps_place_token": null
     },
     {
-      "name": "〒106-0031 Tokyo, Minato City, Nishiazabu, 2 Chome−7−7 AC HOUSE",
+      "name": "AC HOUSE",
       "address": "2 Chome-7-7 Nishiazabu, Minato City, Tokyo 106-0031",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.662116,
       "lng": 139.72118849999998,
       "maps_url": "https://maps.google.com/?cid=6924438312899688131",
       "cid": "6924438312899688131",
-      "google_id": "/g/11sfq9dqk_"
+      "google_id": "/g/11sfq9dqk_",
+      "maps_place_token": null
     },
     {
-      "name": "Kushiwakamaru, 1 Chome-19-2 Kamimeguro, Meguro City, Tokyo 153-0051",
+      "name": "Kushiwakamaru",
       "address": "1 Chome-19-2 Kamimeguro, Meguro City, Tokyo 153-0051",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6453485,
       "lng": 139.6982788,
       "maps_url": "https://maps.google.com/?cid=6924437597722443775",
       "cid": "6924437597722443775",
-      "google_id": "/g/1tgxtjhc"
+      "google_id": "/g/1tgxtjhc",
+      "maps_place_token": null
     },
     {
-      "name": "Toufuya Ukai, 4 Chome-4-13 Shibakoen, Minato City, Tokyo 105-0011",
+      "name": "Toufuya Ukai",
       "address": "4 Chome-4-13 Shibakoen, Minato City, Tokyo 105-0011",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6572889,
       "lng": 139.7453639,
       "maps_url": "https://maps.google.com/?cid=6925840174303039763",
       "cid": "6925840174303039763",
-      "google_id": "/g/1vd3vwk8"
+      "google_id": "/g/1vd3vwk8",
+      "maps_place_token": null
     },
     {
-      "name": "エル カフェ ラティーノ/El Café Latino ウィン六本木 港区六本木３丁目１５−２４ WIN六本木1&2階, 3 Chome-15-24 Roppongi, Minato City, Tokyo 106-0032",
+      "name": "エル カフェ ラティーノ/El Café Latino",
       "address": "ウィン六本木 港区六本木３丁目１５−２４ WIN六本木1&2階, 3 Chome-15-24 Roppongi, Minato City, Tokyo 106-0032",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.662548799999996,
       "lng": 139.735495,
       "maps_url": "https://maps.google.com/?cid=6924437933268143089",
       "cid": "6924437933268143089",
-      "google_id": "/g/1tfv0jhk"
+      "google_id": "/g/1tfv0jhk",
+      "maps_place_token": null
     },
     {
       "name": "Moment Factory - Tokyo",
@@ -4098,18 +4495,20 @@
       "lng": 139.7025826,
       "maps_url": "https://maps.google.com/?cid=6924439072569131525",
       "cid": "6924439072569131525",
-      "google_id": "/g/11hbkgk3y7"
+      "google_id": "/g/11hbkgk3y7",
+      "maps_place_token": null
     },
     {
-      "name": "Arashi, 内田邸 B1 3 Chome-23番地14 Nishiazabu, Minato City, Tokyo 106-0031",
+      "name": "Arashi",
       "address": "〒106-0031 Tokyo, Minato City, Nishiazabu, 3 Chome−23番地14 内田邸 B1",
       "note": null,
-      "is_favorite": true,
+      "is_favorite": false,
       "lat": 35.6592134,
       "lng": 139.7242871,
       "maps_url": "https://maps.google.com/?cid=6924437741885501307",
       "cid": "6924437741885501307",
-      "google_id": "/g/1v5_9f0l"
+      "google_id": "/g/1v5_9f0l",
+      "maps_place_token": null
     },
     {
       "name": "鳥のかけ橋",
@@ -4120,7 +4519,8 @@
       "lng": 139.7720463,
       "maps_url": "https://maps.google.com/?cid=6924440274061017317",
       "cid": "6924440274061017317",
-      "google_id": "/g/11h22wx6dg"
+      "google_id": "/g/11h22wx6dg",
+      "maps_place_token": null
     },
     {
       "name": "とんかつ 寿々木",
@@ -4131,7 +4531,8 @@
       "lng": 139.7680901,
       "maps_url": "https://maps.google.com/?cid=6924438330241574425",
       "cid": "6924438330241574425",
-      "google_id": "/g/12qgl2r9d"
+      "google_id": "/g/12qgl2r9d",
+      "maps_place_token": null
     },
     {
       "name": "小やなぎ",
@@ -4142,7 +4543,8 @@
       "lng": 139.7327809,
       "maps_url": "https://maps.google.com/?cid=6924437938825608547",
       "cid": "6924437938825608547",
-      "google_id": "/g/1vp6_4y5"
+      "google_id": "/g/1vp6_4y5",
+      "maps_place_token": null
     },
     {
       "name": "TAKAZAWA",
@@ -4153,7 +4555,8 @@
       "lng": 139.7386556,
       "maps_url": "https://maps.google.com/?cid=6924437839373957701",
       "cid": "6924437839373957701",
-      "google_id": "/g/1twyzjml"
+      "google_id": "/g/1twyzjml",
+      "maps_place_token": null
     },
     {
       "name": "中国飯店 三田店",
@@ -4164,7 +4567,8 @@
       "lng": 139.7449868,
       "maps_url": "https://maps.google.com/?cid=6924438017357359189",
       "cid": "6924438017357359189",
-      "google_id": "/g/1wrgk49m"
+      "google_id": "/g/1wrgk49m",
+      "maps_place_token": null
     },
     {
       "name": "月花 MoonFlower Sagaya Ginza, Art by teamLab",
@@ -4175,7 +4579,8 @@
       "lng": 139.7668857,
       "maps_url": "https://maps.google.com/?cid=6924438240323615731",
       "cid": "6924438240323615731",
-      "google_id": "/g/11f0_gbq3g"
+      "google_id": "/g/11f0_gbq3g",
+      "maps_place_token": null
     },
     {
       "name": "RECORD BAR analog",
@@ -4186,7 +4591,8 @@
       "lng": 139.6959367,
       "maps_url": "https://maps.google.com/?cid=6924439512376577261",
       "cid": "6924439512376577261",
-      "google_id": "/g/11gzqm8_hr"
+      "google_id": "/g/11gzqm8_hr",
+      "maps_place_token": null
     },
     {
       "name": "天馬屋 下北沢店",
@@ -4197,7 +4603,8 @@
       "lng": 139.6682162,
       "maps_url": "https://maps.google.com/?cid=6924552064434372609",
       "cid": "6924552064434372609",
-      "google_id": "/g/11b6zqx9yv"
+      "google_id": "/g/11b6zqx9yv",
+      "maps_place_token": null
     },
     {
       "name": "広島焼き HIROKI 下北沢店",
@@ -4208,7 +4615,8 @@
       "lng": 139.66782999999998,
       "maps_url": "https://maps.google.com/?cid=6924552061504105131",
       "cid": "6924552061504105131",
-      "google_id": "/g/1tdn43md"
+      "google_id": "/g/1tdn43md",
+      "maps_place_token": null
     },
     {
       "name": "ダ・オッジ",
@@ -4219,18 +4627,20 @@
       "lng": 139.6685784,
       "maps_url": "https://maps.google.com/?cid=6924552062137656525",
       "cid": "6924552062137656525",
-      "google_id": "/g/1hf2k3vmr"
+      "google_id": "/g/1hf2k3vmr",
+      "maps_place_token": null
     },
     {
       "name": "マザー",
       "address": "日本、〒155-0032 東京都世田谷区代沢５丁目３６−１４",
       "note": null,
       "is_favorite": false,
-      "lat": 35.659205799999995,
-      "lng": 139.6672903,
+      "lat": 35.6592024,
+      "lng": 139.6672891,
       "maps_url": "https://maps.google.com/?cid=6924552061194312855",
       "cid": "6924552061194312855",
-      "google_id": "/g/1tfjw9qv"
+      "google_id": "/g/1tfjw9qv",
+      "maps_place_token": null
     },
     {
       "name": "バー・ビーテン",
@@ -4241,7 +4651,8 @@
       "lng": 139.7072423,
       "maps_url": "https://maps.google.com/?cid=6924437537739258141",
       "cid": "6924437537739258141",
-      "google_id": "/g/11fvxl5v3m"
+      "google_id": "/g/11fvxl5v3m",
+      "maps_place_token": null
     },
     {
       "name": "感情",
@@ -4252,7 +4663,8 @@
       "lng": 139.7316233,
       "maps_url": "https://maps.google.com/?cid=6924437328754141665",
       "cid": "6924437328754141665",
-      "google_id": "/g/11sy3dcc4w"
+      "google_id": "/g/11sy3dcc4w",
+      "maps_place_token": null
     }
   ]
 }

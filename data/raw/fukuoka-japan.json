@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:23:06.645692+00:00",
-  "refresh_after": "2026-04-29T15:23:06.645692+00:00",
+  "fetched_at": "2026-04-20T13:53:48.125274+00:00",
+  "refresh_after": "2026-05-02T15:03:12.125274+00:00",
   "source_signature": "c93244f8cccbc8aae5bf01710a9c6f0f2697dc230ac46084f84b5bba88c2cbbf",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/B6GMbSwqYLiv7yS9A",
@@ -10,6 +10,138 @@
   "title": "Fukuoka, Japan 🇯🇵",
   "description": "Michael's list for Fukuoka. See https://beacons.ai/demflyers for more.",
   "places": [
+    {
+      "name": "Tempura Hirao Main Store",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5838348,
+      "lng": 130.4565615,
+      "maps_url": "https://maps.google.com/?cid=3837506787339578027",
+      "cid": "3837506787339578027",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Tenzushi Kyomachi",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.885242999999996,
+      "lng": 130.8844196,
+      "maps_url": "https://maps.google.com/?cid=3838121652515200567",
+      "cid": "3838121652515200567",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Yoshizuka Unagi",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5926068,
+      "lng": 130.4089564,
+      "maps_url": "https://maps.google.com/?cid=3837508427042247697",
+      "cid": "3837508427042247697",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Yatai Bar Ebi-chan",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5932217,
+      "lng": 130.4004258,
+      "maps_url": "https://maps.google.com/?cid=3837508795054520297",
+      "cid": "3837508795054520297",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Maedaya",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5891874,
+      "lng": 130.41669389999998,
+      "maps_url": "https://maps.google.com/?cid=3837508580433878499",
+      "cid": "3837508580433878499",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Tempura Hirao",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5888387,
+      "lng": 130.3942887,
+      "maps_url": "https://maps.google.com/?cid=3837508363285190711",
+      "cid": "3837508363285190711",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Torikami (Daimyo Garden City)",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5897905,
+      "lng": 130.3945794,
+      "maps_url": "https://maps.google.com/?cid=3837508583891664829",
+      "cid": "3837508583891664829",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Chez Rémy",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5870305,
+      "lng": 130.4017984,
+      "maps_url": "https://maps.google.com/?cid=3837508450820496089",
+      "cid": "3837508450820496089",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "U.S. burger",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5880882,
+      "lng": 130.3915333,
+      "maps_url": "https://maps.google.com/?cid=3837508712311334087",
+      "cid": "3837508712311334087",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Motsunabe Yamanaka Honten",
+      "address": "2 Chome-2-12 Mukaino, Minami Ward, Fukuoka, 815-0035",
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.5619412,
+      "lng": 130.4245479,
+      "maps_url": "https://maps.google.com/?cid=3837507805352190969",
+      "cid": "3837507805352190969",
+      "google_id": "/g/11b77d5d85",
+      "maps_place_token": null
+    },
+    {
+      "name": "Amegen",
+      "address": null,
+      "note": null,
+      "is_favorite": true,
+      "lat": 33.441280299999995,
+      "lng": 130.0675214,
+      "maps_url": "https://maps.google.com/?cid=3837577794271631053",
+      "cid": "3837577794271631053",
+      "google_id": null,
+      "maps_place_token": null
+    },
     {
       "name": "Hakata Motsunabe Yamanaka Hakata Branch",
       "address": "〒812-0013 Fukuoka, Hakata Ward, Hakataekihigashi, 2 Chome−4−6 ハカタベビル ２階",
@@ -75,8 +207,8 @@
       "address": "3 Chome-7-13 Yakuin, Chuo Ward, Fukuoka, 810-0022",
       "note": null,
       "is_favorite": false,
-      "lat": 33.5774908,
-      "lng": 130.400484,
+      "lat": 33.5775186,
+      "lng": 130.400514,
       "maps_url": "https://maps.google.com/?cid=3837508302576862519",
       "cid": "3837508302576862519",
       "google_id": "/g/1tql2kdr",
@@ -115,18 +247,6 @@
       "lng": 130.410278,
       "maps_url": "https://maps.google.com/?cid=3837508793993620843",
       "cid": "3837508793993620843",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
-      "name": "Torikami (Daimyo Garden City)",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5897905,
-      "lng": 130.3945794,
-      "maps_url": "https://maps.google.com/?cid=3837508583891664829",
-      "cid": "3837508583891664829",
       "google_id": null,
       "maps_place_token": null
     },
@@ -299,18 +419,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Motsunabe Yamanaka Honten",
-      "address": "2 Chome-2-12 Mukaino, Minami Ward, Fukuoka, 815-0035",
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5619412,
-      "lng": 130.4245479,
-      "maps_url": "https://maps.google.com/?cid=3837507805352190969",
-      "cid": "3837507805352190969",
-      "google_id": "/g/11b77d5d85",
-      "maps_place_token": null
-    },
-    {
       "name": "nodoka",
       "address": null,
       "note": null,
@@ -331,18 +439,6 @@
       "lng": 130.3887596,
       "maps_url": "https://maps.google.com/?cid=3837552875198144607",
       "cid": "3837552875198144607",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
-      "name": "Amegen",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.441280299999995,
-      "lng": 130.0675214,
-      "maps_url": "https://maps.google.com/?cid=3837577794271631053",
-      "cid": "3837577794271631053",
       "google_id": null,
       "maps_place_token": null
     },
@@ -391,18 +487,6 @@
       "lng": 130.3914222,
       "maps_url": "https://maps.google.com/?cid=3837508338688259489",
       "cid": "3837508338688259489",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
-      "name": "Tempura Hirao",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5888387,
-      "lng": 130.3942887,
-      "maps_url": "https://maps.google.com/?cid=3837508363285190711",
-      "cid": "3837508363285190711",
       "google_id": null,
       "maps_place_token": null
     },
@@ -515,18 +599,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Tenzushi Kyomachi",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.885242999999996,
-      "lng": 130.8844196,
-      "maps_url": "https://maps.google.com/?cid=3838121652515200567",
-      "cid": "3838121652515200567",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
       "name": "Kayanoya Restaurant",
       "address": null,
       "note": null,
@@ -563,18 +635,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Chez Rémy",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5870305,
-      "lng": 130.4017984,
-      "maps_url": "https://maps.google.com/?cid=3837508450820496089",
-      "cid": "3837508450820496089",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
       "name": "Warayaki Mikan",
       "address": null,
       "note": null,
@@ -591,8 +651,8 @@
       "address": null,
       "note": null,
       "is_favorite": false,
-      "lat": 33.590852399999996,
-      "lng": 130.4055558,
+      "lat": 33.590833599999996,
+      "lng": 130.40556709999998,
       "maps_url": "https://maps.google.com/?cid=3837508422221215703",
       "cid": "3837508422221215703",
       "google_id": null,
@@ -647,18 +707,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Yatai Bar Ebi-chan",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5932217,
-      "lng": 130.4004258,
-      "maps_url": "https://maps.google.com/?cid=3837508795054520297",
-      "cid": "3837508795054520297",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
       "name": "Tempura Hirao",
       "address": null,
       "note": null,
@@ -667,18 +715,6 @@
       "lng": 130.40227199999998,
       "maps_url": "https://maps.google.com/?cid=3837508250365752419",
       "cid": "3837508250365752419",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
-      "name": "Yoshizuka Unagi",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5926068,
-      "lng": 130.4089564,
-      "maps_url": "https://maps.google.com/?cid=3837508427042247697",
-      "cid": "3837508427042247697",
       "google_id": null,
       "maps_place_token": null
     },
@@ -731,18 +767,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Maedaya",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5891874,
-      "lng": 130.41669389999998,
-      "maps_url": "https://maps.google.com/?cid=3837508580433878499",
-      "cid": "3837508580433878499",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
       "name": "Yakiniku no Bakuro Hakata-ten",
       "address": null,
       "note": null,
@@ -763,18 +787,6 @@
       "lng": 130.4123078,
       "maps_url": "https://maps.google.com/?cid=3837508602135878907",
       "cid": "3837508602135878907",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
-      "name": "Tempura Hirao Main Store",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5838348,
-      "lng": 130.4565615,
-      "maps_url": "https://maps.google.com/?cid=3837506787339578027",
-      "cid": "3837506787339578027",
       "google_id": null,
       "maps_place_token": null
     },
@@ -955,18 +967,6 @@
       "lng": 130.3805898,
       "maps_url": "https://maps.google.com/?cid=3837509084239838875",
       "cid": "3837509084239838875",
-      "google_id": null,
-      "maps_place_token": null
-    },
-    {
-      "name": "U.S. burger",
-      "address": null,
-      "note": null,
-      "is_favorite": false,
-      "lat": 33.5880882,
-      "lng": 130.3915333,
-      "maps_url": "https://maps.google.com/?cid=3837508712311334087",
-      "cid": "3837508712311334087",
       "google_id": null,
       "maps_place_token": null
     }

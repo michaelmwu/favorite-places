@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:23:02.189530+00:00",
-  "refresh_after": "2026-04-29T15:23:02.189530+00:00",
+  "fetched_at": "2026-04-20T13:53:47.778056+00:00",
+  "refresh_after": "2026-05-06T21:29:22.778056+00:00",
   "source_signature": "a027a1bfee6a17c16f55ebdfca9000cb3a8a5a7a093f095112a3170aec94ad10",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/VP4zg8Gqp9PoH54f6",
@@ -11,6 +11,246 @@
   "description": "Michael & Micca’s Bali, Indonesia 🇮🇩 bookmarks. See https://beacons.ai/demflyers for more, or follow on Instagram / Threads / BlueSky @demflyers",
   "places": [
     {
+      "name": "Alila Seminyak",
+      "address": "Jl. Taman Ganesha Jl. Petitenget No.9, Seminyak, Bali, Kabupaten Badung, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": false,
+      "lat": -8.680272,
+      "lng": 115.150606,
+      "maps_url": "https://maps.google.com/?cid=3301779604378260493",
+      "cid": "3301779604378260493",
+      "google_id": "/g/11b6_jhr15",
+      "maps_place_token": null
+    },
+    {
+      "name": "Merah Putih",
+      "address": "Jalan Petitenget. 100X Kerobokan Kelod, Seminyak, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6767071,
+      "lng": 115.15456069999999,
+      "maps_url": "https://maps.google.com/?cid=3301779621796727443",
+      "cid": "3301779621796727443",
+      "google_id": "/g/12qg3fxg8",
+      "maps_place_token": null
+    },
+    {
+      "name": "Naughty Nuri's Warung Seminyak",
+      "address": "Jalan Mertanadi No. 62 Kerobokan Seminyak, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6775526,
+      "lng": 115.1676799,
+      "maps_url": "https://maps.google.com/?cid=3301776716738197911",
+      "cid": "3301776716738197911",
+      "google_id": "/g/11b88m223n",
+      "maps_place_token": null
+    },
+    {
+      "name": "The Iron Fairies Bali",
+      "address": "Jl. Petitenget No.19x, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6771175,
+      "lng": 115.15511939999999,
+      "maps_url": "https://maps.google.com/?cid=3301780628994496835",
+      "cid": "3301780628994496835",
+      "google_id": "/g/11v5xqjv_5",
+      "maps_place_token": null
+    },
+    {
+      "name": "Potato Head Beach Club",
+      "address": "Petitenget St No.51B, Seminyak, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6794353,
+      "lng": 115.14993419999999,
+      "maps_url": "https://maps.google.com/?cid=3301779619439146749",
+      "cid": "3301779619439146749",
+      "google_id": "/g/1tf7j_07",
+      "maps_place_token": null
+    },
+    {
+      "name": "BAR RASA",
+      "address": "Jl. Lebak Sari, Br. Taman, Petitenget, Kuta, Kerobokan Kelod, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6774165,
+      "lng": 115.1610618,
+      "maps_url": "https://maps.google.com/?cid=3301779543034726655",
+      "cid": "3301779543034726655",
+      "google_id": "/g/11yqrc58kw",
+      "maps_place_token": null
+    },
+    {
+      "name": "Alchemy Yoga and Meditation Center Ubud",
+      "address": "Jl. Penestanan, Sayan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.5059496,
+      "lng": 115.25145169999999,
+      "maps_url": "https://maps.google.com/?cid=3301768906966683385",
+      "cid": "3301768906966683385",
+      "google_id": "/g/11smc3nwsp",
+      "maps_place_token": null
+    },
+    {
+      "name": "Rejuvo Life",
+      "address": "Jl. Pantai Berawa No.8, Tibubeneng, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6463564,
+      "lng": 115.1514766,
+      "maps_url": "https://maps.google.com/?cid=3301779545002183653",
+      "cid": "3301779545002183653",
+      "google_id": "/g/11stjv651s",
+      "maps_place_token": null
+    },
+    {
+      "name": "Locavore NXT",
+      "address": "Jl. A.A. Gede Rai Gang Pura Panti Bija, Lodtunduh, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
+      "note": "Amazing food, Asia's top 50 Best",
+      "is_favorite": true,
+      "lat": -8.5422753,
+      "lng": 115.2573302,
+      "maps_url": "https://maps.google.com/?cid=3301769616040713675",
+      "cid": "3301769616040713675",
+      "google_id": "/g/11l3253902",
+      "maps_place_token": null
+    },
+    {
+      "name": "The Yoga Barn",
+      "address": "F7M8+PVG, Jl. Sukma Kesuma, Peliatan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.5195835,
+      "lng": 115.266139,
+      "maps_url": "https://maps.google.com/?cid=3301769229643871827",
+      "cid": "3301769229643871827",
+      "google_id": "/g/1hm4sm2mp",
+      "maps_place_token": null
+    },
+    {
+      "name": "Warung Babi Guling Putra Celagi",
+      "address": "Jl. Desa Apuan No.87, Apuan, Kec. Susut, Kabupaten Bangli, Bali 80661, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.4944996,
+      "lng": 115.3290871,
+      "maps_url": "https://maps.google.com/?cid=3301727443242690767",
+      "cid": "3301727443242690767",
+      "google_id": "/g/11dyrf0sz7",
+      "maps_place_token": null
+    },
+    {
+      "name": "Ki Ashiatsu + Massage Studio, Seminyak",
+      "address": "Jl. Sunset Road No.151, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.6824476,
+      "lng": 115.16549239999999,
+      "maps_url": "https://maps.google.com/?cid=3301780604060122623",
+      "cid": "3301780604060122623",
+      "google_id": "/g/11gbf9hzdv",
+      "maps_place_token": null
+    },
+    {
+      "name": "Sacred Monkey Forest Sanctuary",
+      "address": "Jl. Monkey Forest, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.5193727,
+      "lng": 115.2606299,
+      "maps_url": "https://maps.google.com/?cid=3301768838916905831",
+      "cid": "3301768838916905831",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Mekar Ubud Jungle Spa by K club",
+      "address": "Jalan Raya Cebok , Kedisan, Tegallalang, Kecamatan Ubud, Bali 80561, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.4412252,
+      "lng": 115.2850948,
+      "maps_url": "https://maps.google.com/?cid=3301729496707754797",
+      "cid": "3301729496707754797",
+      "google_id": "/g/11rql5gjqf",
+      "maps_place_token": null
+    },
+    {
+      "name": "Alas Harum Bali",
+      "address": "Jl. Raya Tegallalang, Tegallalang, Kec. Tegallalang, Kabupaten Gianyar, Bali 80561",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.439799599999999,
+      "lng": 115.28072739999999,
+      "maps_url": "https://maps.google.com/?cid=3301739405141770259",
+      "cid": "3301739405141770259",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Alila Ubud",
+      "address": "Melinggih Kelod, Ubud, Gianyar Regency, Bali 80572, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.4619577,
+      "lng": 115.2406779,
+      "maps_url": "https://maps.google.com/?cid=3301739953952833495",
+      "cid": "3301739953952833495",
+      "google_id": "/g/1ptzsb721",
+      "maps_place_token": null
+    },
+    {
+      "name": "Tukad Cepung Waterfall",
+      "address": "Jl. Tembuku, Tembuku, Kec. Tembuku, Kabupaten Bangli, Bali 80671, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.4410173,
+      "lng": 115.3868079,
+      "maps_url": "https://maps.google.com/?cid=3301731852034550339",
+      "cid": "3301731852034550339",
+      "google_id": "/g/11qnkky0r9",
+      "maps_place_token": null
+    },
+    {
+      "name": "Bali Pulina",
+      "address": "Jl. Raya Pujung Kelod No.Br, Sebatu, Kec. Tegallalang, Kabupaten Gianyar, Bali 80561, Indonesia",
+      "note": null,
+      "is_favorite": true,
+      "lat": -8.422796,
+      "lng": 115.27903839999999,
+      "maps_url": "https://maps.google.com/?cid=3301739517341464843",
+      "cid": "3301739517341464843",
+      "google_id": "/g/11bc7r5jvk",
+      "maps_place_token": null
+    },
+    {
+      "name": "The cave by Chef Ryan Clift at The edge",
+      "address": "Jalan Pura Goa Lempeh, Banjar Dinas Kangin, Jl. Goa Lempeh, Pecatu, Kec. Kuta Sel., Kabupaten Badung, Bali 80361, Indonesia",
+      "note": null,
+      "is_favorite": false,
+      "lat": -8.8453524,
+      "lng": 115.1252305,
+      "maps_url": "https://maps.google.com/?cid=3301801654707451599",
+      "cid": "3301801654707451599",
+      "google_id": "/g/11g4fbr405",
+      "maps_place_token": null
+    },
+    {
+      "name": "Ulekan Berawa",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": -8.6601995,
+      "lng": 115.14310289999999,
+      "maps_url": "https://maps.google.com/?cid=3301780060945392053",
+      "cid": "3301780060945392053",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
       "name": "Sardine Restaurant",
       "address": "Petitenget St No.21, Kerobokan Kelod, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
       "note": null,
@@ -20,18 +260,6 @@
       "maps_url": "https://maps.google.com/?cid=3301780001592214991",
       "cid": "3301780001592214991",
       "google_id": "/g/119vcnfcv",
-      "maps_place_token": null
-    },
-    {
-      "name": "BAR RASA",
-      "address": "Jl. Lebak Sari, Br. Taman, Petitenget, Kuta, Kerobokan Kelod, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6774165,
-      "lng": 115.1610618,
-      "maps_url": "https://maps.google.com/?cid=3301779543034726655",
-      "cid": "3301779543034726655",
-      "google_id": "/g/11yqrc58kw",
       "maps_place_token": null
     },
     {
@@ -479,54 +707,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Alila Ubud",
-      "address": "Melinggih Kelod, Ubud, Gianyar Regency, Bali 80572, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.4619577,
-      "lng": 115.2406779,
-      "maps_url": "https://maps.google.com/?cid=3301739953952833495",
-      "cid": "3301739953952833495",
-      "google_id": "/g/1ptzsb721",
-      "maps_place_token": null
-    },
-    {
-      "name": "Alila Seminyak",
-      "address": "Jl. Taman Ganesha Jl. Petitenget No.9, Seminyak, Bali, Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.680272,
-      "lng": 115.150606,
-      "maps_url": "https://maps.google.com/?cid=3301779604378260493",
-      "cid": "3301779604378260493",
-      "google_id": "/g/11b6_jhr15",
-      "maps_place_token": null
-    },
-    {
-      "name": "Ulekan",
-      "address": "Jl. Tegal Sari Jl. Pantai Berawa No.34, Tibubeneng, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.660189299999999,
-      "lng": 115.1430501,
-      "maps_url": "https://maps.google.com/?cid=3301780060945392053",
-      "cid": "3301780060945392053",
-      "google_id": "/g/11c601xyv6",
-      "maps_place_token": null
-    },
-    {
-      "name": "Locavore NXT",
-      "address": "Jl. A.A. Gede Rai Gang Pura Panti Bija, Lodtunduh, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.5422753,
-      "lng": 115.2573302,
-      "maps_url": "https://maps.google.com/?cid=3301769616040713675",
-      "cid": "3301769616040713675",
-      "google_id": "/g/11l3253902",
-      "maps_place_token": null
-    },
-    {
       "name": "Mauri Restaurant",
       "address": "Jl. Petitenget No.100, Seminyak, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
       "note": null,
@@ -560,18 +740,6 @@
       "maps_url": "https://maps.google.com/?cid=3301764333367500141",
       "cid": "3301764333367500141",
       "google_id": "/g/11srgh26ss",
-      "maps_place_token": null
-    },
-    {
-      "name": "Rejuvo Life",
-      "address": "Jl. Pantai Berawa No.8, Tibubeneng, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6463564,
-      "lng": 115.1514766,
-      "maps_url": "https://maps.google.com/?cid=3301779545002183653",
-      "cid": "3301779545002183653",
-      "google_id": "/g/11stjv651s",
       "maps_place_token": null
     },
     {
@@ -779,30 +947,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Alchemy Yoga and Meditation Center Ubud",
-      "address": "Jl. Penestanan, Sayan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.5059496,
-      "lng": 115.25145169999999,
-      "maps_url": "https://maps.google.com/?cid=3301768906966683385",
-      "cid": "3301768906966683385",
-      "google_id": "/g/11smc3nwsp",
-      "maps_place_token": null
-    },
-    {
-      "name": "The Iron Fairies Bali",
-      "address": "Jl. Petitenget No.19x, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6771175,
-      "lng": 115.15511939999999,
-      "maps_url": "https://maps.google.com/?cid=3301780628994496835",
-      "cid": "3301780628994496835",
-      "google_id": "/g/11v5xqjv_5",
-      "maps_place_token": null
-    },
-    {
       "name": "The Lawn Canggu Beach Club",
       "address": "Jl. Pura Dalem, Canggu, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
       "note": null,
@@ -947,18 +1091,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Bali Pulina",
-      "address": "Jl. Raya Pujung Kelod No.Br, Sebatu, Kec. Tegallalang, Kabupaten Gianyar, Bali 80561, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.422796,
-      "lng": 115.27903839999999,
-      "maps_url": "https://maps.google.com/?cid=3301739517341464843",
-      "cid": "3301739517341464843",
-      "google_id": "/g/11bc7r5jvk",
-      "maps_place_token": null
-    },
-    {
       "name": "Joueta Resort Wear Canggu",
       "address": "Jl. Pantai Batu Bolong No.45, Canggu, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
       "note": null,
@@ -995,18 +1127,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Mekar Ubud Jungle Spa by K club",
-      "address": "Jalan Raya Cebok , Kedisan, Tegallalang, Kecamatan Ubud, Bali 80561, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.4412252,
-      "lng": 115.2850948,
-      "maps_url": "https://maps.google.com/?cid=3301729496707754797",
-      "cid": "3301729496707754797",
-      "google_id": "/g/11rql5gjqf",
-      "maps_place_token": null
-    },
-    {
       "name": "K Club Ubud",
       "address": "Jalan Raya Cebok , Kedisan Tegallalang, Kedisan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80561, Indonesia",
       "note": null,
@@ -1028,18 +1148,6 @@
       "maps_url": "https://maps.google.com/?cid=3301764150329931889",
       "cid": "3301764150329931889",
       "google_id": "/g/11y5508p56",
-      "maps_place_token": null
-    },
-    {
-      "name": "The Yoga Barn",
-      "address": "F7M8+PVG, Jl. Sukma Kesuma, Peliatan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.5195835,
-      "lng": 115.266139,
-      "maps_url": "https://maps.google.com/?cid=3301769229643871827",
-      "cid": "3301769229643871827",
-      "google_id": "/g/1hm4sm2mp",
       "maps_place_token": null
     },
     {
@@ -1115,18 +1223,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Ki Ashiatsu + Massage Studio, Seminyak",
-      "address": "Jl. Sunset Road No.151, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6824476,
-      "lng": 115.16549239999999,
-      "maps_url": "https://maps.google.com/?cid=3301780604060122623",
-      "cid": "3301780604060122623",
-      "google_id": "/g/11gbf9hzdv",
-      "maps_place_token": null
-    },
-    {
       "name": "De Nyuh Spa Seminyak",
       "address": "Grandmas Plus Hotel Seminyak, Jl. Camplung Tanduk No.99 5th Floor, Seminyak, Kuta, Badung Regency, Bali 80361, Indonesia",
       "note": null,
@@ -1175,18 +1271,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Merah Putih",
-      "address": "Jalan Petitenget. 100X Kerobokan Kelod, Seminyak, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6767071,
-      "lng": 115.15456069999999,
-      "maps_url": "https://maps.google.com/?cid=3301779621796727443",
-      "cid": "3301779621796727443",
-      "google_id": "/g/12qg3fxg8",
-      "maps_place_token": null
-    },
-    {
       "name": "Bambu Indah",
       "address": "Jl. Baung, Sayan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571, Indonesia",
       "note": null,
@@ -1196,18 +1280,6 @@
       "maps_url": "https://maps.google.com/?cid=3301768824598888821",
       "cid": "3301768824598888821",
       "google_id": "/g/1tg97sbc",
-      "maps_place_token": null
-    },
-    {
-      "name": "Sacred Monkey Forest Sanctuary",
-      "address": "Jl. Monkey Forest, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.5193727,
-      "lng": 115.2606299,
-      "maps_url": "https://maps.google.com/?cid=3301768838916905831",
-      "cid": "3301768838916905831",
-      "google_id": null,
       "maps_place_token": null
     },
     {
@@ -1259,30 +1331,6 @@
       "maps_place_token": null
     },
     {
-      "name": "Potato Head Beach Club",
-      "address": "Petitenget St No.51B, Seminyak, Kuta Utara, Badung Regency, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6794353,
-      "lng": 115.14993419999999,
-      "maps_url": "https://maps.google.com/?cid=3301779619439146749",
-      "cid": "3301779619439146749",
-      "google_id": "/g/1tf7j_07",
-      "maps_place_token": null
-    },
-    {
-      "name": "Warung Babi Guling Putra Celagi",
-      "address": "Jl. Desa Apuan No.87, Apuan, Kec. Susut, Kabupaten Bangli, Bali 80661, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.4944996,
-      "lng": 115.3290871,
-      "maps_url": "https://maps.google.com/?cid=3301727443242690767",
-      "cid": "3301727443242690767",
-      "google_id": "/g/11dyrf0sz7",
-      "maps_place_token": null
-    },
-    {
       "name": "Wapa di Ume Sidemen",
       "address": "Banjar Dinas, Jl. Raya Tebola, Telaga Tawang, Kec. Sidemen, Kabupaten Karangasem, Bali 80864, Indonesia",
       "note": null,
@@ -1292,30 +1340,6 @@
       "maps_url": "https://maps.google.com/?cid=3301719581303136123",
       "cid": "3301719581303136123",
       "google_id": "/g/11gdtw91k5",
-      "maps_place_token": null
-    },
-    {
-      "name": "Tukad Cepung Waterfall",
-      "address": "Jl. Tembuku, Tembuku, Kec. Tembuku, Kabupaten Bangli, Bali 80671, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.4410173,
-      "lng": 115.3868079,
-      "maps_url": "https://maps.google.com/?cid=3301731852034550339",
-      "cid": "3301731852034550339",
-      "google_id": "/g/11qnkky0r9",
-      "maps_place_token": null
-    },
-    {
-      "name": "Alas Harum Bali",
-      "address": "Jl. Raya Tegallalang, Tegallalang, Kec. Tegallalang, Kabupaten Gianyar, Bali 80561",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.439799599999999,
-      "lng": 115.28072739999999,
-      "maps_url": "https://maps.google.com/?cid=3301739405141770259",
-      "cid": "3301739405141770259",
-      "google_id": null,
       "maps_place_token": null
     },
     {
@@ -1376,18 +1400,6 @@
       "maps_url": "https://maps.google.com/?cid=3301768821342395447",
       "cid": "3301768821342395447",
       "google_id": "/g/11c2ksvw65",
-      "maps_place_token": null
-    },
-    {
-      "name": "Naughty Nuri's Warung Seminyak",
-      "address": "Jalan Mertanadi No. 62 Kerobokan Seminyak, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.6775526,
-      "lng": 115.1676799,
-      "maps_url": "https://maps.google.com/?cid=3301776716738197911",
-      "cid": "3301776716738197911",
-      "google_id": "/g/11b88m223n",
       "maps_place_token": null
     },
     {

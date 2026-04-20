@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:42:51.393677+00:00",
-  "refresh_after": "2026-04-29T23:42:51.393677+00:00",
+  "fetched_at": "2026-04-20T13:20:27.931461+00:00",
+  "refresh_after": "2026-05-03T22:36:09.931461+00:00",
   "source_signature": "74a0306451b54acd83459a4babe72394ea23e1a895c8c9091541cce105d5b29b",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/WHTVv1f2rssaBWQ98",
@@ -10,18 +10,6 @@
   "title": "Las Vegas, NV, USA 🇺🇲",
   "description": "Michael's Las Vegas, NV, USA 🇺🇲 bookmarks. See https://beacons.ai/demflyers for more.",
   "places": [
-    {
-      "name": "OJ Morning 早午餐",
-      "address": "號1樓, No. 116, Changji St, Datong District, Taipei City, Taiwan 103",
-      "note": null,
-      "is_favorite": false,
-      "lat": 25.0658702,
-      "lng": 121.51458059999999,
-      "maps_url": "https://maps.google.com/?cid=3765758976819582671",
-      "cid": "3765758976819582671",
-      "google_id": "/g/11pp9dw3cy",
-      "maps_place_token": null
-    },
     {
       "name": "Michael's Las Vegas, NV, USA 🇺🇲 bookmarks. See https://beacons.ai/demflyers for more.",
       "address": "8oz Korean Steak House and Bar",

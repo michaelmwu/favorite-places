@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:29:15.867873+00:00",
-  "refresh_after": "2026-04-29T15:29:15.867873+00:00",
+  "fetched_at": "2026-04-20T13:20:58.852759+00:00",
+  "refresh_after": "2026-05-05T21:13:10.852759+00:00",
   "source_signature": "a1e518329e9e3b06b71444a73f0066e373bec0127f8c5a05dcaedd517f4ef554",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/dUDUdru3FYRmtsvu8",
@@ -800,18 +800,6 @@
       "maps_url": "https://maps.google.com/?cid=3545929123069510281",
       "cid": "3545929123069510281",
       "google_id": "/g/1tdp2j4q",
-      "maps_place_token": null
-    },
-    {
-      "name": "チャーカータンロン",
-      "address": "6B Đường Thành, Cửa Đông, Hoàn Kiếm, Hà Nội",
-      "note": null,
-      "is_favorite": false,
-      "lat": 10.801581899999999,
-      "lng": 106.61744329999999,
-      "maps_url": "https://maps.google.com/?cid=3563802599984858777",
-      "cid": "3563802599984858777",
-      "google_id": "/g/11fnv8wm56",
       "maps_place_token": null
     },
     {

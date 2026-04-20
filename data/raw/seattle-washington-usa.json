@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:49:54.359568+00:00",
-  "refresh_after": "2026-04-29T23:49:54.359568+00:00",
+  "fetched_at": "2026-04-20T13:20:27.862410+00:00",
+  "refresh_after": "2026-05-04T20:22:07.862410+00:00",
   "source_signature": "8a7e0370066ef8423f582439e54c50e85e2e42993fb82830d45e714c4aaaa3f9",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/LjnhBWrDhAyHoYSn7",
@@ -56,18 +56,6 @@
       "maps_url": "https://maps.google.com/?cid=6093442608145995453",
       "cid": "6093442608145995453",
       "google_id": "/g/11vjg0hfr1",
-      "maps_place_token": null
-    },
-    {
-      "name": "The Cubby Bear Chicago",
-      "address": "1059 W Addison St, Chicago, IL 60613",
-      "note": null,
-      "is_favorite": false,
-      "lat": 41.9469512,
-      "lng": -87.6567149,
-      "maps_url": "https://maps.google.com/?q=41.9469512,-87.6567149",
-      "cid": null,
-      "google_id": null,
       "maps_place_token": null
     },
     {

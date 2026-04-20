@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:30:04.563974+00:00",
-  "refresh_after": "2026-04-29T15:30:04.563974+00:00",
+  "fetched_at": "2026-04-20T13:54:23.716231+00:00",
+  "refresh_after": "2026-05-05T01:54:48.716231+00:00",
   "source_signature": "d390c8ea6b84adf75373f656b54c56a66774f34a1215298b36f242543eee41a0",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/9W44A7mfQ2fUssk67",
@@ -10,6 +10,18 @@
   "title": "Saigon (Ho Chi Minh City), Vietnam 🇻🇳",
   "description": "Michael's list for Saigon (Ho Chi Minh City), Vietnam 🇻🇳 See https://beacons.ai/demflyers for more.",
   "places": [
+    {
+      "name": "Aeon Shopping Mall - Tan Phu",
+      "address": "30 Tân Thắng, Celadon City, Tân Sơn Nhì, Hồ Chí Minh 700000, Vietnam",
+      "note": null,
+      "is_favorite": false,
+      "lat": 10.801581899999999,
+      "lng": 106.61744329999999,
+      "maps_url": "https://maps.google.com/?cid=3563802599984858777",
+      "cid": "3563802599984858777",
+      "google_id": "/g/11fnv8wm56",
+      "maps_place_token": null
+    },
     {
       "name": "STIR - Modern Classic Cocktail",
       "address": "136 Đ. Lê Thánh Tôn, ward, District 01, Thành phố Hồ Chí Minh, Vietnam",
@@ -224,18 +236,6 @@
       "maps_url": "https://maps.google.com/?cid=3563807019331268853",
       "cid": "3563807019331268853",
       "google_id": "/g/11rfn3ghz4",
-      "maps_place_token": null
-    },
-    {
-      "name": "Le Comptoir",
-      "address": "16 Chế Lan Viên, Bắc Mỹ An, Ngũ Hành Sơn, Đà Nẵng 550000",
-      "note": null,
-      "is_favorite": false,
-      "lat": 16.042674599999998,
-      "lng": 108.2454296,
-      "maps_url": "https://maps.google.com/?cid=3549425237464705219",
-      "cid": "3549425237464705219",
-      "google_id": "/g/11gl587yy9",
       "maps_place_token": null
     },
     {

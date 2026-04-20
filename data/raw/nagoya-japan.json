@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:24:42.457628+00:00",
-  "refresh_after": "2026-04-29T15:24:42.457628+00:00",
+  "fetched_at": "2026-04-20T13:20:42.946065+00:00",
+  "refresh_after": "2026-05-07T05:32:24.946065+00:00",
   "source_signature": "0b432fdc437a1240ff9ec1d5a4f8136382e6b0f1aa1dcb9152c31a9093e8d4ee",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/hAENsrBixi7waVaJA",
@@ -10,18 +10,6 @@
   "title": "Nagoya, Japan 🇯🇵",
   "description": "Michael's Nagoya, Japan 🇯🇵 bookmarks. See https://beacons.ai/demflyers for more.",
   "places": [
-    {
-      "name": "Torigin Honten",
-      "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−5−7 ニューギンザビル６号館",
-      "note": null,
-      "is_favorite": false,
-      "lat": 35.6712742,
-      "lng": 139.763679,
-      "maps_url": "https://maps.google.com/?cid=6924438246536460181",
-      "cid": "6924438246536460181",
-      "google_id": "/g/1tdbqw0v",
-      "maps_place_token": null
-    },
     {
       "name": "Furaibo",
       "address": "〒450-0002 Aichi, Nagoya, Nakamura Ward, Meieki, 4 Chome−9−8 センチュリー豊田ビル B1F",

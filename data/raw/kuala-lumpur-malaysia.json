@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:27:12.340879+00:00",
-  "refresh_after": "2026-04-29T15:27:12.340879+00:00",
+  "fetched_at": "2026-04-20T13:20:42.969760+00:00",
+  "refresh_after": "2026-05-01T19:08:34.969760+00:00",
   "source_signature": "cf9e39152721bbfeb408f2c98bd242e622770633ee2a3a168e4482a53c317da8",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/VcA2SXG6KcFWMcU77",
@@ -32,18 +32,6 @@
       "maps_url": "https://maps.google.com/?cid=3588734761040498937",
       "cid": "3588734761040498937",
       "google_id": "/g/11tmt_jmf2",
-      "maps_place_token": null
-    },
-    {
-      "name": "Longyin Temple",
-      "address": "602, Taiwan, Chiayi County, Fanlu Township, 1號",
-      "note": null,
-      "is_favorite": false,
-      "lat": 23.4389827,
-      "lng": 120.60727949999999,
-      "maps_url": "https://maps.google.com/?cid=3778216369289457447",
-      "cid": "3778216369289457447",
-      "google_id": "/g/1trphz67",
       "maps_place_token": null
     },
     {

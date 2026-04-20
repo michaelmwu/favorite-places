@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:34:48.403077+00:00",
-  "refresh_after": "2026-04-29T23:34:48.403077+00:00",
+  "fetched_at": "2026-04-20T13:54:07.182941+00:00",
+  "refresh_after": "2026-05-07T05:52:17.182941+00:00",
   "source_signature": "5f4f654b06877abda687e4238a7ceed11924c4ddd599e5bc3fb90377a448c764",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/CyBpVLMUL4jGuNep6",
@@ -10,6 +10,18 @@
   "title": "Alishan, Taiwan 🇹🇼",
   "description": null,
   "places": [
+    {
+      "name": "Hana village kitchen",
+      "address": "605, Taiwan, Chiayi County, Alishan Township, 四鄰87-3號",
+      "note": null,
+      "is_favorite": false,
+      "lat": 23.5269679,
+      "lng": 120.74443389999999,
+      "maps_url": "https://maps.google.com/?cid=3778200048335143355",
+      "cid": "3778200048335143355",
+      "google_id": "/g/11b6yqlkz8",
+      "maps_place_token": null
+    },
     {
       "name": "Longyin Temple",
       "address": "602, Taiwan, Chiayi County, Fanlu Township, 1號",

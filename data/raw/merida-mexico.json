@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:16:08.245896+00:00",
-  "refresh_after": "2026-04-29T15:16:08.245896+00:00",
+  "fetched_at": "2026-04-20T13:53:47.772917+00:00",
+  "refresh_after": "2026-05-02T22:50:40.772917+00:00",
   "source_signature": "162d1801f07966f005d56eac5c8db0130fcfb961dda6e46545f6bf6c2682f388",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/3cbe85NYjTT3oY85A",
@@ -10,6 +10,18 @@
   "title": "Merida, Mexico 🇲🇽",
   "description": "Michael’s Merida, Mexico 🇲🇽 bookmarks. See https://beacons.ai/demflyers for more, or follow on Instagram / Threads / BlueSky @demflyers",
   "places": [
+    {
+      "name": "National Museum of Roman Art",
+      "address": "C/ José Ramón Mélida, s/n, 06800 Mérida, Badajoz, Spain",
+      "note": null,
+      "is_favorite": false,
+      "lat": 38.9169323,
+      "lng": -6.3395066,
+      "maps_url": "https://maps.google.com/?cid=942420823595839903",
+      "cid": "942420823595839903",
+      "google_id": "/g/1218lbzz",
+      "maps_place_token": null
+    },
     {
       "name": "Cuna Merida",
       "address": "Av. Colón 508, García Ginerés, 97070 Mérida, Yuc., Mexico",

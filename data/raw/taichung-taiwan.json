@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:27:12.912617+00:00",
-  "refresh_after": "2026-04-29T15:27:12.912617+00:00",
+  "fetched_at": "2026-04-20T13:20:58.661406+00:00",
+  "refresh_after": "2026-05-06T15:56:49.661406+00:00",
   "source_signature": "1113b934c838dafda7082f654a349bc9b4751eba3d5e05f55f217e6d31a21151",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/hztp4mn7UFK4UgJ76",
@@ -35,18 +35,6 @@
       "maps_place_token": null
     },
     {
-      "name": "The cave by Chef Ryan Clift at The edge",
-      "address": "Jalan Pura Goa Lempeh, Banjar Dinas Kangin, Pecatu, Kec. Kuta Sel., Kabupaten Badung, Bali 80361, Indonesia",
-      "note": null,
-      "is_favorite": false,
-      "lat": -8.8453524,
-      "lng": 115.1252305,
-      "maps_url": "https://maps.google.com/?cid=3301801654707451599",
-      "cid": "3301801654707451599",
-      "google_id": "/g/11g4fbr405",
-      "maps_place_token": null
-    },
-    {
       "name": "Jerry's House 澳洲經典料理",
       "address": "No. 305號, Shizheng North 2nd Rd, Xitun District, Taichung City, 407",
       "note": null,
@@ -68,18 +56,6 @@
       "maps_url": "https://maps.google.com/?cid=3776617491184920903",
       "cid": "3776617491184920903",
       "google_id": "/g/11lvzny608",
-      "maps_place_token": null
-    },
-    {
-      "name": "National Museum of Roman Art",
-      "address": "C/ José Ramón Mélida, s/n, 06800 Mérida, Badajoz, Spain",
-      "note": null,
-      "is_favorite": false,
-      "lat": 38.9169323,
-      "lng": -6.3395066,
-      "maps_url": "https://maps.google.com/?cid=942420823595839903",
-      "cid": "942420823595839903",
-      "google_id": "/g/1218lbzz",
       "maps_place_token": null
     },
     {

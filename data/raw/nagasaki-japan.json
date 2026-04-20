@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:24:35.493476+00:00",
-  "refresh_after": "2026-04-29T15:24:35.493476+00:00",
+  "fetched_at": "2026-04-20T13:54:07.177715+00:00",
+  "refresh_after": "2026-05-01T15:18:31.177715+00:00",
   "source_signature": "a699a4cf69e96ad9348027ef7163f694154ec5358b1490966b286f79e09d5f01",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/FGvK2LZPrDf8koYX6",
@@ -10,6 +10,18 @@
   "title": "Nagasaki, Japan 🇯🇵",
   "description": "Michael’s Nagasaki, Japan 🇯🇵 bookmarks. See https://beacons.ai/demflyers for more.",
   "places": [
+    {
+      "name": "永楽苑",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 32.7452113,
+      "lng": 129.8725619,
+      "maps_url": "https://maps.google.com/?cid=3825054984037528701",
+      "cid": "3825054984037528701",
+      "google_id": null,
+      "maps_place_token": null
+    },
     {
       "name": "Victor",
       "address": "〒850-0901 Nagasaki, Motoshikkuimachi, 5−13 シンアイビル",
