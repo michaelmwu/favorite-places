@@ -2014,7 +2014,7 @@ def build_tag_provenance(
     for tag in coerce_string_list(override.get("tags")):
         put_tag(tag, manual_place_field(tag), priority=30)
     if city_name:
-        tag = slugify(city_name)
+        tag = normalize_tag_slug(city_name)
         put_tag(tag, google_list_field(tag, raw), priority=10)
     for tag in derive_locality_tags(
         raw_place.address,
@@ -2024,7 +2024,7 @@ def build_tag_provenance(
     ):
         put_tag(tag, google_list_field(tag, raw), priority=10)
     if primary_category:
-        tag = slugify(primary_category)
+        tag = normalize_tag_slug(primary_category)
         put_tag(
             tag,
             source_place_field(tag, primary_category_field),
@@ -2548,7 +2548,7 @@ def derive_place_tags(
 ) -> list[str]:
     tags: set[str] = set()
     if city_name:
-        tags.add(slugify(city_name))
+        tags.add(normalize_tag_slug(city_name))
     tags.update(
         derive_locality_tags(
             place.address,
@@ -2558,7 +2558,7 @@ def derive_place_tags(
         )
     )
     if category:
-        tags.add(slugify(category))
+        tags.add(normalize_tag_slug(category))
     tags.update(derive_enrichment_type_tags(enrichment))
     return sorted(tag for tag in tags if tag)
 
@@ -2572,7 +2572,7 @@ def derive_locality_tags(
 ) -> list[str]:
     locality_tags: list[str] = []
     for locality in infer_address_localities(address, city_name=city_name):
-        tag = slugify(locality)
+        tag = normalize_tag_slug(locality)
         if tag:
             append_unique_tag(locality_tags, tag)
 
@@ -3205,6 +3205,10 @@ def extract_hashtags(text: str | None) -> list[str]:
 
 
 def normalize_list_tag(value: str) -> str:
+    return normalize_tag_slug(value)
+
+
+def normalize_tag_slug(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value)
     ascii_value = "".join(char for char in normalized if not unicodedata.combining(char))
     slug = slugify(ascii_value)

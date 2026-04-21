@@ -99,18 +99,9 @@ export function getStaticPaths() {
 
 const { guide } = Astro.props;
 
-const permanentlyClosedPlaces = guide.places.filter(
-  (place) => !place.hidden && place.status === "closed-permanently",
-);
 const visiblePlaces = guide.places.filter(
   (place) => !place.hidden && place.status !== "closed-permanently",
 );
-const permanentlyClosedWarning =
-  permanentlyClosedPlaces.length === 0
-    ? null
-    : permanentlyClosedPlaces.length === 1
-      ? `${permanentlyClosedPlaces[0].name} is permanently closed and hidden from this guide.`
-      : `${permanentlyClosedPlaces.length} saved places are permanently closed and hidden from this guide.`;
 const placeTagGuideContext = {
   cityName: guide.city_name,
   countryCode: guide.country_code,
@@ -202,7 +193,6 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
             </a>
           )}
         </div>
-        {permanentlyClosedWarning && <p class="guide-warning small-copy">{permanentlyClosedWarning}</p>}
       </div>
 
       {(guideAsideHtml || guideSidebarFallback.length > 0 || displayGuideTags.length > 0) && (
