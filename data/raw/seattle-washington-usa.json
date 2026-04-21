@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:20:27.862410+00:00",
-  "refresh_after": "2026-05-04T20:22:07.862410+00:00",
+  "fetched_at": "2026-04-20T16:02:07.799114+00:00",
+  "refresh_after": "2026-05-04T23:03:47.799114+00:00",
   "source_signature": "8a7e0370066ef8423f582439e54c50e85e2e42993fb82830d45e714c4aaaa3f9",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/LjnhBWrDhAyHoYSn7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 47.5510387,
       "lng": -122.2778771,
-      "maps_url": "https://maps.google.com/?cid=6093488458407449351",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Delish+Ethiopian+Cuisine%2C+5701+Rainier+Ave+S%2C+Seattle%2C+WA+98118%2C+United+States",
       "cid": "6093488458407449351",
       "google_id": "/g/11gy9nbz5l",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 47.6130722,
       "lng": -122.3448258,
-      "maps_url": "https://maps.google.com/?cid=6093393719185195929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Fontana+Siciliana%2C+120+Blanchard+St%2C+Seattle%2C+WA+98121%2C+United+States",
       "cid": "6093393719185195929",
       "google_id": "/g/1tycwbyh",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 47.6153644,
       "lng": -122.34655029999999,
-      "maps_url": "https://maps.google.com/?cid=6093394330281498107",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shinya+Shokudo%2C+2401+3rd+Ave%2C+Seattle%2C+WA+98121%2C+United+States",
       "cid": "6093394330281498107",
       "google_id": "/g/11j488c4jy",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 47.569741699999994,
       "lng": -122.3711568,
-      "maps_url": "https://maps.google.com/?cid=6093442608145995453",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Chingona+Taquer%C3%ADa%2C+2940+SW+Avalon+Way%2C+Seattle%2C+WA+98126%2C+United+States",
       "cid": "6093442608145995453",
       "google_id": "/g/11vjg0hfr1",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 47.6195057,
       "lng": -122.3128579,
-      "maps_url": "https://maps.google.com/?cid=6093487751225336571",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bakery+Nouveau%2C+137+15th+Ave+E%2C+Seattle%2C+WA+98112",
       "cid": "6093487751225336571",
       "google_id": "/g/12hpnzxtr",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 47.6015936,
       "lng": -122.3323265,
-      "maps_url": "https://maps.google.com/?cid=6093487645432633093",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TAT%27S+DELI+-+Cheesesteaks%2C+Subs+%26+Catering",
       "cid": "6093487645432633093",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 47.622788299999996,
       "lng": -122.33403879999999,
-      "maps_url": "https://maps.google.com/?cid=6093393622620305523",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=mbar",
       "cid": "6093393622620305523",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 47.6512715,
       "lng": -122.35011399999999,
-      "maps_url": "https://maps.google.com/?cid=6093394020657056257",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kin+Len+Thai+Night+Bites%2C+3517+Fremont+Ave+N%2C+Seattle%2C+WA+98103",
       "cid": "6093394020657056257",
       "google_id": "/g/11hdwd4c_x",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 47.6160523,
       "lng": -122.33292039999999,
-      "maps_url": "https://maps.google.com/?cid=6093394035559923133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nana%E2%80%99s+Green+Tea%2C+1007+Stewart+St+%23103%2C+Seattle%2C+WA+98101%2C+United+States",
       "cid": "6093394035559923133",
       "google_id": "/g/11fd8gprfw",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 47.619271,
       "lng": -122.3128608,
-      "maps_url": "https://maps.google.com/?cid=6093488247686078439",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kobuta+%26+Ookami+Katsu+and+sake+house%2C+121+15th+Ave+E%2C+Seattle%2C+WA+98112%2C+United+States",
       "cid": "6093488247686078439",
       "google_id": "/g/11nxfq621c",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 47.615438499999996,
       "lng": -122.32535139999999,
-      "maps_url": "https://maps.google.com/?cid=6093487717109790703",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tamari+Bar%2C+500+E+Pine+St%2C+Seattle%2C+WA+98122%2C+United+States",
       "cid": "6093487717109790703",
       "google_id": "/g/11gdzyq74f",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 47.6386974,
       "lng": -122.3571197,
-      "maps_url": "https://maps.google.com/?cid=6093393464886126089",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Eden+Hill+Restaurant%2C+2209+Queen+Anne+Ave+N%2C+Seattle%2C+WA+98109%2C+United+States",
       "cid": "6093393464886126089",
       "google_id": "/g/11bw46kjq1",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 47.6510002,
       "lng": -122.3431121,
-      "maps_url": "https://maps.google.com/?cid=6093393393252844551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Manolin%2C+3621+Stone+Way+N%2C+Seattle%2C+WA+98103%2C+United+States",
       "cid": "6093393393252844551",
       "google_id": "/g/11b6mctb8k",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 47.6370363,
       "lng": -122.35719139999999,
-      "maps_url": "https://maps.google.com/?cid=6093394066873392593",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Big+Max+Burger+Co%2C+1935+Queen+Anne+Ave+N%2C+Seattle%2C+WA+98109%2C+United+States",
       "cid": "6093394066873392593",
       "google_id": "/g/11h_td6y0v",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 47.6098164,
       "lng": -122.34154889999999,
-      "maps_url": "https://maps.google.com/?cid=6093487612287594261",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Kashiba%2C+86+Pine+St+Suite+%231%2C+Seattle%2C+WA+98101%2C+United+States",
       "cid": "6093487612287594261",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 47.5521937,
       "lng": -122.2778211,
-      "maps_url": "https://maps.google.com/?cid=6093488617189715383",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Flour+Box%2C+5520+Rainier+Ave+S%2C+Seattle%2C+WA+98118%2C+United+States",
       "cid": "6093488617189715383",
       "google_id": "/g/11fwhnw92m",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 47.702251399999994,
       "lng": -122.3625946,
-      "maps_url": "https://maps.google.com/?cid=6093396356554567977",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miss+Pho%2C+10023+Holman+Rd+NW%2C+Seattle%2C+WA+98177",
       "cid": "6093396356554567977",
       "google_id": "/g/11ty1tkccj",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 47.615053599999996,
       "lng": -122.33800459999999,
-      "maps_url": "https://maps.google.com/?cid=6093393710535025621",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cinque+Terre+Ristorante%2C+2001+Westlake+Ave%2C+Seattle%2C+WA+98121%2C+United+States",
       "cid": "6093393710535025621",
       "google_id": "/g/11bz0w_jj4",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 47.624721799999996,
       "lng": -122.5205762,
-      "maps_url": "https://maps.google.com/?cid=6093440296550675393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seabird%2C+133+Winslow+Way+E%2C+Bainbridge+Island%2C+WA+98110",
       "cid": "6093440296550675393",
       "google_id": "/g/11t292ztyh",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 47.6146289,
       "lng": -122.32805649999999,
-      "maps_url": "https://maps.google.com/?cid=6093487715355062863",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taylor+Shellfish+Oyster+Bar%2C+1521+Melrose+Ave%2C+Seattle%2C+WA+98122%2C+United+States",
       "cid": "6093487715355062863",
       "google_id": "/g/1hhhsgdbn",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 47.629124,
       "lng": -122.33171999999999,
-      "maps_url": "https://maps.google.com/?cid=6093393543237812115",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+White+Swan+Public+House%2C+1001+Fairview+Ave+N%2C+Seattle%2C+WA+98109%2C+United+States",
       "cid": "6093393543237812115",
       "google_id": "/g/11c546z769",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 47.5988332,
       "lng": -122.33271889999999,
-      "maps_url": "https://maps.google.com/?cid=6093487551793747833",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taylor+Shellfish+Oyster+Bar%2C+410+Occidental+Ave+S%2C+Seattle%2C+WA+98104%2C+United+States",
       "cid": "6093487551793747833",
       "google_id": "/g/11b5pjzc7s",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 47.6234215,
       "lng": -122.35443869999999,
-      "maps_url": "https://maps.google.com/?cid=6093393677797039759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taylor+Shellfish+Oyster+Bar%2C+124+Republican+St%2C+Seattle%2C+WA+98109%2C+United+States",
       "cid": "6093393677797039759",
       "google_id": "/g/1q5ccvp7t",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 47.675965999999995,
       "lng": -122.304181,
-      "maps_url": "https://maps.google.com/?cid=6093392808234693169",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JuneBaby%2C+2122+NE+65th+St%2C+Seattle%2C+WA+98115%2C+United+States",
       "cid": "6093392808234693169",
       "google_id": "/g/11c5hhx_jk",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 47.652874999999995,
       "lng": -122.3427833,
-      "maps_url": "https://maps.google.com/?cid=6093392652566128243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Art+of+the+Table%2C+3801+Stone+Way+N+Suite+A%2C+Seattle%2C+WA+98103%2C+United+States",
       "cid": "6093392652566128243",
       "google_id": "/g/1tgnlsdw",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 47.6616839,
       "lng": -122.3132919,
-      "maps_url": "https://maps.google.com/?cid=6093394306476134613",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dont+Yell+At+Me%2C+4511+University+Way+NE%2C+Seattle%2C+WA+98105%2C+United+States",
       "cid": "6093394306476134613",
       "google_id": "/g/11k0p03p5t",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 47.658485999999996,
       "lng": -122.35031099999999,
-      "maps_url": "https://maps.google.com/?cid=6093392643832403491",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Paseo%2C+4225+Fremont+Ave+N%2C+Seattle%2C+WA+98103%2C+United+States",
       "cid": "6093392643832403491",
       "google_id": "/g/1tf3b79x",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 47.663525,
       "lng": -122.380218,
-      "maps_url": "https://maps.google.com/?cid=6093394177485959535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Walrus+and+the+Carpenter%2C+4743+Ballard+Ave+NW%2C+Seattle%2C+WA+98107%2C+United+States",
       "cid": "6093394177485959535",
       "google_id": "/g/1td2b0lh",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 47.6430933,
       "lng": -122.34675349999999,
-      "maps_url": "https://maps.google.com/?cid=6093393407984496709",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Canlis%2C+2576+Aurora+Ave+N%2C+Seattle%2C+WA+98109%2C+United+States",
       "cid": "6093393407984496709",
       "google_id": null,
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 47.6138378,
       "lng": -122.3439485,
-      "maps_url": "https://maps.google.com/?cid=6093393713141513843",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=FOB+Poke+Bar%2C+220+Blanchard+St%2C+Seattle%2C+WA+98121%2C+United+States",
       "cid": "6093393713141513843",
       "google_id": "/g/11c6f02sfd",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 47.6109158,
       "lng": -122.3353796,
-      "maps_url": "https://maps.google.com/?cid=6093487621139839599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monorail+Espresso%2C+510+Pike+St%2C+Seattle%2C+WA+98101%2C+United+States",
       "cid": "6093487621139839599",
       "google_id": null,
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 47.597674399999995,
       "lng": -122.3265151,
-      "maps_url": "https://maps.google.com/?cid=6093487655483069431",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oasis+Tea+Zone+%28Chinatown+ID%29%2C+519+6th+Ave+S%2C+Seattle%2C+WA+98104%2C+United+States",
       "cid": "6093487655483069431",
       "google_id": "/g/1tdz4jrh",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 47.601819899999995,
       "lng": -122.30655979999999,
-      "maps_url": "https://maps.google.com/?cid=6093487675309027485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Broadcast+Coffee+Roasters%2C+1918+E+Yesler+Way%2C+Seattle%2C+WA+98122%2C+United+States",
       "cid": "6093487675309027485",
       "google_id": "/g/1tpn284f",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 47.5973259,
       "lng": -122.3154711,
-      "maps_url": "https://maps.google.com/?cid=6093488620324101181",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hello+Em+Vi%E1%BB%87t+Coffee+%26+Roastery%2C+1227+S+Weller+St%2C+Seattle%2C+WA+98144%2C+United+States",
       "cid": "6093488620324101181",
       "google_id": "/g/11qs569kdn",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 47.5985339,
       "lng": -122.32655129999999,
-      "maps_url": "https://maps.google.com/?cid=6093487653810318917",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A%2B+Hong+Kong+Kitchen%2C+419+6th+Ave+S%2C+Seattle%2C+WA+98104%2C+United+States",
       "cid": "6093487653810318917",
       "google_id": "/g/11bzt8srdk",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 47.5484004,
       "lng": -122.31632259999999,
-      "maps_url": "https://maps.google.com/?cid=6093442694249190565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Voi+C%C3%A0+Ph%C3%AA%2C+6105+13th+Ave+S%2C+Seattle%2C+WA+98108%2C+United+States",
       "cid": "6093442694249190565",
       "google_id": "/g/11t2th6p2w",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 47.6066539,
       "lng": -122.33125159999999,
-      "maps_url": "https://maps.google.com/?cid=6093488495308466939",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Retro+Coffee%2C+920+5th+Ave+%23150%2C+Seattle%2C+WA+98104%2C+United+States",
       "cid": "6093488495308466939",
       "google_id": "/g/11h3g9f2m1",
       "maps_place_token": null

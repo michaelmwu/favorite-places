@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:49:51.728494+00:00",
-  "refresh_after": "2026-04-29T23:49:51.728494+00:00",
+  "fetched_at": "2026-04-20T16:01:49.113202+00:00",
+  "refresh_after": "2026-05-04T23:24:08.113202+00:00",
   "source_signature": "ebe5067219eadb82100f63ac8c458d6dfc2d6dc2149945ae90235c2aa7d953c5",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/2p19qNGERSvSm97g7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.6593878,
       "lng": -70.2513467,
-      "maps_url": "https://maps.google.com/?cid=5526651492297443449",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Eventide+Oyster+Co.%2C+86+Middle+St%2C+Portland%2C+ME+04101",
       "cid": "5526651492297443449",
       "google_id": "/g/11by15c2d7",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.627358699999995,
       "lng": -70.277525,
-      "maps_url": "https://maps.google.com/?cid=5526654232824936361",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Docks+Seafood",
       "cid": "5526654232824936361",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.6338118,
       "lng": -70.3265019,
-      "maps_url": "https://maps.google.com/?cid=5526655306410497525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shaking+Crab+Cajun+Seafood+House%2C+Maine%2C+South+Portland%2C+Gorham+Rd%2C+%E9%82%AE%E6%94%BF%E7%BC%96%E7%A0%81%3A+04106",
       "cid": "5526655306410497525",
       "google_id": "/g/11pvmlmtcy",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.8594296,
       "lng": -70.1552947,
-      "maps_url": "https://maps.google.com/?cid=5526619860346415725",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Desert+of+Maine%2C+95+Desert+Rd%2C+Freeport%2C+ME+04032",
       "cid": "5526619860346415725",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.6558028,
       "lng": -70.2544928,
-      "maps_url": "https://maps.google.com/?cid=5526651490651063589",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gorgeous+Gelato+Portland%2C+434+Fore+St%2C+Portland%2C+ME+04101",
       "cid": "5526651490651063589",
       "google_id": "/g/1tjbrs1p",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.6581718,
       "lng": -70.25098299999999,
-      "maps_url": "https://maps.google.com/?cid=5526651493487966199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fore+Street+Restaurant",
       "cid": "5526651493487966199",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.6563714,
       "lng": -70.2530814,
-      "maps_url": "https://maps.google.com/?cid=5526651490326361105",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Beal%27s+Old+Fashioned+Ice+Cream%2C+12+Moulton+St%2C+Portland%2C+ME+04101",
       "cid": "5526651490326361105",
       "google_id": "/g/1xpwjcmk",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.666455899999995,
       "lng": -70.2571134,
-      "maps_url": "https://maps.google.com/?cid=5526653389850850869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bite+Into+Maine%2C+31+Diamond+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526653389850850869",
       "google_id": "/g/11svcjp9qv",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.658352,
       "lng": -70.25590369999999,
-      "maps_url": "https://maps.google.com/?cid=5526651288175627011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Highroller+Lobster+Co.%2C+104+Exchange+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651288175627011",
       "google_id": "/g/11cncn866q",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.6563381,
       "lng": -70.2505288,
-      "maps_url": "https://maps.google.com/?cid=5526650000924287243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Harbor+Fish+Market%2C+9+Custom+House+Wharf%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526650000924287243",
       "google_id": "/g/1262cx18s",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 43.6569225,
       "lng": -70.2506003,
-      "maps_url": "https://maps.google.com/?cid=5526651489204754479",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gilberts+Chowder+House%2C+92+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651489204754479",
       "google_id": "/g/1tfjkr0q",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 43.6560827,
       "lng": -70.25385949999999,
-      "maps_url": "https://maps.google.com/?cid=5526651490456808109",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Central+Provisions%2C+414+Fore+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651490456808109",
       "google_id": "/g/11b7gmkhcb",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 43.6602268,
       "lng": -70.2504008,
-      "maps_url": "https://maps.google.com/?cid=5526651498829995955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Duckfat%2C+43+Middle+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651498829995955",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 43.661468299999996,
       "lng": -70.2486955,
-      "maps_url": "https://maps.google.com/?cid=5526651500620039769",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shipyard+Brewing+Company%2C+27+Hancock+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651500620039769",
       "google_id": "/g/1tfcmypq",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 43.6683026,
       "lng": -70.2565213,
-      "maps_url": "https://maps.google.com/?cid=5526652496464929399",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Belleflower+Brewing+Company%2C+66+Cove+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526652496464929399",
       "google_id": "/g/11p9pcdll9",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 43.6700194,
       "lng": -70.2558653,
-      "maps_url": "https://maps.google.com/?cid=5526651649886125521",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lone+Pine+Brewing+Company%2C+219+Anderson+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651649886125521",
       "google_id": "/g/11cn3d2wk1",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 43.659140099999995,
       "lng": -70.24892799999999,
-      "maps_url": "https://maps.google.com/?cid=5526652935755627643",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Brickyard+Hollow+Brewing+Company%2C+9+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526652935755627643",
       "google_id": "/g/11nm9md3n4",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 43.6649733,
       "lng": -70.2516373,
-      "maps_url": "https://maps.google.com/?cid=5526651664570620933",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oxbow+Blending+%26+Bottling%2C+49+Washington+Ave%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651664570620933",
       "google_id": "/g/11b6hy_gl9",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 43.668743899999996,
       "lng": -70.25397199999999,
-      "maps_url": "https://maps.google.com/?cid=5526652900080480443",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Newscapes+brewing%2C+163+Washington+Ave%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526652900080480443",
       "google_id": "/g/11t2lfz3mn",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 43.6648145,
       "lng": -70.2514874,
-      "maps_url": "https://maps.google.com/?cid=5526652503653567419",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Duckfat+Frites+Shack%2C+43+Washington+Ave%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526652503653567419",
       "google_id": "/g/11g2ykdg35",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 43.6230726,
       "lng": -70.2078824,
-      "maps_url": "https://maps.google.com/?cid=5526653437531039477",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Portland+Head+Light%2C+Cape+Elizabeth%2C+ME+04107%2C+United+States",
       "cid": "5526653437531039477",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 43.6559678,
       "lng": -70.2748659,
-      "maps_url": "https://maps.google.com/?cid=5526651279662250545",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Holy+Donut%2C+194+Park+Ave%2C+Portland%2C+ME+04102%2C+United+States",
       "cid": "5526651279662250545",
       "google_id": "/g/12644t0tq",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 43.655963899999996,
       "lng": -70.2528264,
-      "maps_url": "https://maps.google.com/?cid=5526652929083848217",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Holy+Donut%2C+177+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526652929083848217",
       "google_id": "/g/11r3vmwtxl",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 43.657029099999995,
       "lng": -70.24860989999999,
-      "maps_url": "https://maps.google.com/?cid=5526651493598622317",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casco+Bay+Lines%2C+56+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651493598622317",
       "google_id": "/g/1tdndvt0",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 43.6514763,
       "lng": -70.260651,
-      "maps_url": "https://maps.google.com/?cid=5526651318486502857",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Victoria+Mansion%2C+109+Danforth+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651318486502857",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 43.6696242,
       "lng": -70.2564747,
-      "maps_url": "https://maps.google.com/?cid=5526653359603775339",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hi-Fidelity%2C+200+Anderson+St+Ste+6%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526653359603775339",
       "google_id": "/g/11sgnhqr6h",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 43.667814199999995,
       "lng": -70.2530058,
-      "maps_url": "https://maps.google.com/?cid=5526652412047135197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Root+Wild+Kombucha%2C+135+Washington+Ave%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526652412047135197",
       "google_id": "/g/11grr9xtvw",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 43.6653891,
       "lng": -70.2482843,
-      "maps_url": "https://maps.google.com/?cid=5526651663721808723",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Portland+Observatory%2C+138+Congress+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651663721808723",
       "google_id": null,
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 43.6539824,
       "lng": -70.2626156,
-      "maps_url": "https://maps.google.com/?cid=5526651313519828315",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Portland+Museum+of+Art%2C+7+Congress+Sq%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651313519828315",
       "google_id": null,
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 43.6620541,
       "lng": -70.2438225,
-      "maps_url": "https://maps.google.com/?cid=5526651510584765207",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Eastern+Promenade+Trail%2C+Eastern+Promenade%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651510584765207",
       "google_id": "/g/11hbqv6y47",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 43.7030892,
       "lng": -70.3176521,
-      "maps_url": "https://maps.google.com/?cid=5526650017049076265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Allagash+Brewing+Company",
       "cid": "5526650017049076265",
       "google_id": null,
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 43.653403,
       "lng": -70.2344955,
-      "maps_url": "https://maps.google.com/?cid=5526651446617592749",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bug+Light%2C+S+Portland+Greenbelt+Pathway%2C+South+Portland%2C+ME+04106%2C+United+States",
       "cid": "5526651446617592749",
       "google_id": "/g/1td_gvq3",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 43.6684609,
       "lng": -70.2403472,
-      "maps_url": "https://maps.google.com/?cid=5526651612273473163",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=East+End+Beach%2C+Eastern+Promenade+Trail%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651612273473163",
       "google_id": "/g/12jsq4k4w",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 43.6608179,
       "lng": -70.245781,
-      "maps_url": "https://maps.google.com/?cid=5526651506616648739",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maine+Narrow+Gauge+Railroad%2C+49+Thames+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651506616648739",
       "google_id": null,
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 43.6363996,
       "lng": -70.2528213,
-      "maps_url": "https://maps.google.com/?cid=5526661586396506051",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SoPo+Seafood",
       "cid": "5526661586396506051",
       "google_id": null,
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 43.657364,
       "lng": -70.2506581,
-      "maps_url": "https://maps.google.com/?cid=5526651489261881643",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Old+Port+Sea+Grill+%26+Raw+Bar%2C+93+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651489261881643",
       "google_id": "/g/1tf02200",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 43.655642,
       "lng": -70.25279809999999,
-      "maps_url": "https://maps.google.com/?cid=5526651490086732905",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Portland+Lobster+Company%2C+180+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651490086732905",
       "google_id": "/g/11b77pppjb",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 43.6577056,
       "lng": -70.2564427,
-      "maps_url": "https://maps.google.com/?cid=5526651307739289437",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Works+Caf%C3%A9%2C+15+Temple+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651307739289437",
       "google_id": "/g/1tlc_sj5",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 43.6538824,
       "lng": -70.2544195,
-      "maps_url": "https://maps.google.com/?cid=5526651484898957985",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+King%27s+Head%2C+254+Commercial+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651484898957985",
       "google_id": "/g/11bbsy6smx",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 43.6571177,
       "lng": -70.25871529999999,
-      "maps_url": "https://maps.google.com/?cid=5526651306340937447",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sisters+Gourmet+Deli%2C+15+Monument+Sq%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651306340937447",
       "google_id": "/g/11cn952qxn",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 43.659921399999995,
       "lng": -70.2514116,
-      "maps_url": "https://maps.google.com/?cid=5526651499175670957",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tomaso%27s+Canteen%2C+18+Hampshire+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651499175670957",
       "google_id": "/g/1tgfpqvw",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 43.6566968,
       "lng": -70.25280289999999,
-      "maps_url": "https://maps.google.com/?cid=5526653008182542073",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cheese+Louise+Portland%2C+363+Fore+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526653008182542073",
       "google_id": "/g/11r3x00dmz",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 43.656272,
       "lng": -70.2500835,
-      "maps_url": "https://maps.google.com/?cid=5526651488992751197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Porthole+Restaurant+%26+Pub%2C+20+Custom+House+Wharf%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651488992751197",
       "google_id": "/g/1tsr2t8w",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 43.6553306,
       "lng": -70.2616572,
-      "maps_url": "https://maps.google.com/?cid=5526651302654903457",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taco+Escobarr%2C+548+Congress+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651302654903457",
       "google_id": "/g/1tknk0yr",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 43.654852999999996,
       "lng": -70.2624118,
-      "maps_url": "https://maps.google.com/?cid=5526651302475830819",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Empire+Chinese+Kitchen%2C+575+Congress+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651302475830819",
       "google_id": "/g/1tgtf2qh",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 43.657324599999995,
       "lng": -70.2538107,
-      "maps_url": "https://maps.google.com/?cid=5526651490945574237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Thirsty+Pig%2C+37+Exchange+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651490945574237",
       "google_id": "/g/1tf70jps",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 43.656656999999996,
       "lng": -70.2578733,
-      "maps_url": "https://maps.google.com/?cid=5526651306797757233",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Rayo+Taqueria%2C+26+Free+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651306797757233",
       "google_id": "/g/11c1l4j9hm",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 43.6582022,
       "lng": -70.2551332,
-      "maps_url": "https://maps.google.com/?cid=5526651674863943357",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Black+Cow+Burgers+%26+Fries%2C+83+Exchange+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651674863943357",
       "google_id": "/g/11f53s4ksb",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 43.6601934,
       "lng": -70.2504623,
-      "maps_url": "https://maps.google.com/?cid=5526651498816585799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+East+Ender%2C+47+Middle+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651498816585799",
       "google_id": "/g/1hc6zk0tq",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 43.6559667,
       "lng": -70.2539621,
-      "maps_url": "https://maps.google.com/?cid=5526651490611297531",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Portland+Mash+TUN%2C+29+Wharf+St%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651490611297531",
       "google_id": "/g/11cmy4_x66",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 43.6646631,
       "lng": -70.2519337,
-      "maps_url": "https://maps.google.com/?cid=5526651667396503575",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Terlingua%2C+40+Washington+Ave%2C+Portland%2C+ME+04101%2C+United+States",
       "cid": "5526651667396503575",
       "google_id": "/g/11b76gb536",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 43.6553645,
       "lng": -70.2546666,
-      "maps_url": "https://maps.google.com/?cid=5526653345605777183",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Butcher+Burger+Old+Port",
       "cid": "5526653345605777183",
       "google_id": null,
       "maps_place_token": null

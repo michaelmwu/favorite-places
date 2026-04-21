@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:21:11.185004+00:00",
-  "refresh_after": "2026-04-29T15:21:11.185004+00:00",
+  "fetched_at": "2026-04-20T16:05:05.719663+00:00",
+  "refresh_after": "2026-05-06T21:43:43.719663+00:00",
   "source_signature": "a25f6fa152bd1cb57fbaf9dde8760a96de4df631d26f95db634547d5af8c31e6",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/n5z5ghhntmNmHhJA8",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.3214573,
       "lng": -1.9493146,
-      "maps_url": "https://maps.google.com/?cid=959729903686999699",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arzak%2C+Alcalde+J.+Elosegi+Hiribidea%2C+273%2C+20015+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959729903686999699",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.307784999999996,
       "lng": -2.0431364,
-      "maps_url": "https://maps.google.com/?cid=959742390758789981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Akelare+%7C+Pedro+Subijana%2C+Padre+Orkolaga+Ibilbidea%2C+56%2C+20008+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959742390758789981",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.3030202,
       "lng": -2.2049624999999997,
-      "maps_url": "https://maps.google.com/?cid=959768794146853151",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ELKANO%2C+Herrerieta+Kalea%2C+2%2C+20808+Getaria%2C+Gipuzkoa%2C+Spain",
       "cid": "959768794146853151",
       "google_id": "/g/1tfks2nx",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.2668149,
       "lng": -2.0156098,
-      "maps_url": "https://maps.google.com/?cid=959743566453910645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Martin+Berasategui%2C+Loidi+Kalea%2C+4%2C+20160+Lasarte-Oria%2C+Gipuzkoa%2C+Spain",
       "cid": "959743566453910645",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.1145302,
       "lng": -2.6023734,
-      "maps_url": "https://maps.google.com/?cid=959217914613722063",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Txispa%2C+San+Juan+Auzoa%2C+45%2C+48291+Atxondo%2C+Bizkaia%2C+Spain",
       "cid": "959217914613722063",
       "google_id": "/g/11ssbzp63v",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.1158721,
       "lng": -2.5984691,
-      "maps_url": "https://maps.google.com/?cid=959217186372125567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Asador+Etxebarri%2C+San+Juan+Plaza%2C+1%2C+48291+Axpe%2C+Bizkaia%2C+Spain",
       "cid": "959217186372125567",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.261980099999995,
       "lng": -2.9326962,
-      "maps_url": "https://maps.google.com/?cid=958791528457965433",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Globo+taberna%2C+Diputazio+Kalea%2C+8%2C+48008+Bilbo%2C+Bizkaia%2C+Spain",
       "cid": "958791528457965433",
       "google_id": "/g/1tzzwv4s",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.263237,
       "lng": -2.9318828,
-      "maps_url": "https://maps.google.com/?cid=958791451797972029",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Perita+Bar%2C+Diputazio+Kalea%2C+1%2C+48009+Bilbo%2C+Bizkaia%2C+Spain",
       "cid": "958791451797972029",
       "google_id": "/g/11fqc9wpmq",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.2686712,
       "lng": -2.9340118,
-      "maps_url": "https://maps.google.com/?cid=958791589308674485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Guggenheim+Museum+Bilbao%2C+Abandoibarra+Etorb.%2C+2%2C+48009+Bilbo%2C+Bizkaia%2C+Spain",
       "cid": "958791589308674485",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.321703,
       "lng": -1.9799904,
-      "maps_url": "https://maps.google.com/?cid=959729991533724807",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Amelia+by+Paulo+Airaudo%2C+Zubieta+Kalea%2C+26%2C+20007+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959729991533724807",
       "google_id": "/g/11dxm9ygzf",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 43.318081199999995,
       "lng": -1.9842008,
-      "maps_url": "https://maps.google.com/?cid=959730353738862227",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Lanperna%2C+San+Martzial+Kalea%2C+50%2C+20005+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959730353738862227",
       "google_id": "/g/11stgfh44y",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 43.3233372,
       "lng": -1.9844591999999999,
-      "maps_url": "https://maps.google.com/?cid=959729948300913097",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+Urola%2C+Fermin+Calbeton+Kalea%2C+20%2C+20003+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959729948300913097",
       "google_id": "/g/1tf_pm7d",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 43.278197399999996,
       "lng": -2.0006649,
-      "maps_url": "https://maps.google.com/?cid=959741932268340399",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chillida-Leku%2C+Jauregi+Bailara%2C+66%2C+20120+Hernani%2C+Gipuzkoa%2C+Spain",
       "cid": "959741932268340399",
       "google_id": "/g/122pkw04",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 43.314242,
       "lng": -1.9748434,
-      "maps_url": "https://maps.google.com/?cid=959729995259615409",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cristina+Enea+parkea%2C+Mandasko+Dukearen+Pasealekua%2C+66%2C+20012+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959729995259615409",
       "google_id": "/g/121k3gv1",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 43.323836899999996,
       "lng": -1.9866066,
-      "maps_url": "https://maps.google.com/?cid=959729949286213293",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Koruko+Andre+Mariaren+basilika%2C+31+de+Agosto+Kalea%2C+46%2C+20003+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959729949286213293",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 43.316874999999996,
       "lng": -1.9816361,
-      "maps_url": "https://maps.google.com/?cid=959729946176656355",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Good+Shepherd+of+San+Sebasti%C3%A1n+Cathedral%2C+Urdaneta+Kalea%2C+12%2C+20006+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959729946176656355",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 43.3218056,
       "lng": -2.0053891,
-      "maps_url": "https://maps.google.com/?cid=959753405451418673",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Haizearen+orrazia%2C+Eduardo+Chillida+Pasealekua%2C+s%2Fn%2C+20008+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959753405451418673",
       "google_id": "/g/1238y1zn",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 43.3148304,
       "lng": -1.9984962,
-      "maps_url": "https://maps.google.com/?cid=959753418506640917",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miramar+Jauregia%2C+Paseo+Miraconcha%2C+48%2C+20007+Donostia%2C+Gipuzkoa%2C+Spain",
       "cid": "959753418506640917",
       "google_id": "/g/121rprns",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 43.324993,
       "lng": -1.9848439999999998,
-      "maps_url": "https://maps.google.com/?cid=959729942375469909",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=San+Telmo+Museum%2C+Plaza+Zuloaga%2C+1%2C+20003+Donostia-San+Sebastian%2C+Gipuzkoa%2C+Spain",
       "cid": "959729942375469909",
       "google_id": "/g/120m0nj0",
       "maps_place_token": null

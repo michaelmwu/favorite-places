@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:26:38.516949+00:00",
-  "refresh_after": "2026-04-29T15:26:38.516949+00:00",
+  "fetched_at": "2026-04-20T16:07:41.648408+00:00",
+  "refresh_after": "2026-05-03T06:44:36.648408+00:00",
   "source_signature": "526460ca726f878769593be004976d3fc230dfae48f126a06baeb71731829ac9",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/NaxWqgG1U9NXFWU2A",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 35.8385349,
       "lng": 129.2090461,
-      "maps_url": "https://maps.google.com/?cid=3847850570014301779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sugyeongsa%2C+4-1+Sajeong-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850570014301779",
       "google_id": "/g/11t_t7183v",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 35.8340706,
       "lng": 129.21031,
-      "maps_url": "https://maps.google.com/?cid=3847850057378708731",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%ED%99%A9%EB%82%A8%EB%B9%84%EB%B9%94%EB%B0%A5%2C+317-14+Hwangnam-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850057378708731",
       "google_id": "/g/11q8rs0047",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 35.837151299999995,
       "lng": 129.2063899,
-      "maps_url": "https://maps.google.com/?cid=3847849080057331657",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EC%9D%98%EA%B3%A1%EC%88%AF%EB%B6%88%2C+Gyeongju%2C+South+Korea",
       "cid": "3847849080057331657",
       "google_id": "/g/11b5k761dr",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 35.8431774,
       "lng": 129.2154827,
-      "maps_url": "https://maps.google.com/?cid=3847848975043147329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EC%9A%B8%ED%83%80%EB%A6%AC%EC%97%86%EB%8A%94%EB%A7%8C%EB%91%90%2C+Gyeongju%2C+South+Korea",
       "cid": "3847848975043147329",
       "google_id": "/g/1v4k4czd",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 35.8345158,
       "lng": 129.212412,
-      "maps_url": "https://maps.google.com/?cid=3847850095224598973",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soog%2C+224-7+Hwangnam-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850095224598973",
       "google_id": "/g/11j6gmwxzw",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 35.841531599999996,
       "lng": 129.2224661,
-      "maps_url": "https://maps.google.com/?cid=3847850436751384321",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EB%B9%BD%EA%B0%80%EB%84%A4%EB%92%B7%EA%B3%A0%EA%B8%B0%EB%8F%BC%EC%A7%80%EA%B3%A0%EA%B8%B0%EA%B5%AC%EC%9D%B4%2C+658-6+Inwang-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850436751384321",
       "google_id": "/g/11g2kcqv75",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 35.8348173,
       "lng": 129.2265645,
-      "maps_url": "https://maps.google.com/?cid=3847849175519733237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Donggung+Palace+%26+Wolji+Pond%2C+102+Wonhwa-ro%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847849175519733237",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 35.8368125,
       "lng": 129.2859375,
-      "maps_url": "https://maps.google.com/?cid=3847848127855705297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gyeongju+Millennium+Hanwoo+Bomun+Branch",
       "cid": "3847848127855705297",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 35.7953846,
       "lng": 129.2434147,
-      "maps_url": "https://maps.google.com/?cid=3847846614289649569",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yeo+Gi+Dang",
       "cid": "3847846614289649569",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 35.7869828,
       "lng": 129.32678909999998,
-      "maps_url": "https://maps.google.com/?cid=3848241039094206223",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EA%B2%BD%EC%B6%98%EC%9E%AC",
       "cid": "3848241039094206223",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 35.8432495,
       "lng": 129.21456329999998,
-      "maps_url": "https://maps.google.com/?cid=3847850286220528477",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Olyugdon",
       "cid": "3847850286220528477",
       "google_id": null,
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 35.8429292,
       "lng": 129.2130606,
-      "maps_url": "https://maps.google.com/?cid=3847848984535173249",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gimssibeut",
       "cid": "3847848984535173249",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 35.797348299999996,
       "lng": 129.31262859999998,
-      "maps_url": "https://maps.google.com/?cid=3847847796423077595",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EC%91%A5%EB%B6%80%EC%9F%81%EC%9D%B4",
       "cid": "3847847796423077595",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 35.8455042,
       "lng": 129.2884173,
-      "maps_url": "https://maps.google.com/?cid=3847853663838128247",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Garden+Hiro",
       "cid": "3847853663838128247",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 35.8368903,
       "lng": 129.2090998,
-      "maps_url": "https://maps.google.com/?cid=3847850109058415097",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dongri",
       "cid": "3847850109058415097",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 35.845495899999996,
       "lng": 129.2024841,
-      "maps_url": "https://maps.google.com/?cid=3847849030109304131",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hongsi+Hanjeongsik",
       "cid": "3847849030109304131",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 35.839681,
       "lng": 129.213841,
-      "maps_url": "https://maps.google.com/?cid=3847848981971963201",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EC%88%99%EC%98%81%EC%8B%9D%EB%8B%B9",
       "cid": "3847848981971963201",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 35.8380098,
       "lng": 129.2091935,
-      "maps_url": "https://maps.google.com/?cid=3847850385327414385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hyanghwajeong",
       "cid": "3847850385327414385",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 35.8334295,
       "lng": 129.2147573,
-      "maps_url": "https://maps.google.com/?cid=3847849098971753505",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gyeongju+Wonjo+Kongguk",
       "cid": "3847849098971753505",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 35.8413063,
       "lng": 129.20772019999998,
-      "maps_url": "https://maps.google.com/?cid=3847850535771485135",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Heuheuheu%2C+117-6+Noseo-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850535771485135",
       "google_id": "/g/11nww2ms75",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 35.8370513,
       "lng": 129.2108179,
-      "maps_url": "https://maps.google.com/?cid=3847849085589227347",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EB%B0%94%EB%8B%AC%EB%B0%A4+%EA%B3%A0%EC%96%91%EC%9D%B4+%EC%8B%9D%EB%8B%B9%2C+South+Korea%2C+Gyeongsangbuk-do%2C+Gyeongju-si%2C+Sonhyoja-gil%2C+12-1+KR",
       "cid": "3847849085589227347",
       "google_id": "/g/11gdjps95r",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 35.842158399999995,
       "lng": 129.2104013,
-      "maps_url": "https://maps.google.com/?cid=3847850841056904495",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Stillroom%2C+87+Wonhyo-ro%2C+Jungbu-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850841056904495",
       "google_id": "/g/11ghrbb1vr",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 35.8470484,
       "lng": 129.21409699999998,
-      "maps_url": "https://maps.google.com/?cid=3847850465454589615",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Round2+restaurant+%26+pub%2C+112+Bukseong-ro%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850465454589615",
       "google_id": "/g/11gxvttyzk",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 35.8421078,
       "lng": 129.2115286,
-      "maps_url": "https://maps.google.com/?cid=3847850002945299245",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Prep%2C+South+Korea%2C+Gyeongsangbuk-do%2C+Gyeongju-si%2C+Wonhyo-ro%2C+97+1%EC%B8%B5",
       "cid": "3847850002945299245",
       "google_id": "/g/11q483zg2z",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 35.8356597,
       "lng": 129.210301,
-      "maps_url": "https://maps.google.com/?cid=3847849851408364137",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar%EB%B6%84+%28Bar+Boon%29%2C+%ED%8F%AC%EC%84%9D%EB%A1%9C%2C+1058-7+%EC%8B%9C%EC%9E%A5+%EB%9D%BC%EB%8F%99%2C+Hwangnam-dong%2C+56%ED%98%B8%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847849851408364137",
       "google_id": "/g/11sn_2tyr8",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 35.835087699999995,
       "lng": 129.2125026,
-      "maps_url": "https://maps.google.com/?cid=3847850871510702865",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seol-Wol%2C+22-13+Cheomseong-ro+81beon-gil%2C+Hwangnam-dong%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847850871510702865",
       "google_id": "/g/11j6_97pww",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 35.8350643,
       "lng": 129.210826,
-      "maps_url": "https://maps.google.com/?cid=3847849988735159093",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%EC%B2%AD%EC%88%98%EB%8B%B9+%EA%B2%BD%EC%A3%BC%2C+21-1+Cheomseong-ro+81beon-gil%2C+Gyeongju-si%2C+Gyeongsangbuk-do%2C+South+Korea",
       "cid": "3847849988735159093",
       "google_id": "/g/11v68wr_48",
       "maps_place_token": null

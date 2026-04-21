@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:23:08.252492+00:00",
-  "refresh_after": "2026-04-29T15:23:08.252492+00:00",
+  "fetched_at": "2026-04-20T16:06:06.103618+00:00",
+  "refresh_after": "2026-05-06T02:00:55.103618+00:00",
   "source_signature": "ee0e3a8c96c138e51e6af0219d2bba2c215f66e327c3dba8b0fbe5bd2b230bd5",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/V9BztrexRsELpywY6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.4647018,
       "lng": 142.4814168,
-      "maps_url": "https://maps.google.com/?cid=6849048748499435087",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%97%A5%E3%81%AE%E5%87%BA%E5%85%AC%E5%9C%92%E3%83%A9%E3%83%99%E3%83%B3%E3%83%80%E3%83%BC%E5%9C%92%2C+27+Go+Higashi+1+Senkita%2C+Kamifurano%2C+Sorachi+District%2C+Hokkaido+071-0521",
       "cid": "6849048748499435087",
       "google_id": "/g/11b6v5d794",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.1590415,
       "lng": 142.4954708,
-      "maps_url": "https://maps.google.com/?cid=6877945147029014799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lake+Kanayama+Lavender+Field%2C+Higashishikagoe%2C+Minamifurano%2C+Sorachi+District%2C+Hokkaido+079-2411",
       "cid": "6877945147029014799",
       "google_id": "/g/11cnx_2d6_",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.0631316,
       "lng": 142.6207566,
-      "maps_url": "https://maps.google.com/?cid=6877947988130647759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mina-Mina+Beach%2C+2198-1+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877947988130647759",
       "google_id": "/g/1tkc6h26",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.063450599999996,
       "lng": 142.63316079999998,
-      "maps_url": "https://maps.google.com/?cid=6877948264789330065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3+%E3%82%AD%E3%83%B3%E3%82%B0%2C+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877948264789330065",
       "google_id": "/g/11h55mn_51",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.06547,
       "lng": 142.6354604,
-      "maps_url": "https://maps.google.com/?cid=6877948185120594235",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Forest+Restaurant+Nininupuri%2C+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877948185120594235",
       "google_id": "/g/12qg_72ky",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.6061781,
       "lng": 142.4696856,
-      "maps_url": "https://maps.google.com/?cid=6849066494044417983",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zerubu+Hill%2C+%E3%80%92071-0200+Hokkaido%2C+Kamikawa+District%2C+Biei%2C+%E5%A4%A7%E4%B8%89",
       "cid": "6849066494044417983",
       "google_id": "/g/1v8k_djk",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.5291728,
       "lng": 142.4650824,
-      "maps_url": "https://maps.google.com/?cid=6849069403826283021",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Panoramic+Flower+Gardens+Shikisai-no-oka%2C+%E3%80%92071-0473+Hokkaido%2C+Kamikawa+District%2C+Biei%2C+Shinsei%2C+%E7%AC%AC%EF%BC%93",
       "cid": "6849069403826283021",
       "google_id": "/g/1231g570",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.406474599999996,
       "lng": 142.46798809999999,
-      "maps_url": "https://maps.google.com/?cid=6849049111956328319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Farm+Tomita+Lavender+East%2C+16+Go+Higashi+6+Senkita%2C+Kamifurano%2C+Hokkaido+071-0526",
       "cid": "6849049111956328319",
       "google_id": "/g/11sshspkxd",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.4118712,
       "lng": 142.4193347,
-      "maps_url": "https://maps.google.com/?cid=6849049220348354623",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hokuseiyama+Observation+Deck%2C+1-41+Miyamachi%2C+Nakafurano%2C+Sorachi+District%2C+Hokkaido+071-0731",
       "cid": "6849049220348354623",
       "google_id": "/g/11jfg7fgyn",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.411299899999996,
       "lng": 142.4211647,
-      "maps_url": "https://maps.google.com/?cid=6849047724147326599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nakafurano+Hokuseiyama+Lavender+Fields%2C+1-41+Miyamachi%2C+Nakafurano%2C+Sorachi+District%2C+Hokkaido+071-0714",
       "cid": "6849047724147326599",
       "google_id": "/g/1tdh3nvy",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 43.3474074,
       "lng": 142.3900121,
-      "maps_url": "https://maps.google.com/?cid=6877926169779294929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sennari+Shabu+Shabu%2C+1-19+Asahimachi%2C+Furano%2C+Hokkaido+076-0026",
       "cid": "6877926169779294929",
       "google_id": "/g/1tc_f1mq",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 43.344350999999996,
       "lng": 142.389163,
-      "maps_url": "https://maps.google.com/?cid=6877926156250888297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Teppan+Okonomiyaki+Masaya",
       "cid": "6877926156250888297",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 43.3431497,
       "lng": 142.3676247,
-      "maps_url": "https://maps.google.com/?cid=6877931910801441283",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Country+Kitchen+Kazamidori",
       "cid": "6877931910801441283",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 43.385606599999996,
       "lng": 142.5333138,
-      "maps_url": "https://maps.google.com/?cid=6877924210098651319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Furano+Jingisukan+Hitsuji+no+Oka",
       "cid": "6877924210098651319",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 43.463053099999996,
       "lng": 142.467682,
-      "maps_url": "https://maps.google.com/?cid=6849048777281978271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Daiichi+Syokudo",
       "cid": "6849048777281978271",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 43.4530701,
       "lng": 142.4729046,
-      "maps_url": "https://maps.google.com/?cid=6849048799259248509",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marumasu",
       "cid": "6849048799259248509",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 43.593723499999996,
       "lng": 142.4667499,
-      "maps_url": "https://maps.google.com/?cid=6849065958249206315",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kame+Tsuru",
       "cid": "6849065958249206315",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 43.560968599999995,
       "lng": 142.4083841,
-      "maps_url": "https://maps.google.com/?cid=6849068823122142799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=STAPLE",
       "cid": "6849068823122142799",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 43.3469136,
       "lng": 142.3684059,
-      "maps_url": "https://maps.google.com/?cid=6877925967059613267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LOUNGE+FURANO+1909+Restaurant+and+Bar%2C+29-19+Kitanominecho%2C+Furano%2C+Hokkaido+076-0034",
       "cid": "6877925967059613267",
       "google_id": "/g/11l6qgwzlm",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 43.6248064,
       "lng": 141.94359359999999,
-      "maps_url": "https://maps.google.com/?cid=6849008188108803241",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ebeotsu+Shrine%2C+12+Chome-1-24+Ebeotsuchohigashi%2C+Takikawa%2C+Hokkaido+079-0463",
       "cid": "6849008188108803241",
       "google_id": "/g/1tm68r1m",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 43.5470889,
       "lng": 141.89657499999998,
-      "maps_url": "https://maps.google.com/?cid=6849024150905105563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Takikawa+Sky+Park%2C+139-4+Nakajimacho%2C+Takikawa%2C+Hokkaido+073-0035",
       "cid": "6849024150905105563",
       "google_id": "/g/11crzw5zv5",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 43.1598164,
       "lng": 142.5587117,
-      "maps_url": "https://maps.google.com/?cid=6877942506719544457",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Minamifurano+Ski+Hill%2C+Ikutora%2C+Minamifurano%2C+Sorachi+District%2C+Hokkaido+079-2401",
       "cid": "6877942506719544457",
       "google_id": "/g/1vvdv077",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 43.0693159,
       "lng": 142.6150047,
-      "maps_url": "https://maps.google.com/?cid=6877948012477857179",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hoshino+Resorts+TOMAMU+ski+area%2C+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877948012477857179",
       "google_id": "/g/12hlhq7ww",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 43.6955752,
       "lng": 142.5096833,
-      "maps_url": "https://maps.google.com/?cid=6849092085541701493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%B4%E3%83%AC+%28Vraie%29%2C+1+Chome-4-11+Minamimachi%2C+Higashikawa%2C+Kamikawa+District%2C+Hokkaido+071-1424",
       "cid": "6849092085541701493",
       "google_id": "/g/11c30p7xpd",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 43.0657095,
       "lng": 142.63249299999998,
-      "maps_url": "https://maps.google.com/?cid=6877948021336189521",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Altezza+Tomamu%2C+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877948021336189521",
       "google_id": "/g/11hb4t_4l3",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 43.6290767,
       "lng": 142.4312157,
-      "maps_url": "https://maps.google.com/?cid=6849065129814880779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seven+Stars+Tree%2C+Hokuei%2C+%E7%BE%8E%E7%91%9B%E7%94%BA+Biei%2C+Kamikawa+District%2C+Hokkaido+071-0224",
       "cid": "6849065129814880779",
       "google_id": "/g/11c3kjvsn8",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 43.0771118,
       "lng": 142.5988156,
-      "maps_url": "https://maps.google.com/?cid=6877947849943388511",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Unkai+Terrace%2C+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877947849943388511",
       "google_id": "/g/11bw44jry7",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 43.6236848,
       "lng": 142.44563159999998,
-      "maps_url": "https://maps.google.com/?cid=6849065092702901869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+bi.ble%2C+Hokuei%2C+Biei%2C+Kamikawa+District%2C+Hokkaido+071-0224",
       "cid": "6849065092702901869",
       "google_id": "/g/11b7yr5kj7",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 43.618618399999995,
       "lng": 142.43520709999999,
-      "maps_url": "https://maps.google.com/?cid=6849064731646749197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Parent+%26+Child+Tree+%28Biei-cho%29%2C+Mita%2C+Biei%2C+Kamikawa+District%2C+Hokkaido+071-0222",
       "cid": "6849064731646749197",
       "google_id": "/g/1td_4_0z",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 43.605073999999995,
       "lng": 142.41014719999998,
-      "maps_url": "https://maps.google.com/?cid=6849067416719872479",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mild+Seven+Hills%2C+Mita%2C+Biei%2C+Kamikawa+District%2C+Hokkaido+071-0222",
       "cid": "6849067416719872479",
       "google_id": "/g/12hlsvy50",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 43.5516244,
       "lng": 142.5148341,
-      "maps_url": "https://maps.google.com/?cid=6849076919838395943",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=VALORE%2C+%E3%80%92071-0236+Hokkaido%2C+Kamikawa+District%2C+Biei%2C+%E7%BE%8E%E7%91%9B%E7%94%BAMisawa%2C+%E5%85%B1%E7%94%9F",
       "cid": "6849076919838395943",
       "google_id": "/g/1tk6_8zx",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 43.4631579,
       "lng": 142.4819057,
-      "maps_url": "https://maps.google.com/?cid=6849048757857441031",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hinode+Park%2C+%EF%BC%92%EF%BC%97%E5%8F%B7+Higashi+1+Senkita%2C+Kamifurano%2C+Sorachi+District%2C+Hokkaido+071-0521",
       "cid": "6849048757857441031",
       "google_id": "/g/11cn5lfrrv",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 43.4629549,
       "lng": 142.4676572,
-      "maps_url": "https://maps.google.com/?cid=6849048777305321385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Midori+Sushi%2C+1+Chome-4-2+Nakamachi%2C+Kamifurano%2C+Sorachi+District%2C+Hokkaido+071-0543",
       "cid": "6849048777305321385",
       "google_id": "/g/1thp7swg",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 43.4620344,
       "lng": 142.46008949999998,
-      "maps_url": "https://maps.google.com/?cid=6849049154222831675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mansaku%2C+2+Chome-1+Nishimachi%2C+%E4%B8%8A%E5%AF%8C%E8%89%AF%E9%87%8E%E7%94%BA+Kamifurano%2C+Sorachi+District%2C+Hokkaido+071-0546",
       "cid": "6849049154222831675",
       "google_id": "/g/1vd713cn",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 43.4182493,
       "lng": 142.4280407,
-      "maps_url": "https://maps.google.com/?cid=6849046348895238007",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Farm+Tomita%2C+%EF%BC%91%EF%BC%95%E5%8F%B7+Kisenkita%2C+Nakafurano%2C+Sorachi+District%2C+Hokkaido+071-0704",
       "cid": "6849046348895238007",
       "google_id": "/g/1239vf8g",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 43.324172999999995,
       "lng": 142.3573728,
-      "maps_url": "https://maps.google.com/?cid=6877932252686284653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%AB%E3%83%BB%E3%82%B4%E3%83%AD%E3%83%AF+%E3%83%95%E3%83%A9%E3%83%8E%2C+Nakagoryo%2C+Furano%2C+Hokkaido+076-0016",
       "cid": "6877932252686284653",
       "google_id": "/g/11ggqtswch",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 43.4236919,
       "lng": 142.4443632,
-      "maps_url": "https://maps.google.com/?cid=6849048064485554327",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soup+Curry+and+Nepali+Curry+Pokhara+Dining%2C+%E3%80%92071-0700+Hokkaido%2C+Sorachi+District%2C+Nakafurano%2C+%E4%B8%AD%E5%AF%8C%E8%89%AF%E9%87%8E%E6%9D%B1%EF%BC%91%E7%B7%9A%E5%8C%97%EF%BC%91%EF%BC%97%E5%8F%B7+%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%99%E3%82%B9%E3%83%88%E3%83%A0%E4%B8%AD%E5%AF%8C%E8%89%AF%E9%87%8E%E5%BA%97",
       "cid": "6849048064485554327",
       "google_id": "/g/12qh9qdny",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 43.371440299999996,
       "lng": 142.39314439999998,
-      "maps_url": "https://maps.google.com/?cid=6877925911198047695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%89%E3%83%A1%E3%83%BC%E3%83%8C%E3%83%AC%E3%82%BE%E3%83%B3%2C+%E3%80%92071-0700+Hokkaido%2C+Sorachi+District%2C+%E9%83%A1%E4%B8%AD%E5%AF%8C%E8%89%AF%E9%87%8E%E7%94%BA%E6%9D%B11%E7%B7%9A%E5%8C%974%E5%8F%B7",
       "cid": "6877925911198047695",
       "google_id": "/g/11h6rrbb6c",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 43.3206377,
       "lng": 142.3771095,
-      "maps_url": "https://maps.google.com/?cid=6877931645303014727",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Furano+Cheese+Factory%2C+Naka5ku%2C+Furano%2C+Hokkaido+076-0013",
       "cid": "6877931645303014727",
       "google_id": "/g/1tfbbzb8",
       "maps_place_token": null
@@ -485,9 +485,21 @@
       "is_favorite": false,
       "lat": 43.3249606,
       "lng": 142.3532411,
-      "maps_url": "https://maps.google.com/?cid=6877931623792031293",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Furano+ski+resort%2C+Nakagoryo%2C+Furano%2C+Hokkaido+076-8511",
       "cid": "6877931623792031293",
       "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "New Furano Prince Hotel Onsen",
+      "address": "Nakagoryo, Furano, Hokkaido 076-0016",
+      "note": null,
+      "is_favorite": false,
+      "lat": 43.323892799999996,
+      "lng": 142.3543511,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=New+Furano+Prince+Hotel+Onsen%2C+Nakagoryo%2C+Furano%2C+Hokkaido+076-0016",
+      "cid": "6877931623792031293",
+      "google_id": "/g/1tkc1xt9",
       "maps_place_token": null
     },
     {
@@ -497,7 +509,7 @@
       "is_favorite": false,
       "lat": 43.3585597,
       "lng": 142.3736882,
-      "maps_url": "https://maps.google.com/?cid=6877926057389501099",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Furano+Winery%2C+1161+Nishigakuden2ku%2C+Furano%2C+Hokkaido+076-0048",
       "cid": "6877926057389501099",
       "google_id": "/g/1td32vvl",
       "maps_place_token": null
@@ -509,7 +521,7 @@
       "is_favorite": false,
       "lat": 43.3430207,
       "lng": 142.3826356,
-      "maps_url": "https://maps.google.com/?cid=6877926159276562189",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Furanoya%2C+1-46+Yayoicho%2C+Furano%2C+Hokkaido+076-0018",
       "cid": "6877926159276562189",
       "google_id": "/g/1tj7dvxl",
       "maps_place_token": null
@@ -521,7 +533,7 @@
       "is_favorite": false,
       "lat": 43.0637469,
       "lng": 142.6262841,
-      "maps_url": "https://maps.google.com/?cid=6877948007146959141",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chapel+on+the+water%2C+Nakatomamu%2C+Shimukappu%2C+Yufutsu+District%2C+Hokkaido+079-2204",
       "cid": "6877948007146959141",
       "google_id": "/g/1239pkfm",
       "maps_place_token": null
@@ -533,7 +545,7 @@
       "is_favorite": false,
       "lat": 43.4745585,
       "lng": 142.6393176,
-      "maps_url": "https://maps.google.com/?cid=6849074184782771551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E3%81%B2%E3%81%92%E3%81%AE%E6%BB%9D%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92071-0235+%E5%8C%97%E6%B5%B7%E9%81%93%E4%B8%8A%E5%B7%9D%E9%83%A1%E7%BE%8E%E7%91%9B%E7%94%BA%E7%99%BD%E9%87%91",
       "cid": "6849074184782771551",
       "google_id": "/g/12dpwybjh",
       "maps_place_token": null
@@ -545,7 +557,7 @@
       "is_favorite": false,
       "lat": 43.4934738,
       "lng": 142.61421439999998,
-      "maps_url": "https://maps.google.com/?cid=6849073858329324143",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%87%91%E9%9D%92%E3%81%84%E6%B1%A0%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92071-0235+%E5%8C%97%E6%B5%B7%E9%81%93%E4%B8%8A%E5%B7%9D%E9%83%A1%E7%BE%8E%E7%91%9B%E7%94%BA%E7%99%BD%E9%87%91",
       "cid": "6849073858329324143",
       "google_id": "/g/112yg4fmk",
       "maps_place_token": null
@@ -557,7 +569,7 @@
       "is_favorite": false,
       "lat": 43.5284711,
       "lng": 142.4645951,
-      "maps_url": "https://maps.google.com/?cid=6849069403657483025",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%83%AB%E3%83%91%E3%82%AB%E7%89%A7%E5%A0%B4%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92071-0473+%E5%8C%97%E6%B5%B7%E9%81%93%E4%B8%8A%E5%B7%9D%E9%83%A1%E7%BE%8E%E7%91%9B%E7%94%BA%E6%96%B0%E6%98%9F",
       "cid": "6849069403657483025",
       "google_id": "/g/11fy_d2j8d",
       "maps_place_token": null
@@ -569,9 +581,21 @@
       "is_favorite": false,
       "lat": 43.3559474,
       "lng": 142.3727696,
-      "maps_url": "https://maps.google.com/?cid=6877926061331884715",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%B5%E3%82%89%E3%81%AE%E3%83%AF%E3%82%A4%E3%83%B3%E3%83%8F%E3%82%A6%E3%82%B9%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92076-0048+%E5%8C%97%E6%B5%B7%E9%81%93%E5%AF%8C%E8%89%AF%E9%87%8E%E5%B8%82%E6%B8%85%E6%B0%B4%E5%B1%B1",
       "cid": "6877926061331884715",
       "google_id": "/g/11c74zwx25",
+      "maps_place_token": null
+    },
+    {
+      "name": "ニングルテラス",
+      "address": "日本、〒076-8511 北海道富良野市中御料",
+      "note": null,
+      "is_favorite": false,
+      "lat": 43.3232668,
+      "lng": 142.3563319,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%B3%E3%82%B0%E3%83%AB%E3%83%86%E3%83%A9%E3%82%B9%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92076-8511+%E5%8C%97%E6%B5%B7%E9%81%93%E5%AF%8C%E8%89%AF%E9%87%8E%E5%B8%82%E4%B8%AD%E5%BE%A1%E6%96%99",
+      "cid": "6877931623792031293",
+      "google_id": "/g/11clvnlt3_",
       "maps_place_token": null
     },
     {
@@ -581,7 +605,7 @@
       "is_favorite": false,
       "lat": 43.3221117,
       "lng": 142.3595356,
-      "maps_url": "https://maps.google.com/?cid=6877932252596943113",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soh%E2%80%99s+BAR%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92076-0016+%E5%8C%97%E6%B5%B7%E9%81%93%E5%AF%8C%E8%89%AF%E9%87%8E%E5%B8%82%E4%B8%AD%E5%BE%A1%E6%96%99",
       "cid": "6877932252596943113",
       "google_id": "/g/1thvy217",
       "maps_place_token": null

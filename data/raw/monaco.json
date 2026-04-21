@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:44:50.504450+00:00",
-  "refresh_after": "2026-04-29T15:44:50.504450+00:00",
+  "fetched_at": "2026-04-20T16:05:33.806327+00:00",
+  "refresh_after": "2026-05-06T13:26:22.806327+00:00",
   "source_signature": "d5a715f4ae9274c5f047011d5e673e43599377bac59b9d5fb60b83e6be3831ef",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/SBdpNn65NHyrG3nF7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.727740399999995,
       "lng": 7.421728,
-      "maps_url": "https://maps.google.com/?cid=1354954355062128509",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=gerhard%27s+caf%C3%A9+monaco%2C+42+Quai+Jean-Charles+Rey%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354954355062128509",
       "google_id": "/g/11swbz9g4z",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.7390141,
       "lng": 7.427429699999999,
-      "maps_url": "https://maps.google.com/?cid=1354952951637983893",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Bar+Am%C3%A9ricain%2C+Pl.+du+Casino%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354952951637983893",
       "google_id": "/g/1vfhk1bn",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.733849199999995,
       "lng": 7.422129,
-      "maps_url": "https://maps.google.com/?cid=1354952980728643263",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monaco+Brewery%2C+Rte+de+la+Piscine%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354952980728643263",
       "google_id": "/g/1tdv8kvg",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.7340385,
       "lng": 7.422441999999999,
-      "maps_url": "https://maps.google.com/?cid=1354952958009993443",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jack+Monaco%2C+32+Rte+de+la+Piscine%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354952958009993443",
       "google_id": "/g/1q5bl0sgj",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.7272544,
       "lng": 7.419264399999999,
-      "maps_url": "https://maps.google.com/?cid=1354954060750387357",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Roseraie+Princesse+Grace%2C+Av.+des+Papalins%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354954060750387357",
       "google_id": "/g/11h1vgpbwz",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.7297981,
       "lng": 7.4241459999999995,
-      "maps_url": "https://maps.google.com/?cid=1354952994057909179",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%BB%E3%83%B3%E3%83%88%C2%B7%E3%83%9E%E3%83%BC%E3%83%81%E3%83%B3%E3%81%AE%E5%BA%AD%E5%9C%92%2C+%E3%83%A2%E3%83%8A%E3%82%B3+%E3%80%9298000+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354952994057909179",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.7303806,
       "lng": 7.4225216,
-      "maps_url": "https://maps.google.com/?cid=1354952995749368159",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%A2%E3%83%8A%E3%82%B3%E5%A4%A7%E8%81%96%E5%A0%82%2C+4+Rue+Colonel+Bellando+de+Castro%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354952995749368159",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.73135,
       "lng": 7.413945999999999,
-      "maps_url": "https://maps.google.com/?cid=1354953388076568737",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%A2%E3%83%8A%E3%82%B3%E5%A4%96%E6%9D%A5%E6%A4%8D%E7%89%A9%E5%9C%92%2C+62+Bd+du+Jardin+Exotique%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354953388076568737",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.7393925,
       "lng": 7.427528799999999,
-      "maps_url": "https://maps.google.com/?cid=1354952951712421765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Place+du+Casino%2C+Pl.+du+Casino%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354952951712421765",
       "google_id": "/g/11gzz7rnm",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.7308132,
       "lng": 7.425573999999999,
-      "maps_url": "https://maps.google.com/?cid=1354952987270997331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mus%C3%A9e+oc%C3%A9anographique+de+Monaco",
       "cid": "1354952987270997331",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 43.734108,
       "lng": 7.4217042,
-      "maps_url": "https://maps.google.com/?cid=1354952969366486247",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monaco+Grand+Prix+de+Monaco%2C+10+bl%2C+Bd+Albert+1er%2C+98000%2C+Monaco",
       "cid": "1354952969366486247",
       "google_id": "/g/11b6_nfmx_",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 43.7311154,
       "lng": 7.420256299999999,
-      "maps_url": "https://maps.google.com/?cid=1354952997220371499",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Prince%27s+Palace+of+Monaco%2C+98015+Monaco",
       "cid": "1354952997220371499",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 43.728589299999996,
       "lng": 7.4196538,
-      "maps_url": "https://maps.google.com/?cid=1354953002472780993",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Quai+Jean-Charles+Rey%2C+Quai+Jean-Charles+Rey%2C+98000+Monaco%2C+%E3%83%A2%E3%83%8A%E3%82%B3",
       "cid": "1354953002472780993",
       "google_id": "/g/1tgl5tq1",
       "maps_place_token": null

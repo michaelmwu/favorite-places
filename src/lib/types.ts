@@ -1,4 +1,11 @@
-export type FieldSource = "manual" | "google_list" | "google_places" | "osm" | "wikidata" | "website";
+export type FieldSource =
+  | "manual"
+  | "google_list"
+  | "google_maps_page"
+  | "google_places"
+  | "osm"
+  | "wikidata"
+  | "website";
 export type MarkerIcon =
   | "default"
   | "cafe"
@@ -30,6 +37,8 @@ export interface PlaceProvenance {
   google_id?: PlaceField<string> | null;
   google_place_id?: PlaceField<string> | null;
   google_place_resource_name?: PlaceField<string> | null;
+  rating?: PlaceField<number> | null;
+  user_rating_count?: PlaceField<number> | null;
   primary_category?: PlaceField<string> | null;
   tags: PlaceField<string>[];
   neighborhood?: PlaceField<string> | null;
@@ -52,6 +61,8 @@ export interface Place {
   google_id: string | null;
   google_place_id: string | null;
   google_place_resource_name: string | null;
+  rating: number | null;
+  user_rating_count: number | null;
   primary_category: string | null;
   marker_icon: MarkerIcon;
   tags: string[];
@@ -59,6 +70,7 @@ export interface Place {
   neighborhood: string | null;
   note: string | null;
   why_recommended: string | null;
+  main_photo_path: string | null;
   top_pick: boolean;
   hidden: boolean;
   manual_rank: number;
@@ -77,6 +89,9 @@ export interface Guide {
   city_name: string;
   list_tags: string[];
   featured_place_ids: string[];
+  best_hit_place_ids: string[];
+  best_hit_min_rating: number | null;
+  best_hit_min_reviews: number | null;
   top_categories: string[];
   generated_at: string;
   place_count: number;

@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:53:48.125274+00:00",
-  "refresh_after": "2026-05-02T15:03:12.125274+00:00",
+  "fetched_at": "2026-04-20T16:06:07.147391+00:00",
+  "refresh_after": "2026-05-02T17:15:31.147391+00:00",
   "source_signature": "c93244f8cccbc8aae5bf01710a9c6f0f2697dc230ac46084f84b5bba88c2cbbf",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/B6GMbSwqYLiv7yS9A",
@@ -17,7 +17,7 @@
       "is_favorite": true,
       "lat": 33.5838348,
       "lng": 130.4565615,
-      "maps_url": "https://maps.google.com/?cid=3837506787339578027",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tempura+Hirao+Main+Store",
       "cid": "3837506787339578027",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": true,
       "lat": 33.885242999999996,
       "lng": 130.8844196,
-      "maps_url": "https://maps.google.com/?cid=3838121652515200567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tenzushi+Kyomachi",
       "cid": "3838121652515200567",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": true,
       "lat": 33.5926068,
       "lng": 130.4089564,
-      "maps_url": "https://maps.google.com/?cid=3837508427042247697",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yoshizuka+Unagi",
       "cid": "3837508427042247697",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": true,
       "lat": 33.5932217,
       "lng": 130.4004258,
-      "maps_url": "https://maps.google.com/?cid=3837508795054520297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yatai+Bar+Ebi-chan",
       "cid": "3837508795054520297",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": true,
       "lat": 33.5891874,
       "lng": 130.41669389999998,
-      "maps_url": "https://maps.google.com/?cid=3837508580433878499",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maedaya",
       "cid": "3837508580433878499",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": true,
       "lat": 33.5888387,
       "lng": 130.3942887,
-      "maps_url": "https://maps.google.com/?cid=3837508363285190711",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tempura+Hirao",
       "cid": "3837508363285190711",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": true,
       "lat": 33.5897905,
       "lng": 130.3945794,
-      "maps_url": "https://maps.google.com/?cid=3837508583891664829",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Torikami+%28Daimyo+Garden+City%29",
       "cid": "3837508583891664829",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": true,
       "lat": 33.5870305,
       "lng": 130.4017984,
-      "maps_url": "https://maps.google.com/?cid=3837508450820496089",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chez+R%C3%A9my",
       "cid": "3837508450820496089",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": true,
       "lat": 33.5880882,
       "lng": 130.3915333,
-      "maps_url": "https://maps.google.com/?cid=3837508712311334087",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=U.S.+burger",
       "cid": "3837508712311334087",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": true,
       "lat": 33.5619412,
       "lng": 130.4245479,
-      "maps_url": "https://maps.google.com/?cid=3837507805352190969",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Motsunabe+Yamanaka+Honten%2C+2+Chome-2-12+Mukaino%2C+Minami+Ward%2C+Fukuoka%2C+815-0035",
       "cid": "3837507805352190969",
       "google_id": "/g/11b77d5d85",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": true,
       "lat": 33.441280299999995,
       "lng": 130.0675214,
-      "maps_url": "https://maps.google.com/?cid=3837577794271631053",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Amegen",
       "cid": "3837577794271631053",
       "google_id": null,
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 33.5887907,
       "lng": 130.4236257,
-      "maps_url": "https://maps.google.com/?cid=3837508410270209517",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hakata+Motsunabe+Yamanaka+Hakata+Branch%2C+%E3%80%92812-0013+Fukuoka%2C+Hakata+Ward%2C+Hakataekihigashi%2C+2+Chome%E2%88%924%E2%88%926+%E3%83%8F%E3%82%AB%E3%82%BF%E3%83%99%E3%83%93%E3%83%AB+%EF%BC%92%E9%9A%8E",
       "cid": "3837508410270209517",
       "google_id": "/g/11mgf8005v",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 33.589156599999995,
       "lng": 130.4110368,
-      "maps_url": "https://maps.google.com/?cid=3837508430944154371",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Original+Tomato+Ramen+Sanmi+%28333%29%2C+%E3%80%92812-0018+Fukuoka%2C+Hakata+Ward%2C+Sumiyoshi%2C+1+Chome%E2%88%922%2C+%E3%82%AD%E3%83%A3%E3%83%8A%E3%83%AB%E3%82%B7%E3%83%86%E3%82%A3%E5%8D%9A%E5%A4%9A5F+%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B3%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%A2%E3%83%A0%E5%86%85",
       "cid": "3837508430944154371",
       "google_id": "/g/11hd1nnx7_",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 33.586436,
       "lng": 130.4038404,
-      "maps_url": "https://maps.google.com/?cid=3837507786777050635",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Notime+Mixology+Bar+%28%E3%83%8E%E3%83%BC%E3%82%BF%E3%82%A4%E3%83%A0+%E3%83%9F%E3%82%AF%E3%82%BD%E3%83%AD%E3%82%B8%E3%83%BC+%E3%83%90%E3%83%BC%29%2C+%E3%80%92810-0004+Fukuoka%2C+Chuo+Ward%2C+Watanabedori%2C+5+Chome%E2%88%9213%E2%88%9221+%E3%83%A0%E3%83%84%E3%82%AD%E3%82%BD%E3%82%A6+2F",
       "cid": "3837507786777050635",
       "google_id": "/g/11vxzng057",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 33.5907275,
       "lng": 130.4047546,
-      "maps_url": "https://maps.google.com/?cid=3837508421832393313",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yasube%2C+2-17+Nishinakasu%2C+Chuo+Ward%2C+Fukuoka%2C+810-0002",
       "cid": "3837508421832393313",
       "google_id": "/g/1trph_3q",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 33.5920644,
       "lng": 130.4100732,
-      "maps_url": "https://maps.google.com/?cid=3837508427750706593",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maedaya+Motsunabe+Nakasu%2C+3-1+Kamikawabatamachi%2C+Hakata+Ward%2C+Fukuoka%2C+812-0026",
       "cid": "3837508427750706593",
       "google_id": "/g/11gh0h9cqn",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 33.5775186,
       "lng": 130.400514,
-      "maps_url": "https://maps.google.com/?cid=3837508302576862519",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Abeki%2C+3+Chome-7-13+Yakuin%2C+Chuo+Ward%2C+Fukuoka%2C+810-0022",
       "cid": "3837508302576862519",
       "google_id": "/g/1tql2kdr",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 33.5883566,
       "lng": 130.4059694,
-      "maps_url": "https://maps.google.com/?cid=3837508230399157061",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR+%E9%87%8E%E8%A6%8B%E5%B1%B1%2C+%E3%80%92810-0003+Fukuoka%2C+Chuo+Ward%2C+Haruyoshi%2C+3+Chome%E2%88%9224%E2%88%924+2F",
       "cid": "3837508230399157061",
       "google_id": "/g/11lf_rhmcb",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 33.6046376,
       "lng": 130.3991005,
-      "maps_url": "https://maps.google.com/?cid=3837508818738352007",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Sola%2C+%E3%80%92812-0021+Fukuoka%2C+Hakata+Ward%2C+Chikkohonmachi%2C+13%E2%88%926+%E3%83%99%E3%82%A4%E3%82%B5%E3%82%A4%E3%83%89%E3%83%97%E3%83%AC%E3%82%A4%E3%82%B9%E5%8D%9A%E5%A4%9A+C%E9%A4%A82F",
       "cid": "3837508818738352007",
       "google_id": "/g/11hdpb4dtb",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 33.595380299999995,
       "lng": 130.410278,
-      "maps_url": "https://maps.google.com/?cid=3837508793993620843",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hamadaya",
       "cid": "3837508793993620843",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 33.6536196,
       "lng": 130.20934739999998,
-      "maps_url": "https://maps.google.com/?cid=3837610635118425161",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maruya+Seafood%2C+1265-38+Nishinoura%2C+Nishi+Ward%2C+Fukuoka%2C+819-0202%2C+Japan",
       "cid": "3837610635118425161",
       "google_id": "/g/11c3v6f_xd",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 33.588797899999996,
       "lng": 130.419445,
-      "maps_url": "https://maps.google.com/?cid=3837508647921371979",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ShinShin+KITTE+Hakataten%2C+9-1+Hakataekichuogai%2C+Hakata+Ward%2C+Fukuoka%2C+812-0012",
       "cid": "3837508647921371979",
       "google_id": "/g/11byyqr41w",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 33.5947673,
       "lng": 130.4144643,
-      "maps_url": "https://maps.google.com/?cid=3837508617463995283",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Giant+wood+buddha%2C+2-4+Gokushomachi%2C+Hakata+Ward%2C+Fukuoka%2C+812-0037",
       "cid": "3837508617463995283",
       "google_id": null,
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 33.5900842,
       "lng": 130.4093993,
-      "maps_url": "https://maps.google.com/?cid=3837508429843502603",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kawataro+Nakasu",
       "cid": "3837508429843502603",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 33.5835838,
       "lng": 130.4246713,
-      "maps_url": "https://maps.google.com/?cid=3837508571694680095",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hagakure+Udon%2C+2+Chome-3-32+Hakataekiminami%2C+Hakata+Ward%2C+Fukuoka%2C+812-0016",
       "cid": "3837508571694680095",
       "google_id": "/g/1tnk_541",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 33.586206499999996,
       "lng": 130.3764646,
-      "maps_url": "https://maps.google.com/?cid=3837510864242189511",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ohori+Park",
       "cid": "3837510864242189511",
       "google_id": null,
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 33.5932846,
       "lng": 130.35151,
-      "maps_url": "https://maps.google.com/?cid=3837510716437561345",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fukuoka+Tower",
       "cid": "3837510716437561345",
       "google_id": null,
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 33.5213697,
       "lng": 130.5348239,
-      "maps_url": "https://maps.google.com/?cid=3837519465418587085",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dazaifu+Tenmangu%E5%A4%AA%E5%AE%B0%E5%BA%9C%E5%A4%A9%E6%BA%80%E5%AE%AE",
       "cid": "3837519465418587085",
       "google_id": null,
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 33.619838,
       "lng": 130.5729783,
-      "maps_url": "https://maps.google.com/?cid=3837493357977944055",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nanzoin+Temple",
       "cid": "3837493357977944055",
       "google_id": null,
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 33.5877907,
       "lng": 130.4255095,
-      "maps_url": "https://maps.google.com/?cid=3837508565961087329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hakatamotsunabe+Maedaya+Sohonten%2C+2+Chome-9-20+Hakataekihigashi%2C+Hakata+Ward%2C+Fukuoka%2C+812-0013",
       "cid": "3837508565961087329",
       "google_id": "/g/11fcv7hs89",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 33.5872234,
       "lng": 130.4003348,
-      "maps_url": "https://maps.google.com/?cid=3837508359291363681",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taiho+Ramen+Tenjin-Imaizumi+Shop",
       "cid": "3837508359291363681",
       "google_id": null,
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 33.5877797,
       "lng": 130.4039377,
-      "maps_url": "https://maps.google.com/?cid=3837508433590935891",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Musasiza%2C+5+Chome-5-12+Watanabedori%2C+Chuo+Ward%2C+Fukuoka%2C+810-0004%2C+Japan",
       "cid": "3837508433590935891",
       "google_id": "/g/11h6q_c600",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 33.5896305,
       "lng": 130.4109478,
-      "maps_url": "https://maps.google.com/?cid=3837508428939510625",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Canal+City+Hakata%2C+1+Chome-2+Sumiyoshi%2C+Hakata+Ward%2C+Fukuoka%2C+812-0018",
       "cid": "3837508428939510625",
       "google_id": null,
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 33.588398,
       "lng": 130.4124915,
-      "maps_url": "https://maps.google.com/?cid=3837508820451884989",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%89%8B%E6%89%93%E3%81%A1+%E3%81%A8+%E5%A4%A9%E3%81%B7%E3%82%89+%E3%81%9D%E3%81%B0+%E8%80%95%E4%BD%9C%2C+%E3%80%92812-0018+Fukuoka%2C+Hakata+Ward%2C+Sumiyoshi%2C+2+Chome%E2%88%924%E2%88%923+%E5%A4%A7%E8%94%B5%E3%83%9E%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%B3%E5%8D%9A%E5%A4%9A+102",
       "cid": "3837508820451884989",
       "google_id": "/g/11fl47p6tx",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 33.440485699999996,
       "lng": 130.02237359999998,
-      "maps_url": "https://maps.google.com/?cid=3837585442311114427",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=nodoka",
       "cid": "3837585442311114427",
       "google_id": null,
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 33.323936599999996,
       "lng": 130.3887596,
-      "maps_url": "https://maps.google.com/?cid=3837552875198144607",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yoshinogari+Historical+Park",
       "cid": "3837552875198144607",
       "google_id": null,
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 33.4874678,
       "lng": 130.3947689,
-      "maps_url": "https://maps.google.com/?cid=3837513785533399629",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maison+Lafit",
       "cid": "3837513785533399629",
       "google_id": null,
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 33.5880775,
       "lng": 130.4125166,
-      "maps_url": "https://maps.google.com/?cid=3837508604662520835",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ebisuya+Udon+Hakata",
       "cid": "3837508604662520835",
       "google_id": null,
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 33.5881109,
       "lng": 130.4102188,
-      "maps_url": "https://maps.google.com/?cid=3837508720099968669",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=GohGan",
       "cid": "3837508720099968669",
       "google_id": null,
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 33.584598299999996,
       "lng": 130.3914222,
-      "maps_url": "https://maps.google.com/?cid=3837508338688259489",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Toriichi",
       "cid": "3837508338688259489",
       "google_id": null,
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 33.5871674,
       "lng": 130.3939613,
-      "maps_url": "https://maps.google.com/?cid=3837508366207243127",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Oscar",
       "cid": "3837508366207243127",
       "google_id": null,
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 33.5937797,
       "lng": 130.40462549999998,
-      "maps_url": "https://maps.google.com/?cid=3837508735697225341",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=THE+LIVELY+KITCHEN+FUKUOKA+HAKATA%2F%E3%82%B6%E3%83%BB%E3%83%A9%E3%82%A4%E3%83%96%E3%83%AA%E3%83%BC%E3%82%AD%E3%83%83%E3%83%81%E3%83%B3%E7%A6%8F%E5%B2%A1%E5%8D%9A%E5%A4%9A",
       "cid": "3837508735697225341",
       "google_id": null,
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 33.5927497,
       "lng": 130.39684459999998,
-      "maps_url": "https://maps.google.com/?cid=3837508399787364457",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shin+Shin",
       "cid": "3837508399787364457",
       "google_id": null,
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 33.5929546,
       "lng": 130.41045889999998,
-      "maps_url": "https://maps.google.com/?cid=3837508794562341463",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=kushida-jinja",
       "cid": "3837508794562341463",
       "google_id": null,
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 33.547242,
       "lng": 130.336641,
-      "maps_url": "https://maps.google.com/?cid=3837508586136279749",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fuku-chan+ramen",
       "cid": "3837508586136279749",
       "google_id": null,
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 33.4460754,
       "lng": 129.99401459999999,
-      "maps_url": "https://maps.google.com/?cid=3837585601555250503",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niji+No+Matsubara+Pine+Grove",
       "cid": "3837585601555250503",
       "google_id": null,
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 33.4532333,
       "lng": 129.97869409999998,
-      "maps_url": "https://maps.google.com/?cid=3849021286898232269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%94%90%E6%B4%A5%E5%9F%8E%E3%81%AE%E3%83%95%E3%82%B8",
       "cid": "3849021286898232269",
       "google_id": null,
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 33.447580099999996,
       "lng": 129.9719868,
-      "maps_url": "https://maps.google.com/?cid=3849021308753336595",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chidori+Bridge",
       "cid": "3849021308753336595",
       "google_id": null,
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 33.5949959,
       "lng": 130.3636745,
-      "maps_url": "https://maps.google.com/?cid=3837510762902326461",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=teamLab+Forest+Fukuoka",
       "cid": "3837510762902326461",
       "google_id": null,
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 33.675689,
       "lng": 130.52190199999998,
-      "maps_url": "https://maps.google.com/?cid=3837496777082264855",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kayanoya+Restaurant",
       "cid": "3837496777082264855",
       "google_id": null,
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 33.5869882,
       "lng": 130.4007159,
-      "maps_url": "https://maps.google.com/?cid=3837508271014173765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A7%E9%87%8D%E9%A3%9F%E5%A0%82+%EF%BD%9E%E4%BB%8A%E6%B3%89%E5%BA%97%EF%BD%9E",
       "cid": "3837508271014173765",
       "google_id": null,
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 33.5872002,
       "lng": 130.40120299999998,
-      "maps_url": "https://maps.google.com/?cid=3837508339194245135",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Menya+Kanetora",
       "cid": "3837508339194245135",
       "google_id": null,
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 33.5863271,
       "lng": 130.4081486,
-      "maps_url": "https://maps.google.com/?cid=3837508434720686807",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Warayaki+Mikan",
       "cid": "3837508434720686807",
       "google_id": null,
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 33.590833599999996,
       "lng": 130.40556709999998,
-      "maps_url": "https://maps.google.com/?cid=3837508422221215703",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Sakai",
       "cid": "3837508422221215703",
       "google_id": null,
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 33.5881228,
       "lng": 130.4101116,
-      "maps_url": "https://maps.google.com/?cid=3837508410925792267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Maison+de+la+Nature+Goh",
       "cid": "3837508410925792267",
       "google_id": null,
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 33.5897466,
       "lng": 130.39898259999998,
-      "maps_url": "https://maps.google.com/?cid=3837508403593595559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hyotan+Sushi",
       "cid": "3837508403593595559",
       "google_id": null,
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 33.5918239,
       "lng": 130.4023721,
-      "maps_url": "https://maps.google.com/?cid=3837508411758302831",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Aji+No+Masafuku",
       "cid": "3837508411758302831",
       "google_id": null,
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 33.5920555,
       "lng": 130.39774269999998,
-      "maps_url": "https://maps.google.com/?cid=3837508404017423011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yatai+Mamichan",
       "cid": "3837508404017423011",
       "google_id": null,
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 33.591050599999996,
       "lng": 130.40227199999998,
-      "maps_url": "https://maps.google.com/?cid=3837508250365752419",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tempura+Hirao",
       "cid": "3837508250365752419",
       "google_id": null,
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 33.5901983,
       "lng": 130.4068797,
-      "maps_url": "https://maps.google.com/?cid=3837508422759518861",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%84%E3%81%BE%E3%82%84%E5%88%A5%E9%82%B8%E8%A5%BF%E4%B8%AD%E6%B4%B2",
       "cid": "3837508422759518861",
       "google_id": null,
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 33.5882764,
       "lng": 130.41256959999998,
-      "maps_url": "https://maps.google.com/?cid=3837508614379412863",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%AA%E3%83%83%E3%83%91%E5%AE%B6",
       "cid": "3837508614379412863",
       "google_id": null,
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 33.5890614,
       "lng": 130.4194858,
-      "maps_url": "https://maps.google.com/?cid=3837508647939989797",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jojoen+%28Kitte+Hakata+Store%29",
       "cid": "3837508647939989797",
       "google_id": null,
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 33.588234,
       "lng": 130.4193603,
-      "maps_url": "https://maps.google.com/?cid=3837508578638401209",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kawataro+Hakata+Station",
       "cid": "3837508578638401209",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 33.589250199999995,
       "lng": 130.41233889999998,
-      "maps_url": "https://maps.google.com/?cid=3837508603817086975",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakiniku+no+Bakuro+Hakata-ten",
       "cid": "3837508603817086975",
       "google_id": null,
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 33.5871695,
       "lng": 130.4123078,
-      "maps_url": "https://maps.google.com/?cid=3837508602135878907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%A3%9F%E5%A0%82%E7%85%AE%E9%AD%9A%E5%B0%91%E5%B9%B4",
       "cid": "3837508602135878907",
       "google_id": null,
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 33.556820699999996,
       "lng": 130.42662479999998,
-      "maps_url": "https://maps.google.com/?cid=3837507909538637881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR+VICTORY",
       "cid": "3837507909538637881",
       "google_id": null,
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 33.5767805,
       "lng": 130.41141779999998,
-      "maps_url": "https://maps.google.com/?cid=3837508481665008217",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%94%B0%E4%B8%AD%E7%94%B0",
       "cid": "3837508481665008217",
       "google_id": null,
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 33.5880113,
       "lng": 130.4055314,
-      "maps_url": "https://maps.google.com/?cid=3837508473040643259",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shirokane+Nishida",
       "cid": "3837508473040643259",
       "google_id": null,
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 33.5712933,
       "lng": 130.4088098,
-      "maps_url": "https://maps.google.com/?cid=3837508287253225923",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shokudo+Saison+d%27Or",
       "cid": "3837508287253225923",
       "google_id": null,
       "maps_place_token": null
@@ -845,7 +845,7 @@
       "is_favorite": false,
       "lat": 33.576443,
       "lng": 130.4017895,
-      "maps_url": "https://maps.google.com/?cid=3837508300291189535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hirao+no+Itaba+Shirayuki",
       "cid": "3837508300291189535",
       "google_id": null,
       "maps_place_token": null
@@ -857,7 +857,7 @@
       "is_favorite": false,
       "lat": 33.5764243,
       "lng": 130.4018434,
-      "maps_url": "https://maps.google.com/?cid=3837508300293407641",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E6%96%99%E7%90%86%E3%81%A8%E3%82%B9%E3%83%86%E3%83%BC%E3%82%AD+%E6%B8%85%E5%96%9C",
       "cid": "3837508300293407641",
       "google_id": null,
       "maps_place_token": null
@@ -869,7 +869,7 @@
       "is_favorite": false,
       "lat": 33.584248699999996,
       "lng": 130.3997315,
-      "maps_url": "https://maps.google.com/?cid=3837508341609195403",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Robata+Hyakushiki",
       "cid": "3837508341609195403",
       "google_id": null,
       "maps_place_token": null
@@ -881,7 +881,7 @@
       "is_favorite": false,
       "lat": 33.5835998,
       "lng": 130.3891954,
-      "maps_url": "https://maps.google.com/?cid=3837508581705068387",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%BF%E3%83%B3%E3%83%86%E3%83%BC%E3%83%AB%E5%AF%8C%E5%A3%AB",
       "cid": "3837508581705068387",
       "google_id": null,
       "maps_place_token": null
@@ -893,7 +893,7 @@
       "is_favorite": false,
       "lat": 33.5844436,
       "lng": 130.3912176,
-      "maps_url": "https://maps.google.com/?cid=3837508338728092627",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kegomusu",
       "cid": "3837508338728092627",
       "google_id": null,
       "maps_place_token": null
@@ -905,7 +905,7 @@
       "is_favorite": false,
       "lat": 33.58379,
       "lng": 130.39234,
-      "maps_url": "https://maps.google.com/?cid=3837508337915138179",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+marchand+de+bonheur",
       "cid": "3837508337915138179",
       "google_id": null,
       "maps_place_token": null
@@ -917,7 +917,7 @@
       "is_favorite": false,
       "lat": 33.5875425,
       "lng": 130.39084649999998,
-      "maps_url": "https://maps.google.com/?cid=3837508367982443743",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yamanaka+Akasaka",
       "cid": "3837508367982443743",
       "google_id": null,
       "maps_place_token": null
@@ -929,7 +929,7 @@
       "is_favorite": false,
       "lat": 33.5885937,
       "lng": 130.38649619999998,
-      "maps_url": "https://maps.google.com/?cid=3837509063859477105",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Rochelle+Fukuoka",
       "cid": "3837509063859477105",
       "google_id": null,
       "maps_place_token": null
@@ -941,7 +941,7 @@
       "is_favorite": false,
       "lat": 33.5889531,
       "lng": 130.3868058,
-      "maps_url": "https://maps.google.com/?cid=3837509064030674295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Georges+Marceau",
       "cid": "3837509064030674295",
       "google_id": null,
       "maps_place_token": null
@@ -953,7 +953,7 @@
       "is_favorite": false,
       "lat": 33.5907632,
       "lng": 130.38104049999998,
-      "maps_url": "https://maps.google.com/?cid=3837509083910345653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gohanya+Hansuke",
       "cid": "3837509083910345653",
       "google_id": null,
       "maps_place_token": null
@@ -965,7 +965,7 @@
       "is_favorite": false,
       "lat": 33.5915817,
       "lng": 130.3805898,
-      "maps_url": "https://maps.google.com/?cid=3837509084239838875",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TTOAHISU",
       "cid": "3837509084239838875",
       "google_id": null,
       "maps_place_token": null

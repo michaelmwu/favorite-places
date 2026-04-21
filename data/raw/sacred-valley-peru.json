@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:17:19.156660+00:00",
-  "refresh_after": "2026-04-29T15:17:19.156660+00:00",
+  "fetched_at": "2026-04-20T16:02:57.885644+00:00",
+  "refresh_after": "2026-05-04T18:00:56.885644+00:00",
   "source_signature": "5159d34fb14120e2e27d4c8d4c0a7a11077368044878aa30035c6ced8744c0af",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/51eHF2WGtY3WpYZy6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": -13.2569661,
       "lng": -72.26593969999999,
-      "maps_url": "https://maps.google.com/?cid=4196549491230723645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ollantaytambo+Sanctuary%2C+PPVM%2B5M7%2C+Ollantaytambo+08676%2C+Peru",
       "cid": "4196549491230723645",
       "google_id": "/g/1tjz9041",
       "maps_place_token": null
@@ -29,8 +29,8 @@
       "is_favorite": false,
       "lat": -13.257278399999999,
       "lng": -72.2672098,
-      "maps_url": "https://maps.google.com/?q=-13.2572784,-72.2672098",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Templo+del+Sol%2C+PPVM%2B34M%2C+Ollantaytambo+08676%2C+Peru",
+      "cid": "15175648743290962034",
       "google_id": "/g/11gbsv8x2l",
       "maps_place_token": null
     },
@@ -41,8 +41,8 @@
       "is_favorite": false,
       "lat": -13.258863199999999,
       "lng": -72.26367379999999,
-      "maps_url": "https://maps.google.com/?q=-13.2588632,-72.2636738",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Plaza+de+Armas+de+Ollantaytambo%2C+PPRP%2BFG4%2C+Ollantaytambo+08676%2C+Peru",
+      "cid": "10685539856528554710",
       "google_id": "/g/1hhgllyj8",
       "maps_place_token": null
     },
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": -13.2562635,
       "lng": -72.261034,
-      "maps_url": "https://maps.google.com/?cid=2658457288019645983",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sitio+arqueol%C3%B3gico+Pinkuylluna",
       "cid": "2658457288019645983",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": -13.2581668,
       "lng": -72.2648268,
-      "maps_url": "https://maps.google.com/?cid=619243818924205270",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Apu+Veronica+Restaurant%2C+Calle+Ventiderio%2C+08675%2C+Peru",
       "cid": "619243818924205270",
       "google_id": "/g/11b_2wb16y",
       "maps_place_token": null
@@ -77,8 +77,8 @@
       "is_favorite": false,
       "lat": -13.257079099999999,
       "lng": -72.2626229,
-      "maps_url": "https://maps.google.com/?q=-13.2570791,-72.2626229",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ALQA+-+Museo+de+Arte+Popular+Andino%2C+Sipas+Calle%2C+Ollantaytambo+08676%2C+Peru",
+      "cid": "17445420595534256497",
       "google_id": "/g/11pkf1xt66",
       "maps_place_token": null
     },
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": -13.257117099999999,
       "lng": -72.26249039999999,
-      "maps_url": "https://maps.google.com/?cid=2474466876253676630",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ALQA+-+El+Restaurante+del+Museo%2C+Calle+sipas+S%2Fn%2C+Ollantaytambo+08676%2C+Peru",
       "cid": "2474466876253676630",
       "google_id": "/g/11v5fcwzwd",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": -13.2583377,
       "lng": -72.263635,
-      "maps_url": "https://maps.google.com/?cid=270208856391526420",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CHUNCHO%2C+Plaza+de+Armas+de+Ollantaytambo%2C+Ollantaytambo+08676%2C+Peru",
       "cid": "270208856391526420",
       "google_id": "/g/11g05gp_cq",
       "maps_place_token": null

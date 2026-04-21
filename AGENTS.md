@@ -31,7 +31,7 @@
 This repo deliberately avoids committing generated build artifacts.
 
 - `data/raw/` may be committed when you want reproducible scraped snapshots in git.
-- `data/cache/google-places/` may be committed when you want reproducible enrichment snapshots in git.
+- `data/cache/places.sqlite` is the canonical enrichment cache artifact when you want reproducible enrichment snapshots in git.
 - `src/data/generated/` is local-only generated site input data.
 - `public/data/search-index.json` is local-only generated browser search data.
 - `src/data/overrides/` is the source-controlled layer for handwritten curation.
@@ -87,6 +87,12 @@ Fill or refresh Google Places enrichment cache:
 ```bash
 GOOGLE_PLACES_API_KEY=... bun run enrich:data
 GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
+```
+
+Optional debug export of per-guide cache JSON from SQLite:
+
+```bash
+bun run export:cache:json
 ```
 
 Run the site:

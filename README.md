@@ -43,6 +43,9 @@ GOOGLE_PLACES_API_KEY=...
 
 # Optional: force the old non-Google map path.
 PUBLIC_MAP_PROVIDER=leaflet
+
+# Optional: hide place photos entirely in the UI.
+PUBLIC_PLACE_PHOTOS=off
 ```
 
 Notes:
@@ -51,6 +54,7 @@ Notes:
 - `GOOGLE_PLACES_API_KEY` should never be exposed to the browser. Use it only as a server/build-time fallback when place-page enrichment cannot recover enough data.
 - Use a separate production browser key instead of reusing a local dev key.
 - `PUBLIC_MAP_PROVIDER=leaflet` is an escape hatch if you need to force the Leaflet fallback while keeping the Google Maps codepath in the repo.
+- `PUBLIC_PLACE_PHOTOS=off` hides place photos in the UI without changing the data pipeline.
 - `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/`, clears them after obvious block/cookie-jar failures, and expires idle sessions after 14 days.
 
 Populate local raw data from public Google Maps lists:
@@ -103,6 +107,12 @@ Force-refresh all place enrichment cache entries:
 GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
 ```
 
+Optional debug export of per-guide cache JSON from SQLite:
+
+```bash
+bun run export:cache:json
+```
+
 Start the site:
 
 ```bash
@@ -150,8 +160,8 @@ unless the packaging layout changes.
 
 ## Populate Base Data
 
-This repo can commit raw scraped list snapshots in `data/raw/` and reproducible Google Places
-enrichment cache files in `data/cache/google-places/` when you want stable source data in git.
+This repo can commit raw scraped list snapshots in `data/raw/` and a reproducible SQLite-backed Google Places
+enrichment cache in `data/cache/places.sqlite` when you want stable source data in git.
 It still does not commit generated build data.
 
 1. Export your saved lists from Google Takeout.
@@ -258,8 +268,8 @@ Per-place example at `src/data/overrides/places/tokyo-japan.json`:
 bun run enrich:data
 ```
 
-This writes cache files into `data/cache/google-places/`, which may be committed for reproducible
-enrichment results.
+This updates the SQLite cache at `data/cache/places.sqlite`.
+If you want per-guide JSON debug dumps, run `bun run export:cache:json`.
 
 6. Build generated site data:
 
@@ -308,9 +318,10 @@ For future extraction into a dedicated template repo, the split is:
 The project keeps three layers separate:
 
 1. `data/raw/` stores disposable scraper output.
-2. `data/cache/google-places/` stores cached Google Places lookups keyed by stable place id and may be committed.
-3. `src/data/overrides/` stores handwritten metadata, tags, notes, and ranking.
-4. `src/data/generated/` stores the static JSON that Astro reads at build time.
+2. `data/cache/places.sqlite` stores cached Google Places lookups keyed by guide slug and stable place id.
+3. `data/cache/google-places/` is an optional debug export directory and is gitignored.
+4. `src/data/overrides/` stores handwritten metadata, tags, notes, and ranking.
+5. `src/data/generated/` stores the static JSON that Astro reads at build time.
 
 Manual overrides always win over machine-enriched fields.
 

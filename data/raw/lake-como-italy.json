@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:34:13.559133+00:00",
-  "refresh_after": "2026-04-29T23:34:13.559133+00:00",
+  "fetched_at": "2026-04-20T16:04:28.674203+00:00",
+  "refresh_after": "2026-05-06T02:17:39.674203+00:00",
   "source_signature": "64538543703ff13135a67e78b4e0da5671d82c4f964a4f1686ba55101033fa9f",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/7C5jGmEtGcH9BoLw7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 45.4661853,
       "lng": 9.170600499999999,
-      "maps_url": "https://maps.google.com/?cid=5154019417201813743",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Leonardo%27s+Last+Supper+Museum%2C+Piazza+di+Santa+Maria+delle+Grazie%2C+2%2C+20123+Milano+MI%2C+Italy",
       "cid": "5154019417201813743",
       "google_id": "/g/11bz__fn4r",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 46.011084,
       "lng": 9.2829742,
-      "maps_url": "https://maps.google.com/?cid=5153269515794009671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Greenway+dei+Patriarchi%2C+Riva+dei+marmisti%2C+24-26%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153269515794009671",
       "google_id": "/g/11nmbxf69x",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 46.0101018,
       "lng": 9.2841255,
-      "maps_url": "https://maps.google.com/?cid=5153269163410509661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chiesa+di+San+Giorgio%2C+Contrada+della+Filanda%2C+25%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153269163410509661",
       "google_id": "/g/11gbf6tg8s",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 46.0113574,
       "lng": 9.283007399999999,
-      "maps_url": "https://maps.google.com/?cid=5153270005581648423",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Passerella%2C+Contrada+del+Porto+Varenna%2C+14%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153270005581648423",
       "google_id": "/g/1ptw4gvrs",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 46.0107217,
       "lng": 9.2866076,
-      "maps_url": "https://maps.google.com/?cid=5153270019045189023",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Castello+di+Vezio%2C+Via+Castello%2C+23828+Perledo+LC%2C+Italy",
       "cid": "5153270019045189023",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 46.0093155,
       "lng": 9.2855686,
-      "maps_url": "https://maps.google.com/?cid=5153275936331132185",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Villa+Monastero%2C+Viale+Giovanni+Polvani%2C+4%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153275936331132185",
       "google_id": "/g/11b5qbn4wx",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 45.9865868,
       "lng": 9.2619469,
-      "maps_url": "https://maps.google.com/?cid=5153270268162111833",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Salita+Serbelloni%2C+Salita+Serbelloni%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153270268162111833",
       "google_id": "/g/1q6401yv9",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 45.812905199999996,
       "lng": 9.0797211,
-      "maps_url": "https://maps.google.com/?cid=5153980221996586647",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gelateria+Lariana%2C+Lungo+Lario+Trento%2C+5%2C+22100+Como+CO%2C+Italy",
       "cid": "5153980221996586647",
       "google_id": "/g/11b6hqx077",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 45.988017199999994,
       "lng": 9.2618525,
-      "maps_url": "https://maps.google.com/?cid=5153270260148910275",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Basilica+of+St.+Giacomo%2C+Piazza+della+Chiesa%2C+27%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153270260148910275",
       "google_id": "/g/1218f57l",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 45.9912845,
       "lng": 9.2654879,
-      "maps_url": "https://maps.google.com/?cid=5153270255919265303",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Punta+Spartivento%2C+Via+Eugenio+Vitali%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153270255919265303",
       "google_id": "/g/11fy9ym72_",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 46.020322199999995,
       "lng": 9.2393833,
-      "maps_url": "https://maps.google.com/?cid=5153311815948978037",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pasticceria+Cassera+Moretti%2C+Via+Carlo+Camozzi%2C+12%2C+22017+Menaggio+CO%2C+Italy",
       "cid": "5153311815948978037",
       "google_id": "/g/11f66g_p53",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 45.9872155,
       "lng": 9.26079,
-      "maps_url": "https://maps.google.com/?cid=5153269553999409293",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B-Lake+Restaurant+Bellagio%2C+Salita+Camillo+Benso+Conte+di+Cavour%2C+7%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153269553999409293",
       "google_id": "/g/11h7c_fmtq",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 46.0111904,
       "lng": 9.2830282,
-      "maps_url": "https://maps.google.com/?cid=5153270005576360133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Riva%2C+Via+Contrada+dell%E2%80%99Oste%2C+14%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153270005576360133",
       "google_id": "/g/11ckvfrtf3",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 45.8106198,
       "lng": 9.081571499999999,
-      "maps_url": "https://maps.google.com/?cid=5153980161660294145",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gelab+Gelateria%2C+Via+Cinque+Giornate%2C+40%2C+22100+Como+CO%2C+Italy",
       "cid": "5153980161660294145",
       "google_id": "/g/11j7h7z0yd",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 45.9871486,
       "lng": 9.2620788,
-      "maps_url": "https://maps.google.com/?cid=5153270259861373129",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gelateria+del+Borgo%2C+Via+Giuseppe+Garibaldi%2C+46%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153270259861373129",
       "google_id": "/g/1tfzfmlv",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 45.986718499999995,
       "lng": 9.2609801,
-      "maps_url": "https://maps.google.com/?cid=5153272452943817279",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gelateria+Artisanale%2C+Salita+Serbelloni%2C+2%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153272452943817279",
       "google_id": "/g/11l1ms9jwk",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 46.010158499999996,
       "lng": 9.282192199999999,
-      "maps_url": "https://maps.google.com/?cid=5153270005924286523",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Al+Prato+Restaurant%2C+Piazza+del+Prato%2C+6%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153270005924286523",
       "google_id": "/g/11b88rc3mw",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 45.9886348,
       "lng": 9.2619021,
-      "maps_url": "https://maps.google.com/?cid=5153269389409130807",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Da+Franco+Piadineria+e+Panetteria%2C+Via+Eugenio+Vitali%2C+4%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153269389409130807",
       "google_id": "/g/11v48qhbv9",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 45.9847567,
       "lng": 9.2285261,
-      "maps_url": "https://maps.google.com/?cid=5153282133232385007",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grand+Hotel+Tremezzo%2C+Via+Statale%2C+5401%2C+22016+Tremezzina+CO%2C+Italy",
       "cid": "5153282133232385007",
       "google_id": "/g/11h4q84wnj",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 45.9604698,
       "lng": 9.2530565,
-      "maps_url": "https://maps.google.com/?cid=5153270776167589949",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+Baita+Belvedere%2C+Chevrio+di+Bellagio%2C43%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153270776167589949",
       "google_id": "/g/1tf19m8p",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 46.0141479,
       "lng": 9.2831076,
-      "maps_url": "https://maps.google.com/?cid=5153270010903041363",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+La+Cambusa%2C+Piazza+Martiri+della+Libert%C3%A0%2C+5%2C+23829+Varenna+LC%2C+Italy",
       "cid": "5153270010903041363",
       "google_id": "/g/1tt0p_42",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 45.987851,
       "lng": 9.261319,
-      "maps_url": "https://maps.google.com/?cid=5153310955739084519",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Fontana+Bellagio%2C+Via+Centrale%2C+7%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153310955739084519",
       "google_id": "/g/12mh4hdvq",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 45.9876012,
       "lng": 9.262284,
-      "maps_url": "https://maps.google.com/?cid=5153269680617621577",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Torre+del+Gusto+Bellagio%2C+Piazza+della+Chiesa%2C+12%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153269680617621577",
       "google_id": "/g/11qywrj1k2",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 45.8450079,
       "lng": 9.0793838,
-      "maps_url": "https://maps.google.com/?cid=5153980013908211113",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Villa+d%27Este",
       "cid": "5153980013908211113",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 46.0426861,
       "lng": 9.3049081,
-      "maps_url": "https://maps.google.com/?cid=5153267978859188975",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Orrido+di+Bellano",
       "cid": "5153267978859188975",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 46.0048531,
       "lng": 8.9585636,
-      "maps_url": "https://maps.google.com/?cid=5153294396020494295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Parco+Ciani%2C+6900+Lugano%2C+Switzerland",
       "cid": "5153294396020494295",
       "google_id": "/g/11bx55yz02",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 45.9797344,
       "lng": 9.2539943,
-      "maps_url": "https://maps.google.com/?cid=5153281981022278227",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=I+Giardini+di+Villa+Melzi%2C+Via+Lungo+Lario+Manzoni%2C+22021+Bellagio+CO%2C+Italy",
       "cid": "5153281981022278227",
       "google_id": "/g/1w0hzgqd",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 45.9858523,
       "lng": 9.2306397,
-      "maps_url": "https://maps.google.com/?cid=5153282132033363287",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Villa+Carlotta%2C+Via+Statale%2C+5605%2C+22016+Tremezzina+CO%2C+Italy",
       "cid": "5153282132033363287",
       "google_id": null,
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 45.9652533,
       "lng": 9.2024923,
-      "maps_url": "https://maps.google.com/?cid=5153282463244140415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Villa+del+Balbianello%2C+22016+Tremezzina%2C+Province+of+Como%2C+Italy",
       "cid": "5153282463244140415",
       "google_id": null,
       "maps_place_token": null

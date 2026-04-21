@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:43:40.549675+00:00",
-  "refresh_after": "2026-04-29T15:43:40.549675+00:00",
+  "fetched_at": "2026-04-20T16:03:51.128265+00:00",
+  "refresh_after": "2026-05-04T00:27:19.128265+00:00",
   "source_signature": "fc15b94443eb8a513aeca418be82691827343105b8b7c70317f73df8a5f69fce",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/mZU9GEcrDfqbxesm7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 48.1483311,
       "lng": 11.5699755,
-      "maps_url": "https://maps.google.com/?cid=5160691890437253591",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alte+Pinakothek%2C+Barer+Str.+27%2C+80333+M%C3%BCnchen%2C+Germany",
       "cid": "5160691890437253591",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 48.1277766,
       "lng": 11.5614475,
-      "maps_url": "https://maps.google.com/?cid=5160526330441234267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taverna+Melina%2C+Maistra%C3%9Fe+26%2C+80337+M%C3%BCnchen%2C+Germany",
       "cid": "5160526330441234267",
       "google_id": "/g/11f_0w5y2t",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 48.1340387,
       "lng": 11.5676369,
-      "maps_url": "https://maps.google.com/?cid=5160526348073771073",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor%2C+Sendlinger-Tor-Platz+1%2C+80336+M%C3%BCnchen%2C+Germany",
       "cid": "5160526348073771073",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 48.1353899,
       "lng": 11.5760761,
-      "maps_url": "https://maps.google.com/?cid=5160691420570759859",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Viktualienmarkt%2C+Viktualienmarkt+3%2C+80331+M%C3%BCnchen%2C+Germany",
       "cid": "5160691420570759859",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 48.1298707,
       "lng": 11.5834522,
-      "maps_url": "https://maps.google.com/?cid=5160526364660093139",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Deutsches+Museum%2C+Museumsinsel+1%2C+80538+M%C3%BCnchen%2C+Germany",
       "cid": "5160526364660093139",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 48.138664899999995,
       "lng": 11.5730127,
-      "maps_url": "https://maps.google.com/?cid=5160691916321552535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Frauenkirche%2C+Frauenplatz+1%2C+80331+M%C3%BCnchen%2C+Germany",
       "cid": "5160691916321552535",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 48.1417978,
       "lng": 11.579486,
-      "maps_url": "https://maps.google.com/?cid=5160691467395491245",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Munich+Residenz%2C+Residenzstra%C3%9Fe+1%2C+80333+M%C3%BCnchen%2C+Germany",
       "cid": "5160691467395491245",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 48.1768601,
       "lng": 11.556582599999999,
-      "maps_url": "https://maps.google.com/?cid=5160692504582151863",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=EssZimmer+by+K%C3%A4fer+%28BMW+Welt%29%2C+Am+Olympiapark+1%2C+80809+M%C3%BCnchen%2C+Germany",
       "cid": "5160692504582151863",
       "google_id": "/g/1pzs678yq",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 48.169796,
       "lng": 11.588339,
-      "maps_url": "https://maps.google.com/?cid=5160691733633704373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tantris%2C+Johann-Fichte-Stra%C3%9Fe+7%2C+80805+M%C3%BCnchen%2C+Germany",
       "cid": "5160691733633704373",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 48.1768304,
       "lng": 11.5590966,
-      "maps_url": "https://maps.google.com/?cid=5160692499414207339",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BMW+Museum%2C+Am+Olympiapark+2%2C+80809+M%C3%BCnchen%2C+Germany",
       "cid": "5160692499414207339",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 48.137408199999996,
       "lng": 11.5760735,
-      "maps_url": "https://maps.google.com/?cid=5160691463527941375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=New+Town+Hall",
       "cid": "5160691463527941375",
       "google_id": null,
       "maps_place_token": null

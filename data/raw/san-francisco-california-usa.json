@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:43:26.951423+00:00",
-  "refresh_after": "2026-04-29T23:43:26.951423+00:00",
+  "fetched_at": "2026-04-20T16:02:23.414929+00:00",
+  "refresh_after": "2026-05-05T11:37:04.414929+00:00",
   "source_signature": "5731b905d22d71853de768f33dfb0cac1d40b6059fe637973f176aa6bbd03404",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/FFpz3CY9GehrBmbr6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 37.7974009,
       "lng": -122.4035761,
-      "maps_url": "https://maps.google.com/?cid=3844909922527115641",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cotogna%2C+490+Pacific+Ave%2C+San+Francisco%2C+CA+94133%2C+United+States",
       "cid": "3844909922527115641",
       "google_id": null,
       "maps_place_token": null
@@ -29,8 +29,8 @@
       "is_favorite": false,
       "lat": 37.7902449,
       "lng": -122.409088,
-      "maps_url": "https://maps.google.com/?q=37.7902449,-122.4090880",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Naides%2C+708+Bush+St%2C+San+Francisco%2C+CA+94108%2C+United+States",
+      "cid": "15637955032392455248",
       "google_id": "/g/11ynl1hm6j",
       "maps_place_token": null
     },
@@ -41,8 +41,8 @@
       "is_favorite": false,
       "lat": 37.734407499999996,
       "lng": -122.4334153,
-      "maps_url": "https://maps.google.com/?q=37.7344075,-122.4334153",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Cigale%2C+679+Chenery+St%2C+San+Francisco%2C+CA+94131",
+      "cid": "14930072300100302261",
       "google_id": "/g/11yf7ns78x",
       "maps_place_token": null
     },
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 37.7981209,
       "lng": -122.4057057,
-      "maps_url": "https://maps.google.com/?cid=5409186209426992063",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Osmanthus+Dim+Sum+Lounge%2C+504+Broadway%2C+San+Francisco%2C+CA+94133%2C+United+States",
       "cid": "5409186209426992063",
       "google_id": "/g/11j4pz7qq6",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 37.7596962,
       "lng": -122.4347512,
-      "maps_url": "https://maps.google.com/?cid=6034675008981876862",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Anchor+Oyster+Bar%2C+579+Castro+St%2C+San+Francisco%2C+CA+94114%2C+United+States",
       "cid": "6034675008981876862",
       "google_id": null,
       "maps_place_token": null
@@ -77,8 +77,8 @@
       "is_favorite": false,
       "lat": 37.7995085,
       "lng": -122.4412277,
-      "maps_url": "https://maps.google.com/?q=37.7995085,-122.4412277",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tiya%2C+3213+Scott+St%2C+San+Francisco%2C+CA+94123%2C+United+States",
+      "cid": "12768470023672140677",
       "google_id": "/g/11vzcnqpm5",
       "maps_place_token": null
     },
@@ -89,8 +89,8 @@
       "is_favorite": false,
       "lat": 37.752656099999996,
       "lng": -122.40861,
-      "maps_url": "https://maps.google.com/?q=37.7526561,-122.4086100",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tacos+del+barrio%2C+2817+24th+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "13854449088151562561",
       "google_id": "/g/11kjnphxsj",
       "maps_place_token": null
     },
@@ -101,8 +101,8 @@
       "is_favorite": false,
       "lat": 37.7557361,
       "lng": -122.40959339999999,
-      "maps_url": "https://maps.google.com/?q=37.7557361,-122.4095934",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Metate%2C+2406+Bryant+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "11712703125106285619",
       "google_id": "/g/11rsqd_wx5",
       "maps_place_token": null
     },
@@ -113,8 +113,8 @@
       "is_favorite": false,
       "lat": 37.757267899999995,
       "lng": -122.41873199999999,
-      "maps_url": "https://maps.google.com/?q=37.7572679,-122.4187320",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Rey+Taquiza+Artesanal%2C+2491+Mission+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "18092010714442883563",
       "google_id": "/g/11t49yc6cf",
       "maps_place_token": null
     },
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 37.7249592,
       "lng": -122.4344417,
-      "maps_url": "https://maps.google.com/?cid=8114814777890038701",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mexico+Tipico%2C+4581+Mission+St%2C+San+Francisco%2C+CA+94112%2C+United+States",
       "cid": "8114814777890038701",
       "google_id": null,
       "maps_place_token": null
@@ -137,8 +137,8 @@
       "is_favorite": false,
       "lat": 37.745360399999996,
       "lng": -122.4199087,
-      "maps_url": "https://maps.google.com/?q=37.7453604,-122.4199087",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taqueria+Cancun%2C+3211+Mission+St+%233213%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "10712461188304478964",
       "google_id": "/g/1tdjx7gs",
       "maps_place_token": null
     },
@@ -149,8 +149,8 @@
       "is_favorite": false,
       "lat": 37.7527699,
       "lng": -122.4114087,
-      "maps_url": "https://maps.google.com/?q=37.7527699,-122.4114087",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Vaca+Birria%2C+2962+24th+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "14791641875717612830",
       "google_id": "/g/11q91znrp8",
       "maps_place_token": null
     },
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 37.758663299999995,
       "lng": -122.4167111,
-      "maps_url": "https://maps.google.com/?cid=8479380053246533185",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SanJalisco+Mexican+Restaurant%2C+901+S+Van+Ness+Ave%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "8479380053246533185",
       "google_id": "/g/113f82n5c",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 37.7516098,
       "lng": -122.41822119999999,
-      "maps_url": "https://maps.google.com/?cid=8025973842790668866",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taqueria+San+Jose%2C+2830+Mission+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "8025973842790668866",
       "google_id": "/g/1yl45hq01",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 37.765338799999995,
       "lng": -122.4171439,
-      "maps_url": "https://maps.google.com/?cid=3799449704690906695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Poc-Chuc+Restaurant%2C+2886+16th+St%2C+San+Francisco%2C+CA+94103%2C+United+States",
       "cid": "3799449704690906695",
       "google_id": null,
       "maps_place_token": null
@@ -197,20 +197,20 @@
       "is_favorite": false,
       "lat": 37.7784058,
       "lng": -122.4121866,
-      "maps_url": "https://maps.google.com/?cid=1114618151513796290",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Merchant+Roots%2C+1148+Mission+St%2C+San+Francisco%2C+CA+94103%2C+United+States",
       "cid": "1114618151513796290",
       "google_id": "/g/11f3n9h1v3",
       "maps_place_token": null
     },
     {
-      "name": "🌉",
-      "address": "Abacá",
+      "name": "Abacá",
+      "address": null,
       "note": null,
       "is_favorite": false,
       "lat": 37.806736699999995,
       "lng": -122.4169367,
-      "maps_url": "https://maps.google.com/?cid=104356373423434804635",
-      "cid": "104356373423434804635",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Abac%C3%A1",
+      "cid": "16667242964397114430",
       "google_id": null,
       "maps_place_token": null
     },
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 37.7798312,
       "lng": -122.40366279999999,
-      "maps_url": "https://maps.google.com/?cid=2238734840529851025",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dragon+Horse%2C+917+Folsom+St%2C+San+Francisco%2C+CA+94107%2C+United+States",
       "cid": "2238734840529851025",
       "google_id": "/g/11kc0d3l7h",
       "maps_place_token": null
@@ -233,8 +233,8 @@
       "is_favorite": false,
       "lat": 37.7761559,
       "lng": -122.42041189999999,
-      "maps_url": "https://maps.google.com/?q=37.7761559,-122.4204119",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kiln%2C+149+Fell+St%2C+San+Francisco%2C+CA+94102%2C+United+States",
+      "cid": "15476983298208337153",
       "google_id": "/g/11srrp6qf6",
       "maps_place_token": null
     },
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 37.7981765,
       "lng": -122.42208529999999,
-      "maps_url": "https://maps.google.com/?cid=963425384699482225",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nisei%2C+2316+Polk+St%2C+San+Francisco%2C+CA+94109%2C+United+States",
       "cid": "963425384699482225",
       "google_id": "/g/11k6r1c2ps",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 37.7588898,
       "lng": -122.41285049999999,
-      "maps_url": "https://maps.google.com/?cid=3748081942563517299",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mijot%C3%A9%2C+2400+Harrison+St%2C+San+Francisco%2C+CA+94110",
       "cid": "3748081942563517299",
       "google_id": "/g/11rvcnsl2y",
       "maps_place_token": null
@@ -269,8 +269,8 @@
       "is_favorite": false,
       "lat": 37.7679709,
       "lng": -122.4137207,
-      "maps_url": "https://maps.google.com/?q=37.7679709,-122.4137207",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Baklavastory.%2C+1830+Harrison+St+Ste+B%2C+San+Francisco%2C+CA+94103%2C+United+States",
+      "cid": "14754650187970297561",
       "google_id": "/g/11s4fgck2f",
       "maps_place_token": null
     },
@@ -281,8 +281,8 @@
       "is_favorite": false,
       "lat": 37.7631455,
       "lng": -122.4109946,
-      "maps_url": "https://maps.google.com/?q=37.7631455,-122.4109946",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ernest%2C+1890+Bryant+St+Suite+100%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "15444057393179428253",
       "google_id": "/g/11kn2n6x7k",
       "maps_place_token": null
     },
@@ -293,8 +293,8 @@
       "is_favorite": false,
       "lat": 37.7644063,
       "lng": -122.46616279999999,
-      "maps_url": "https://maps.google.com/?q=37.7644063,-122.4661628",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=San+Francisco%27s+Hometown+Creamery%2C+1290+9th+Ave%2C+San+Francisco%2C+CA+94122",
+      "cid": "10901142443504185623",
       "google_id": null,
       "maps_place_token": null
     },
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 37.7865433,
       "lng": -122.4332707,
-      "maps_url": "https://maps.google.com/?cid=1231183495849507687",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Philmore+Creamery%2C+1840+Fillmore+St%2C+San+Francisco%2C+CA+94115%2C+United+States",
       "cid": "1231183495849507687",
       "google_id": "/g/11g04yx1sl",
       "maps_place_token": null
@@ -317,8 +317,8 @@
       "is_favorite": false,
       "lat": 37.800626099999995,
       "lng": -122.43871469999999,
-      "maps_url": "https://maps.google.com/?q=37.8006261,-122.4387147",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Over+The+Moon+Creamery%2C+2144+Chestnut+St%2C+San+Francisco%2C+CA+94109%2C+United+States",
+      "cid": "18251313161903021764",
       "google_id": "/g/1pxqffc9p",
       "maps_place_token": null
     },
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 37.798112599999996,
       "lng": -122.42208199999999,
-      "maps_url": "https://maps.google.com/?cid=3063989756799622109",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Iris%2C+2310+Polk+St%2C+San+Francisco%2C+CA+94109%2C+United+States",
       "cid": "3063989756799622109",
       "google_id": "/g/11q2p_dkp5",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 37.7873051,
       "lng": -122.4182117,
-      "maps_url": "https://maps.google.com/?cid=5592955860861642413",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Members+Only%2C+1000+Larkin+St%2C+San+Francisco%2C+CA+94109",
       "cid": "5592955860861642413",
       "google_id": "/g/11q45gw1xk",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 37.7889711,
       "lng": -122.40841239999999,
-      "maps_url": "https://maps.google.com/?cid=7683813487433324974",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Starlite%2C+450+Powell+St%2C+San+Francisco%2C+CA+94102",
       "cid": "7683813487433324974",
       "google_id": "/g/1tfydt4t",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 37.4383765,
       "lng": -122.1583028,
-      "maps_url": "https://maps.google.com/?cid=3717042603262137464",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Telef%C3%A8ric+Barcelona+Palo+Alto%2C+855+El+Camino+Real+%23130%2C+Palo+Alto%2C+CA+94301%2C+United+States",
       "cid": "3717042603262137464",
       "google_id": "/g/11fnp_dlmn",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 37.5142105,
       "lng": -122.2537424,
-      "maps_url": "https://maps.google.com/?cid=2981759277007768895",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Izzy%27s+on+the+Peninsula%2C+525+Skyway+Rd%2C+San+Carlos%2C+CA+94070%2C+United+States",
       "cid": "2981759277007768895",
       "google_id": "/g/1wd3w8s4",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 37.627415,
       "lng": -122.411559,
-      "maps_url": "https://maps.google.com/?cid=1369463489904674639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boiling+Beijing%2C+649+San+Mateo+Ave%2C+San+Bruno%2C+CA+94066",
       "cid": "1369463489904674639",
       "google_id": "/g/11b7rxg3p1",
       "maps_place_token": null
@@ -401,8 +401,8 @@
       "is_favorite": false,
       "lat": 37.5640727,
       "lng": -122.32377199999999,
-      "maps_url": "https://maps.google.com/?q=37.5640727,-122.3237720",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gao+Viet+Kitchen%2C+313+S+San+Mateo+Dr%2C+San+Mateo%2C+CA+94401",
+      "cid": "9886299060760165866",
       "google_id": "/g/11f77243pg",
       "maps_place_token": null
     },
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 37.800032699999996,
       "lng": -122.4595791,
-      "maps_url": "https://maps.google.com/?cid=5219830582866008268",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dalida%2C+101+Montgomery+St+Suite+100%2C+San+Francisco%2C+CA+94129%2C+United+States",
       "cid": "5219830582866008268",
       "google_id": "/g/11kpn1nqys",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 37.7618143,
       "lng": -122.42296789999999,
-      "maps_url": "https://maps.google.com/?cid=8428301566270344888",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Good+Good+Culture+Club%2C+3560+18th+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "8428301566270344888",
       "google_id": "/g/11ptl7cnpf",
       "maps_place_token": null
@@ -437,8 +437,8 @@
       "is_favorite": false,
       "lat": 37.784881299999995,
       "lng": -122.40506069999999,
-      "maps_url": "https://maps.google.com/?q=37.7848813,-122.4050607",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Harlequin%2C+68+4th+St%2C+San+Francisco%2C+CA+94103%2C+United+States",
+      "cid": "15261236414697043786",
       "google_id": "/g/1tgw57q4",
       "maps_place_token": null
     },
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 37.786730999999996,
       "lng": -122.41242179999999,
-      "maps_url": "https://maps.google.com/?cid=8200490028416316397",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bottle+Club+Pub%2C+555+Geary+St%2C+San+Francisco%2C+CA+94102%2C+United+States",
       "cid": "8200490028416316397",
       "google_id": "/g/11sq32yr5l",
       "maps_place_token": null
@@ -461,8 +461,8 @@
       "is_favorite": false,
       "lat": 37.7877212,
       "lng": -122.4025116,
-      "maps_url": "https://maps.google.com/?q=37.7877212,-122.4025116",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dawn+Club%2C+10+Annie+St%2C+San+Francisco%2C+CA+94103%2C+United+States",
+      "cid": "9615088899622206948",
       "google_id": "/g/11kk1q6bwz",
       "maps_place_token": null
     },
@@ -473,8 +473,8 @@
       "is_favorite": false,
       "lat": 37.7879046,
       "lng": -122.41987809999999,
-      "maps_url": "https://maps.google.com/?q=37.7879046,-122.4198781",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=R+Bar%2C+1176+Sutter+St%2C+San+Francisco%2C+CA+94109%2C+United+States",
+      "cid": "11738965112528672533",
       "google_id": "/g/1thbwx0t",
       "maps_place_token": null
     },
@@ -485,8 +485,8 @@
       "is_favorite": false,
       "lat": 37.7586821,
       "lng": -122.4204424,
-      "maps_url": "https://maps.google.com/?q=37.7586821,-122.4204424",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Garden+Creamery%2C+3566+20th+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "9799759097684364500",
       "google_id": null,
       "maps_place_token": null
     },
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 37.7566255,
       "lng": -122.4190761,
-      "maps_url": "https://maps.google.com/?cid=5288073983709946198",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Techo%2C+2516+Mission+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "5288073983709946198",
       "google_id": "/g/12qgp_prl",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 37.7566676,
       "lng": -122.4190802,
-      "maps_url": "https://maps.google.com/?cid=1285216296375631840",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lolinda%2C+2518+Mission+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "1285216296375631840",
       "google_id": "/g/11bwnb_kg7",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 37.7564917,
       "lng": -122.4191194,
-      "maps_url": "https://maps.google.com/?cid=3410591911709045721",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Foreign+Cinema%2C+2534+Mission+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "3410591911709045721",
       "google_id": "/g/1wrtd2d2",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 37.755727,
       "lng": -122.4167629,
-      "maps_url": "https://maps.google.com/?cid=346129598453102493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Urban+Putt%2C+1096+S+Van+Ness+Ave%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "346129598453102493",
       "google_id": null,
       "maps_place_token": null
@@ -545,8 +545,8 @@
       "is_favorite": false,
       "lat": 37.7522126,
       "lng": -122.4170199,
-      "maps_url": "https://maps.google.com/?q=37.7522126,-122.4170199",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Story+of+Ramen%2C+3231+24th+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
+      "cid": "14450078886522517894",
       "google_id": "/g/11g0mdw57b",
       "maps_place_token": null
     },
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 37.746755799999995,
       "lng": -122.41932709999999,
-      "maps_url": "https://maps.google.com/?cid=2461165019631861555",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Rio%2C+3158+Mission+St%2C+San+Francisco%2C+CA+94110%2C+United+States",
       "cid": "2461165019631861555",
       "google_id": null,
       "maps_place_token": null
@@ -569,9 +569,21 @@
       "is_favorite": false,
       "lat": 37.7507861,
       "lng": -122.4342472,
-      "maps_url": "https://maps.google.com/?cid=6060460649548190963",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hamano+Sushi%2C+1332+Castro+St%2C+San+Francisco%2C+CA+94114%2C+United+States",
       "cid": "6060460649548190963",
       "google_id": "/g/1tj4h8kw",
+      "maps_place_token": null
+    },
+    {
+      "name": "Saru Sushi Bar",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 37.751714,
+      "lng": -122.42884459999999,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Saru+Sushi+Bar",
+      "cid": "13429869530911346456",
+      "google_id": null,
       "maps_place_token": null
     },
     {
@@ -581,7 +593,7 @@
       "is_favorite": false,
       "lat": 37.747414,
       "lng": -122.4593245,
-      "maps_url": "https://maps.google.com/?cid=5600704453807713644",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ChouChou+French+Bistro%2C+400+Dewey+Blvd%2C+San+Francisco%2C+CA+94116%2C+United+States",
       "cid": "5600704453807713644",
       "google_id": null,
       "maps_place_token": null
@@ -593,8 +605,8 @@
       "is_favorite": false,
       "lat": 37.762369799999995,
       "lng": -122.5068759,
-      "maps_url": "https://maps.google.com/?q=37.7623698,-122.5068759",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hook+Fish+Co%2C+4542+Irving+St%2C+San+Francisco%2C+CA+94122%2C+United+States",
+      "cid": "9378627027085325305",
       "google_id": "/g/11c59w8b36",
       "maps_place_token": null
     },
@@ -605,8 +617,8 @@
       "is_favorite": false,
       "lat": 37.7682249,
       "lng": -122.4527148,
-      "maps_url": "https://maps.google.com/?q=37.7682249,-122.4527148",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Free+Gold+Watch%2C+1767+Waller+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
+      "cid": "14214357395547938832",
       "google_id": "/g/1tf3p3r6",
       "maps_place_token": null
     },
@@ -617,7 +629,7 @@
       "is_favorite": false,
       "lat": 37.7749009,
       "lng": -122.43750829999999,
-      "maps_url": "https://maps.google.com/?cid=6373257973262962437",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nopa%2C+560+Divisadero+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
       "cid": "6373257973262962437",
       "google_id": null,
       "maps_place_token": null
@@ -629,8 +641,8 @@
       "is_favorite": false,
       "lat": 37.7765382,
       "lng": -122.43883009999999,
-      "maps_url": "https://maps.google.com/?q=37.7765382,-122.4388301",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ju-Ni%2C+1335+Fulton+St+STE+101%2C+San+Francisco%2C+CA+94117%2C+United+States",
+      "cid": "14380921691623689697",
       "google_id": "/g/11clvx78y6",
       "maps_place_token": null
     },
@@ -641,8 +653,8 @@
       "is_favorite": false,
       "lat": 37.7762013,
       "lng": -122.43825349999999,
-      "maps_url": "https://maps.google.com/?q=37.7762013,-122.4382535",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=4505+Burgers+%26+BBQ%2C+705+Divisadero+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
+      "cid": "12381967146001095423",
       "google_id": null,
       "maps_place_token": null
     },
@@ -653,8 +665,8 @@
       "is_favorite": false,
       "lat": 37.7769269,
       "lng": -122.438474,
-      "maps_url": "https://maps.google.com/?q=37.7769269,-122.4384740",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tsunami+Panhandle%2C+1306+Fulton+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
+      "cid": "17242452455309870303",
       "google_id": null,
       "maps_place_token": null
     },
@@ -665,8 +677,8 @@
       "is_favorite": false,
       "lat": 37.777129699999996,
       "lng": -122.4380118,
-      "maps_url": "https://maps.google.com/?q=37.7771297,-122.4380118",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hina+Yakitori%2C+808+Divisadero+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
+      "cid": "17058766979333481732",
       "google_id": "/g/11g0m3kfd0",
       "maps_place_token": null
     },
@@ -677,8 +689,8 @@
       "is_favorite": false,
       "lat": 37.775323,
       "lng": -122.4377433,
-      "maps_url": "https://maps.google.com/?q=37.7753230,-122.4377433",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Emporium+Arcade+Bar%2C+616+Divisadero+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
+      "cid": "12763661621608876806",
       "google_id": "/g/11dym6f0r9",
       "maps_place_token": null
     },
@@ -689,7 +701,7 @@
       "is_favorite": false,
       "lat": 37.776795299999996,
       "lng": -122.4380302,
-      "maps_url": "https://maps.google.com/?cid=3126665390567274737",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fly%2C+762+Divisadero+St%2C+San+Francisco%2C+CA+94117%2C+United+States",
       "cid": "3126665390567274737",
       "google_id": "/g/1tmk8qt5",
       "maps_place_token": null
@@ -701,8 +713,8 @@
       "is_favorite": false,
       "lat": 37.7884301,
       "lng": -122.4462054,
-      "maps_url": "https://maps.google.com/?q=37.7884301,-122.4462054",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sorrel%2C+3228+Sacramento+St%2C+San+Francisco%2C+CA+94115%2C+United+States",
+      "cid": "14598180114424704030",
       "google_id": "/g/11btx5hs_3",
       "maps_place_token": null
     },
@@ -713,8 +725,8 @@
       "is_favorite": false,
       "lat": 37.787580299999995,
       "lng": -122.45276919999999,
-      "maps_url": "https://maps.google.com/?q=37.7875803,-122.4527692",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Spruce%2C+3640+Sacramento+St%2C+San+Francisco%2C+CA+94118%2C+United+States",
+      "cid": "12784987250191810097",
       "google_id": null,
       "maps_place_token": null
     },
@@ -725,8 +737,8 @@
       "is_favorite": false,
       "lat": 37.7831377,
       "lng": -122.4629284,
-      "maps_url": "https://maps.google.com/?q=37.7831377,-122.4629284",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mokuku%2C+332+Clement+St%2C+San+Francisco%2C+CA+94118%2C+United+States",
+      "cid": "10855023105851023730",
       "google_id": "/g/11f99nj_r0",
       "maps_place_token": null
     },
@@ -737,7 +749,7 @@
       "is_favorite": false,
       "lat": 37.7812485,
       "lng": -122.45557009999999,
-      "maps_url": "https://maps.google.com/?cid=2730787877529426391",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kaiju+Eats+Ramen+%26+Izakaya%2C+3409+Geary+Blvd%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "2730787877529426391",
       "google_id": null,
       "maps_place_token": null
@@ -749,7 +761,7 @@
       "is_favorite": false,
       "lat": 37.7834259,
       "lng": -122.4593062,
-      "maps_url": "https://maps.google.com/?cid=3389884366903096466",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arsicault+Bakery%2C+397+Arguello+Blvd%2C+San+Francisco%2C+CA+94118",
       "cid": "3389884366903096466",
       "google_id": "/g/11b7m9hg8p",
       "maps_place_token": null
@@ -761,7 +773,7 @@
       "is_favorite": false,
       "lat": 37.783210499999996,
       "lng": -122.4645985,
-      "maps_url": "https://maps.google.com/?cid=6608598390446321978",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Spices%2C+291+6th+Ave%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "6608598390446321978",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +785,7 @@
       "is_favorite": false,
       "lat": 37.7829921,
       "lng": -122.4671175,
-      "maps_url": "https://maps.google.com/?cid=7458994870414233274",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chili+House+SF%2C+726+Clement+St%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "7458994870414233274",
       "google_id": "/g/1hhmw796x",
       "maps_place_token": null
@@ -785,7 +797,7 @@
       "is_favorite": false,
       "lat": 37.782532499999995,
       "lng": -122.4712261,
-      "maps_url": "https://maps.google.com/?cid=7079755942580515542",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=DNM+Hot+Pot%2C+1115+Clement+St%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "7079755942580515542",
       "google_id": "/g/11hckrd_9c",
       "maps_place_token": null
@@ -797,7 +809,7 @@
       "is_favorite": false,
       "lat": 37.7803391,
       "lng": -122.4754708,
-      "maps_url": "https://maps.google.com/?cid=3563028487511152851",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sweet+Mango+Dessert+Cafe%2C+5217+Geary+Blvd%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "3563028487511152851",
       "google_id": "/g/11gl21k6qx",
       "maps_place_token": null
@@ -809,7 +821,7 @@
       "is_favorite": false,
       "lat": 37.7827006,
       "lng": -122.47438799999999,
-      "maps_url": "https://maps.google.com/?cid=8560502750337166765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Breadbelly%2C+1408+Clement+St%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "8560502750337166765",
       "google_id": "/g/11f7pt63n2",
       "maps_place_token": null
@@ -821,8 +833,8 @@
       "is_favorite": false,
       "lat": 37.780052999999995,
       "lng": -122.48193099999999,
-      "maps_url": "https://maps.google.com/?q=37.7800530,-122.4819310",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PPQ+Dungeness+Island+-+San+Francisco%2C+5821+Geary+Blvd%2C+San+Francisco%2C+CA+94121%2C+United+States",
+      "cid": "14462437558698098688",
       "google_id": "/g/1tdr3jx1",
       "maps_place_token": null
     },
@@ -833,7 +845,7 @@
       "is_favorite": false,
       "lat": 37.7821778,
       "lng": -122.4842037,
-      "maps_url": "https://maps.google.com/?cid=2388193582286819506",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ilana+Coffee%2C+2314+Clement+St%2C+San+Francisco%2C+CA+94121%2C+United+States",
       "cid": "2388193582286819506",
       "google_id": "/g/1pp2ww_z8",
       "maps_place_token": null
@@ -845,8 +857,8 @@
       "is_favorite": false,
       "lat": 37.782813999999995,
       "lng": -122.4625643,
-      "maps_url": "https://maps.google.com/?q=37.7828140,-122.4625643",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Burma+Superstar%2C+309+Clement+St%2C+San+Francisco%2C+CA+94118%2C+United+States",
+      "cid": "10744315307919991702",
       "google_id": null,
       "maps_place_token": null
     },
@@ -857,7 +869,7 @@
       "is_favorite": false,
       "lat": 37.78046,
       "lng": -122.48061039999999,
-      "maps_url": "https://maps.google.com/?cid=6924344292273102319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dragon+Beaux%2C+5700+Geary+Blvd%2C+San+Francisco%2C+CA+94121%2C+United+States",
       "cid": "6924344292273102319",
       "google_id": "/g/11b77fsgvk",
       "maps_place_token": null
@@ -869,7 +881,7 @@
       "is_favorite": false,
       "lat": 37.7800568,
       "lng": -122.4816944,
-      "maps_url": "https://maps.google.com/?cid=5206771361401252308",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=HoDaLa%2C+5801+Geary+Blvd%2C+San+Francisco%2C+CA+94121%2C+United+States",
       "cid": "5206771361401252308",
       "google_id": "/g/11gfp21wbm",
       "maps_place_token": null
@@ -881,8 +893,8 @@
       "is_favorite": false,
       "lat": 37.765506099999996,
       "lng": -122.466241,
-      "maps_url": "https://maps.google.com/?q=37.7655061,-122.4662410",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=um.ma%2C+1220+9th+Ave%2C+San+Francisco%2C+CA+94122%2C+United+States",
+      "cid": "16166611691695403553",
       "google_id": "/g/11hz11q6d9",
       "maps_place_token": null
     },
@@ -893,7 +905,7 @@
       "is_favorite": false,
       "lat": 37.7698646,
       "lng": -122.4660947,
-      "maps_url": "https://maps.google.com/?cid=1982859062306917049",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=California+Academy+of+Sciences%2C+55+Music+Concourse+Dr%2C+San+Francisco%2C+CA+94118%2C+United+States",
       "cid": "1982859062306917049",
       "google_id": null,
       "maps_place_token": null
@@ -905,7 +917,7 @@
       "is_favorite": false,
       "lat": 37.761019,
       "lng": -122.489581,
-      "maps_url": "https://maps.google.com/?cid=685315674439444948",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Terra+Cotta+Warrior%2C+2555+Judah+St%2C+San+Francisco%2C+CA+94122%2C+United+States",
       "cid": "685315674439444948",
       "google_id": "/g/1q5bw2qxk",
       "maps_place_token": null

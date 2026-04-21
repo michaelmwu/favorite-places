@@ -58,9 +58,9 @@ describe("guide map interactions", () => {
     const css = readSource("src/styles/global.css");
 
     expect(guideMap).toContain('class="map-icon-button"');
-    expect(guideMap).toContain('data-location-state="checking"');
-    expect(guideMap).toContain('aria-label="Center map on current location"');
-    expect(guideMap).toContain('aria-disabled="true"');
+    expect(guideMap).toContain('data-location-state="idle"');
+    expect(guideMap).toContain('aria-label="Use current location"');
+    expect(guideMap).toContain('aria-disabled="false"');
     expect(guideMap).not.toContain(">Near me</button>");
     expect(guideMap).toContain("locationBoundsForPlaces");
     expect(guideMap).toContain("guideLocationInliers");
@@ -69,6 +69,8 @@ describe("guide map interactions", () => {
     expect(guideMap).not.toContain("Math.ceil(sorted.length * percentileValue) - 1");
     expect(guideMap).toContain("distanceFromGuideCenter <= guideLocationBounds.maxDistanceKm");
     expect(guideMap).toContain("Current location is too far from this guide");
+    expect(guideMap).toContain('setLocationButtonState("checking", "Checking current location")');
+    expect(guideMap).toContain('setLocationButtonState("near", "Center map on current location")');
     expect(guideMap).toContain("watchPosition");
     expect(css).toContain(".map-icon-button");
     expect(css).toContain('.map-icon-button[aria-disabled="true"]');

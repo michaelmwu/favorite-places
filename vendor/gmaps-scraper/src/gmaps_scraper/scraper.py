@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html
+import json
 import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -28,6 +29,7 @@ _SCRIPT_TEXT_PATTERN = re.compile(
     r"<script\b[^>]*>(.*?)</script>",
     re.IGNORECASE | re.DOTALL,
 )
+_ENTITYLIST_PAGE_SIZE_PATTERN = re.compile(r"(%214i|!4i)(\d+)")
 _CONSENT_TEXT_MARKERS = (
     "before you continue to google",
     "prima di continuare su google",
@@ -247,6 +249,14 @@ def collect_http_artifacts(
                 else:
                     preload_text = _response_text(preload_response)
                     if preload_text.strip():
+                        expanded_preload_text = _expand_entitylist_preload_text(
+                            session,
+                            preload_url=preload_url,
+                            preload_text=preload_text,
+                            referer=resolved_url or list_url,
+                        )
+                        if expanded_preload_text is not None:
+                            preload_text = expanded_preload_text
                         script_texts.append(preload_text)
     except Exception as exc:  # pragma: no cover - network error path
         raise ScrapeError(f"Failed to collect HTTP artifacts: {exc}") from exc
@@ -569,6 +579,86 @@ def _extract_preloaded_fetch_url(
             if marker in candidate:
                 return candidate
     return candidates[0]
+
+
+def _expand_entitylist_preload_text(
+    session: Any,
+    *,
+    preload_url: str,
+    preload_text: str,
+    referer: str,
+) -> str | None:
+    response_counts = _extract_entitylist_response_counts(preload_text)
+    if response_counts is None:
+        return None
+
+    loaded_rows, total_rows = response_counts
+    if total_rows <= loaded_rows:
+        return None
+
+    expanded_preload_url = _replace_entitylist_page_size(preload_url, total_rows)
+    if expanded_preload_url is None or expanded_preload_url == preload_url:
+        return None
+
+    try:
+        expanded_response = session.get(
+            expanded_preload_url,
+            referer=referer,
+        )
+        _raise_for_status(expanded_response)
+    except Exception:
+        return None
+
+    expanded_text = _response_text(expanded_response)
+    if not expanded_text.strip():
+        return None
+    return expanded_text
+
+
+def _extract_entitylist_response_counts(preload_text: str) -> tuple[int, int] | None:
+    candidate = _extract_entitylist_payload(preload_text)
+    if candidate is None:
+        return None
+
+    rows = candidate[8]
+    total = candidate[12]
+    if not isinstance(rows, list) or not isinstance(total, int):
+        return None
+    return len(rows), total
+
+
+def _extract_entitylist_payload(preload_text: str) -> list[Any] | None:
+    normalized = preload_text.strip()
+    if normalized.startswith(")]}'"):
+        normalized = normalized[4:].lstrip()
+    try:
+        payload = json.loads(normalized)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, list) or not payload:
+        return None
+    candidate = payload[0]
+    if not isinstance(candidate, list) or len(candidate) <= 12:
+        return None
+    return candidate
+
+
+def _replace_entitylist_page_size(preload_url: str, page_size: int) -> str | None:
+    if page_size < 1:
+        return None
+
+    def _replacement(match: re.Match[str]) -> str:
+        prefix = match.group(1)
+        return f"{prefix}{page_size}"
+
+    expanded_url, replacement_count = _ENTITYLIST_PAGE_SIZE_PATTERN.subn(
+        _replacement,
+        preload_url,
+        count=1,
+    )
+    if replacement_count == 0:
+        return None
+    return expanded_url
 
 
 def _extract_html_attributes(tag_html: str) -> dict[str, str]:

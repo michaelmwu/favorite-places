@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:25:05.217584+00:00",
-  "refresh_after": "2026-04-29T15:25:05.217584+00:00",
+  "fetched_at": "2026-04-20T16:06:56.445806+00:00",
+  "refresh_after": "2026-05-03T01:59:51.445806+00:00",
   "source_signature": "01ed0648be5bbe2ee59bce12780c08100b0c014d3c86f2ca8ab3c8beac55f073",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/4riMSaf3VD7sG9jP8",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 42.8424905,
       "lng": 140.6395839,
-      "maps_url": "https://maps.google.com/?cid=6848479180481544291",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=NISEKO+A-nabeya",
       "cid": "6848479180481544291",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 42.8582432,
       "lng": 140.7056536,
-      "maps_url": "https://maps.google.com/?cid=6848481354792090093",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakitori+Fujiwara+Niseko",
       "cid": "6848481354792090093",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 42.8044454,
       "lng": 140.6880902,
-      "maps_url": "https://maps.google.com/?cid=6848478554765433779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Hanayoshi",
       "cid": "6848478554765433779",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 42.8582542,
       "lng": 140.7056398,
-      "maps_url": "https://maps.google.com/?cid=6848480798336735709",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=dan",
       "cid": "6848480798336735709",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 42.860129099999995,
       "lng": 140.7060323,
-      "maps_url": "https://maps.google.com/?cid=6848481793934472655",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Temporada",
       "cid": "6848481793934472655",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 42.8602981,
       "lng": 140.70573919999998,
-      "maps_url": "https://maps.google.com/?cid=6848481342991316343",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Flats.+Restaurant%2FBar",
       "cid": "6848481342991316343",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 42.8641929,
       "lng": 140.7128,
-      "maps_url": "https://maps.google.com/?cid=6848480187349740109",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tsubara+Tsubara%2C+4-chome-3+Nisekohirafu+5+Jo%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0086",
       "cid": "6848480187349740109",
       "google_id": "/g/1vljg3b7",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 42.901195799999996,
       "lng": 140.7609736,
-      "maps_url": "https://maps.google.com/?cid=6848492506457960237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Charcoal+Grilled+Yakitori+Tomarigi%2C+%E3%80%92044-0003+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E7%94%BA%E5%8C%97%E4%B8%89%E6%9D%A1%E6%9D%B1%E5%9B%9B%E4%B8%81%E7%9B%AE1-12",
       "cid": "6848492506457960237",
       "google_id": "/g/11jybj3q03",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 42.8895493,
       "lng": 140.7519436,
-      "maps_url": "https://maps.google.com/?cid=6848480416085559775",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AD%9A%E5%B1%8B%E3%81%97%E3%82%8D%E3%81%8F%E3%81%BE%2C+1+Chome-30-1+Minami+11+Johigashi%2C+%E8%99%BB%E7%94%B0%E9%83%A1%E5%80%B6%E7%9F%A5%E5%AE%89%E7%94%BA+Abuta+District%2C+Hokkaido+044-0025",
       "cid": "6848480416085559775",
       "google_id": "/g/11g021475b",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 42.8992825,
       "lng": 140.7528475,
-      "maps_url": "https://maps.google.com/?cid=6848491974950653691",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakiniku+Dainimon+Kutchan+Branch",
       "cid": "6848491974950653691",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 42.9030742,
       "lng": 140.75054649999998,
-      "maps_url": "https://maps.google.com/?cid=6848490814442448543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tenhoh",
       "cid": "6848490814442448543",
       "google_id": null,
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 42.902804599999996,
       "lng": 140.7511575,
-      "maps_url": "https://maps.google.com/?cid=6848492846708118737",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Otto+Uno",
       "cid": "6848492846708118737",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 42.9015558,
       "lng": 140.75291869999998,
-      "maps_url": "https://maps.google.com/?cid=6848492751486431611",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%85%AD%E8%8A%B1+RIKKA",
       "cid": "6848492751486431611",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 42.9016467,
       "lng": 140.7465942,
-      "maps_url": "https://maps.google.com/?cid=6848492831248466501",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cafe+Creperiz",
       "cid": "6848492831248466501",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 42.901641,
       "lng": 140.7467097,
-      "maps_url": "https://maps.google.com/?cid=6848491974436819557",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wagyu+to+Worldwide+Niseko",
       "cid": "6848491974436819557",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 42.9015969,
       "lng": 140.7386252,
-      "maps_url": "https://maps.google.com/?cid=6848490791649398927",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kutchancho+Asahigaoka+Ski+Area%2C+95+Asahi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0083",
       "cid": "6848490791649398927",
       "google_id": "/g/1tf7xhs5",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 42.9031948,
       "lng": 140.7512652,
-      "maps_url": "https://maps.google.com/?cid=6848490813930805763",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casual+Bar+%26+Sukiyaki+Trattoria+GARSON",
       "cid": "6848490813930805763",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 42.8577678,
       "lng": 140.7063105,
-      "maps_url": "https://maps.google.com/?cid=6848481201868885751",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SUSHIKATO+HINZAN+NISEKO+~Crab%26Wagyu~",
       "cid": "6848481201868885751",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 42.8596657,
       "lng": 140.7004469,
-      "maps_url": "https://maps.google.com/?cid=6848481119675288381",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Roketto+%E3%83%AD%E3%82%B1%E3%83%83%E3%83%88",
       "cid": "6848481119675288381",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 42.8604033,
       "lng": 140.7055377,
-      "maps_url": "https://maps.google.com/?cid=6848481412415982393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kitchen",
       "cid": "6848481412415982393",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 42.8620751,
       "lng": 140.7032825,
-      "maps_url": "https://maps.google.com/?cid=6848481516582598085",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=HakuSteak",
       "cid": "6848481516582598085",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 42.9076648,
       "lng": 140.674705,
-      "maps_url": "https://maps.google.com/?cid=6848492525491504745",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Somoza",
       "cid": "6848492525491504745",
       "google_id": null,
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 42.863338,
       "lng": 140.699605,
-      "maps_url": "https://maps.google.com/?cid=6848481130489817483",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MUWA+NISEKO",
       "cid": "6848481130489817483",
       "google_id": null,
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 42.8456812,
       "lng": 140.6825168,
-      "maps_url": "https://maps.google.com/?cid=6848479478876601011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MOKA+Italian+Japanese+Restaurant+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A3%E3%83%91%E3%83%8B%E3%83%BC%E3%82%BA+%E3%80%8EMOKA%E3%80%8F",
       "cid": "6848479478876601011",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 42.8589762,
       "lng": 140.7047952,
-      "maps_url": "https://maps.google.com/?cid=6848479775299090315",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Alpinist",
       "cid": "6848479775299090315",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 42.858234599999996,
       "lng": 140.70866089999998,
-      "maps_url": "https://maps.google.com/?cid=6848480797087853373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Confidential%2C+1-3-20%2CNiseko%2C+2-jo+Hirafu%2C+Kutchan%2C+Abuta+District%2C+Hokkaido%2C+Japan",
       "cid": "6848480797087853373",
       "google_id": "/g/11wqs7tvl9",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 42.8582283,
       "lng": 140.7056724,
-      "maps_url": "https://maps.google.com/?cid=6848480979041151827",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR+HAKU+NISEKO%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+2+Jo%2C+1-chome%E2%88%929%E2%88%9241+The+Select+%E5%86%85",
       "cid": "6848480979041151827",
       "google_id": "/g/11lcpv1hz9",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 42.9026375,
       "lng": 140.7391345,
-      "maps_url": "https://maps.google.com/?cid=6848490794479217477",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Asahigaoka+Total+Park",
       "cid": "6848490794479217477",
       "google_id": null,
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 42.9085532,
       "lng": 140.7398844,
-      "maps_url": "https://maps.google.com/?cid=6848492354038123149",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mishima-San%E2%80%99s+Shibazakura+Garden",
       "cid": "6848492354038123149",
       "google_id": null,
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 42.8579782,
       "lng": 140.8688923,
-      "maps_url": "https://maps.google.com/?cid=6848486989911954027",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fukidashi+Park+%28Spring+water+drinking+point+%29",
       "cid": "6848486989911954027",
       "google_id": null,
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 42.8608786,
       "lng": 140.7001894,
-      "maps_url": "https://maps.google.com/?cid=6848479181603686673",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AE%A8+%E5%BF%83+by+%E5%AE%AE%E5%B7%9D+%E3%83%8B%E3%82%BB%E3%82%B3+%2F+Sushi+Shin+by+Miyakawa+Niseko",
       "cid": "6848479181603686673",
       "google_id": null,
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 42.7808564,
       "lng": 140.7311267,
-      "maps_url": "https://maps.google.com/?cid=6848477271207291815",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ostrich+Arishima+2nd+farm+Niseko",
       "cid": "6848477271207291815",
       "google_id": null,
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 42.7831668,
       "lng": 140.7788179,
-      "maps_url": "https://maps.google.com/?cid=6848476835626521695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wakimizu+no+Sato%2C+Makkari+Tofu+Kobo",
       "cid": "6848476835626521695",
       "google_id": null,
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 42.8486632,
       "lng": 140.7405815,
-      "maps_url": "https://maps.google.com/?cid=6848480035302891297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Houzuki+Udon%2C+340-5+Hirafu%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0077",
       "cid": "6848480035302891297",
       "google_id": "/g/1td2m8j9",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 42.8823545,
       "lng": 140.7768625,
-      "maps_url": "https://maps.google.com/?cid=6848480483476473037",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nokanosobaya+Yoteizan%2C+463-5+Fujimi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0075",
       "cid": "6848480483476473037",
       "google_id": "/g/1tgkh28b",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 42.8603885,
       "lng": 140.884561,
-      "maps_url": "https://maps.google.com/?cid=6848487918479445475",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SOUP+CURRY+LOOP%2C+306+Kyogoku%2C+Abuta+District%2C+Hokkaido+044-0101",
       "cid": "6848487918479445475",
       "google_id": "/g/11vklk8f7g",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 42.8836297,
       "lng": 140.76206589999998,
-      "maps_url": "https://maps.google.com/?cid=6848480398974157065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Narita%2C+52-8+Takasago%2C+%E5%AD%97+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0076",
       "cid": "6848480398974157065",
       "google_id": "/g/1tfx4plq",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 42.8611753,
       "lng": 140.7034248,
-      "maps_url": "https://maps.google.com/?cid=6848479755762895461",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Akaru+%E6%98%8E%E3%82%8B+Japanese+Restaurant%2C+%E3%80%92044-0081+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Yamada%2C+185-6+%E5%B1%B1%E8%87%AA%E7%84%B6west+1F",
       "cid": "6848479755762895461",
       "google_id": "/g/11gg70j47m",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 42.8580912,
       "lng": 140.70746599999998,
-      "maps_url": "https://maps.google.com/?cid=6848479782388590315",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Half+Note%2C+170-238+Nisekohirafu+2+Jo%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0089",
       "cid": "6848479782388590315",
       "google_id": "/g/11dxdfdmdp",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 42.8631963,
       "lng": 140.7013811,
-      "maps_url": "https://maps.google.com/?cid=6848479751158416343",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9D%8F%E3%83%80%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0+An+Dining%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B51%E6%9D%A13%E4%B8%81%E7%9B%AE8-5+%E6%9C%A8%E3%83%8B%E3%82%BB%E3%82%B31F",
       "cid": "6848479751158416343",
       "google_id": "/g/11b7h9gtk1",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 42.8633988,
       "lng": 140.69965589999998,
-      "maps_url": "https://maps.google.com/?cid=6848481351841360463",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%99%E3%81%8D%E7%84%BC%E5%89%B2%E7%83%B9+%E6%97%A5%E5%B1%B1+SUKIYAKI+HIYAMA%2C+%E3%80%92044-0080+Hokkaido%2C+%E8%99%BB%E7%94%B0%E7%BE%A4%E4%BF%B1%E7%9F%A5%E5%AE%89%E7%94%BA%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B51%E6%9D%A13%E4%B8%81%E7%9B%AE204%E7%95%AA%E5%9C%B019+MUWA+NISEKO+B1F",
       "cid": "6848481351841360463",
       "google_id": "/g/11vf98yz_q",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 42.8453474,
       "lng": 140.6829739,
-      "maps_url": "https://maps.google.com/?cid=6848478598181735295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B7%9D%E5%91%B3%E3%83%8B%E3%82%BB%E3%82%B3+Chuan+Niseko+Village%2C+919-5+Soga%2C+Niseko%2C+Abuta+District%2C+Hokkaido+048-1522",
       "cid": "6848478598181735295",
       "google_id": "/g/11vm4ypfh7",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 42.898992,
       "lng": 140.74948999999998,
-      "maps_url": "https://maps.google.com/?cid=6848492636101084281",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Morideai%2C+2+Chome+Minami+4+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0034",
       "cid": "6848492636101084281",
       "google_id": "/g/11lr_59_y1",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 42.9018673,
       "lng": 140.7467438,
-      "maps_url": "https://maps.google.com/?cid=6848491957407923039",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Family+Restaurant+ROCO%2C+3+Chome-3+Kita+1+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0051",
       "cid": "6848491957407923039",
       "google_id": "/g/11n6ttnbby",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 42.8640586,
       "lng": 140.7231397,
-      "maps_url": "https://maps.google.com/?cid=6848480131867902833",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%AD%E3%82%AB%E3%83%B3%E3%83%80+%28L%E2%80%99ocanda%29%2C+%E3%80%92044-0086+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B55%E6%9D%A12%E4%B8%81%E7%9B%AE%EF%BC%97%E7%95%AA1%E5%8F%B7",
       "cid": "6848480131867902833",
       "google_id": "/g/12hq94c0y",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 42.8582402,
       "lng": 140.7085319,
-      "maps_url": "https://maps.google.com/?cid=6848479782343880003",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Yummy%27s+Pizza+%28%E3%83%8B%E3%82%BB%E3%82%B3%E3%83%A4%E3%83%9F%E3%83%BC%E3%82%BA%E3%83%94%E3%82%B6%29%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B5%EF%BC%92%E6%9D%A1%EF%BC%91%E4%B8%81%E7%9B%AE3-21",
       "cid": "6848479782343880003",
       "google_id": "/g/1tfh4f_r",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 42.8604079,
       "lng": 140.7048404,
-      "maps_url": "https://maps.google.com/?cid=6848479755551200249",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lava+Lounge+Pizza%2C+3-chome-2-18+Nisekohirafu+1+Jo%2C+Kutchan%2C+Hokkaido+044-0080",
       "cid": "6848479755551200249",
       "google_id": "/g/11bv5s_1b_",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 42.8642361,
       "lng": 140.7131664,
-      "maps_url": "https://maps.google.com/?cid=6848480187284856331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Graubunden%2C+%E3%80%92044-0086+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B5%EF%BC%95%E6%9D%A1%EF%BC%94%E4%B8%81%E7%9B%AE%EF%BC%92%E7%95%AA%E5%9C%B0%EF%BC%96%E5%8F%B7",
       "cid": "6848480187284856331",
       "google_id": "/g/1tdg7lc1",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 42.871189,
       "lng": 140.7251306,
-      "maps_url": "https://maps.google.com/?cid=6848480231182046141",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ruhiel%2C+34-62+Yamada%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0081",
       "cid": "6848480231182046141",
       "google_id": "/g/1vg_cndd",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 42.8635357,
       "lng": 140.72434769999998,
-      "maps_url": "https://maps.google.com/?cid=6848480175491624681",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Teuchi-Soba+Ichimura%2C+%E3%80%92044-0087+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B5%EF%BC%94%E6%9D%A1%EF%BC%91%E4%B8%81%E7%9B%AE%EF%BC%91%E2%80%93%EF%BC%91%EF%BC%95",
       "cid": "6848480175491624681",
       "google_id": "/g/1vd94wyp",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 42.8738257,
       "lng": 140.63742019999998,
-      "maps_url": "https://maps.google.com/?cid=6848467816718410471",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Goshiki+Onsen+And+Hotel%2C+673%E7%95%AA%E5%9C%B0+Yunosato%2C+Rankoshi%2C+Isoya+District%2C+Hokkaido+048-1321",
       "cid": "6848467816718410471",
       "google_id": "/g/1233lvjn",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 42.9599122,
       "lng": 140.695583,
-      "maps_url": "https://maps.google.com/?cid=6848495877731101005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Waisu+Onsen%2C+256-35+Waisu%2C+Kyowa%2C+Iwanai+District%2C+Hokkaido+048-2141",
       "cid": "6848495877731101005",
       "google_id": "/g/1tykv55q",
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 42.869577299999996,
       "lng": 140.5982598,
-      "maps_url": "https://maps.google.com/?cid=6848467591210413135",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yukichichibu+Onsen%2C+680+Yunosato%2C+Rankoshi%2C+Isoya+District%2C+Hokkaido+048-1321",
       "cid": "6848467591210413135",
       "google_id": "/g/1tnqgsfd",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 42.7539703,
       "lng": 140.9022681,
-      "maps_url": "https://maps.google.com/?cid=6878488731191604447",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rusutsu+Onsen+-+Kotobuki-no-yu%2C+13+Izumikawa%2C+Rusutsu%2C+Abuta+District%2C+Hokkaido+048-1711",
       "cid": "6878488731191604447",
       "google_id": "/g/1vnnj64q",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 42.797728299999996,
       "lng": 140.9574932,
-      "maps_url": "https://maps.google.com/?cid=6878486994544028649",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kiko%E5%9B%B3+-Kikoz-%2C+332-3+Fushimi%2C+Kimobetsu%2C+Abuta+District%2C+Hokkaido+044-0221",
       "cid": "6878486994544028649",
       "google_id": "/g/11hz41_h_x",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 42.8253254,
       "lng": 140.890752,
-      "maps_url": "https://maps.google.com/?cid=6848486066854698623",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=le+mantaro%2C+470-3+Koshin%2C+Kyogoku%2C+Abuta+District%2C+Hokkaido+044-0132",
       "cid": "6848486066854698623",
       "google_id": "/g/11ptm5j_2z",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 42.7970639,
       "lng": 140.7539352,
-      "maps_url": "https://maps.google.com/?cid=6848477008549037867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dan+Niseko%2C+741-36+Kondo%2C+Niseko%2C+Abuta+District%2C+Hokkaido+048-1542",
       "cid": "6848477008549037867",
       "google_id": "/g/11rqs1p6dy",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 42.8625489,
       "lng": 140.6986141,
-      "maps_url": "https://maps.google.com/?cid=6848479749482002337",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hirafu+Welcome+Center%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B5%EF%BC%91%E6%9D%A1%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%99%E2%80%93%EF%BC%93%EF%BC%91",
       "cid": "6848479749482002337",
       "google_id": "/g/11c5fzbrhk",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 42.8608568,
       "lng": 140.7002302,
-      "maps_url": "https://maps.google.com/?cid=6848479772675589707",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TOSHIRO%E2%80%99S+BAR+%E3%83%88%E3%82%B7%E3%83%AD%E3%83%BC%E3%82%BA%E3%83%90%E3%83%BC%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+1+Jo%2C+4-chome%E2%88%925%E2%88%9232+SANSUI+NISEKO",
       "cid": "6848479772675589707",
       "google_id": "/g/11b6_cnxx7",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 42.9077208,
       "lng": 140.674733,
-      "maps_url": "https://maps.google.com/?cid=6848492521052536295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SOMOZA+Gallery%2C+Chefs+table%2C+Exhibition+and+Event+Space%2C+%EF%BC%97%EF%BC%98-5+Hanazono%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0084",
       "cid": "6848492521052536295",
       "google_id": "/g/11c6dzqmt4",
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 42.8624803,
       "lng": 140.6986243,
-      "maps_url": "https://maps.google.com/?cid=6848479749022877313",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Day%3A+Mountain+Kiosk+Coffee+Stand%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+1+Jo%2C+3-chome%E2%88%929%E2%88%9231+MOUNTAIN+KIOSK+COFFEE",
       "cid": "6848479749022877313",
       "google_id": "/g/11bccm7jjl",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 42.8599215,
       "lng": 140.7016993,
-      "maps_url": "https://maps.google.com/?cid=6848479757790689467",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Bang+Bang%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+1+Jo%2C+188-24+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B51%E6%9D%A14%E4%B8%81%E7%9B%AE5-47-2",
       "cid": "6848479757790689467",
       "google_id": "/g/1wfvmfn3",
       "maps_place_token": null
@@ -761,9 +761,21 @@
       "is_favorite": false,
       "lat": 42.897809599999995,
       "lng": 140.7499934,
-      "maps_url": "https://maps.google.com/?cid=6848492509589212713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Winter+Whale+Lodge%2C+2+Chome-2-58+Minami+4+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0034",
       "cid": "6848492509589212713",
       "google_id": "/g/11vrthm0gp",
+      "maps_place_token": null
+    },
+    {
+      "name": "Soba Dining Usagiya",
+      "address": "1 Chome-1-1 Kita 2 Jonishi, Kutchan, Abuta District, Hokkaido 044-0052",
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.9024911,
+      "lng": 140.7504912,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soba+Dining+Usagiya%2C+1+Chome-1-1+Kita+2+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0052",
+      "cid": "6848490814442448543",
+      "google_id": "/g/1tf35rfp",
       "maps_place_token": null
     },
     {
@@ -773,7 +785,7 @@
       "is_favorite": false,
       "lat": 42.859927,
       "lng": 140.70693119999999,
-      "maps_url": "https://maps.google.com/?cid=6848479776362256029",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Crab+Dining+Kanon%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B5%EF%BC%92%E6%9D%A1%EF%BC%91%E4%B8%81%E7%9B%AE1-20",
       "cid": "6848479776362256029",
       "google_id": "/g/11bwywj5_j",
       "maps_place_token": null
@@ -785,7 +797,7 @@
       "is_favorite": false,
       "lat": 42.8608359,
       "lng": 140.70399229999998,
-      "maps_url": "https://maps.google.com/?cid=6848479755730617017",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A7%E8%A1%86%E3%83%90%E3%83%AB+JAM%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B51%E6%9D%A13%E4%B8%81%E7%9B%AE5-41",
       "cid": "6848479755730617017",
       "google_id": "/g/11b7hhdcd3",
       "maps_place_token": null
@@ -797,7 +809,7 @@
       "is_favorite": false,
       "lat": 42.8559215,
       "lng": 140.7085798,
-      "maps_url": "https://maps.google.com/?cid=6848479783249738583",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Izakaya+Koharuya%2C+155-14+Nisekohirafu+2+Jo%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0089",
       "cid": "6848479783249738583",
       "google_id": "/g/11c4tfh00t",
       "maps_place_token": null
@@ -807,9 +819,9 @@
       "address": "〒044-0089 Hokkaido, Abuta District, Kutchan, ニセコひらふ2条1丁目13番2号",
       "note": null,
       "is_favorite": false,
-      "lat": 42.857195499999996,
-      "lng": 140.70884039999999,
-      "maps_url": "https://maps.google.com/?cid=6848479783080496579",
+      "lat": 42.857199099999995,
+      "lng": 140.7088451,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rin+Japanese+restaurant+%EF%BC%88%E9%A3%B2%E3%81%BF%E5%96%B0%E3%81%84%E5%87%A6+%E3%82%8A%E3%82%93%EF%BC%89%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B52%E6%9D%A11%E4%B8%81%E7%9B%AE13%E7%95%AA2%E5%8F%B7",
       "cid": "6848479783080496579",
       "google_id": "/g/11b6z_zp89",
       "maps_place_token": null
@@ -821,7 +833,7 @@
       "is_favorite": false,
       "lat": 42.8589287,
       "lng": 140.70661139999999,
-      "maps_url": "https://maps.google.com/?cid=6848480836206588873",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MAME+niseko%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+2+Jo%2C+1-chome%E2%88%926%E2%88%9214+1F+Dharma+Niseko",
       "cid": "6848480836206588873",
       "google_id": "/g/11s9dchgpx",
       "maps_place_token": null
@@ -833,7 +845,7 @@
       "is_favorite": false,
       "lat": 42.8623232,
       "lng": 140.7078792,
-      "maps_url": "https://maps.google.com/?cid=6848479754456684187",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Japanese+Kitchen+%26+A+snug+Japanese+pub+REN%2C+%E3%80%92044-0080+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+1+Jo%2C+2%E7%94%BA%E7%9B%AE4%2C+14%E5%8F%B7",
       "cid": "6848479754456684187",
       "google_id": "/g/11hbc2l2w0",
       "maps_place_token": null
@@ -845,7 +857,7 @@
       "is_favorite": false,
       "lat": 42.8574505,
       "lng": 140.7068313,
-      "maps_url": "https://maps.google.com/?cid=6848479772546936623",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Steak+Rosso+Rosso%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+Nisekohirafu+2+Jo%2C+1-chome%E2%88%9210%E2%88%929+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B52%E6%9D%A11%E4%B8%81%E7%9B%AE10%E7%95%AA9%E5%8F%B7",
       "cid": "6848479772546936623",
       "google_id": "/g/1tsyj_15",
       "maps_place_token": null
@@ -857,7 +869,7 @@
       "is_favorite": false,
       "lat": 42.7525561,
       "lng": 140.90479679999999,
-      "maps_url": "https://maps.google.com/?cid=6878488735176822451",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rodeo+Drive%2C+24+Izumikawa%2C+%E8%99%BB%E7%94%B0%E9%83%A1%E7%95%99%E5%AF%BF%E9%83%BD%E6%9D%91+Abuta+District%2C+Hokkaido+048-1711",
       "cid": "6878488735176822451",
       "google_id": "/g/1tdx8hxj",
       "maps_place_token": null
@@ -869,7 +881,7 @@
       "is_favorite": false,
       "lat": 42.836771,
       "lng": 140.675442,
-      "maps_url": "https://maps.google.com/?cid=6848479423338560827",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Takahashi+Dairy+Farm+MILK+KOBO%2C+888-1+Soga%2C+Niseko%2C+Abuta+District%2C+Hokkaido+048-1522",
       "cid": "6848479423338560827",
       "google_id": "/g/1vfn6fxj",
       "maps_place_token": null
@@ -881,7 +893,7 @@
       "is_favorite": false,
       "lat": 42.797793899999995,
       "lng": 140.7297347,
-      "maps_url": "https://maps.google.com/?cid=6848478003188120115",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pi-kan+rollpizza.%2C+260-1+Kondo%2C+Niseko%2C+Abuta+District%2C+Hokkaido+048-1542",
       "cid": "6848478003188120115",
       "google_id": "/g/11dyp00ckv",
       "maps_place_token": null
@@ -893,7 +905,7 @@
       "is_favorite": false,
       "lat": 42.8381335,
       "lng": 140.6759033,
-      "maps_url": "https://maps.google.com/?cid=6848479604932793223",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Takahashi+Dairy+Farm+MANDRIANO%2C+888-1+Soga%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E7%94%BA+Niseko%2C+Abuta+District%2C+Hokkaido+048-1522",
       "cid": "6848479604932793223",
       "google_id": "/g/11g87kl0jl",
       "maps_place_token": null
@@ -905,7 +917,7 @@
       "is_favorite": false,
       "lat": 42.9022077,
       "lng": 140.75164089999998,
-      "maps_url": "https://maps.google.com/?cid=6848490815206859019",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tomone+Pocha%2C+1+Chome-13-7+Kita+1+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0051",
       "cid": "6848490815206859019",
       "google_id": "/g/1ptx_c2yc",
       "maps_place_token": null
@@ -917,7 +929,7 @@
       "is_favorite": false,
       "lat": 42.902279799999995,
       "lng": 140.75052789999998,
-      "maps_url": "https://maps.google.com/?cid=6848490815220721387",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chiharu+Zushi%2C+1+Chome+Kita+1+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0051",
       "cid": "6848490815220721387",
       "google_id": "/g/1tf3nq0p",
       "maps_place_token": null
@@ -929,7 +941,7 @@
       "is_favorite": false,
       "lat": 42.9022912,
       "lng": 140.7508714,
-      "maps_url": "https://maps.google.com/?cid=6848490815049706173",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kasseki+Dining%2C+1+Chome-8+Kita+1+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0051",
       "cid": "6848490815049706173",
       "google_id": "/g/11b8zqw080",
       "maps_place_token": null
@@ -941,7 +953,7 @@
       "is_favorite": false,
       "lat": 42.902866599999996,
       "lng": 140.7519462,
-      "maps_url": "https://maps.google.com/?cid=6848490816911719365",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%BA%80%E8%B6%B3%E9%A3%9F%E5%A0%82",
       "cid": "6848490816911719365",
       "google_id": null,
       "maps_place_token": null
@@ -953,7 +965,7 @@
       "is_favorite": false,
       "lat": 42.9031789,
       "lng": 140.7519298,
-      "maps_url": "https://maps.google.com/?cid=6848492350453652237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3+%E3%81%88%E3%81%84%E3%81%98%E3%82%93+%E5%80%B6%E7%9F%A5%E5%AE%89%E5%BA%97%EF%BC%88Genghis+Khan+Eijin+Kucchan%29%2C+1+Chome-11-4+Kita+3+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0053",
       "cid": "6848492350453652237",
       "google_id": "/g/11rq8ns07p",
       "maps_place_token": null
@@ -965,7 +977,7 @@
       "is_favorite": false,
       "lat": 42.901358099999996,
       "lng": 140.7511781,
-      "maps_url": "https://maps.google.com/?cid=6848490815463590435",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boom+Sports%2C+1+Chome-12-2+Minami+1+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0031",
       "cid": "6848490815463590435",
       "google_id": "/g/11bwp5tprv",
       "maps_place_token": null
@@ -977,7 +989,7 @@
       "is_favorite": false,
       "lat": 42.901373299999996,
       "lng": 140.7507298,
-      "maps_url": "https://maps.google.com/?cid=6848490810224810153",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B9%E3%83%9D%E3%83%BC%E3%83%84%E3%81%9F%E3%81%8D%E3%81%90%E3%81%A1%28Sports+Takiguchi%29+%E5%80%B6%E7%9F%A5%E5%AE%89%E5%BA%97%2C+1+Chome-2+Minami+1+Jonishi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0031",
       "cid": "6848490810224810153",
       "google_id": "/g/1thhk955",
       "maps_place_token": null
@@ -989,7 +1001,7 @@
       "is_favorite": false,
       "lat": 42.8620879,
       "lng": 140.7022824,
-      "maps_url": "https://maps.google.com/?cid=6848479775142088167",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rhythm+Hirafu%2C+Niseko%2C+3-chome-7-6+Nisekohirafu+1+Jo%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0080",
       "cid": "6848479775142088167",
       "google_id": "/g/1th1cj1m",
       "maps_place_token": null
@@ -1001,7 +1013,7 @@
       "is_favorite": false,
       "lat": 42.8458512,
       "lng": 140.6831959,
-      "maps_url": "https://maps.google.com/?cid=6848478599013793875",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Baby+Crosta%2C+Higashiyama%2C+Niseko%2C+Abuta+District%2C+Hokkaido+048-1521",
       "cid": "6848478599013793875",
       "google_id": "/g/11lcgv9095",
       "maps_place_token": null
@@ -1013,9 +1025,21 @@
       "is_favorite": false,
       "lat": 42.893202699999996,
       "lng": 140.6975685,
-      "maps_url": "https://maps.google.com/?cid=6848492848783530123",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=China+Kitchen+%28%E3%83%81%E3%83%A3%E3%82%A4%E3%83%8A%E3%82%AD%E3%83%83%E3%83%81%E3%83%B3%29%2C+Aza%2C+328-47+Iwaobetsu%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0082",
       "cid": "6848492848783530123",
       "google_id": "/g/11j2f_q6bm",
+      "maps_place_token": null
+    },
+    {
+      "name": "Ezo Seafoods FRESH",
+      "address": "170-165 Nisekohirafu 2 Jo, Kutchan, Abuta District, Hokkaido 044-0089",
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.8588561,
+      "lng": 140.7062214,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ezo+Seafoods+FRESH%2C+170-165+Nisekohirafu+2+Jo%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0089",
+      "cid": "6848479782343880003",
+      "google_id": "/g/1tgvdf52",
       "maps_place_token": null
     },
     {
@@ -1025,7 +1049,7 @@
       "is_favorite": false,
       "lat": 42.8567743,
       "lng": 140.70694179999998,
-      "maps_url": "https://maps.google.com/?cid=6848479771929776055",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Gyu%2B%2C+%E3%80%92044-0089+Hokkaido%2C+Abuta+District%2C+Kutchan%2C+%E3%83%8B%E3%82%BB%E3%82%B3%E3%81%B2%E3%82%89%E3%81%B52%E6%9D%A13%E4%B8%81%E7%9B%AE1-50",
       "cid": "6848479771929776055",
       "google_id": "/g/1td47r_j",
       "maps_place_token": null
@@ -1037,7 +1061,7 @@
       "is_favorite": false,
       "lat": 42.8555711,
       "lng": 140.7086398,
-      "maps_url": "https://maps.google.com/?cid=6848479794666957613",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ebisutei",
       "cid": "6848479794666957613",
       "google_id": null,
       "maps_place_token": null
@@ -1049,7 +1073,7 @@
       "is_favorite": false,
       "lat": 42.895199399999996,
       "lng": 140.75243,
-      "maps_url": "https://maps.google.com/?cid=6848479757155760941",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Pizza%2C+1+Chome-1-14+Minami+6+Johigashi%2C+Kutchan%2C+Abuta+District%2C+Hokkaido+044-0016",
       "cid": "6848479757155760941",
       "google_id": "/g/1tfwd8s5",
       "maps_place_token": null
@@ -1061,7 +1085,7 @@
       "is_favorite": false,
       "lat": 42.9042542,
       "lng": 140.7493665,
-      "maps_url": "https://maps.google.com/?cid=6848490813336906825",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%9C%8B%E5%8E%A8%E6%88%BF+%E5%BA%83%E8%8F%AF",
       "cid": "6848490813336906825",
       "google_id": null,
       "maps_place_token": null
@@ -1073,8 +1097,20 @@
       "is_favorite": false,
       "lat": 42.9039417,
       "lng": 140.7511707,
-      "maps_url": "https://maps.google.com/?cid=6848490813730340967",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakitori+Torimatsu",
       "cid": "6848490813730340967",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "たる鮨",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.9019834,
+      "lng": 140.7512942,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%9F%E3%82%8B%E9%AE%A8",
+      "cid": "6848490815220721387",
       "google_id": null,
       "maps_place_token": null
     },
@@ -1085,7 +1121,7 @@
       "is_favorite": false,
       "lat": 42.728648799999995,
       "lng": 140.795602,
-      "maps_url": "https://maps.google.com/?cid=6848492756458902511",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pyram+Organics+%26+Plants",
       "cid": "6848492756458902511",
       "google_id": null,
       "maps_place_token": null
@@ -1097,7 +1133,7 @@
       "is_favorite": false,
       "lat": 42.9016472,
       "lng": 140.74644709999998,
-      "maps_url": "https://maps.google.com/?cid=6848490811509742173",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=J%27s+Corner+Grill",
       "cid": "6848490811509742173",
       "google_id": null,
       "maps_place_token": null
@@ -1109,7 +1145,7 @@
       "is_favorite": false,
       "lat": 42.8931024,
       "lng": 140.6972983,
-      "maps_url": "https://maps.google.com/?cid=6848492103963061699",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moli%C3%A8re+Montagne",
       "cid": "6848492103963061699",
       "google_id": null,
       "maps_place_token": null
@@ -1121,7 +1157,7 @@
       "is_favorite": false,
       "lat": 42.860119,
       "lng": 140.705963,
-      "maps_url": "https://maps.google.com/?cid=6848479775397095675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Green+Farm+Cafe+%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3%E3%83%95%E3%82%A1%E3%83%BC%E3%83%A0%E3%82%AB%E3%83%95%E3%82%A7",
       "cid": "6848479775397095675",
       "google_id": null,
       "maps_place_token": null
@@ -1133,7 +1169,7 @@
       "is_favorite": false,
       "lat": 42.8590471,
       "lng": 140.7060486,
-      "maps_url": "https://maps.google.com/?cid=6848479775780208369",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%88%E3%82%A5%E3%82%AF%E3%83%88%E3%82%A5%E3%82%AF+Tuk+Tuk",
       "cid": "6848479775780208369",
       "google_id": null,
       "maps_place_token": null
@@ -1145,7 +1181,7 @@
       "is_favorite": false,
       "lat": 42.858908,
       "lng": 140.7047041,
-      "maps_url": "https://maps.google.com/?cid=6848479775296818955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Musu+Bar+%2B+Bistro",
       "cid": "6848479775296818955",
       "google_id": null,
       "maps_place_token": null
@@ -1157,8 +1193,20 @@
       "is_favorite": false,
       "lat": 42.859073599999995,
       "lng": 140.70824589999998,
-      "maps_url": "https://maps.google.com/?cid=6848479775363838825",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Otsukisama+and+Bar+Moon",
       "cid": "6848479775363838825",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "The BARN BY ODIN",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 42.858351899999995,
+      "lng": 140.7070378,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+BARN+BY+ODIN",
+      "cid": "6848479782343880003",
       "google_id": null,
       "maps_place_token": null
     },
@@ -1169,7 +1217,7 @@
       "is_favorite": false,
       "lat": 42.7501245,
       "lng": 140.9036604,
-      "maps_url": "https://maps.google.com/?cid=6878488730877261659",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Red+House",
       "cid": "6878488730877261659",
       "google_id": null,
       "maps_place_token": null
@@ -1181,7 +1229,7 @@
       "is_favorite": false,
       "lat": 42.750956599999995,
       "lng": 140.9036076,
-      "maps_url": "https://maps.google.com/?cid=6878489579546060585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rusutsu+Sakaba",
       "cid": "6878489579546060585",
       "google_id": null,
       "maps_place_token": null
@@ -1193,7 +1241,7 @@
       "is_favorite": false,
       "lat": 42.7526267,
       "lng": 140.9048058,
-      "maps_url": "https://maps.google.com/?cid=6878488735916616777",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tanpopo+Shokud",
       "cid": "6878488735916616777",
       "google_id": null,
       "maps_place_token": null
@@ -1205,7 +1253,7 @@
       "is_favorite": false,
       "lat": 42.7664802,
       "lng": 140.7791163,
-      "maps_url": "https://maps.google.com/?cid=6848476458617719779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maccarina+Restaurant",
       "cid": "6848476458617719779",
       "google_id": null,
       "maps_place_token": null
@@ -1217,7 +1265,7 @@
       "is_favorite": false,
       "lat": 42.846472999999996,
       "lng": 140.6455767,
-      "maps_url": "https://maps.google.com/?cid=6848468023584130771",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+Del+Sole",
       "cid": "6848468023584130771",
       "google_id": null,
       "maps_place_token": null
@@ -1229,7 +1277,7 @@
       "is_favorite": false,
       "lat": 42.8427183,
       "lng": 140.6395771,
-      "maps_url": "https://maps.google.com/?cid=6848479180939492605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Karabina",
       "cid": "6848479180939492605",
       "google_id": null,
       "maps_place_token": null
@@ -1241,7 +1289,7 @@
       "is_favorite": false,
       "lat": 42.8428222,
       "lng": 140.640139,
-      "maps_url": "https://maps.google.com/?cid=6848479180476370903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rakuichi+Soba",
       "cid": "6848479180476370903",
       "google_id": null,
       "maps_place_token": null
@@ -1253,7 +1301,7 @@
       "is_favorite": false,
       "lat": 42.8332772,
       "lng": 140.6568709,
-      "maps_url": "https://maps.google.com/?cid=6848479258495582779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Niseko+Loft+Club",
       "cid": "6848479258495582779",
       "google_id": null,
       "maps_place_token": null
@@ -1265,7 +1313,7 @@
       "is_favorite": false,
       "lat": 42.836846,
       "lng": 140.7064091,
-      "maps_url": "https://maps.google.com/?cid=6848478737335180245",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BLACK+WOOD+GRILL",
       "cid": "6848478737335180245",
       "google_id": null,
       "maps_place_token": null
@@ -1277,7 +1325,7 @@
       "is_favorite": false,
       "lat": 42.8342378,
       "lng": 140.703511,
-      "maps_url": "https://maps.google.com/?cid=6848491957915804771",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cucina+italiana+Santo",
       "cid": "6848491957915804771",
       "google_id": null,
       "maps_place_token": null

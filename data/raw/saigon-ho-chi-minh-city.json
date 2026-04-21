@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:54:23.716231+00:00",
-  "refresh_after": "2026-05-05T01:54:48.716231+00:00",
+  "fetched_at": "2026-04-20T16:08:48.295543+00:00",
+  "refresh_after": "2026-05-05T04:09:13.295543+00:00",
   "source_signature": "d390c8ea6b84adf75373f656b54c56a66774f34a1215298b36f242543eee41a0",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/9W44A7mfQ2fUssk67",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 10.801581899999999,
       "lng": 106.61744329999999,
-      "maps_url": "https://maps.google.com/?cid=3563802599984858777",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Aeon+Shopping+Mall+-+Tan+Phu%2C+30+T%C3%A2n+Th%E1%BA%AFng%2C+Celadon+City%2C+T%C3%A2n+S%C6%A1n+Nh%C3%AC%2C+H%E1%BB%93+Ch%C3%AD+Minh+700000%2C+Vietnam",
       "cid": "3563802599984858777",
       "google_id": "/g/11fnv8wm56",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 10.7737517,
       "lng": 106.6980511,
-      "maps_url": "https://maps.google.com/?cid=3563806422686650671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=STIR+-+Modern+Classic+Cocktail%2C+136+%C4%90.+L%C3%AA+Th%C3%A1nh+T%C3%B4n%2C+ward%2C+District+01%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563806422686650671",
       "google_id": "/g/11pq6y0268",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 10.7702314,
       "lng": 106.6885756,
-      "maps_url": "https://maps.google.com/?cid=3563806772225391951",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Linh%2C+118+%C4%90.+B%C3%B9i+Th%E1%BB%8B+Xu%C3%A2n%2C+Ph%C6%B0%E1%BB%9Dng+Ph%E1%BA%A1m+Ng%C5%A9+L%C3%A3o%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563806772225391951",
       "google_id": "/g/11t_r8n0rh",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 10.7707708,
       "lng": 106.68791089999999,
-      "maps_url": "https://maps.google.com/?cid=3563806463243619925",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cong+Caphe%2C+136+%C4%90.+S%C6%B0%C6%A1ng+Nguy%E1%BB%87t+Anh%2C+Ph%C6%B0%E1%BB%9Dng+Ph%E1%BA%A1m+Ng%C5%A9+L%C3%A3o%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+71000%2C+Vietnam",
       "cid": "3563806463243619925",
       "google_id": "/g/11h3tjqy_v",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 10.772525199999999,
       "lng": 106.6855406,
-      "maps_url": "https://maps.google.com/?cid=3563806869926893713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%BAn+B%C3%B2+Hu%E1%BA%BF+M%E1%BB%A1+N%E1%BB%95i+C%C3%B4+Nh%C6%B0%2C+274%2F29+V%C3%B5+V%C4%83n+T%E1%BA%A7n%2C+Ph%C6%B0%E1%BB%9Dng+5%2C+Qu%E1%BA%ADn+3%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563806869926893713",
       "google_id": "/g/11fmv_rkqd",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 10.7632148,
       "lng": 106.6746838,
-      "maps_url": "https://maps.google.com/?cid=3563806226357972641",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+M%C3%AC+24%2C+68B+%C4%90.+Tr%E1%BA%A7n+Nh%C3%A2n+T%C3%B4n%2C+Ph%C6%B0%E1%BB%9Dng+2%2C+Qu%E1%BA%ADn+10%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563806226357972641",
       "google_id": "/g/11b7kfqqv7",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 10.7663085,
       "lng": 106.6882492,
-      "maps_url": "https://maps.google.com/?cid=3563806395688245685",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+M%C3%AC+B%C3%A0+Huynh+%28Madam+Win%29%2C+197A+%C4%90.+Nguy%E1%BB%85n+Tr%C3%A3i%2C+P%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+700000%2C+Vietnam",
       "cid": "3563806395688245685",
       "google_id": "/g/11vf6qk16p",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 10.791744099999999,
       "lng": 106.7044226,
-      "maps_url": "https://maps.google.com/?cid=3563799435305122871",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Lunch+Lady+%28Nguyen+Thi+Thanh%29%2C+L%C3%B4+C1+Chung+C%C6%B0+1A1B%2C+Nguy%E1%BB%85n+%C4%90%C3%ACnh+Chi%E1%BB%83u%2C+%C4%90a+Kao%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563799435305122871",
       "google_id": "/g/11g8nk2kg4",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 10.7663259,
       "lng": 106.6759953,
-      "maps_url": "https://maps.google.com/?cid=3563806393516414727",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ho+Thi+Ky+Food+Street%2C+VN+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+Qu%E1%BA%ADn+10+T%E1%BB%95+56-khu4+89d%2C+70350%2C+Vietnam",
       "cid": "3563806393516414727",
       "google_id": "/g/11lkx5g945",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 10.782704599999999,
       "lng": 106.6974352,
-      "maps_url": "https://maps.google.com/?cid=3563806741601090627",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CTY+Kitchen+%2B+Bar%2C+Centec+Tower%2C+Ground+Floor+%26+Behind+the+elevator+lobby%2C+72-74+Nguyen+Thi+Minh+Khai+or+Alleyway%2C+145+Hai+B%C3%A0+Tr%C6%B0ng%2C+Qu%E1%BA%ADn+3%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563806741601090627",
       "google_id": "/g/11lkvwgqvx",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 10.7725615,
       "lng": 106.7025968,
-      "maps_url": "https://maps.google.com/?cid=3563806914052205249",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hue+Beef+Noodle+Soup+24H%2C+64-92+%C4%90.+Hu%E1%BB%B3nh+Th%C3%BAc+Kh%C3%A1ng%2C+B%E1%BA%BFn+Ngh%C3%A9%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0",
       "cid": "3563806914052205249",
       "google_id": "/g/11qnlqq995",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 10.7795135,
       "lng": 106.70265219999999,
-      "maps_url": "https://maps.google.com/?cid=3563807094988950227",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shamballa+Vegetarian%2C+Restaurant+%26+Lounge+-+Sai+Gon%2C+31+L%C3%BD+T%E1%BB%B1+Tr%E1%BB%8Dng%2C+B%E1%BA%BFn+Ngh%C3%A9%2C+Ward%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh%2C+Vietnam",
       "cid": "3563807094988950227",
       "google_id": "/g/11jvbdshld",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 10.7732368,
       "lng": 106.6974618,
-      "maps_url": "https://maps.google.com/?cid=3563806773263436487",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SOUL+B%E1%BA%BEN+TH%C3%80NH+Restaurant+%26+Bar%2C+7A+Th%E1%BB%A7+Khoa+Hu%C3%A2n%2C+Ph%C6%B0%E1%BB%9Dng+B%E1%BA%BFn+Th%C3%A0nh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+70000%2C+Vietnam",
       "cid": "3563806773263436487",
       "google_id": "/g/11gd256vbf",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 10.781873899999999,
       "lng": 106.7051396,
-      "maps_url": "https://maps.google.com/?cid=3563806671648800797",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+4P%27s+L%C3%AA+Th%C3%A1nh+T%C3%B4n%2C+H%E1%BA%BBm+8%2F15%2C+8%2F15+%C4%90.+L%C3%AA+Th%C3%A1nh+T%C3%B4n%2C+B%E1%BA%BFn+Ngh%C3%A9%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+700000%2C+Vietnam",
       "cid": "3563806671648800797",
       "google_id": "/g/11c1qb2jtn",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 10.7733721,
       "lng": 106.69763619999999,
-      "maps_url": "https://maps.google.com/?cid=3563806879427103613",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+4P%27s+Ben+Thanh%2C+8+Th%E1%BB%A7+Khoa+Hu%C3%A2n%2C+Ph%C6%B0%E1%BB%9Dng+B%E1%BA%BFn+Th%C3%A0nh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+700000%2C+Vietnam",
       "cid": "3563806879427103613",
       "google_id": "/g/11k1lbvf9v",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 10.783275999999999,
       "lng": 106.696328,
-      "maps_url": "https://maps.google.com/?cid=3563806591346365969",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+kh%E1%BB%8Dt+C%C3%B4+Ba+V%C5%A9ng+T%C3%A0u%2C+40B+Tr%E1%BA%A7n+Cao+V%C3%A2n%2C+Ph%C6%B0%E1%BB%9Dng+6%2C+Qu%E1%BA%ADn+3%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563806591346365969",
       "google_id": "/g/11bw_50v_9",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 10.7667463,
       "lng": 106.69247589999999,
-      "maps_url": "https://maps.google.com/?cid=3563806452021045047",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%C4%90.+B%C3%B9i+Vi%E1%BB%87n%2C+Pham+Ngu+Lao%2C+1%E5%8C%BA+%E3%83%9B%E3%83%BC%E3%83%BB%E3%83%81%E3%83%BB%E3%83%9F%E3%83%B3",
       "cid": "3563806452021045047",
       "google_id": "/g/1w0h4_x6",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 10.7725168,
       "lng": 106.6980208,
-      "maps_url": "https://maps.google.com/?cid=3563806628587890253",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%99%E3%83%B3%E3%82%BF%E3%82%A4%E3%83%B3%E5%B8%82%E5%A0%B4%2C+L%C3%AA+L%E1%BB%A3i%2C+Ph%C6%B0%E1%BB%9Dng+B%E1%BA%BFn+Th%C3%A0nh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563806628587890253",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 10.771522599999999,
       "lng": 106.6923968,
-      "maps_url": "https://maps.google.com/?cid=3563807019331268853",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+M%C3%AC+Huynh+Hoa%2C+26+%C4%90.+L%C3%AA+Th%E1%BB%8B+Ri%C3%AAng%2C+Ph%C6%B0%E1%BB%9Dng+Ph%E1%BA%A1m+Ng%C5%A9+L%C3%A3o%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563807019331268853",
       "google_id": "/g/11rfn3ghz4",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 10.7705646,
       "lng": 106.7021211,
-      "maps_url": "https://maps.google.com/?cid=3563807108804001485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zion+Sky+Lounge+and+Dining%2C+87A+H%C3%A0m+Nghi%2C+Ph%C6%B0%E1%BB%9Dng+Nguy%E1%BB%85n+Th%C3%A1i+B%C3%ACnh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563807108804001485",
       "google_id": "/g/11qnf968vr",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 10.76893,
       "lng": 106.6951495,
-      "maps_url": "https://maps.google.com/?cid=3563806705234339329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=11%3A11+Club%2C+134+Nguy%E1%BB%85n+Th%C3%A1i+H%E1%BB%8Dc%2C+Ph%C6%B0%E1%BB%9Dng+Ph%E1%BA%A1m+Ng%C5%A9+L%C3%A3o%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+70000",
       "cid": "3563806705234339329",
       "google_id": "/g/11q3dpdhg3",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 10.7695815,
       "lng": 106.7041077,
-      "maps_url": "https://maps.google.com/?cid=3563806639064094301",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B9%E3%83%8A%E3%83%83%E3%83%95%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9+%E3%83%90%E3%83%BC%2C+14+T%C3%B4n+Th%E1%BA%A5t+%C4%90%E1%BA%A1m%2C+Ph%C6%B0%E1%BB%9Dng+Nguy%E1%BB%85n+Th%C3%A1i+B%C3%ACnh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563806639064094301",
       "google_id": "/g/11cjkjqpyh",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 10.769784,
       "lng": 106.70140839999999,
-      "maps_url": "https://maps.google.com/?cid=3563789549441493009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Commas+Saigon+Club%2C+41-43+%C4%90.+Nam+K%E1%BB%B3+Kh%E1%BB%9Fi+Ngh%C4%A9a%2C+Ph%C6%B0%E1%BB%9Dng+Nguy%E1%BB%85n+Th%C3%A1i+B%C3%ACnh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563789549441493009",
       "google_id": "/g/11s8gxvj22",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 10.769905699999999,
       "lng": 106.70148879999999,
-      "maps_url": "https://maps.google.com/?cid=3563806832665428101",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bam+Bam%2C+41-43+%C4%90.+Nam+K%E1%BB%B3+Kh%E1%BB%9Fi+Ngh%C4%A9a%2C+Ph%C6%B0%E1%BB%9Dng+Nguy%E1%BB%85n+Th%C3%A1i+B%C3%ACnh%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh",
       "cid": "3563806832665428101",
       "google_id": "/g/11hyk2831l",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 10.777632299999999,
       "lng": 106.7033778,
-      "maps_url": "https://maps.google.com/?cid=3563806658625580087",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%91%E3%83%BC%E3%82%AF%E3%83%8F%E3%82%A4%E3%82%A2%E3%83%83%E3%83%88%E3%82%B5%E3%82%A4%E3%82%B4%E3%83%B3%2C+2+Lam+Son+Square%2C+B%E1%BA%BFn+Ngh%C3%A9%2C+Qu%E1%BA%ADn+1%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh+700000+%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0",
       "cid": "3563806658625580087",
       "google_id": "/g/1tctc2p6",
       "maps_place_token": null

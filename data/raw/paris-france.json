@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:18:00.373321+00:00",
-  "refresh_after": "2026-04-29T15:18:00.373321+00:00",
+  "fetched_at": "2026-04-20T16:03:23.747748+00:00",
+  "refresh_after": "2026-05-06T07:13:25.747748+00:00",
   "source_signature": "84291fa49fefd20f5fc951eaab937acbc1d283d7ab4d37a184c3eb58edf9a524",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/6kxZU8HYJnK8YWBr5",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 48.8814703,
       "lng": 2.340862,
-      "maps_url": "https://maps.google.com/?cid=5180951040094558101",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France",
       "cid": "5180951040094558101",
       "google_id": "/g/11fj5l_3c7",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 48.8486462,
       "lng": 2.3752367,
-      "maps_url": "https://maps.google.com/?cid=5180953790092389631",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Calbar%2C+82+Rue+de+Charenton%2C+75012+Paris%2C+France",
       "cid": "5180953790092389631",
       "google_id": "/g/11rs0366n",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 48.869906699999994,
       "lng": 2.3799511,
-      "maps_url": "https://maps.google.com/?cid=5180949296140510411",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LA+COMMUNE%2C+80+Bd+de+Belleville%2C+75020+Paris%2C+France",
       "cid": "5180949296140510411",
       "google_id": "/g/11c2ls892g",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 48.8815448,
       "lng": 2.3375062,
-      "maps_url": "https://maps.google.com/?cid=5180949667561247187",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dirty+Dick%2C+10+Rue+Frochot%2C+75009+Paris%2C+France",
       "cid": "5180949667561247187",
       "google_id": "/g/11b6ggvj29",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 48.8540156,
       "lng": 2.3313398,
-      "maps_url": "https://maps.google.com/?cid=5180952758663648795",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CRAVAN+Paris+6e%2C+165+Bd+Saint-Germain%2C+75006+Paris%2C+France",
       "cid": "5180952758663648795",
       "google_id": "/g/11kpg8fydy",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 48.8814022,
       "lng": 2.3409150999999997,
-      "maps_url": "https://maps.google.com/?cid=5180950566786056917",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CLASSIQUE%2C+1bis+Rue+Lallier%2C+75009+Paris%2C+France",
       "cid": "5180950566786056917",
       "google_id": "/g/11rc85tc95",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 48.8548726,
       "lng": 2.375673,
-      "maps_url": "https://maps.google.com/?cid=5180953798333217721",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cafe+Moderne%2C+19+Rue+Keller%2C+75011+Paris%2C+France",
       "cid": "5180953798333217721",
       "google_id": "/g/1td5k_qn",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 48.861486799999994,
       "lng": 2.3576546,
-      "maps_url": "https://maps.google.com/?cid=5180951329971079905",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Nouveau%2C+5+Rue+des+Haudriettes%2C+75003+Paris%2C+France",
       "cid": "5180951329971079905",
       "google_id": "/g/11sty5ws1w",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 48.855000399999994,
       "lng": 2.3379507,
-      "maps_url": "https://maps.google.com/?cid=5180953597212702189",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Prescription+Cocktail+Club%2C+23+Rue+Mazarine%2C+75006+Paris%2C+France",
       "cid": "5180953597212702189",
       "google_id": "/g/1td_xxmb",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 48.8596668,
       "lng": 2.3626138,
-      "maps_url": "https://maps.google.com/?cid=5180949373025282891",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mus%C3%A9e+National+Picasso-Paris%2C+5+Rue+de+Thorigny%2C+75003+Paris%2C+France",
       "cid": "5180949373025282891",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 48.854692,
       "lng": 2.3708795,
-      "maps_url": "https://maps.google.com/?cid=5180955123413668947",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SUPERBAO+PARIS+11%2C+16+Rue+Daval%2C+75011+Paris%2C+France",
       "cid": "5180955123413668947",
       "google_id": "/g/11rfcz96jk",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 48.8504685,
       "lng": 2.3691543,
-      "maps_url": "https://maps.google.com/?cid=5180955281572536311",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Guru+Paris%2C+36+Bd+de+la+Bastille%2C+75012+Paris%2C+France",
       "cid": "5180955281572536311",
       "google_id": "/g/11vd6ptk9_",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 48.8575187,
       "lng": 2.35725,
-      "maps_url": "https://maps.google.com/?cid=5180949380103079217",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jaja%2C+3+Rue+Sainte-Croix+de+la+Bretonnerie%2C+75004+Paris%2C+France",
       "cid": "5180949380103079217",
       "google_id": "/g/1vfwc4lh",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 48.854375999999995,
       "lng": 2.3599826,
-      "maps_url": "https://maps.google.com/?cid=5180953756012098881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chez+Mademoiselle%2C+16+Rue+Charlemagne%2C+75004+Paris%2C+France",
       "cid": "5180953756012098881",
       "google_id": "/g/1ydpvbhn8",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 48.8637107,
       "lng": 2.3626065,
-      "maps_url": "https://maps.google.com/?cid=5180951198118215629",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bistrot+Instinct%2C+19+Rue+de+Picardie%2C+75003+Paris%2C+France",
       "cid": "5180951198118215629",
       "google_id": "/g/11h04nwz4n",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 48.857333999999994,
       "lng": 2.3660981,
-      "maps_url": "https://maps.google.com/?cid=5180949369428442485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Petit+March%C3%A9%2C+9+Rue+de+B%C3%A9arn%2C+75003+Paris%2C+France",
       "cid": "5180949369428442485",
       "google_id": "/g/12q4q9xf3",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 48.8534253,
       "lng": 2.3666076,
-      "maps_url": "https://maps.google.com/?cid=5180953763533553165",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Rempart+Bastille%2C+15+Rue+Saint-Antoine%2C+75004+Paris%2C+France",
       "cid": "5180953763533553165",
       "google_id": "/g/1tn4xgym",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 48.8554404,
       "lng": 2.3575814,
-      "maps_url": "https://maps.google.com/?cid=5180953754473163363",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Au+Bourguignon+du+Marais%2C+52+Rue+Fran%C3%A7ois+Miron%2C+75004+Paris%2C+France",
       "cid": "5180953754473163363",
       "google_id": "/g/1tgg989f",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 48.8558735,
       "lng": 2.3674295,
-      "maps_url": "https://maps.google.com/?cid=5180949490449031095",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+L%27Ange+20%2C+44+Rue+des+Tournelles%2C+75004+Paris%2C+France",
       "cid": "5180949490449031095",
       "google_id": "/g/1th27q2k",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 48.8556114,
       "lng": 2.3655266,
-      "maps_url": "https://maps.google.com/?cid=5180953765134002257",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Place+des+Vosges%2C+Pl.+des+Vosges%2C+75004+Paris%2C+France",
       "cid": "5180953765134002257",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 48.8494548,
       "lng": 2.3714863,
-      "maps_url": "https://maps.google.com/?cid=5180953772017886367",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coul%C3%A9e+Verte+Ren%C3%A9-Dumont%2C+1+Coul%C3%A9e+Verte+Ren%C3%A9-Dumont%2C+75012+Paris%2C+France",
       "cid": "5180953772017886367",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 48.8790899,
       "lng": 2.2957777,
-      "maps_url": "https://maps.google.com/?cid=5180951100140888613",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Palanquin%2C+4+Pl.+Boulnois%2C+75017+Paris%2C+France",
       "cid": "5180951100140888613",
       "google_id": "/g/1v41zs61",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 48.8762474,
       "lng": 2.2941009,
-      "maps_url": "https://maps.google.com/?cid=5180951483969596345",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LE+HIDE%2C+10+Rue+du+G%C3%A9n%C3%A9ral+Lanrezac%2C+75017+Paris%2C+France",
       "cid": "5180951483969596345",
       "google_id": "/g/1v6qgydx",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 48.8802916,
       "lng": 2.2879202999999997,
-      "maps_url": "https://maps.google.com/?cid=5180951075555131751",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Hameau%2C+84+Av.+des+Ternes%2C+75017+Paris%2C+France",
       "cid": "5180951075555131751",
       "google_id": "/g/11c709nhlb",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 48.8498436,
       "lng": 2.3482751,
-      "maps_url": "https://maps.google.com/?cid=5180952782204494031",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Maison+d%27Isabelle%2C+47ter+Bd+Saint-Germain%2C+75005+Paris%2C+France",
       "cid": "5180952782204494031",
       "google_id": "/g/11ghnfgwkd",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 48.8627964,
       "lng": 2.3599323,
-      "maps_url": "https://maps.google.com/?cid=5180951025314216065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Da+Melo+Cucina+Italiana%2C+73+Rue+des+Archives%2C+75003+Paris%2C+France",
       "cid": "5180951025314216065",
       "google_id": "/g/11nxrzr0b6",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 48.8809368,
       "lng": 2.3380085,
-      "maps_url": "https://maps.google.com/?cid=5180950948694947031",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Django+Restaurant%2C+24+Rue+Victor+Mass%C3%A9%2C+75009+Paris%2C+France",
       "cid": "5180950948694947031",
       "google_id": "/g/11h_47wrhr",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 48.865674,
       "lng": 2.3704229999999997,
-      "maps_url": "https://maps.google.com/?cid=5180948270863386321",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=G%C3%A9osmine%2C+71+Rue+de+la+Folie+M%C3%A9ricourt%2C+75011+Paris%2C+France",
       "cid": "5180948270863386321",
       "google_id": "/g/11sjgvmg_m",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 48.8625762,
       "lng": 2.3621233999999998,
-      "maps_url": "https://maps.google.com/?cid=5180949395599035415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=March%C3%A9+Couvert+des+Enfants+Rouges%2C+39+Rue+de+Bretagne%2C+75003+Paris%2C+France",
       "cid": "5180949395599035415",
       "google_id": "/g/11gjwg4t_g",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 48.8631719,
       "lng": 2.3605818999999997,
-      "maps_url": "https://maps.google.com/?cid=5180950501717642727",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gramme%2C+86+Rue+des+Archives%2C+75003+Paris%2C+France",
       "cid": "5180950501717642727",
       "google_id": "/g/11h3h5nbr4",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 48.8529871,
       "lng": 2.3387754,
-      "maps_url": "https://maps.google.com/?cid=5180953623072016757",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Procope%2C+13+Rue+de+l%27Ancienne+Com%C3%A9die%2C+75006+Paris%2C+France",
       "cid": "5180953623072016757",
       "google_id": null,
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 48.8677348,
       "lng": 2.3479019,
-      "maps_url": "https://maps.google.com/?cid=5180949469196894303",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Frenchie%2C+5+Rue+du+Nil%2C+75002+Paris%2C+France",
       "cid": "5180949469196894303",
       "google_id": "/g/1x6q11w3",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 48.8886922,
       "lng": 2.3166870999999998,
-      "maps_url": "https://maps.google.com/?cid=5180950547282854869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Truffaut%2C+89+Rue+Truffaut%2C+75017+Paris%2C+France",
       "cid": "5180950547282854869",
       "google_id": "/g/11jm7f_yjy",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 48.8830181,
       "lng": 2.3180193,
-      "maps_url": "https://maps.google.com/?cid=5180951135227639631",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Janine%2C+90+Rue+des+Dames%2C+75017+Paris%2C+France",
       "cid": "5180951135227639631",
       "google_id": "/g/11t6g1m48g",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 48.8627013,
       "lng": 2.2886617,
-      "maps_url": "https://maps.google.com/?cid=5180951546701325577",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cit%C3%A9+de+l%E2%80%99architecture+et+du+patrimoine%2C+1+Pl.+du+Trocad%C3%A9ro+et+du+11+Novembre%2C+75116+Paris%2C+France",
       "cid": "5180951546701325577",
       "google_id": null,
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 48.8628797,
       "lng": 2.3428392,
-      "maps_url": "https://maps.google.com/?cid=5180949517100718879",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bourse+de+Commerce+-+Pinault+Collection%2C+2+Rue+de+Viarmes%2C+75001+Paris%2C+France",
       "cid": "5180949517100718879",
       "google_id": "/g/122mqfl_",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 48.8650898,
       "lng": 2.3284434,
-      "maps_url": "https://maps.google.com/?cid=5180949567168075865",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Angelina%2C+226+Rue+de+Rivoli%2C+75001+Paris%2C+France",
       "cid": "5180949567168075865",
       "google_id": "/g/1xn_mp_b",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 48.866109099999996,
       "lng": 2.3124544,
-      "maps_url": "https://maps.google.com/?cid=5180951361703828689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grand+Palais%2C+75008+Paris%2C+France",
       "cid": "5180951361703828689",
       "google_id": null,
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 48.863499399999995,
       "lng": 2.3437333,
-      "maps_url": "https://maps.google.com/?cid=5180949515377183553",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Au+Pied+de+Cochon%2C+6+Rue+Coquilli%C3%A8re%2C+75001+Paris%2C+France",
       "cid": "5180949515377183553",
       "google_id": "/g/1tdgjkvs",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 48.8791723,
       "lng": 2.3545789,
-      "maps_url": "https://maps.google.com/?cid=5180949832840668689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Carton+Paris%2C+6+Bd+de+Denain%2C+75010+Paris",
       "cid": "5180949832840668689",
       "google_id": "/g/1hc2kddr4",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 48.8607021,
       "lng": 2.3546869999999998,
-      "maps_url": "https://maps.google.com/?cid=5180949490594549003",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Homer+Lobster+-+Marais%2C+21+Rue+Rambuteau%2C+75004+Paris",
       "cid": "5180949490594549003",
       "google_id": "/g/11f3v71byg",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 48.853054799999995,
       "lng": 2.3465361,
-      "maps_url": "https://maps.google.com/?cid=5180953168227451293",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Cr%C3%A8me+de+Paris+Notre-Dame%2C+1+Quai+Saint-Michel%2C+75005+Paris%2C+France",
       "cid": "5180953168227451293",
       "google_id": "/g/11jrp7vyg1",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 48.8469786,
       "lng": 2.3432247,
-      "maps_url": "https://maps.google.com/?cid=5180953616878724467",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Cr%C3%AAperie%2C+12+Rue+Soufflot%2C+75005+Paris%2C+France",
       "cid": "5180953616878724467",
       "google_id": "/g/1yhbl89pk",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 48.833971899999995,
       "lng": 2.3165548,
-      "maps_url": "https://maps.google.com/?cid=5180953355981383277",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27Entrep%C3%B4t+Restaurant%2C+7+Rue+Francis+de+Pressens%C3%A9%2C+75014+Paris%2C+France",
       "cid": "5180953355981383277",
       "google_id": "/g/11btm9t9x5",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 48.8328109,
       "lng": 2.3148298,
-      "maps_url": "https://maps.google.com/?cid=5180951892641802833",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bistrotters%2C+9+Rue+Decr%C3%A8s%2C+75014+Paris%2C+France",
       "cid": "5180951892641802833",
       "google_id": "/g/11r8xjzbn",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 48.8272498,
       "lng": 2.3146776,
-      "maps_url": "https://maps.google.com/?cid=5180951901556740339",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Galia+par+Maxim+Godigna%2C+123+Rue+Didot%2C+75014+Paris%2C+France",
       "cid": "5180951901556740339",
       "google_id": "/g/11bwf8tr5w",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 48.8290856,
       "lng": 2.3169337999999997,
-      "maps_url": "https://maps.google.com/?cid=5180951900214426561",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+J%C3%A9roboam%2C+72+Rue+Didot%2C+75014+Paris%2C+France",
       "cid": "5180951900214426561",
       "google_id": "/g/1tcw2x_d",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 48.8283736,
       "lng": 2.316181,
-      "maps_url": "https://maps.google.com/?cid=5180951900490473191",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+14+Juillet%2C+99+Rue+Didot%2C+75014+Paris%2C+France",
       "cid": "5180951900490473191",
       "google_id": "/g/11c1sz1j3c",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 48.835077,
       "lng": 2.3201593,
-      "maps_url": "https://maps.google.com/?cid=5180951887879322013",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Les+Tontons%2C+38+Rue+Raymond+Losserand%2C+75014+Paris%2C+France",
       "cid": "5180951887879322013",
       "google_id": "/g/1v41zs89",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 48.8660399,
       "lng": 2.3556152,
-      "maps_url": "https://maps.google.com/?cid=5180949482082681909",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mus%C3%A9e+des+Arts+et+M%C3%A9tiers%2C+292+Rue+Saint-Martin%2C+75141+Paris%2C+France",
       "cid": "5180949482082681909",
       "google_id": null,
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 48.857366999999996,
       "lng": 2.3591441,
-      "maps_url": "https://maps.google.com/?cid=5180949377767281711",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27As+du+Fallafel",
       "cid": "5180949377767281711",
       "google_id": null,
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 48.881921999999996,
       "lng": 2.286206,
-      "maps_url": "https://maps.google.com/?cid=5180951069001156529",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chez+Chung%2C+49+Bd+Gouvion-Saint-Cyr%2C+75017+Paris%2C+France",
       "cid": "5180951069001156529",
       "google_id": "/g/1vxz8y6g",
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 48.886704599999995,
       "lng": 2.3431043,
-      "maps_url": "https://maps.google.com/?cid=5180949656259431907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Basilica+of+Sacr%C3%A9-C%C5%93ur+de+Montmartre%2C+35+Rue+du+Chevalier+de+la+Barre%2C+75018+Paris%2C+France",
       "cid": "5180949656259431907",
       "google_id": "/g/1tdm30l7",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 48.881963,
       "lng": 2.2885736,
-      "maps_url": "https://maps.google.com/?cid=5180951076398421421",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+-+Le+Paris+17%2C+41+Rue+Guersant%2C+75017+Paris%2C+France",
       "cid": "5180951076398421421",
       "google_id": "/g/1tczpp2g",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 48.879931799999994,
       "lng": 2.2864372,
-      "maps_url": "https://maps.google.com/?cid=5180951204898817917",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bey+Steakhouse%2C+7+Rue+Waldeck-Rousseau%2C+75017+Paris%2C+France",
       "cid": "5180951204898817917",
       "google_id": "/g/11gmd_sy_b",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 48.881428,
       "lng": 2.2984964999999997,
-      "maps_url": "https://maps.google.com/?cid=5180951103660970549",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maison+Rostang%2C+20+Rue+Rennequin%2C+75017+Paris%2C+France",
       "cid": "5180951103660970549",
       "google_id": "/g/1tmg5w5z",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 48.863999299999996,
       "lng": 2.2507703,
-      "maps_url": "https://maps.google.com/?cid=5180939706814537565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Pr%C3%A9+Catelan%2C+Bois+de+Boulogne%2C+75016+Paris%2C+France",
       "cid": "5180939706814537565",
       "google_id": "/g/122z2dqp",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 48.851646699999996,
       "lng": 2.2737768,
-      "maps_url": "https://maps.google.com/?cid=5180964193728832715",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CRAVAN+Paris+16e%2C+17+Rue+Jean+de+la+Fontaine%2C+75016+Paris%2C+France",
       "cid": "5180964193728832715",
       "google_id": "/g/11g072pnkd",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 48.8741225,
       "lng": 2.3025235,
-      "maps_url": "https://maps.google.com/?cid=5180951299525243559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taillevent%2C+15+Rue+Lamennais%2C+75008+Paris%2C+France",
       "cid": "5180951299525243559",
       "google_id": null,
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 48.8709243,
       "lng": 2.3006316,
-      "maps_url": "https://maps.google.com/?cid=5180843019414969769",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miss+K%C3%B4%2C+49-51+Av.+George+V%2C+75008+Paris%2C+France",
       "cid": "5180843019414969769",
       "google_id": "/g/12mkvm_m2",
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 48.8732779,
       "lng": 2.3003408999999997,
-      "maps_url": "https://maps.google.com/?cid=5180951472379973023",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pierre+Gagnaire%2C+6+Rue+Balzac%2C+75008+Paris%2C+France",
       "cid": "5180951472379973023",
       "google_id": "/g/1tg6pf7t",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 48.8707917,
       "lng": 2.293309,
-      "maps_url": "https://maps.google.com/?cid=5180951493281543269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27Oiseau+Blanc%2C+19+Av.+Kl%C3%A9ber%2C+75116+Paris%2C+France",
       "cid": "5180951493281543269",
       "google_id": "/g/11b6g8txjf",
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 48.868849,
       "lng": 2.300683,
-      "maps_url": "https://maps.google.com/?cid=5180951464116434089",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Cinq%2C+31+Av.+George+V%2C+75008+Paris%2C+France",
       "cid": "5180951464116434089",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 48.8674268,
       "lng": 2.3097738999999997,
-      "maps_url": "https://maps.google.com/?cid=5180951314070016543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Clarence%2C+31+Av.+Franklin+Delano+Roosevelt%2C+75008+Paris%2C+France",
       "cid": "5180951314070016543",
       "google_id": "/g/11bwh59b9l",
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 48.8640106,
       "lng": 2.3059374,
-      "maps_url": "https://maps.google.com/?cid=5180951404886173769",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bateaux-Mouches%2C+Port+de+la+Conf%C3%A9rence%2C+75008+Paris%2C+France",
       "cid": "5180951404886173769",
       "google_id": "/g/1tdgjkyw",
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 48.863899499999995,
       "lng": 2.3135589999999997,
-      "maps_url": "https://maps.google.com/?cid=5180951361950445753",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pont+Alexandre+III%2C+Pont+Alexandre+III%2C+75008+Paris%2C+France",
       "cid": "5180951361950445753",
       "google_id": null,
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 48.8662387,
       "lng": 2.3164818,
-      "maps_url": "https://maps.google.com/?cid=5180951548067691829",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PavYllon%2C+8+Av.+Dutuit%2C+75008+Paris%2C+France",
       "cid": "5180951548067691829",
       "google_id": null,
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 48.8656331,
       "lng": 2.3212357,
-      "maps_url": "https://maps.google.com/?cid=5180951349234108929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Place+de+la+Concorde%2C+75008+Paris%2C+France",
       "cid": "5180951349234108929",
       "google_id": null,
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 48.868814199999996,
       "lng": 2.3305749,
-      "maps_url": "https://maps.google.com/?cid=5180949580850457831",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Park+Hyatt+Paris-Vend%C3%B4me%2C+5+Rue+de+la+Paix%2C+75002+Paris%2C+France",
       "cid": "5180949580850457831",
       "google_id": "/g/1218dkxk",
       "maps_place_token": null
@@ -845,7 +845,7 @@
       "is_favorite": false,
       "lat": 48.8669653,
       "lng": 2.3271337,
-      "maps_url": "https://maps.google.com/?cid=5180949580850059783",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+8%2C+251+Rue+Saint-Honor%C3%A9%2C+75001+Paris%2C+France",
       "cid": "5180949580850059783",
       "google_id": "/g/1tglm6cp",
       "maps_place_token": null
@@ -857,7 +857,7 @@
       "is_favorite": false,
       "lat": 48.868806299999996,
       "lng": 2.3276317,
-      "maps_url": "https://maps.google.com/?cid=5180949582190967799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Hemingway%2C+15+Pl.+Vend%C3%B4me%2C+75001+Paris%2C+France",
       "cid": "5180949582190967799",
       "google_id": "/g/11gzt81y4",
       "maps_place_token": null
@@ -869,7 +869,7 @@
       "is_favorite": false,
       "lat": 48.866992499999995,
       "lng": 2.3270258,
-      "maps_url": "https://maps.google.com/?cid=5180949584289901331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sur+Mesure+par+Thierry+Marx%2C+251+Rue+Saint-Honor%C3%A9%2C+75001+Paris%2C+France",
       "cid": "5180949584289901331",
       "google_id": "/g/1tl7n08h",
       "maps_place_token": null
@@ -881,7 +881,7 @@
       "is_favorite": false,
       "lat": 48.8841232,
       "lng": 2.3322518999999997,
-      "maps_url": "https://maps.google.com/?cid=5180949706908306569",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moulin+Rouge%2C+82+Bd+de+Clichy%2C+75018+Paris%2C+France",
       "cid": "5180949706908306569",
       "google_id": null,
       "maps_place_token": null
@@ -893,7 +893,7 @@
       "is_favorite": false,
       "lat": 48.8692375,
       "lng": 2.3321273,
-      "maps_url": "https://maps.google.com/?cid=5180949577961850043",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Harry%27s+New+York+Bar%2C+5+Rue+Daunou%2C+75002+Paris%2C+France",
       "cid": "5180949577961850043",
       "google_id": null,
       "maps_place_token": null
@@ -905,7 +905,7 @@
       "is_favorite": false,
       "lat": 48.865659199999996,
       "lng": 2.3388673,
-      "maps_url": "https://maps.google.com/?cid=5180949526354790645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Palais+Royal+Restaurant%2C+110+Gal+de+Valois%2C+75001+Paris%2C+France",
       "cid": "5180949526354790645",
       "google_id": "/g/1tf357_7",
       "maps_place_token": null
@@ -917,7 +917,7 @@
       "is_favorite": false,
       "lat": 48.8671511,
       "lng": 2.3392386,
-      "maps_url": "https://maps.google.com/?cid=5180949622547147583",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Danico%2C+6+Rue+Vivienne%2C+75002+Paris%2C+France",
       "cid": "5180949622547147583",
       "google_id": "/g/11cnb5dpzs",
       "maps_place_token": null
@@ -929,7 +929,7 @@
       "is_favorite": false,
       "lat": 48.87016,
       "lng": 2.335622,
-      "maps_url": "https://maps.google.com/?cid=5180949617804052853",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Entre+2+Rives%2C+1+Rue+de+Hanovre%2C+75002+Paris%2C+France",
       "cid": "5180949617804052853",
       "google_id": "/g/1v8kzxvg",
       "maps_place_token": null
@@ -941,7 +941,7 @@
       "is_favorite": false,
       "lat": 48.8687639,
       "lng": 2.3467548,
-      "maps_url": "https://maps.google.com/?cid=5180950873475167557",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ibrik+Kitchen%2C+9+Rue+de+Mulhouse%2C+75002+Paris%2C+France",
       "cid": "5180950873475167557",
       "google_id": "/g/11fj6tp7s6",
       "maps_place_token": null
@@ -953,7 +953,7 @@
       "is_favorite": false,
       "lat": 48.8718177,
       "lng": 2.3536579,
-      "maps_url": "https://maps.google.com/?cid=5180949452678899193",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Syndicat%2C+51+Rue+du+Faubourg+Saint-Denis%2C+75010+Paris%2C+France",
       "cid": "5180949452678899193",
       "google_id": "/g/11b6gk4jzb",
       "maps_place_token": null
@@ -965,7 +965,7 @@
       "is_favorite": false,
       "lat": 48.8724334,
       "lng": 2.3649541,
-      "maps_url": "https://maps.google.com/?cid=5180949418252468837",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Comptoir+G%C3%A9n%C3%A9ral%2C+84+Quai+de+Jemmapes%2C+75010+Paris%2C+France",
       "cid": "5180949418252468837",
       "google_id": "/g/1tmcljrz",
       "maps_place_token": null
@@ -977,7 +977,7 @@
       "is_favorite": false,
       "lat": 48.8684697,
       "lng": 2.3618696999999997,
-      "maps_url": "https://maps.google.com/?cid=5180949431362936197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lavomatic%2C+30+Rue+Ren%C3%A9+Boulanger%2C+75010+Paris%2C+France",
       "cid": "5180949431362936197",
       "google_id": "/g/11bv1n8byh",
       "maps_place_token": null
@@ -989,7 +989,7 @@
       "is_favorite": false,
       "lat": 48.8652886,
       "lng": 2.3664584,
-      "maps_url": "https://maps.google.com/?cid=5180950566099445801",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=DREAMIN+MAN%2C+140+Rue+Amelot%2C+75011+Paris%2C+France",
       "cid": "5180950566099445801",
       "google_id": "/g/11h38g1_0s",
       "maps_place_token": null
@@ -1001,7 +1001,7 @@
       "is_favorite": false,
       "lat": 48.8698468,
       "lng": 2.357087,
-      "maps_url": "https://maps.google.com/?cid=5180949428270750435",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CopperBay%2C+5+Rue+Bouchardon%2C+75010+Paris%2C+France",
       "cid": "5180949428270750435",
       "google_id": "/g/11b6g7rv_s",
       "maps_place_token": null
@@ -1013,7 +1013,7 @@
       "is_favorite": false,
       "lat": 48.864318999999995,
       "lng": 2.3421035,
-      "maps_url": "https://maps.google.com/?cid=5180949517987101097",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Kei%2C+5+Rue+Coq+H%C3%A9ron%2C+75001+Paris%2C+France",
       "cid": "5180949517987101097",
       "google_id": "/g/1jmc_p_g0",
       "maps_place_token": null
@@ -1025,7 +1025,7 @@
       "is_favorite": false,
       "lat": 48.8614427,
       "lng": 2.3417022,
-      "maps_url": "https://maps.google.com/?cid=5180949514383276359",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=yam%27Tcha%2C+121+Rue+Saint-Honor%C3%A9%2C+75001+Paris%2C+France",
       "cid": "5180949514383276359",
       "google_id": "/g/1tfft7js",
       "maps_place_token": null
@@ -1037,7 +1037,7 @@
       "is_favorite": false,
       "lat": 48.8610135,
       "lng": 2.3358583,
-      "maps_url": "https://maps.google.com/?cid=5180949532874298433",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Louvre+Pyramid%2C+75001+Paris%2C+France",
       "cid": "5180949532874298433",
       "google_id": null,
       "maps_place_token": null
@@ -1049,7 +1049,7 @@
       "is_favorite": false,
       "lat": 48.8588971,
       "lng": 2.3420459,
-      "maps_url": "https://maps.google.com/?cid=5180951389075309013",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pl%C3%A9nitude%2C+8+Quai+du+Louvre%2C+75001+Paris%2C+France",
       "cid": "5180951389075309013",
       "google_id": "/g/11p06c_z9p",
       "maps_place_token": null
@@ -1061,7 +1061,7 @@
       "is_favorite": false,
       "lat": 48.8557874,
       "lng": 2.3170682,
-      "maps_url": "https://maps.google.com/?cid=5180951747413207619",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arp%C3%A8ge%2C+84+Rue+de+Varenne%2C+75007+Paris%2C+France",
       "cid": "5180951747413207619",
       "google_id": null,
       "maps_place_token": null
@@ -1073,7 +1073,7 @@
       "is_favorite": false,
       "lat": 48.860221599999996,
       "lng": 2.3096909,
-      "maps_url": "https://maps.google.com/?cid=5180951289674725393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+David+Toutain%2C+29+Rue+Surcouf%2C+75007+Paris%2C+France",
       "cid": "5180951289674725393",
       "google_id": "/g/1ptwymzp2",
       "maps_place_token": null
@@ -1085,7 +1085,7 @@
       "is_favorite": false,
       "lat": 48.8583424,
       "lng": 2.3375084,
-      "maps_url": "https://maps.google.com/?cid=5180949535531383899",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pont+des+Arts%2C+Pont+des+Arts%2C+75006+Paris%2C+France",
       "cid": "5180949535531383899",
       "google_id": null,
       "maps_place_token": null
@@ -1097,7 +1097,7 @@
       "is_favorite": false,
       "lat": 48.859961399999996,
       "lng": 2.3265614,
-      "maps_url": "https://maps.google.com/?cid=5180949555355620379",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mus%C3%A9e+d%27Orsay%2C+Esplanade+Val%C3%A9ry+Giscard+d%27Estaing%2C+75007+Paris%2C+France",
       "cid": "5180949555355620379",
       "google_id": null,
       "maps_place_token": null
@@ -1109,7 +1109,7 @@
       "is_favorite": false,
       "lat": 48.850981399999995,
       "lng": 2.3350051,
-      "maps_url": "https://maps.google.com/?cid=5180953602852379813",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%C3%89glise+Saint-Sulpice%2C+2+Rue+Palatine%2C+75006+Paris%2C+France",
       "cid": "5180953602852379813",
       "google_id": null,
       "maps_place_token": null
@@ -1121,7 +1121,7 @@
       "is_favorite": false,
       "lat": 48.8521194,
       "lng": 2.3346557999999997,
-      "maps_url": "https://maps.google.com/?cid=5180953600604406579",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tiger%2C+13+Rue+Princesse%2C+75006+Paris%2C+France",
       "cid": "5180953600604406579",
       "google_id": null,
       "maps_place_token": null
@@ -1133,7 +1133,7 @@
       "is_favorite": false,
       "lat": 48.851994499999996,
       "lng": 2.3423623,
-      "maps_url": "https://maps.google.com/?cid=5180953621472943435",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Castor+Club%2C+14+Rue+Hautefeuille%2C+75006+Paris%2C+France",
       "cid": "5180953621472943435",
       "google_id": "/g/1tdq59wy",
       "maps_place_token": null
@@ -1145,7 +1145,7 @@
       "is_favorite": false,
       "lat": 48.8517684,
       "lng": 2.3354537,
-      "maps_url": "https://maps.google.com/?cid=5180953600219847233",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27Avant+Comptoir+du+March%C3%A9%2C+14+Rue+Lobineau%2C+75006+Paris%2C+France",
       "cid": "5180953600219847233",
       "google_id": "/g/11cs5l6z0c",
       "maps_place_token": null
@@ -1157,7 +1157,7 @@
       "is_favorite": false,
       "lat": 48.855374999999995,
       "lng": 2.3449609,
-      "maps_url": "https://maps.google.com/?cid=5180949504391019847",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sainte-Chapelle%2C+10+Bd+du+Palais%2C+75001+Paris%2C+France",
       "cid": "5180949504391019847",
       "google_id": null,
       "maps_place_token": null
@@ -1169,7 +1169,7 @@
       "is_favorite": false,
       "lat": 48.8529682,
       "lng": 2.3499021,
-      "maps_url": "https://maps.google.com/?cid=5180953635201563137",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cath%C3%A9drale+Notre-Dame+de+Paris%2C+6+Parvis+Notre-Dame+-+Pl.+Jean-Paul+II%2C+75004+Paris%2C+France",
       "cid": "5180953635201563137",
       "google_id": null,
       "maps_place_token": null
@@ -1181,7 +1181,7 @@
       "is_favorite": false,
       "lat": 48.8629858,
       "lng": 2.3640159,
-      "maps_url": "https://maps.google.com/?cid=5180949397423121895",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Candelaria%2C+52+Rue+de+Saintonge%2C+75003+Paris%2C+France",
       "cid": "5180949397423121895",
       "google_id": "/g/1thlyrgk",
       "maps_place_token": null
@@ -1193,7 +1193,7 @@
       "is_favorite": false,
       "lat": 48.8617412,
       "lng": 2.3650124,
-      "maps_url": "https://maps.google.com/?cid=5180949398291205255",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Mary+Celeste%2C+1+Rue+Commines%2C+75003+Paris%2C+France",
       "cid": "5180949398291205255",
       "google_id": "/g/11b7q9d4m6",
       "maps_place_token": null
@@ -1205,7 +1205,7 @@
       "is_favorite": false,
       "lat": 48.863042899999996,
       "lng": 2.3550817,
-      "maps_url": "https://maps.google.com/?cid=5180949484159064381",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=la%C3%AFz%C3%A9+marais+%E6%9D%A5%E5%BA%A7%E8%A3%BD%E8%8C%B6%2C+19+Rue+de+Montmorency%2C+75003+Paris%2C+France",
       "cid": "5180949484159064381",
       "google_id": "/g/11f3ttx1v4",
       "maps_place_token": null
@@ -1217,7 +1217,7 @@
       "is_favorite": false,
       "lat": 48.861452299999996,
       "lng": 2.3641424,
-      "maps_url": "https://maps.google.com/?cid=5180951189954843519",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Cambridge+Public+House%2C+8+Rue+de+Poitou%2C+75003+Paris%2C+France",
       "cid": "5180951189954843519",
       "google_id": "/g/11h2hfz_yh",
       "maps_place_token": null
@@ -1229,7 +1229,7 @@
       "is_favorite": false,
       "lat": 48.8647389,
       "lng": 2.3723475,
-      "maps_url": "https://maps.google.com/?cid=5180949353690165605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pierre+Sang+in+Oberkampf%2C+55+Rue+Oberkampf%2C+75011+Paris%2C+France",
       "cid": "5180949353690165605",
       "google_id": "/g/11ycqv0j5",
       "maps_place_token": null
@@ -1241,7 +1241,7 @@
       "is_favorite": false,
       "lat": 48.8640839,
       "lng": 2.3658696999999997,
-      "maps_url": "https://maps.google.com/?cid=5180949400823917893",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bisou.%2C+15+Bd+du+Temple%2C+75003+Paris%2C+France",
       "cid": "5180949400823917893",
       "google_id": "/g/11dzsvxck9",
       "maps_place_token": null
@@ -1253,7 +1253,7 @@
       "is_favorite": false,
       "lat": 48.863650299999996,
       "lng": 2.3635515,
-      "maps_url": "https://maps.google.com/?cid=5180949394930071007",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Little+Red+Door%2C+60+Rue+Charlot%2C+75003+Paris%2C+France",
       "cid": "5180949394930071007",
       "google_id": "/g/1q62n4rjy",
       "maps_place_token": null
@@ -1265,7 +1265,7 @@
       "is_favorite": false,
       "lat": 48.8710405,
       "lng": 2.376583,
-      "maps_url": "https://maps.google.com/?cid=5180949258208022687",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=New+Hawaienne%2C+15+Rue+Louis+Bonnet%2C+75011+Paris%2C+France",
       "cid": "5180949258208022687",
       "google_id": "/g/11b6d1rpvf",
       "maps_place_token": null
@@ -1277,7 +1277,7 @@
       "is_favorite": false,
       "lat": 48.8653723,
       "lng": 2.3818223,
-      "maps_url": "https://maps.google.com/?cid=5180949306778605009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Perchoir%2C+14+Rue+Crespin+du+Gast%2C+75011+Paris%2C+France",
       "cid": "5180949306778605009",
       "google_id": "/g/12q4sk1fz",
       "maps_place_token": null
@@ -1289,7 +1289,7 @@
       "is_favorite": false,
       "lat": 48.872499999999995,
       "lng": 2.3802778,
-      "maps_url": "https://maps.google.com/?cid=5180949266953434921",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rouleau+de+Printemps%2C+42+R.+de+Tourtille%2C+75020+Paris%2C+France",
       "cid": "5180949266953434921",
       "google_id": "/g/1tfp1s1w",
       "maps_place_token": null
@@ -1301,7 +1301,7 @@
       "is_favorite": false,
       "lat": 48.8712239,
       "lng": 2.3768148,
-      "maps_url": "https://maps.google.com/?cid=5180949258036399269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dong+Huong+Restaurant%2C+14+Rue+Louis+Bonnet%2C+75011+Paris%2C+France",
       "cid": "5180949258036399269",
       "google_id": "/g/1tfd1q4m",
       "maps_place_token": null
@@ -1313,7 +1313,7 @@
       "is_favorite": false,
       "lat": 48.873528699999994,
       "lng": 2.3822625,
-      "maps_url": "https://maps.google.com/?cid=5180949265939781747",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Combat%2C+63+Rue+de+Belleville%2C+75019+Paris%2C+France",
       "cid": "5180949265939781747",
       "google_id": "/g/11dzsdlpd8",
       "maps_place_token": null
@@ -1325,7 +1325,7 @@
       "is_favorite": false,
       "lat": 48.8487978,
       "lng": 2.3758605,
-      "maps_url": "https://maps.google.com/?cid=5180953790300103585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Table+Bruno+Verjus%2C+3+R.+de+Prague%2C+75012+Paris%2C+France",
       "cid": "5180953790300103585",
       "google_id": "/g/1pp2x5_vy",
       "maps_place_token": null
@@ -1337,7 +1337,7 @@
       "is_favorite": false,
       "lat": 48.858242,
       "lng": 2.3882882,
-      "maps_url": "https://maps.google.com/?cid=5180949319351179151",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Paris-Hanoi%2C+9+Rue+de+Mont-Louis%2C+75011+Paris%2C+France",
       "cid": "5180949319351179151",
       "google_id": "/g/1q65cmznf",
       "maps_place_token": null
@@ -1349,7 +1349,7 @@
       "is_favorite": false,
       "lat": 48.853572299999996,
       "lng": 2.3809332999999997,
-      "maps_url": "https://maps.google.com/?cid=5180953801397545235",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Septime%2C+80+Rue+de+Charonne%2C+75011+Paris%2C+France",
       "cid": "5180953801397545235",
       "google_id": "/g/1v6l6tc7",
       "maps_place_token": null
@@ -1361,7 +1361,7 @@
       "is_favorite": false,
       "lat": 48.8556969,
       "lng": 2.3712084,
-      "maps_url": "https://maps.google.com/?cid=5180953768354659957",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moonshiner%2C+5+Rue+Sedaine%2C+75011+Paris%2C+France",
       "cid": "5180953768354659957",
       "google_id": "/g/12mkw79l_",
       "maps_place_token": null
@@ -1373,7 +1373,7 @@
       "is_favorite": false,
       "lat": 48.8532723,
       "lng": 2.3640916,
-      "maps_url": "https://maps.google.com/?cid=5180953764220170109",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sherry+Butt%2C+20+Rue+Beautreillis%2C+75004+Paris%2C+France",
       "cid": "5180953764220170109",
       "google_id": "/g/11r8j0l6p",
       "maps_place_token": null
@@ -1385,7 +1385,7 @@
       "is_favorite": false,
       "lat": 48.854814999999995,
       "lng": 2.3759872,
-      "maps_url": "https://maps.google.com/?cid=5180953798150717441",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fr%C3%A9quence%2C+20+Rue+Keller%2C+75011+Paris%2C+France",
       "cid": "5180953798150717441",
       "google_id": "/g/11gg97ngq_",
       "maps_place_token": null
@@ -1397,7 +1397,7 @@
       "is_favorite": false,
       "lat": 48.8553396,
       "lng": 2.3643541,
-      "maps_url": "https://maps.google.com/?cid=5180953764971537451",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27Ambroisie%2C+9+Pl.+des+Vosges%2C+75004+Paris%2C+France",
       "cid": "5180953764971537451",
       "google_id": null,
       "maps_place_token": null
@@ -1409,7 +1409,7 @@
       "is_favorite": false,
       "lat": 48.846221799999995,
       "lng": 2.3464138,
-      "maps_url": "https://maps.google.com/?cid=5180953661820881267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Panth%C3%A9on%2C+Pl.+du+Panth%C3%A9on%2C+75005+Paris%2C+France",
       "cid": "5180953661820881267",
       "google_id": null,
       "maps_place_token": null
@@ -1421,7 +1421,7 @@
       "is_favorite": false,
       "lat": 48.848925699999995,
       "lng": 2.3572313,
-      "maps_url": "https://maps.google.com/?cid=5180953744777932075",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arab+World+Institute%2C+1+Rue+des+Foss%C3%A9s+Saint-Bernard%2C+75005+Paris%2C+France",
       "cid": "5180953744777932075",
       "google_id": null,
       "maps_place_token": null
@@ -1433,7 +1433,7 @@
       "is_favorite": false,
       "lat": 48.8451471,
       "lng": 2.3494969,
-      "maps_url": "https://maps.google.com/?cid=5180953693948450039",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bonjour+Vietnam%2C+6+Rue+Thouin%2C+75005+Paris%2C+France",
       "cid": "5180953693948450039",
       "google_id": "/g/11b6nq432w",
       "maps_place_token": null
@@ -1445,7 +1445,7 @@
       "is_favorite": false,
       "lat": 48.8423131,
       "lng": 2.3519403999999997,
-      "maps_url": "https://maps.google.com/?cid=5180953689971427005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Foyer+Vietnam%2C+80+Rue+Monge%2C+75005+Paris%2C+France",
       "cid": "5180953689971427005",
       "google_id": "/g/1tfq3zhf",
       "maps_place_token": null
@@ -1457,7 +1457,7 @@
       "is_favorite": false,
       "lat": 48.8500647,
       "lng": 2.3278578999999997,
-      "maps_url": "https://maps.google.com/?cid=5180953564341689075",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%C3%A9l%C3%A8ne+Darroze%2C+4+Rue+d%27Assas%2C+75006+Paris%2C+France",
       "cid": "5180953564341689075",
       "google_id": "/g/1tg2j_4v",
       "maps_place_token": null
@@ -1469,7 +1469,7 @@
       "is_favorite": false,
       "lat": 48.8347306,
       "lng": 2.3278052,
-      "maps_url": "https://maps.google.com/?cid=5180953448991982427",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Un+Jour+%C3%A0+Hano%C3%AF%2C+46+Rue+Daguerre%2C+75014+Paris%2C+France",
       "cid": "5180953448991982427",
       "google_id": null,
       "maps_place_token": null
@@ -1481,7 +1481,7 @@
       "is_favorite": false,
       "lat": 48.8245893,
       "lng": 2.361353,
-      "maps_url": "https://maps.google.com/?cid=5180953242565564513",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Indochine%2C+86+Av.+de+Choisy%2C+75013+Paris%2C+France",
       "cid": "5180953242565564513",
       "google_id": "/g/1tfmh3ph",
       "maps_place_token": null
@@ -1493,7 +1493,7 @@
       "is_favorite": false,
       "lat": 48.8255887,
       "lng": 2.3614382,
-      "maps_url": "https://maps.google.com/?cid=5180953242426550723",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lao+Lane+Xang+Restaurant%2C+102+Av.+d%27Ivry%2C+75013+Paris%2C+France",
       "cid": "5180953242426550723",
       "google_id": "/g/1tfq8jrs",
       "maps_place_token": null
@@ -1505,7 +1505,7 @@
       "is_favorite": false,
       "lat": 48.8243217,
       "lng": 2.3660407,
-      "maps_url": "https://maps.google.com/?cid=5180953938698551263",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=May+Hong%2C+Galerie+Olympiades%2C+Centre+Commercial+Oslo%2C+44+Av.+d%27Ivry%2C+75013+Paris%2C+France",
       "cid": "5180953938698551263",
       "google_id": "/g/11byl1vmyj",
       "maps_place_token": null
@@ -1517,7 +1517,7 @@
       "is_favorite": false,
       "lat": 48.8609618,
       "lng": 2.3426538999999997,
-      "maps_url": "https://maps.google.com/?cid=5180949511596029481",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Les+Caves+du+Louvre",
       "cid": "5180949511596029481",
       "google_id": null,
       "maps_place_token": null

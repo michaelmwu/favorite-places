@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:45:26.041643+00:00",
-  "refresh_after": "2026-04-29T15:45:26.041643+00:00",
+  "fetched_at": "2026-04-20T16:08:04.702395+00:00",
+  "refresh_after": "2026-05-06T19:05:48.702395+00:00",
   "source_signature": "754175ca447bd6ddf50bb44449e71f970a20ab228865366004130111221a1c44",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/Wq4HBEyd9p8Spgqy5",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 23.481057099999997,
       "lng": 120.45187899999999,
-      "maps_url": "https://maps.google.com/?cid=3778120068424207191",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AD%9A%E5%88%BA%E4%BA%BA%E9%9B%9E%E8%9B%8B%E7%B3%95-%E5%98%89%E7%BE%A9%E5%BA%97%2C+No.+196%E8%99%9F%2C+Zhongshan+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120068424207191",
       "google_id": "/g/11f3jxpfyb",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 23.4734929,
       "lng": 120.6978061,
-      "maps_url": "https://maps.google.com/?cid=3778212348849048311",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%81%94%E5%AE%98%E7%8F%BE%E7%82%92%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township",
       "cid": "3778212348849048311",
       "google_id": "/g/12hkn_62r",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 23.4800699,
       "lng": 120.4472205,
-      "maps_url": "https://maps.google.com/?cid=3778120072012375633",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hand+On+The+Pizza%2C+No.+129-1%2C+Zhongyi+St%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120072012375633",
       "google_id": "/g/1pzsq2k0v",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 23.486649,
       "lng": 120.44825399999999,
-      "maps_url": "https://maps.google.com/?cid=3778120083275938659",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Song+of+the+Forest+%E6%A3%AE%E6%9E%97%E4%B9%8B%E6%AD%8C",
       "cid": "3778120083275938659",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 23.4799394,
       "lng": 120.45045599999999,
-      "maps_url": "https://maps.google.com/?cid=3778120075932278711",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%B4%94%E6%83%85%E5%B0%88%E5%A3%B2%E6%89%80%2C+No.+404%E8%99%9F%2C+Gongming+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120075932278711",
       "google_id": "/g/11f403lk8b",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 23.480065699999997,
       "lng": 120.4501124,
-      "maps_url": "https://maps.google.com/?cid=3778121373686032795",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%98%89%E7%BE%A9%E6%8D%B2%E9%A4%85%E8%88%96%EF%BC%88%E6%9D%8E%E8%A8%98%E9%A4%85%E5%BA%97%EF%BC%89%2C+No.+299%E8%99%9F%2C+Zhongshan+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778121373686032795",
       "google_id": "/g/11qb895kp0",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 23.478175999999998,
       "lng": 120.442107,
-      "maps_url": "https://maps.google.com/?cid=3778121789656813937",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%8B%95%E6%84%9F%E9%85%92%E5%90%A7+Mega+Lounge+Bar%2C+600%2C+Taiwan%2C+Chiayi+City%2C+West+District%2C+Renai+Rd%2C+560%E8%99%9F3%E6%A8%93",
       "cid": "3778121789656813937",
       "google_id": "/g/11rpd9y7f4",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 23.473577799999997,
       "lng": 120.4578121,
-      "maps_url": "https://maps.google.com/?cid=3778120105494952213",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%98%89%E7%BE%A9%E8%AB%B8%E7%BE%85%E5%B1%B1%E6%B6%BC%E9%BA%B5%2C+No.+77%E8%99%9F%2C+Heping+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120105494952213",
       "google_id": "/g/11b76f74qh",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 23.4784705,
       "lng": 120.44985249999999,
-      "maps_url": "https://maps.google.com/?cid=3778120078382233485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Guo%27s+Chicken+Rice%2C+No.+148%E8%99%9F%2C+Wenhua+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120078382233485",
       "google_id": "/g/11b7tpntfj",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 23.4723585,
       "lng": 120.446873,
-      "maps_url": "https://maps.google.com/?cid=3778120023263129125",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%98%BF%E5%A9%86%E7%82%B8%E9%BA%BB%E7%B3%AC%2C+No.+54%E8%99%9F%2C+Minsheng+S+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120023263129125",
       "google_id": "/g/11ggnghknb",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 23.4704707,
       "lng": 120.4369849,
-      "maps_url": "https://maps.google.com/?cid=3778121565131189545",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%B4%85%E9%9D%A2%E8%94%A1%E6%B0%B4%E7%85%8E%E5%8C%85%2C+No.+292%E8%99%9F%2C+Shanghai+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600023",
       "cid": "3778121565131189545",
       "google_id": "/g/11mv10dt3w",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 23.4344341,
       "lng": 120.1714908,
-      "maps_url": "https://maps.google.com/?cid=3778130275589211767",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%AD%A3%E6%B4%A5%E5%85%A8%E8%9A%B5%E5%AE%B4%E5%85%A8%E5%9C%8B%E9%A6%96%E5%89%B5%E5%85%A8%E8%9A%B5%E6%96%99%E7%90%86%E5%90%83%E5%88%B0%E9%A3%BD%2C+614%2C+Taiwan%2C+Chiayi+County%2C+Dongshi+Township%2C+115%E8%99%9F",
       "cid": "3778130275589211767",
       "google_id": "/g/11scky3_tc",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 23.480908499999998,
       "lng": 120.45213469999999,
-      "maps_url": "https://maps.google.com/?cid=3778120186239073061",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%81%A9%E5%85%B8%E9%85%A5%E6%9C%AC%E8%88%96%2C+No.+221%E8%99%9F%2C+Zhongshan+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120186239073061",
       "google_id": "/g/1tdfqx1w",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 23.4820824,
       "lng": 120.4573746,
-      "maps_url": "https://maps.google.com/?cid=3778120092827571297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%A6%8F%E7%BE%A9%E8%BB%92-%E4%B8%AD%E5%B1%B1%E9%96%80%E5%B8%82%2C+No.+98%E8%99%9F%2C+Zhongshan+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120092827571297",
       "google_id": "/g/11cm685thc",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 23.485832199999997,
       "lng": 120.45463769999999,
-      "maps_url": "https://maps.google.com/?cid=3778121837589015851",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%A6%8F%E7%BE%A9%E8%BB%92-%E5%85%B1%E5%92%8C%E9%96%80%E5%B8%82%2C+No.+372%E8%99%9F%2C+Gonghe+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778121837589015851",
       "google_id": "/g/11cm67kgcb",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 24.1644309,
       "lng": 120.6376545,
-      "maps_url": "https://maps.google.com/?cid=3776617872929429857",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thefreen+Burger%2C+407%2C+Taiwan%2C+Taichung+City%2C+Xitun+District%2C+Section+3%2C+Henan+Rd%2C+120%E8%99%9F3%E6%A8%93",
       "cid": "3776617872929429857",
       "google_id": "/g/11bzrfw_bq",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 23.4786908,
       "lng": 120.4544073,
-      "maps_url": "https://maps.google.com/?cid=3778120100005054579",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%98%89%E7%BE%A9%E5%B8%82%E6%9D%B1%E5%85%AC%E6%9C%89%E9%9B%B6%E5%94%AE%E5%B8%82%E5%A0%B4%2C+600%2C+Taiwan%2C+Chiayi+City%2C+East+District%2C+Zhongxiao+Rd%2C+%E5%85%89%E5%BD%A9%E8%A1%97",
       "cid": "3778120100005054579",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 23.4744696,
       "lng": 120.4342511,
-      "maps_url": "https://maps.google.com/?cid=3778122741655818015",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%B6%BC%E9%BA%B5%E5%9B%9B%E5%91%B3%E6%9E%9C%E6%B1%81+%E7%B8%BD%E5%BA%97%2C+No.+48%2C+Xinyi+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778122741655818015",
       "google_id": "/g/11bwc825sx",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 23.4884363,
       "lng": 120.44668539999999,
-      "maps_url": "https://maps.google.com/?cid=3778121042875940993",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%B6%BC%E9%BA%B5%E5%9B%9B%E5%91%B3%E6%9E%9C%E6%B1%81%E6%96%87%E5%8C%96%E5%BA%97%2C+No.+417%E8%99%9F%2C+Wenhua+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778121042875940993",
       "google_id": "/g/11rstsp7f1",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 23.4804875,
       "lng": 120.434271,
-      "maps_url": "https://maps.google.com/?cid=3778122624051979859",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AE%AE%E8%8F%93%E5%AD%90%E6%B6%BC%E9%BA%B5%E5%9B%9B%E5%91%B3%E6%9E%9C%E6%B1%81%2C+No.+180%E8%99%9F%2C+You%27ai+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778122624051979859",
       "google_id": "/g/11bz__t73n",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 23.4745642,
       "lng": 120.4518075,
-      "maps_url": "https://maps.google.com/?cid=3778120077597563125",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%BB%83%E8%A8%98%E6%B6%BC%E9%BA%B5%E6%B6%BC%E5%9C%93%2C+No.+6%E8%99%9F%2C+Xingzhong+St%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120077597563125",
       "google_id": "/g/1tgf5jl1",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 23.4785649,
       "lng": 120.45223039999999,
-      "maps_url": "https://maps.google.com/?cid=3778120026316276455",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ah+Hong+Shi+Turkey+Rice%2C+No.+108%E8%99%9F%2C+Guanghua+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120026316276455",
       "google_id": "/g/11bbyq3b_6",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 23.4805295,
       "lng": 120.4543365,
-      "maps_url": "https://maps.google.com/?cid=3778120088810746653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%8C%97%E5%9B%9E%E6%B0%B4%E6%99%B6%E9%A4%83%2C+No.+166%E8%99%9F%2C+Zhongxiao+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120088810746653",
       "google_id": "/g/1tflprxc",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 23.47901,
       "lng": 120.4543243,
-      "maps_url": "https://maps.google.com/?cid=3778121803707716121",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%8E%8B%E5%AE%B6%E7%A5%96%E5%82%B3%E6%9C%AC%E7%94%A2%E7%89%9B%E9%9B%9C%E6%B9%AF%2C+No.+106%E8%99%9F%2C+Zhongxiao+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778121803707716121",
       "google_id": "/g/1tm10c48",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 23.476896,
       "lng": 120.4536483,
-      "maps_url": "https://maps.google.com/?cid=3778120100664213967",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%98%BF%E6%A8%93%E5%B8%AB%E7%81%AB%E9%9B%9E%E8%82%89%E9%A3%AF%2C+No.+102%E8%99%9F%2C+Wufeng+N+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120100664213967",
       "google_id": "/g/1pzr_qkhc",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 23.4693963,
       "lng": 120.4532471,
-      "maps_url": "https://maps.google.com/?cid=1442899911556621691",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%88%88%E5%8A%A0%E8%87%AD%E8%B1%86%E8%85%90%2C+No.+191%E8%99%9F%2C+Xingye+E+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "1442899911556621691",
       "google_id": "/g/11gzjymnx",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 23.480259099999998,
       "lng": 120.4592394,
-      "maps_url": "https://maps.google.com/?cid=3778120186827112963",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%85%AC%E5%9C%92%E8%80%81%E5%BA%97%E6%B6%BC%E9%BA%B5%2C+No.+36%E8%99%9F%2C+Weixin+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120186827112963",
       "google_id": "/g/11xlbb5l0",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 23.4812767,
       "lng": 120.4491742,
-      "maps_url": "https://maps.google.com/?cid=3776572860261760317",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BB%E9%AE%AE%E5%98%89%E7%BE%A9%E5%85%AC%E5%9C%92%E6%B6%BC%E9%BA%B5+%E8%82%89%E7%BE%B9%EF%BC%88%E6%96%87%E5%8C%96%E5%BA%97%EF%BC%89-%E5%98%89%E7%BE%A9%E7%99%BD%E9%86%8B%E6%B6%BC%E9%BA%B5%7C%E8%82%89%E7%BE%B9%E6%8E%A8%E8%96%A6%7C%E7%BE%8E%E5%A5%B6%E6%BB%8B%E6%B6%BC%E9%BA%B5%7C%E6%96%87%E5%8C%96%E6%B6%BC%E9%BA%B5%E8%82%89%E7%BE%B9%7C%E9%8A%85%E6%9D%BF%E7%BE%8E%E9%A3%9F%7C%E5%A4%96%E5%B8%B6%E7%BE%8E%E9%A3%9F%2C+600%2C+Taiwan%2C+Chiayi+City%2C+West+District%2C+Wenhua+Rd%2C+177%E8%99%9F1%E6%A8%93",
       "cid": "3776572860261760317",
       "google_id": "/g/11fpnn63gw",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 23.475376699999998,
       "lng": 120.4437031,
-      "maps_url": "https://maps.google.com/?cid=3778120026642331877",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dai+Shi+Turkey+Rice%2C+No.+665%E8%99%9F%2C+Minzu+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120026642331877",
       "google_id": "/g/1wk49tmy",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 23.485781,
       "lng": 120.453672,
-      "maps_url": "https://maps.google.com/?cid=3778121838054387953",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%8C%97%E9%96%80%E6%B2%99%E9%8D%8B%E9%AD%9A%E9%A0%AD%2C+No.+284-1%E8%99%9F%2C+Zhongxiao+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778121838054387953",
       "google_id": null,
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 23.5446061,
       "lng": 120.4764077,
-      "maps_url": "https://maps.google.com/?cid=3778166279172761137",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9D%BE%E5%B1%B1%E5%9C%9F%E7%AA%AF%E7%BE%8A%E8%82%89%2C+621%2C+Taiwan%2C+Chiayi+County%2C+Minxiong+Township",
       "cid": "3778166279172761137",
       "google_id": "/g/1wk6xj2b",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 23.479271699999998,
       "lng": 120.458832,
-      "maps_url": "https://maps.google.com/?cid=3778120198133261691",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CASA%EF%BC%88%E8%A8%82%E4%BD%8D%E4%BC%91%E5%81%87%E8%A9%B3%E6%83%85%E8%AB%8B%E8%A6%8BInstagram+%EF%BC%89%2C+No.+132%E8%99%9F%2C+Guangcai+St%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120198133261691",
       "google_id": "/g/119vk0wj0",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 23.4799608,
       "lng": 120.4540732,
-      "maps_url": "https://maps.google.com/?cid=3778120088912902421",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chiayi+Liu+Li+Zhang+Turkey+Rice%2C+No.+197%E8%99%9F%2C+Gongming+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120088912902421",
       "google_id": null,
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 23.4767612,
       "lng": 120.450723,
-      "maps_url": "https://maps.google.com/?cid=3778120072737104497",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%98%BF%E5%A8%A5%E8%B1%86%E6%BC%BF%E8%B1%86%E8%8A%B1%2C+No.+233%E8%99%9F%2C+Yanping+St%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120072737104497",
       "google_id": null,
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 23.4787742,
       "lng": 120.4502527,
-      "maps_url": "https://maps.google.com/?cid=3778120077552439161",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SMARTFISH%2C+No.+361%E8%99%9F%2C+Zhongzheng+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120077552439161",
       "google_id": null,
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 23.47908,
       "lng": 120.4496468,
-      "maps_url": "https://maps.google.com/?cid=3778120078147342125",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%98%BF%E9%9C%9E%E7%81%AB%E9%9B%9E%E8%82%89%E9%A3%AF%2C+No.+119%2C+Wenhua+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120078147342125",
       "google_id": "/g/11cncg_fm2",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 23.4804705,
       "lng": 120.4471536,
-      "maps_url": "https://maps.google.com/?cid=3778120079837826741",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%B2%9D%E6%96%AF%E7%89%B9%E9%A4%90%E9%85%92%E9%A4%A8%2C+No.+143%2C+Zhongyi+St%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120079837826741",
       "google_id": "/g/11cnc7w05b",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 23.4735633,
       "lng": 120.443664,
-      "maps_url": "https://maps.google.com/?cid=3778122040824629111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=COP+bar-Cocktails+Of+Pioneers%2C+No.+54-1%E8%99%9F%2C+Ximen+St%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778122040824629111",
       "google_id": "/g/11f64cyy3l",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 23.4772933,
       "lng": 120.44861259999999,
-      "maps_url": "https://maps.google.com/?cid=3778120072227869953",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%92%B1%E5%8F%B0%E7%81%A3%E4%BA%BA%E7%9A%84%E5%86%B0%2C+No.+249%E8%99%9F%2C+Lanjing+St%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120072227869953",
       "google_id": null,
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 23.4769886,
       "lng": 120.4400247,
-      "maps_url": "https://maps.google.com/?cid=3778120036210783685",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chiayi+Cultural+%26+Creative+Industries+Park%2C+No.+616%E8%99%9F%2C+Zhongshan+Rd%2C+West+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778120036210783685",
       "google_id": null,
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 23.4774802,
       "lng": 120.4454689,
-      "maps_url": "https://maps.google.com/?cid=3778121162095636683",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Door+to+Dream%2C+600%2C+Taiwan%2C+Chiayi+City%2C+West+District%2C+Lanjing+St%2C+314%E8%99%9F%E8%99%9F60047",
       "cid": "3778121162095636683",
       "google_id": null,
       "maps_place_token": null

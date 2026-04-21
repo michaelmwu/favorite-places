@@ -169,4 +169,17 @@ describe("guide filters", () => {
     expect(visibleCountInMapFrame).toBe(1);
     expect(Math.max(0, broaderAreaCount - areaMatchCount)).toBe(0);
   });
+
+  it("normalizes accented and slugged area filters before matching cards", () => {
+    const cards = [
+      makeCard({ placeId: "1", neighborhood: "São Paulo", search: "coffee", vibeTags: "date-night" }),
+      makeCard({ placeId: "2", neighborhood: "Rio de Janeiro", search: "coffee", vibeTags: "date-night" }),
+    ];
+
+    expect(countMatchingCards(cards, {
+      activeArea: "sao-paulo",
+      normalizedQuery: "coffee",
+      tag: "date-night",
+    })).toBe(1);
+  });
 });

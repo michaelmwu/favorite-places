@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:44:15.829568+00:00",
-  "refresh_after": "2026-04-29T15:44:15.829568+00:00",
+  "fetched_at": "2026-04-20T16:04:49.015687+00:00",
+  "refresh_after": "2026-05-06T16:46:03.015687+00:00",
   "source_signature": "e7e623b6f2992ae7b0c3e35d3d78d4d3d9a03ee4a68c81cd314f5826430ad5a4",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/ZnM64oQkUdSSfwGF9",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 38.7164888,
       "lng": -9.129401999999999,
-      "maps_url": "https://maps.google.com/?cid=943842262627566967",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Damas%2C+R.+da+Voz+do+Oper%C3%A1rio+60%2C+1170-039+Lisboa%2C+Portugal",
       "cid": "943842262627566967",
       "google_id": "/g/11bwynq_mf",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 38.7202489,
       "lng": -9.1357281,
-      "maps_url": "https://maps.google.com/?cid=943842245727297273",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cervejaria+Ramiro%2C+Av.+Alm.+Reis+1+H%2C+1150-007+Lisboa%2C+Portugal",
       "cid": "943842245727297273",
       "google_id": "/g/1tghqvkp",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 38.7192091,
       "lng": -9.1327772,
-      "maps_url": "https://maps.google.com/?cid=943842287065202007",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miradouro+da+Senhora+do+Monte%2C+Largo+Monte%2C+1170-107+Lisboa%2C+Portugal",
       "cid": "943842287065202007",
       "google_id": "/g/120zpds0",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 38.7164509,
       "lng": -9.1315937,
-      "maps_url": "https://maps.google.com/?cid=943842263292524899",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miradouro+da+Gra%C3%A7a%2C+Cal%C3%A7ada+da+Gra%C3%A7a%2C+1100-265+Lisboa%2C+Portugal",
       "cid": "943842263292524899",
       "google_id": "/g/11_p4_gll",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 38.7098339,
       "lng": -9.1329535,
-      "maps_url": "https://maps.google.com/?cid=943843283662134427",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lisbon+Cathedral%2C+Largo+da+S%C3%A9+1%2C+1100-585+Lisboa%2C+Portugal",
       "cid": "943843283662134427",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 38.713909199999996,
       "lng": -9.133476199999999,
-      "maps_url": "https://maps.google.com/?cid=943843285637448603",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Castelo+de+S.+Jorge%2C+R.+de+Santa+Cruz+do+Castelo%2C+1100-129+Lisboa%2C+Portugal",
       "cid": "943843285637448603",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 38.7084447,
       "lng": -9.136824299999999,
-      "maps_url": "https://maps.google.com/?cid=943843293472290789",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arco+da+Rua+Augusta%2C+R.+Augusta+2%2C+1100-053+Lisboa%2C+Portugal",
       "cid": "943843293472290789",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 38.712130099999996,
       "lng": -9.139429699999999,
-      "maps_url": "https://maps.google.com/?cid=943843289990860079",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Santa+Justa+Lift%2C+R.+do+Ouro%2C+1150-060+Lisboa%2C+Portugal",
       "cid": "943843289990860079",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 38.712266799999995,
       "lng": -9.1424025,
-      "maps_url": "https://maps.google.com/?cid=943843316770636177",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mini+Bar+-+Jos%C3%A9+Avillez%2C+R.+Nova+da+Trindade+18%2C+1200-235+Lisboa%2C+Portugal",
       "cid": "943843316770636177",
       "google_id": "/g/1q6jhvhjg",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 38.7100544,
       "lng": -9.1436093,
-      "maps_url": "https://maps.google.com/?cid=943843313991451157",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taberna+da+Rua+das+Flores%2C+Rua+das+Flores+103%2C+1200-194+Lisboa%2C+Portugal",
       "cid": "943843313991451157",
       "google_id": "/g/119v9cj1z",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 38.707246399999995,
       "lng": -9.1437847,
-      "maps_url": "https://maps.google.com/?cid=943844072804840321",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pink+Street%2C+R.+Nova+do+Carvalho%2C+1200-019+Lisboa%2C+Portugal",
       "cid": "943844072804840321",
       "google_id": "/g/11kbz8xq67",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 38.7092135,
       "lng": -9.143511799999999,
-      "maps_url": "https://maps.google.com/?cid=943843314244675403",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Das+Flores%2C+Rua+das+Flores+76+78%2C+1200-195+Lisboa%2C+Portugal",
       "cid": "943843314244675403",
       "google_id": "/g/1tdc6hfd",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 38.707270199999996,
       "lng": -9.143673699999999,
-      "maps_url": "https://maps.google.com/?cid=943843311876737331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pens%C3%A3o+Amor%2C+R.+do+Alecrim+19%2C+1200-292+Lisboa%2C+Portugal",
       "cid": "943843311876737331",
       "google_id": "/g/11bbrk3k7w",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 38.7070608,
       "lng": -9.1456691,
-      "maps_url": "https://maps.google.com/?cid=943843352835416181",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Time+Out+Market+Lisboa%2C+Av.+24+de+Julho+49%2C+1200-479+Lisboa%2C+Portugal",
       "cid": "943843352835416181",
       "google_id": "/g/11c2pm29hf",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 38.708465,
       "lng": -9.153227,
-      "maps_url": "https://maps.google.com/?cid=943843337331684725",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Frade+dos+Mares%2C+Av.+Dom+Carlos+I+55A%2C+1200-647+Lisboa%2C+Portugal",
       "cid": "943843337331684725",
       "google_id": "/g/1tdx0tll",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 38.7141649,
       "lng": -9.149725799999999,
-      "maps_url": "https://maps.google.com/?cid=943842214287968797",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CINCO+lounge%2C+R.+Ruben+A.+Leit%C3%A3o+17A%2C+1200-392+Lisboa%2C+Portugal",
       "cid": "943842214287968797",
       "google_id": "/g/1wh4h3fy",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 38.7028828,
       "lng": -9.1705943,
-      "maps_url": "https://maps.google.com/?cid=943843474417622545",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Museum+of+the+Orient%2C+Doca+de+Alcantara+Norte%2C+Av.+Bras%C3%ADlia%2C+1350-352+Lisboa%2C+Portugal",
       "cid": "943843474417622545",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 38.7133952,
       "lng": -9.1606147,
-      "maps_url": "https://maps.google.com/?cid=943842093822298499",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Basilica+of+Estrela%2C+Pra%C3%A7a+da+Estrela%2C+1200-667+Lisboa%2C+Portugal",
       "cid": "943842093822298499",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 38.6978909,
       "lng": -9.206703899999999,
-      "maps_url": "https://maps.google.com/?cid=945416459406974027",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jer%C3%B3nimos+Monastery%2C+Pra%C3%A7a+do+Imp%C3%A9rio+1400-206+Lisboa%2C+Portugal",
       "cid": "945416459406974027",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 38.7027837,
       "lng": -9.178444299999999,
-      "maps_url": "https://maps.google.com/?cid=943843524776745957",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ler+Devagar%2C+R.+Rodrigues+de+Faria+103+-+G+0.3%2C+1300-501+Lisboa%2C+Portugal",
       "cid": "943843524776745957",
       "google_id": "/g/11b77bxpt5",
       "maps_place_token": null
@@ -257,8 +257,20 @@
       "is_favorite": false,
       "lat": 38.7506499,
       "lng": -9.2592521,
-      "maps_url": "https://maps.google.com/?cid=945419239461159891",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Queluz+National+Palace%2C+Largo+Pal%C3%A1cio+de+Queluz%2C+2745-191+Queluz%2C+Portugal",
       "cid": "945419239461159891",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Belém Tower",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 38.691583699999995,
+      "lng": -9.215977299999999,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bel%C3%A9m+Tower",
+      "cid": "945416459406974027",
       "google_id": null,
       "maps_place_token": null
     }

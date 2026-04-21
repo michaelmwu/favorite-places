@@ -121,14 +121,17 @@ export function getGuideAreaFilters(
     const normalizedValue = normalizeAreaText(label);
     if (!normalizedValue || STREET_AREA_PATTERN.test(normalizedValue)) return;
 
-    const value = label.toLowerCase();
-    const current = areaCounts.get(value);
+    const current = areaCounts.get(normalizedValue);
     if (current) {
       current.count += 1;
       return;
     }
 
-    areaCounts.set(value, { label, value, count: 1 });
+    areaCounts.set(normalizedValue, {
+      label,
+      value: getTagComparisonValue(label),
+      count: 1,
+    });
   });
 
   return [...areaCounts.values()]

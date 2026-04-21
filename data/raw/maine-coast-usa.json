@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:52:30.927369+00:00",
-  "refresh_after": "2026-04-29T23:52:30.927369+00:00",
+  "fetched_at": "2026-04-20T16:01:54.923434+00:00",
+  "refresh_after": "2026-05-01T23:10:23.923434+00:00",
   "source_signature": "055b2c68d59746ead29a0d9440b4f806e0222c7124cc40df46e0fef18d96d4d5",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/Tdk96kR7P2qpULaS7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.360356599999996,
       "lng": -70.4754085,
-      "maps_url": "https://maps.google.com/?cid=5526668341901046765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kennebunkport+Historic+District%2C+6+Elm+St%2C+Kennebunkport%2C+ME+04046%2C+United+States",
       "cid": "5526668341901046765",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.4091118,
       "lng": -70.4893944,
-      "maps_url": "https://maps.google.com/?cid=5526672011399248717",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seashore+Trolley+Museum%2C+195+Log+Cabin+Rd%2C+Kennebunkport%2C+ME+04046%2C+United+States",
       "cid": "5526672011399248717",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.3439659,
       "lng": -70.4629163,
-      "maps_url": "https://maps.google.com/?cid=5526668434177048799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Blowing+Cave+Park%2C+208+Ocean+Ave%2C+Kennebunkport%2C+ME+04046%2C+United+States",
       "cid": "5526668434177048799",
       "google_id": "/g/11c606jvf_",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.3492003,
       "lng": -70.47218889999999,
-      "maps_url": "https://maps.google.com/?cid=5526668409066665755",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mabel%27s+Lobster+Claw%2C+124+Ocean+Ave%2C+Kennebunkport%2C+ME+04046%2C+United+States",
       "cid": "5526668409066665755",
       "google_id": "/g/11c1ptf2gx",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.3587837,
       "lng": -70.4767608,
-      "maps_url": "https://maps.google.com/?cid=5526668341580318449",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arundel+Wharf+-+Seafood+-+Cocktail+Bar+-+Craft+Beer%2C+43+Ocean+Ave%2C+Kennebunkport%2C+ME+04046%2C+United+States",
       "cid": "5526668341580318449",
       "google_id": "/g/1tw_mvfx",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.360332299999996,
       "lng": -70.4787705,
-      "maps_url": "https://maps.google.com/?cid=5526668339252293223",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Pilot+House%2C+State+Rte+9%2C+Kennebunk%2C+ME+04043%2C+United+States",
       "cid": "5526668339252293223",
       "google_id": "/g/11bbrlzvb4",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.3616483,
       "lng": -70.4773653,
-      "maps_url": "https://maps.google.com/?cid=5526668728212950069",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alisson%27s+Restaurant%2C+11+Dock+Square%2C+Kennebunkport%2C+ME+04046%2C+United+States",
       "cid": "5526668728212950069",
       "google_id": "/g/1tg9h4kb",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.3597836,
       "lng": -70.4788808,
-      "maps_url": "https://maps.google.com/?cid=5526668727369769901",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rococo+Ice+Cream%2C+8+Western+Ave+Unit+5%2C+Kennebunk%2C+ME+04043%2C+United+States",
       "cid": "5526668727369769901",
       "google_id": "/g/12m95g3fs",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.360030599999995,
       "lng": -70.48053809999999,
-      "maps_url": "https://maps.google.com/?cid=5526668316549397385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H+B+Provisions%2C+15+Western+Ave%2C+Kennebunk%2C+ME+04043%2C+United+States",
       "cid": "5526668316549397385",
       "google_id": "/g/1v_s5h5s",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.346938,
       "lng": -70.485126,
-      "maps_url": "https://maps.google.com/?cid=5526668380986074111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gooch%27s+Beach%2C+Gooch%27s+Beach%2C+Beach+Ave%2C+Kennebunk%2C+ME+04043",
       "cid": "5526668380986074111",
       "google_id": "/g/11c1rthlg1",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 44.388241099999995,
       "lng": -68.2046411,
-      "maps_url": "https://maps.google.com/?cid=5525564889876251445",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Acadia+Perk%2C+5+Firefly+Ln%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564889876251445",
       "google_id": "/g/11px13hljp",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 44.389833599999996,
       "lng": -68.20448449999999,
-      "maps_url": "https://maps.google.com/?cid=5525564337003238867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coffee+Hound+Coffee+Co.+at+the+Stadium%2C+62+Main+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564337003238867",
       "google_id": "/g/12m93p_wc",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 44.3861539,
       "lng": -68.2038201,
-      "maps_url": "https://maps.google.com/?cid=5525564231412273523",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Choco-Latte+Cafe%2C+240+Main+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564231412273523",
       "google_id": "/g/11b5zz9dtq",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 44.431007,
       "lng": -68.26724519999999,
-      "maps_url": "https://maps.google.com/?cid=5525564250007064637",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Udder+Heaven+Ice+Cream+Retreat%2C+369+ME-3%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564250007064637",
       "google_id": "/g/1hc1k0_0l",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 44.3902231,
       "lng": -68.2049681,
-      "maps_url": "https://maps.google.com/?cid=5525564336985919933",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jordan+Pond+Ice+Cream+%26+Fudge%2C+45+Main+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564336985919933",
       "google_id": "/g/11bw21xvt4",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 44.3882328,
       "lng": -68.2047717,
-      "maps_url": "https://maps.google.com/?cid=5525564226077064221",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mount+Desert+Island+Ice+Cream%2C+7+Firefly+Ln%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564226077064221",
       "google_id": "/g/1tj735th",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 44.3907607,
       "lng": -68.205075,
-      "maps_url": "https://maps.google.com/?cid=5525564336979270287",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Galyn%27s%2C+17+Main+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564336979270287",
       "google_id": "/g/1vlz9z74",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 44.390768099999995,
       "lng": -68.206936,
-      "maps_url": "https://maps.google.com/?cid=5525564339359169137",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=West+Street+Cafe%2C+76+West+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564339359169137",
       "google_id": "/g/1v2f031x",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 44.3909466,
       "lng": -68.205646,
-      "maps_url": "https://maps.google.com/?cid=5525564338934800189",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Paddy%27s+Irish+Pub+%26+Restaurant%2C+50+West+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564338934800189",
       "google_id": "/g/1pp2vcsp5",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 44.388359699999995,
       "lng": -68.20634199999999,
-      "maps_url": "https://maps.google.com/?cid=5525564334919547253",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Side+Street+Cafe%2C+49+Rodick+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564334919547253",
       "google_id": "/g/1td09jys",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 44.3900475,
       "lng": -68.2050069,
-      "maps_url": "https://maps.google.com/?cid=5525564336978118053",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Testa%27s+Bar+%26+Grill%2C+53+Main+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564336978118053",
       "google_id": "/g/1td8yqlb",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 44.3894495,
       "lng": -68.20629749999999,
-      "maps_url": "https://maps.google.com/?cid=5525564335987749599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thirsty+Whale+Tavern%2C+40+Cottage+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564335987749599",
       "google_id": "/g/1tcww9yy",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 44.390680599999996,
       "lng": -68.2051812,
-      "maps_url": "https://maps.google.com/?cid=5525564336978838543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Geddy%27s%2C+19+Main+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564336978838543",
       "google_id": "/g/1tm880dt",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 44.362443299999995,
       "lng": -68.2080861,
-      "maps_url": "https://maps.google.com/?cid=5525563949297985107",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wild+Gardens+of+Acadia%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525563949297985107",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 44.3540474,
       "lng": -68.1381567,
-      "maps_url": "https://maps.google.com/?cid=5525557162492066295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Egg+Rock+Lighthouse%2C+Egg+Rock+Lighthouse%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525557162492066295",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 44.339249699999996,
       "lng": -68.2533474,
-      "maps_url": "https://maps.google.com/?cid=5525563312662164933",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bubble+Rock%2C+Park+Loop+Rd%2C+Mt+Desert%2C+ME+04660",
       "cid": "5525563312662164933",
       "google_id": "/g/11ckw28mbm",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 44.320611799999995,
       "lng": -68.18855789999999,
-      "maps_url": "https://maps.google.com/?cid=5525557603061445253",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thunder+Hole%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525557603061445253",
       "google_id": "/g/11bbrkpxky",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 44.3908603,
       "lng": -68.20442369999999,
-      "maps_url": "https://maps.google.com/?cid=5525564337375692875",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Agamont+Park%2C+Newport+Dr%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564337375692875",
       "google_id": "/g/1tgw4mls",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 44.3870528,
       "lng": -68.2060494,
-      "maps_url": "https://maps.google.com/?cid=5525564329139080793",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Abbe+Museum%2C+26+Mt+Desert+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564329139080793",
       "google_id": null,
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 44.386695599999996,
       "lng": -68.197434,
-      "maps_url": "https://maps.google.com/?cid=5525564229049064701",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Harbor+Shore+path%2C+48-52+Hancock+St%2C+Bar+Harbor%2C+ME+04609",
       "cid": "5525564229049064701",
       "google_id": "/g/11g81rl3jv",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 44.2105743,
       "lng": -69.06386499999999,
-      "maps_url": "https://maps.google.com/?cid=5525308764087913119",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Megunticook+Falls%2C+33+Main+St%2C+Camden%2C+ME+04843%2C+United+States",
       "cid": "5525308764087913119",
       "google_id": "/g/11c38j_v25",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 44.2084997,
       "lng": -69.06289799999999,
-      "maps_url": "https://maps.google.com/?cid=5525308775550035117",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Waterfront+Restaurant%2C+48+Bay+View+St%2C+Camden%2C+ME+04843",
       "cid": "5525308775550035117",
       "google_id": "/g/1ty73w59",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 44.1052064,
       "lng": -69.10898929999999,
-      "maps_url": "https://maps.google.com/?cid=5525298992188472435",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rockland+Caf%C3%A9%2C+441+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298992188472435",
       "google_id": "/g/11bbrjm7bp",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 44.102135399999995,
       "lng": -69.1078053,
-      "maps_url": "https://maps.google.com/?cid=5525298976496562181",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Park+Street+Grille%2C+1+Park+Dr%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298976496562181",
       "google_id": "/g/1thznhfj",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 44.1013884,
       "lng": -69.1092753,
-      "maps_url": "https://maps.google.com/?cid=5525298976373444673",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hill%27s+Seafood+Co%2C+266+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298976373444673",
       "google_id": "/g/11b5qyr13j",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 44.109293699999995,
       "lng": -69.1099978,
-      "maps_url": "https://maps.google.com/?cid=5525303035501807775",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wasses+Hot+Dogs%2C+2+N+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525303035501807775",
       "google_id": "/g/1pp2tys6d",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 44.2310537,
       "lng": -69.0482997,
-      "maps_url": "https://maps.google.com/?cid=5525485872069289867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Camden+Hills+State+Park%2C+280+Belfast+Rd%2C+Camden%2C+ME+04843%2C+United+States",
       "cid": "5525485872069289867",
       "google_id": null,
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 44.186213599999995,
       "lng": -69.0737224,
-      "maps_url": "https://maps.google.com/?cid=5525309033355700423",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Andre+The+Seal+Statue",
       "cid": "5525309033355700423",
       "google_id": null,
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 44.1659581,
       "lng": -69.0978767,
-      "maps_url": "https://maps.google.com/?cid=5525301847852696859",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Beech+Hill+Preserve%2C+316+Beech+Hill+Rd%2C+Rockport%2C+ME+04856%2C+United+States",
       "cid": "5525301847852696859",
       "google_id": "/g/11clw07zjf",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 44.210398399999995,
       "lng": -69.065648,
-      "maps_url": "https://maps.google.com/?cid=5525308762372546611",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=River+Ducks+Ice+Cream%2C+19+Mechanic+St%2C+Camden%2C+ME+04843",
       "cid": "5525308762372546611",
       "google_id": "/g/11cr_h1n8j",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 44.105337999999996,
       "lng": -69.10916399999999,
-      "maps_url": "https://maps.google.com/?cid=5525298991573237759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ada%27s+Kitchen%2C+449+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298991573237759",
       "google_id": "/g/11gclzl1q4",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 44.209434099999996,
       "lng": -69.0632552,
-      "maps_url": "https://maps.google.com/?cid=5525308764841855939",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Peter+Ott%27s+on+the+Water%2C+16+Bay+Vw+Lndg%2C+Camden%2C+ME+04843",
       "cid": "5525308764841855939",
       "google_id": "/g/1ttq1q2m",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 44.0899783,
       "lng": -69.1105549,
-      "maps_url": "https://maps.google.com/?cid=5525299089494801955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Primo+Restaurant%2C+2+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525299089494801955",
       "google_id": null,
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 44.5665471,
       "lng": -68.80427639999999,
-      "maps_url": "https://maps.google.com/?cid=5525455803449679939",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fort+Knox+and+Penobscot+Narrows+Observatory%2C+740+Ft+Knox+Rd%2C+Prospect%2C+ME+04981",
       "cid": "5525455803449679939",
       "google_id": null,
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 44.0989699,
       "lng": -69.1050388,
-      "maps_url": "https://maps.google.com/?cid=5525302930903887359",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Archer%E2%80%99s+on+the+Pier%2C+58+Ocean+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525302930903887359",
       "google_id": "/g/1263pcwhb",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 44.2219908,
       "lng": -68.33726229999999,
-      "maps_url": "https://maps.google.com/?cid=5525533726240972865",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bass+Harbor+Head+Light+Station%2C+116+Lighthouse+Rd%2C+Bass+Harbor%2C+ME+04653",
       "cid": "5525533726240972865",
       "google_id": null,
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 44.5605306,
       "lng": -68.80378019999999,
-      "maps_url": "https://maps.google.com/?cid=5525455785493156129",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Penobscot+Narrows+Bridge+Observatory%2C+740+Ft+Knox+Rd%2C+Prospect%2C+ME+04981",
       "cid": "5525455785493156129",
       "google_id": "/g/11bw5twf4q",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 44.0413911,
       "lng": -69.09718029999999,
-      "maps_url": "https://maps.google.com/?cid=5525296688256842409",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Birch+Point+State+Park%2C+459+S+Shore+Dr%2C+Owls+Head%2C+ME+04854%2C+United+States",
       "cid": "5525296688256842409",
       "google_id": null,
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 43.8721277,
       "lng": -69.6589985,
-      "maps_url": "https://maps.google.com/?cid=5525241199685723761",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coastal+Maine+Botanical+Gardens%2C+105+Botanical+Gdns+Dr%2C+Boothbay%2C+ME+04537%2C+United+States",
       "cid": "5525241199685723761",
       "google_id": null,
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 44.1020779,
       "lng": -69.107986,
-      "maps_url": "https://maps.google.com/?cid=5525298979320242501",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maine+Lighthouse+Museum%2C+1+Park+Dr%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298979320242501",
       "google_id": "/g/1w111srh",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 43.9174333,
       "lng": -69.2612762,
-      "maps_url": "https://maps.google.com/?cid=5525273362572438159",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marshall+Point+Lighthouse+%26+Museum%2C+Marshall+Point+Rd%2C+Port+Clyde%2C+ME+04855%2C+United+States",
       "cid": "5525273362572438159",
       "google_id": "/g/1jlj_4zx1",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 43.8369934,
       "lng": -69.5059356,
-      "maps_url": "https://maps.google.com/?cid=5525237080240359783",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pemaquid+Point+Lighthouse%2C+3115+Bristol+Rd%2C+New+Harbor%2C+ME+04554%2C+United+States",
       "cid": "5525237080240359783",
       "google_id": null,
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 44.091274299999995,
       "lng": -69.05001159999999,
-      "maps_url": "https://maps.google.com/?cid=5525298762503857149",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Owls+Head+State+Park%2C+186+Lighthouse+Rd%2C+Owls+Head%2C+ME+04854%2C+United+States",
       "cid": "5525298762503857149",
       "google_id": "/g/1v8y3mqq",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 44.1010858,
       "lng": -69.1084041,
-      "maps_url": "https://maps.google.com/?cid=5525298976245345199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Harbor+Park%2C+1+Pleasant+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298976245345199",
       "google_id": "/g/1tm8dl64",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 44.1117869,
       "lng": -69.106638,
-      "maps_url": "https://maps.google.com/?cid=5525303038813487895",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Claws%2C+743+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525303038813487895",
       "google_id": "/g/1q5bl173y",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 44.1236495,
       "lng": -69.116867,
-      "maps_url": "https://maps.google.com/?cid=5525301227778185341",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hazel%27s+Take-out%2C+557+Old+County+Rd%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525301227778185341",
       "google_id": "/g/11bvcv7dry",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 44.1008722,
       "lng": -69.11081109999999,
-      "maps_url": "https://maps.google.com/?cid=5525298977878465845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trackside+Station%2C+4+Union+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298977878465845",
       "google_id": "/g/1v0lkcgp",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 44.1061026,
       "lng": -69.1102631,
-      "maps_url": "https://maps.google.com/?cid=5525298993829712733",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Waterworks+Restaurant%2C+7+Lindsey+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525298993829712733",
       "google_id": "/g/1vlz9z6j",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 44.110341899999995,
       "lng": -69.1093691,
-      "maps_url": "https://maps.google.com/?cid=5525303035956388065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Home+Kitchen+Cafe%2C+650+Main+St%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525303035956388065",
       "google_id": "/g/1wc30vcj",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 44.104054399999995,
       "lng": -69.07747479999999,
-      "maps_url": "https://maps.google.com/?cid=5525303202608172787",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rockland+Breakwater+Lighthouse%2C+44.104031%2C+-69.077487%2C+Rockland%2C+ME+04841%2C+United+States",
       "cid": "5525303202608172787",
       "google_id": null,
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 43.995348899999996,
       "lng": -69.1178795,
-      "maps_url": "https://maps.google.com/?cid=5525294742149061777",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=McLoons+Lobster+Shack%2C+315+Island+Rd%2C+South+Thomaston%2C+ME+04858%2C+United+States",
       "cid": "5525294742149061777",
       "google_id": "/g/11b6_bfp9t",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 44.1910592,
       "lng": -69.079469,
-      "maps_url": "https://maps.google.com/?cid=5525301657574830083",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rockport%2C+Camden%2C+ME",
       "cid": "5525301657574830083",
       "google_id": null,
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 44.3875617,
       "lng": -68.2042989,
-      "maps_url": "https://maps.google.com/?cid=5525563009637819795",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Harbor%2C+Bar+Harbor%2C+ME",
       "cid": "5525563009637819795",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 43.361726399999995,
       "lng": -70.4767957,
-      "maps_url": "https://maps.google.com/?cid=5526665776006530025",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kennebunkport%2C+Kennebunkport%2C+ME+04046",
       "cid": "5526665776006530025",
       "google_id": null,
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 44.338555899999996,
       "lng": -68.2733346,
-      "maps_url": "https://maps.google.com/?cid=5525533777975191845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Acadia+National+Park",
       "cid": "5525533777975191845",
       "google_id": null,
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 44.9415062,
       "lng": -70.6972061,
-      "maps_url": "https://maps.google.com/?cid=5526264124967198561",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rangeley+Lake",
       "cid": "5526264124967198561",
       "google_id": null,
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 44.209792799999995,
       "lng": -69.0647838,
-      "maps_url": "https://maps.google.com/?cid=5525309852018442949",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Camden%2C+Camden%2C+ME",
       "cid": "5525309852018442949",
       "google_id": null,
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 43.853733999999996,
       "lng": -70.5620952,
-      "maps_url": "https://maps.google.com/?cid=5526748467279445773",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sebago+Lake",
       "cid": "5526748467279445773",
       "google_id": null,
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 43.852304499999995,
       "lng": -69.62810139999999,
-      "maps_url": "https://maps.google.com/?cid=5525240446291310233",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boothbay+Harbor%2C+Boothbay+Harbor%2C+ME+04538",
       "cid": "5525240446291310233",
       "google_id": null,
       "maps_place_token": null

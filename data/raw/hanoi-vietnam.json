@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:20:58.852759+00:00",
-  "refresh_after": "2026-05-05T21:13:10.852759+00:00",
+  "fetched_at": "2026-04-20T16:08:47.462538+00:00",
+  "refresh_after": "2026-05-06T00:00:59.462538+00:00",
   "source_signature": "a1e518329e9e3b06b71444a73f0066e373bec0127f8c5a05dcaedd517f4ef554",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/dUDUdru3FYRmtsvu8",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 21.018126499999997,
       "lng": 105.8553306,
-      "maps_url": "https://maps.google.com/?cid=3545929369730091759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ph%E1%BB%9F+Th%C3%ACn%2C+13+P.+L%C3%B2+%C4%90%C3%BAc%2C+Ng%C3%B4+Th%C3%AC+Nh%E1%BA%ADm%2C+Hai+B%C3%A0+Tr%C6%B0ng%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545929369730091759",
       "google_id": "/g/11vlq9k1nq",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 21.032583799999998,
       "lng": 105.8320913,
-      "maps_url": "https://maps.google.com/?cid=3545928553960511369",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A+B%E1%BA%A3n+-+Mountain+Dew%2C+76+P.+Tr%E1%BA%A7n+Ph%C3%BA%2C+%C4%90i%E1%BB%87n+Bi%C3%AAn%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928553960511369",
       "google_id": "/g/11nmmhbb03",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 21.042942,
       "lng": 105.8428883,
-      "maps_url": "https://maps.google.com/?cid=3545929056009145237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A0ng+1946+C%E1%BB%ADa+B%E1%BA%AFc%2C+3%2C+Ng.+Y%C3%AAn+Th%C3%A0nh%2F61+C%E1%BB%ADa+B%E1%BA%AFc%2C+Qu%C3%A1n+Th%C3%A1nh%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545929056009145237",
       "google_id": "/g/11bc7r9t9_",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 21.0671098,
       "lng": 105.8242535,
-      "maps_url": "https://maps.google.com/?cid=3545928747369059471",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ch%C3%A0o+B%E1%BA%A1n+-+Vietnamese+restaurant%2C+98+%C4%90.+T%C3%B4+Ng%E1%BB%8Dc+V%C3%A2n%2C+Qu%E1%BA%A3ng+An%2C+T%C3%A2y+H%E1%BB%93%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928747369059471",
       "google_id": "/g/11lf_4ymql",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 21.0295053,
       "lng": 105.8439258,
-      "maps_url": "https://maps.google.com/?cid=3545929053562567941",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+East%2C+5B+P.+T%E1%BB%91ng+Duy+T%C3%A2n%2C+P%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000%2C+Vietnam",
       "cid": "3545929053562567941",
       "google_id": "/g/11tcyqmm6l",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 21.0337025,
       "lng": 105.84719799999999,
-      "maps_url": "https://maps.google.com/?cid=3545929119343829583",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Don+Duck+Old+Quarter+Restaurant%2C+29+P.+B%C3%A1t+%C4%90%C3%A0n%2C+C%E1%BB%ADa+%C4%90%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545929119343829583",
       "google_id": "/g/11c206smf8",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 21.0201784,
       "lng": 105.8576928,
-      "maps_url": "https://maps.google.com/?cid=3545928615072023449",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Habakuk+Fine+Coffee+%26+Bistro%2C+4+Ng.+Phan+Huy+Ch%C3%BA%2C+Phan+Chu+Trinh%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928615072023449",
       "google_id": "/g/11fnnzw4c8",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 21.014304499999998,
       "lng": 105.8131818,
-      "maps_url": "https://maps.google.com/?cid=3545928562580049825",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xoi+Com+-+Family+Meals%2C+36+P.+L%C3%A1ng+H%E1%BA%A1%2C+L%C3%A1ng+H%E1%BA%A1%2C+%C4%90%E1%BB%91ng+%C4%90a%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928562580049825",
       "google_id": "/g/11s0wdxvpn",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 21.0621846,
       "lng": 105.8306925,
-      "maps_url": "https://maps.google.com/?cid=3545928749085883689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Two+Schmucks+Bar+and+Pub%2C+68+%C4%90.+Xu%C3%A2n+Di%E1%BB%87u%2C+T%E1%BB%A9+Li%C3%AAn%2C+T%C3%A2y+H%E1%BB%93%2C+H%C3%A0+N%E1%BB%99i+10000%2C+Vietnam",
       "cid": "3545928749085883689",
       "google_id": "/g/11vc2z4hsq",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 21.0361056,
       "lng": 105.8470061,
-      "maps_url": "https://maps.google.com/?cid=3545929117098558205",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+Cu%E1%BB%91n+Gia+Truy%E1%BB%81n+Thanh+V%C3%A2n%2C+14+P+P.+H%C3%A0ng+G%C3%A0%2C+H%C3%A0ng+B%E1%BB%93%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545929117098558205",
       "google_id": "/g/11h0vtqp0n",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 21.0361276,
       "lng": 105.85237529999999,
-      "maps_url": "https://maps.google.com/?cid=3545929131244491303",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trung+t%C3%A2m+V%C4%83n+h%C3%B3a+Ngh%E1%BB%87+thu%E1%BA%ADt+22+H%C3%A0ng+Bu%E1%BB%93m%2822+Hang+Buom+Culture+and+Arts+%0ACenter%2C+22+P.+H%C3%A0ng+Bu%E1%BB%93m%2C+H%C3%A0ng+Bu%E1%BB%93m%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000%2C+Vietnam",
       "cid": "3545929131244491303",
       "google_id": "/g/11sgz08tv7",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 21.217800099999998,
       "lng": 105.8025514,
-      "maps_url": "https://maps.google.com/?cid=3545742571809522771",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ch%E1%BB%A3+hoa+Qu%E1%BA%A3ng+An%2C+236+%C4%90.+%C3%82u+C%C6%A1%2C+Qu%E1%BA%A3ng+An%2C+T%C3%A2y+H%E1%BB%93%2C+H%C3%A0+N%E1%BB%99i+100000+%EB%B2%A0%ED%8A%B8%EB%82%A8",
       "cid": "3545742571809522771",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 21.0381434,
       "lng": 105.8500387,
-      "maps_url": "https://maps.google.com/?cid=3545929092257956999",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%C4%90%E1%BB%93ng+Xu%C3%A2n+Market%2C+%C4%90%E1%BB%93ng+Xu%C3%A2n%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+Hanoi+100000%2C+Vietnam",
       "cid": "3545929092257956999",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 21.0285957,
       "lng": 105.8488606,
-      "maps_url": "https://maps.google.com/?cid=3545928935113275717",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=St.+Joseph+Cathedral%2C+2RHX%2BFHX%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928935113275717",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 21.030688299999998,
       "lng": 105.85238609999999,
-      "maps_url": "https://maps.google.com/?cid=3545929122754633383",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ngoc+Son+Temple%2C+P.+%C4%90inh+Ti%C3%AAn+Ho%C3%A0ng%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000%2C+Vietnam",
       "cid": "3545929122754633383",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 21.0242438,
       "lng": 105.85762539999999,
-      "maps_url": "https://maps.google.com/?cid=3545929311598805009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hanoi+Opera+House%2C+1+Tr%C3%A0ng+Ti%E1%BB%81n%2C+Phan+Chu+Trinh%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545929311598805009",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 21.0356517,
       "lng": 105.8334361,
-      "maps_url": "https://maps.google.com/?cid=3545928991523501549",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=One+Pillar+Pagoda%2C+ph%E1%BB%91+P.+Ch%C3%B9a+M%E1%BB%99t+C%E1%BB%99t%2C+%C4%90%E1%BB%99i+C%E1%BA%A5n%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i+100000%2C+Vietnam",
       "cid": "3545928991523501549",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 21.0298432,
       "lng": 105.8440794,
-      "maps_url": "https://maps.google.com/?cid=3545928422363036459",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Loan+Mai%2C+2a+P.+T%E1%BB%91ng+Duy+T%C3%A2n%2C+H%C3%A0ng+B%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928422363036459",
       "google_id": "/g/11k3kmxwc7",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 21.0465321,
       "lng": 105.8411529,
-      "maps_url": "https://maps.google.com/?cid=3545929179331883193",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ph%E1%BB%9F+Cu%E1%BB%91n+Chinh+Th%E1%BA%AFng%2C+7+P.+M%E1%BA%A1c+%C4%90%C4%A9nh+Chi%2C+Tr%C3%BAc+B%E1%BA%A1ch%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i+100000%2C+Vietnam",
       "cid": "3545929179331883193",
       "google_id": "/g/11twpzqv1z",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 21.0459589,
       "lng": 105.8409444,
-      "maps_url": "https://maps.google.com/?cid=3545929061853709259",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ph%E1%BB%9F+Cu%E1%BB%91n+31%2C+31+P.+Ng%C5%A9+X%C3%A3%2C+Tr%C3%BAc+B%E1%BA%A1ch%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545929061853709259",
       "google_id": "/g/1232nk0qq",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 21.0419476,
       "lng": 105.8257885,
-      "maps_url": "https://maps.google.com/?cid=3545928336748450411",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ngoc+Xuan+Bun+Cha+Restaurant%2C+102+%C4%90.+Th%E1%BB%A5y+Khu%C3%AA%2C+Thu%E1%BB%B5+Khu%C3%AA%2C+T%C3%A2y+H%E1%BB%93%2C+H%C3%A0+N%E1%BB%99i%2C+Vietnam",
       "cid": "3545928336748450411",
       "google_id": "/g/1jkwkl54f",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 21.0221989,
       "lng": 105.8480871,
-      "maps_url": "https://maps.google.com/?cid=3545928488667535179",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KH%C3%93I+Restaurant%2C+67+Tr%E1%BA%A7n+H%C6%B0ng+%C4%90%E1%BA%A1o%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928488667535179",
       "google_id": "/g/11s58_d8xs",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 21.047003099999998,
       "lng": 105.8847854,
-      "maps_url": "https://maps.google.com/?cid=3545929280548095753",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PH%E1%BB%9E+213%2C+213+P.+H%C3%A0ng+B%C3%B4ng%2C+H%C3%A0ng+B%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929280548095753",
       "google_id": "/g/11s63_4g41",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 21.0304871,
       "lng": 105.8485201,
-      "maps_url": "https://maps.google.com/?cid=3545929241394418201",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Loading+T+caf%C3%A9%2C+8+P.+Ch%C3%A2n+C%E1%BA%A7m%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929241394418201",
       "google_id": "/g/11t9c6wpd3",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 21.0303181,
       "lng": 105.84851259999999,
-      "maps_url": "https://maps.google.com/?cid=3545928628539702459",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Blackbird+Coffee+-+5+Chan+Cam%2C+5+P.+Ch%C3%A2n+C%E1%BA%A7m%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928628539702459",
       "google_id": "/g/11f62dzqyq",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 21.0308056,
       "lng": 105.8460216,
-      "maps_url": "https://maps.google.com/?cid=3545929218343784385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%BAn+ch%E1%BA%A3+h%C3%A0+n%E1%BB%99i%2C+5+Ng.+Tr%E1%BA%A1m%2C+C%E1%BB%ADa+%C4%90%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929218343784385",
       "google_id": "/g/11pzmsq0ys",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 21.027328999999998,
       "lng": 105.83591,
-      "maps_url": "https://maps.google.com/?cid=3545929190562261367",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gia+Restaurant%2C+61+P.+V%C4%83n+Mi%E1%BA%BFu%2C+V%C4%83n+Mi%E1%BA%BFu%2C+%C4%90%E1%BB%91ng+%C4%90a%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545929190562261367",
       "google_id": "/g/11mvwb4962",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 21.0348625,
       "lng": 105.8475464,
-      "maps_url": "https://maps.google.com/?cid=3545929113877501083",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Alchemist+-+Cocktail+Bar%2C+25+P.+B%C3%A1t+S%E1%BB%A9%2C+H%C3%A0ng+B%E1%BB%93%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929113877501083",
       "google_id": "/g/11hcj23m5n",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 21.020013,
       "lng": 105.848562,
-      "maps_url": "https://maps.google.com/?cid=3545929370478282675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hummingbird%2C+56+P.+Tr%E1%BA%A7n+Qu%E1%BB%91c+To%E1%BA%A3n%2C+Tr%E1%BA%A7n+H%C6%B0ng+%C4%90%E1%BA%A1o%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+111016",
       "cid": "3545929370478282675",
       "google_id": "/g/11t7dqsb1b",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 21.0348918,
       "lng": 105.85302209999999,
-      "maps_url": "https://maps.google.com/?cid=3545929125483398663",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%E1%BA%A3i+S%E1%BA%A3n+Ph%E1%BB%91+Seafood+Restaurant%2C+68+P.+%C4%90%C3%A0o+Duy+T%E1%BB%AB%2C+H%C3%A0ng+Bu%E1%BB%93m%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929125483398663",
       "google_id": "/g/11bccm3n_w",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 21.034856299999998,
       "lng": 105.85134749999999,
-      "maps_url": "https://maps.google.com/?cid=3545929120231398491",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gh%E1%BA%B9+H%E1%BA%A5p+37+H%C3%A0ng+Gi%E1%BA%A7y%2C+37+P.+H%C3%A0ng+Gi%E1%BA%A7y%2C+P%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545929120231398491",
       "google_id": "/g/11dyrc2ctv",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 21.034342,
       "lng": 105.8544809,
-      "maps_url": "https://maps.google.com/?cid=3545929126662033251",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bun+Cha+Ta+Hanoi%2C+21+P.+Nguy%E1%BB%85n+H%E1%BB%AFu+Hu%C3%A2n%2C+L%C3%BD+Th%C3%A1i+T%E1%BB%95%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929126662033251",
       "google_id": "/g/11ckkx98hd",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 21.031053999999997,
       "lng": 105.85014869999999,
-      "maps_url": "https://maps.google.com/?cid=3545928940294769819",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%94%E3%82%B6+%E3%83%95%E3%82%A9%E3%83%BC%E3%83%94%E3%83%BC%E3%82%B9%2C+11B%2C+Bao+Khanh+Alley%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928940294769819",
       "google_id": "/g/11bw46_k6g",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 21.0250608,
       "lng": 105.8542389,
-      "maps_url": "https://maps.google.com/?cid=3545928791903212769",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+4P%E2%80%99s+Tr%C3%A0ng+Ti%E1%BB%81n%2C+43+Tr%C3%A0ng+Ti%E1%BB%81n%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928791903212769",
       "google_id": "/g/11s8x0d9vq",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 21.0114853,
       "lng": 105.8508492,
-      "maps_url": "https://maps.google.com/?cid=3545928691882844253",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%94%E3%82%B64P%27s%2C+1st+and+2nd+Floor%2C+Hoang+Thanh+Tower%2C+114+Mai+H%E1%BA%AFc+%C4%90%E1%BA%BF%2C+L%C3%AA+%C4%90%E1%BA%A1i+H%C3%A0nh%2C+Hai+B%C3%A0+Tr%C6%B0ng%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928691882844253",
       "google_id": "/g/11j19dh_bk",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 21.0067491,
       "lng": 105.8320882,
-      "maps_url": "https://maps.google.com/?cid=3545931184562650293",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+4p%E2%80%99s%2C+Vincom%2C+2+P.Ph%E1%BA%A1m+Ng%E1%BB%8Dc+Th%E1%BA%A1ch%2C+Trung+T%E1%BB%B1%2C+%C4%90%E1%BB%91ng+%C4%90a%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545931184562650293",
       "google_id": "/g/11fs0bf4lc",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 21.032335,
       "lng": 105.8130467,
-      "maps_url": "https://maps.google.com/?cid=3545928449634446581",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+4P%27s+Lotte+Center+Hanoi%2C+Lotte+Center+H%C3%A0N%E1%BB%99i%2C+F1%2C+A14-A18%2C+54+P.+Li%E1%BB%85u+Giai%2C+C%E1%BB%91ng+V%E1%BB%8B%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928449634446581",
       "google_id": "/g/11fjy3m6hn",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 21.0253129,
       "lng": 105.846537,
-      "maps_url": "https://maps.google.com/?cid=3545928945215069845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9B%E3%82%A2%E3%83%AD%E3%83%BC%E5%88%91%E5%8B%99%E6%89%80%2C+1+P.+Ho%E1%BA%A3+L%C3%B2%2C+Tr%E1%BA%A7n+H%C6%B0ng+%C4%90%E1%BA%A1o%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928945215069845",
       "google_id": null,
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 21.0314515,
       "lng": 105.85539349999999,
-      "maps_url": "https://maps.google.com/?cid=3545928406301998867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Leo%27s+-+Cocktails+%26+Co.%2C+16+P.+L%C3%B2+S%C5%A9%2C+L%C3%BD+Th%C3%A1i+T%E1%BB%95%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+10000",
       "cid": "3545928406301998867",
       "google_id": "/g/11fx0bcj6h",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 21.0358506,
       "lng": 105.8460549,
-      "maps_url": "https://maps.google.com/?cid=3545929281910006579",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gallery+Bespoke+Cocktail+Bar%2C+95+P.+Ph%C3%B9ng+H%C6%B0ng%2C+H%C3%A0ng+B%E1%BB%93%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+111000",
       "cid": "3545929281910006579",
       "google_id": "/g/11h7dckg5y",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 21.031186599999998,
       "lng": 105.8451362,
-      "maps_url": "https://maps.google.com/?cid=3545928672931269473",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Beeznees+1920s%2C+163+P.+Ph%C3%B9ng+H%C6%B0ng%2C+C%E1%BB%ADa+%C4%90%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928672931269473",
       "google_id": "/g/11fkl9_yp0",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 21.042161699999998,
       "lng": 105.8414196,
-      "maps_url": "https://maps.google.com/?cid=3545928841811529385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ZODIAC+-+Mixology+and+Wine%2C+13+P.+%C4%90%E1%BA%B7ng+Dung%2C+Qu%C3%A1n+Th%C3%A1nh%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928841811529385",
       "google_id": "/g/11j0wld9dq",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 21.0713546,
       "lng": 105.8219893,
-      "maps_url": "https://maps.google.com/?cid=3545929309692351523",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kumquat+Tree+Speakeasy+Bar%2C+1+P.+Nguy%E1%BB%85n+Kh%E1%BA%AFc+C%E1%BA%A7n%2C+Tr%C3%A0ng+Ti%E1%BB%81n%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929309692351523",
       "google_id": "/g/11f37pnj5b",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 21.0231679,
       "lng": 105.7675198,
-      "maps_url": "https://maps.google.com/?cid=3545551871288510189",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SI+Cuisine+%26+Mixology%2C+18+P.+H%C3%A0ng+B%C3%A0i%2C+Tr%C3%A0ng+Ti%E1%BB%81n%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545551871288510189",
       "google_id": "/g/1jkw2p0yw",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 21.026884,
       "lng": 105.84394499999999,
-      "maps_url": "https://maps.google.com/?cid=3545928314684998939",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mu%E1%BB%91i+Ti%C3%AAu+-+Salt+n%27+Pepper+Kitchen%2C+2nd+floor%2C+no.+28+P.+T%E1%BB%91ng+Duy+T%C3%A2n%2C+Str%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+10000",
       "cid": "3545928314684998939",
       "google_id": "/g/11f61gt7gc",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 21.0400021,
       "lng": 105.85047809999999,
-      "maps_url": "https://maps.google.com/?cid=3545929089917056327",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Serein+Cafe%2C+16+T%E1%BA%ADp+th%E1%BB%83+Ga+Long+Bi%C3%AAn%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929089917056327",
       "google_id": "/g/11c6q788d9",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 21.036752099999998,
       "lng": 105.85287989999999,
-      "maps_url": "https://maps.google.com/?cid=3545929360600346393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ph%E1%BB%9F+g%C3%A1nh+H%C3%A0ng+Chi%E1%BA%BFu+Ms.Thoa%2C+56+P.+Nguy%E1%BB%85n+Si%C3%AAu%2C+H%C3%A0ng+Bu%E1%BB%93m%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929360600346393",
       "google_id": "/g/11s_skwzdb",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 21.0322458,
       "lng": 105.8482056,
-      "maps_url": "https://maps.google.com/?cid=3545929115239029271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%BAn+Ch%E1%BA%A3+%C4%90%E1%BA%AFc+Kim%2C+1+P.+H%C3%A0ng+M%C3%A0nh%2C+H%C3%A0ng+Gai%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929115239029271",
       "google_id": "/g/1thpz5ms",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 21.047871,
       "lng": 105.83687379999999,
-      "maps_url": "https://maps.google.com/?cid=3545929050229290927",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%81%E3%83%A3%E3%83%B3%E3%82%AF%E3%82%AA%E3%83%83%E3%82%AF%E5%AF%BA%2C+46+%C4%90.+Thanh+Ni%C3%AAn%2C+Tr%C3%BAc+B%E1%BA%A1ch%2C+T%C3%A2y+H%E1%BB%93%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929050229290927",
       "google_id": null,
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 21.009326899999998,
       "lng": 105.7538922,
-      "maps_url": "https://maps.google.com/?cid=3545928996971437331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0%E8%BB%8D%E4%BA%8B%E6%AD%B4%E5%8F%B2%E5%8D%9A%E7%89%A9%E9%A4%A8%2C+28A+%C4%90i%E1%BB%87n+Bi%C3%AAn+Ph%E1%BB%A7%2C+%C4%90i%E1%BB%87n+Bi%C3%AAn%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928996971437331",
       "google_id": null,
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 21.0439375,
       "lng": 105.8600625,
-      "maps_url": "https://maps.google.com/?cid=3545929231287771741",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Long+Bien+Bridge%2C+2VV6%2BP92%2C+C%E1%BA%A7u+Long+Bi%C3%AAn%2C+Ng%E1%BB%8Dc+Th%E1%BB%A5y%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929231287771741",
       "google_id": null,
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 21.0368973,
       "lng": 105.8346667,
-      "maps_url": "https://maps.google.com/?cid=3545928991191948567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9B%E3%83%BC%E3%83%81%E3%83%9F%E3%83%B3%E5%BB%9F%2C+8+H%C3%B9ng+V%C6%B0%C6%A1ng%2C+%C4%90i%E1%BB%87n+Bi%C3%AAn%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928991191948567",
       "google_id": null,
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 21.0269004,
       "lng": 105.8500153,
-      "maps_url": "https://maps.google.com/?cid=3545929113301518525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=T.U.N.G+Dining%2C+2C+P.+Quang+Trung%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545929113301518525",
       "google_id": "/g/11fhz5cb94",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 21.0300127,
       "lng": 105.84789699999999,
-      "maps_url": "https://maps.google.com/?cid=3545928906999397751",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ngo%E1%BA%B7m%2C+19+P.+Ch%C3%A2n+C%E1%BA%A7m%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928906999397751",
       "google_id": "/g/11lgx99b3g",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 21.032158499999998,
       "lng": 105.8469112,
-      "maps_url": "https://maps.google.com/?cid=3545929114309030383",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1ch+Ph%C6%B0%C6%A1ng+Restaurant+-+B%C3%BAn+B%C3%B2+Nam+B%E1%BB%99%2C+73-75+H%C3%A0ng+%C4%90i%E1%BA%BFu%2C+C%E1%BB%ADa+%C4%90%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929114309030383",
       "google_id": "/g/11b7q6f7d4",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 21.01707,
       "lng": 105.8270666,
-      "maps_url": "https://maps.google.com/?cid=3545928470553941031",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bia+Hoi%2C+2RMW%2BC8H%2C+%C4%90%C6%B0%E1%BB%9Dng+Th%C3%A0nh%2C+C%E1%BB%ADa+%C4%90%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928470553941031",
       "google_id": "/g/11rzwvmf7j",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 21.0367006,
       "lng": 105.84636739999999,
-      "maps_url": "https://maps.google.com/?cid=3545929041857663021",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Haflington%2C+94+P.+H%C3%A0ng+M%C3%A3%2C+H%C3%A0ng+B%E1%BB%93%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545929041857663021",
       "google_id": "/g/11qsvkzghb",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 21.0295943,
       "lng": 105.84405389999999,
-      "maps_url": "https://maps.google.com/?cid=3545928943602680407",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=N%C3%AA+Cocktail+bar%2C+3B+P.+T%E1%BB%91ng+Duy+T%C3%A2n%2C+H%C3%A0ng+B%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928943602680407",
       "google_id": "/g/11df812y7l",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 21.0290352,
       "lng": 105.8459467,
-      "maps_url": "https://maps.google.com/?cid=3545928944263727757",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Hanoi+Social+Club%2C+6+Ng.+H%E1%BB%99i+V%C5%A9%2C+H%C3%A0ng+B%C3%B4ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928944263727757",
       "google_id": "/g/1v3hxfw0",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 21.0319976,
       "lng": 105.8483347,
-      "maps_url": "https://maps.google.com/?cid=3545929115180761413",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=New+Gentry+Beer+House%2C+7+P.+H%C3%A0ng+M%C3%A0nh%2C+H%C3%A0ng+Gai%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929115180761413",
       "google_id": "/g/11bxft293q",
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 21.034417299999998,
       "lng": 105.853561,
-      "maps_url": "https://maps.google.com/?cid=3545929125273517125",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Heritage+House%2C+87+P.+M%C3%A3+M%C3%A2y%2C+H%C3%A0ng+Bu%E1%BB%93m%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929125273517125",
       "google_id": "/g/11cjj4lvxh",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 21.0321204,
       "lng": 105.8126197,
-      "maps_url": "https://maps.google.com/?cid=3545928764422215309",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lotte+Center+H%C3%A0N%E1%BB%99i%2C+Lotte+Center+H%C3%A0N%E1%BB%99i%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928764422215309",
       "google_id": null,
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 21.0281175,
       "lng": 105.8356692,
-      "maps_url": "https://maps.google.com/?cid=3545928955895201127",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Temple+Of+Literature%2C+58+P.+Qu%E1%BB%91c+T%E1%BB%AD+Gi%C3%A1m%2C+V%C4%83n+Mi%E1%BA%BFu%2C+%C4%90%E1%BB%91ng+%C4%90a%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928955895201127",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 21.0352231,
       "lng": 105.8402594,
-      "maps_url": "https://maps.google.com/?cid=3545928999133609033",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%BF%E3%83%B3%E3%83%AD%E3%83%B3%E5%9F%8E%E8%B7%A1%2C+19C+Ho%C3%A0ng+Di%E1%BB%87u%2C+%C4%90i%E1%BB%87n+Bi%C3%AAn%2C+Ba+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928999133609033",
       "google_id": null,
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 21.0233734,
       "lng": 105.8515539,
-      "maps_url": "https://maps.google.com/?cid=3545928298471711271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0%E5%A5%B3%E6%80%A7%E5%8D%9A%E7%89%A9%E9%A4%A8%2C+36+P.+L%C3%BD+Th%C6%B0%E1%BB%9Dng+Ki%E1%BB%87t%2C+H%C3%A0ng+B%C3%A0i%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545928298471711271",
       "google_id": null,
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 21.0316634,
       "lng": 105.8532944,
-      "maps_url": "https://maps.google.com/?cid=3545929123069510281",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%BF%E3%83%B3%E3%83%AD%E3%83%B3%E6%B0%B4%E4%B8%8A%E4%BA%BA%E5%BD%A2%E5%8A%87%E5%A0%B4+%28Nha+Hat+Mua+Roi+Thang+Long%29%2C+57B+P.+%C4%90inh+Ti%C3%AAn+Ho%C3%A0ng%2C+H%C3%A0ng+B%E1%BA%A1c%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929123069510281",
       "google_id": "/g/1tdp2j4q",
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 21.0247173,
       "lng": 105.85972389999999,
-      "maps_url": "https://maps.google.com/?cid=3545929300552332503",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0%E5%9B%BD%E7%AB%8B%E6%AD%B4%E5%8F%B2%E5%8D%9A%E7%89%A9%E9%A4%A8%2C+216+%C4%90.+Tr%E1%BA%A7n+Quang+Kh%E1%BA%A3i%2C+Tr%C3%A0ng+Ti%E1%BB%81n%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i+110000",
       "cid": "3545929300552332503",
       "google_id": null,
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 21.0334646,
       "lng": 105.8545355,
-      "maps_url": "https://maps.google.com/?cid=3545929126747911005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cafe+Gi%E1%BA%A3ng%2C+39+P.+Nguy%E1%BB%85n+H%E1%BB%AFu+Hu%C3%A2n%2C+L%C3%BD+Th%C3%A1i+T%E1%BB%95%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929126747911005",
       "google_id": "/g/11bxg4n3g3",
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 21.0358001,
       "lng": 105.8510048,
-      "maps_url": "https://maps.google.com/?cid=3545929119655693813",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bach+Ma+Temple%2C+76+P.+H%C3%A0ng+Bu%E1%BB%93m%2C+H%C3%A0ng+Bu%E1%BB%93m%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929119655693813",
       "google_id": "/g/120w8hg8",
       "maps_place_token": null
@@ -845,7 +845,7 @@
       "is_favorite": false,
       "lat": 21.040342199999998,
       "lng": 105.7987354,
-      "maps_url": "https://maps.google.com/?cid=3545928544055179297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0%E6%B0%91%E6%97%8F%E5%AD%A6%E5%8D%9A%E7%89%A9%E9%A4%A8%2C+%C4%90.+Nguy%E1%BB%85n+V%C4%83n+Huy%C3%AAn%2C+Quan+Hoa%2C+C%E1%BA%A7u+Gi%E1%BA%A5y%2C+H%C3%A0+N%E1%BB%99i+100000",
       "cid": "3545928544055179297",
       "google_id": null,
       "maps_place_token": null
@@ -857,7 +857,7 @@
       "is_favorite": false,
       "lat": 21.028666899999997,
       "lng": 105.85214839999999,
-      "maps_url": "https://maps.google.com/?cid=3545928938924001685",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9B%E3%82%A2%E3%83%B3%E3%82%AD%E3%82%A8%E3%83%A0%E6%B9%96%2C+%E3%83%8F%E3%83%8E%E3%82%A4+%E3%83%9B%E3%82%A2%E3%83%B3%E3%82%AD%E3%82%A8%E3%83%A0%E5%8C%BA+Hang+Trong%2C+%E3%83%9B%E3%82%A2%E3%83%B3%E3%82%AD%E3%82%A8%E3%83%A0%E6%B9%96",
       "cid": "3545928938924001685",
       "google_id": null,
       "maps_place_token": null
@@ -869,7 +869,7 @@
       "is_favorite": false,
       "lat": 21.0320038,
       "lng": 105.8521694,
-      "maps_url": "https://maps.google.com/?cid=3545929120784681153",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%C4%90inh+Caf%C3%A9%2C+13+P.+%C4%90inh+Ti%C3%AAn+Ho%C3%A0ng%2C+H%C3%A0ng+Tr%E1%BB%91ng%2C+Ho%C3%A0n+Ki%E1%BA%BFm%2C+H%C3%A0+N%E1%BB%99i",
       "cid": "3545929120784681153",
       "google_id": "/g/1hm6bz5l2",
       "maps_place_token": null
@@ -881,7 +881,7 @@
       "is_favorite": false,
       "lat": 21.036113,
       "lng": 105.84857699999999,
-      "maps_url": "https://maps.google.com/?cid=3545928799469639349",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+M%C3%AC+25",
       "cid": "3545928799469639349",
       "google_id": null,
       "maps_place_token": null
@@ -893,7 +893,7 @@
       "is_favorite": false,
       "lat": 21.0301433,
       "lng": 105.8504471,
-      "maps_url": "https://maps.google.com/?cid=3545929359713822577",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Huyen+Huong+Restaurant",
       "cid": "3545929359713822577",
       "google_id": null,
       "maps_place_token": null
@@ -905,7 +905,7 @@
       "is_favorite": false,
       "lat": 21.030496199999998,
       "lng": 105.8487892,
-      "maps_url": "https://maps.google.com/?cid=3545928940355912961",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pho+10+Ly+Quoc+Su",
       "cid": "3545928940355912961",
       "google_id": null,
       "maps_place_token": null
@@ -917,7 +917,7 @@
       "is_favorite": false,
       "lat": 21.074576,
       "lng": 105.81563609999999,
-      "maps_url": "https://maps.google.com/?cid=3545928300058997519",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ph%E1%BB%9F+Gia+Truy%E1%BB%81n+B%C3%A1t+%C4%90%C3%A0n",
       "cid": "3545928300058997519",
       "google_id": null,
       "maps_place_token": null
@@ -929,7 +929,7 @@
       "is_favorite": false,
       "lat": 20.2506149,
       "lng": 105.97445359999999,
-      "maps_url": "https://maps.google.com/?cid=3546145638205933761",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%B3%E3%83%93%E3%83%B3%2C+%2Fm%2F07m23f",
       "cid": "3546145638205933761",
       "google_id": null,
       "maps_place_token": null

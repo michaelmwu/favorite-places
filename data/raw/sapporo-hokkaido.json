@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:25:40.081551+00:00",
-  "refresh_after": "2026-04-29T15:25:40.081551+00:00",
+  "fetched_at": "2026-04-20T16:07:13.475121+00:00",
+  "refresh_after": "2026-05-07T05:02:48.475121+00:00",
   "source_signature": "b9d88e7c9b8fee2b85bb90281162e6dcdc118a1efc4dbad826c9c8406f341875",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/KXpT3QAC5tTQD1yk7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.050922199999995,
       "lng": 141.3217875,
-      "maps_url": "https://maps.google.com/?cid=6848613763805435841",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=maruyama%E6%AA%80%2C+%E3%80%92064-0805+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+5+Jonishi%2C+24+Chome%E2%88%923%E2%88%9217+%E7%AC%AC%EF%BC%91%EF%BC%97%E8%97%A4%E6%A0%84%E3%83%93%E3%83%AB+1%E9%9A%8E",
       "cid": "6848613763805435841",
       "google_id": "/g/1v27v904",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 42.922199299999996,
       "lng": 141.3621401,
-      "maps_url": "https://maps.google.com/?cid=6878451849815863551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moai+Statue%2C+2+Takino%2C+Minami+Ward%2C+Sapporo%2C+Hokkaido+005-0862",
       "cid": "6878451849815863551",
       "google_id": "/g/11b8zlmkkv",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 42.928007199999996,
       "lng": 141.3764891,
-      "maps_url": "https://maps.google.com/?cid=6878451993241068005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Makomanai+Takino+Cemetery%2C+2+Takino%2C+Minami+Ward%2C+Sapporo%2C+Hokkaido+005-0862",
       "cid": "6878451993241068005",
       "google_id": "/g/1203lxq_h",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.0533017,
       "lng": 141.3455894,
-      "maps_url": "https://maps.google.com/?cid=6848613712295056775",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nishijin+Curry%2C+%E3%80%92064-0805+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+5+Jonishi%2C+9+Chome%E2%88%921019+%E9%87%91%E5%85%AB",
       "cid": "6848613712295056775",
       "google_id": "/g/11v08k696v",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.0491245,
       "lng": 141.354795,
-      "maps_url": "https://maps.google.com/?cid=6848614007699017209",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%B2%E3%82%87%E3%81%A3%E3%81%A8%E3%81%93%2C+4+Chome-1-8+Minami+9+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0809",
       "cid": "6848614007699017209",
       "google_id": "/g/1thtpd0f",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.049428299999995,
       "lng": 141.3457879,
-      "maps_url": "https://maps.google.com/?cid=6848613339176725539",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sandria%2C+9+Chome-758-14+Minami+8+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0808",
       "cid": "6848613339176725539",
       "google_id": "/g/1td32vjz",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.056120299999996,
       "lng": 141.35401729999998,
-      "maps_url": "https://maps.google.com/?cid=6848613307120296535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Milk+Mura%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+3+Chome%E2%88%92%EF%BC%97%E2%88%921+%E3%83%8B%E3%83%A5%E3%83%BC%E5%8C%97%E6%98%9F%E3%83%93%E3%83%AB+%EF%BC%96F",
       "cid": "6848613307120296535",
       "google_id": "/g/1tf_snt_",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.0571668,
       "lng": 141.3529082,
-      "maps_url": "https://maps.google.com/?cid=6848613087805318963",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tsubaki%E3%83%BBDREAM+DOLCE%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+2+Jonishi%2C+4+Chome%2C+%E3%81%95%E3%81%A3%E3%81%BD%E3%82%8D%E5%9C%B0%E4%B8%8B%E8%A1%97%E3%83%9D%E3%83%BC%E3%83%AB%E3%82%BF%E3%82%A6%E3%83%B3",
       "cid": "6848613087805318963",
       "google_id": "/g/11v6kgb8z0",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.0557952,
       "lng": 141.3498962,
-      "maps_url": "https://maps.google.com/?cid=6848613309940120845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rojiura+Curry+SAMURAI%2C+Sakura%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+6+Chome%E2%88%92%EF%BC%91%E2%88%923+%E3%83%86%E3%82%A3%E3%82%A2%E3%83%A936+2F",
       "cid": "6848613309940120845",
       "google_id": "/g/1tdmpvnl",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.0443268,
       "lng": 141.3522968,
-      "maps_url": "https://maps.google.com/?cid=6848613981343589431",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Concert+Hall+%27Kitara%27%2C+1-15+Nakajimakoen%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0931",
       "cid": "6848613981343589431",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 43.045297999999995,
       "lng": 141.352444,
-      "maps_url": "https://maps.google.com/?cid=6848613980374477375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+City+Observatory%2C+1-17+Nakajimakoen%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0931",
       "cid": "6848613980374477375",
       "google_id": "/g/122jqxcf",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 43.0462797,
       "lng": 141.35256429999998,
-      "maps_url": "https://maps.google.com/?cid=6848614006076897613",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%C5%8Dhei+Kan%2C+%E3%80%92064-0931+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Nakajimakoen%2C+1%E2%88%9220+1F",
       "cid": "6848614006076897613",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 43.054333,
       "lng": 141.3077928,
-      "maps_url": "https://maps.google.com/?cid=6848613686520621203",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hokkaido+Jingu%2C+474+Miyagaoka%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0959",
       "cid": "6848613686520621203",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 43.044488799999996,
       "lng": 141.3544147,
-      "maps_url": "https://maps.google.com/?cid=6848613991354729993",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nakajima+Park%2C+1+Nakajimakoen%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0931",
       "cid": "6848613991354729993",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 43.055411899999996,
       "lng": 141.3544143,
-      "maps_url": "https://maps.google.com/?cid=6848613305632843423",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=THE+NIKKA+BAR%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+3+Chome%E2%88%92%EF%BC%91%E2%88%922+%E7%AC%AC%EF%BC%93%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3%E3%83%93%E3%83%AB+2F",
       "cid": "6848613305632843423",
       "google_id": "/g/1tdvpj_f",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 43.0572802,
       "lng": 141.351462,
-      "maps_url": "https://maps.google.com/?cid=6848613307765391573",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Izakaya+Aiyo+TanukiKouji+4-chome%2C+%E3%80%92060-0062+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+2+Jonishi%2C+4+Chome%E2%88%9210%E2%88%922+%E6%B8%85%E6%B0%B4%E3%83%93%E3%83%AB+B1",
       "cid": "6848613307765391573",
       "google_id": "/g/12qf9p0vv",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 43.0558154,
       "lng": 141.3526272,
-      "maps_url": "https://maps.google.com/?cid=6848613306780951281",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Koropokkuru%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+4+Chome%2C+%E6%9D%BE%E5%B2%A1%E3%83%93%E3%83%AB+3F",
       "cid": "6848613306780951281",
       "google_id": "/g/1tdq0ygf",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 43.056425999999995,
       "lng": 141.35401819999998,
-      "maps_url": "https://maps.google.com/?cid=6848613307319164607",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Umi+Hachikyo%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+3+Chome%E2%88%92%EF%BC%95%E2%88%922+%E9%83%BD%E3%83%93%E3%83%AB",
       "cid": "6848613307319164607",
       "google_id": "/g/1tg_98k5",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 43.0543207,
       "lng": 141.3518025,
-      "maps_url": "https://maps.google.com/?cid=6848613312834777261",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%91%B3%E5%87%A6+%E3%81%BE%E3%81%A4%E7%94%B0%2C+5+Chome+Minami+5+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0805",
       "cid": "6848613312834777261",
       "google_id": "/g/1tfgjm2j",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 43.0707242,
       "lng": 141.32077089999999,
-      "maps_url": "https://maps.google.com/?cid=6848613501821624373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Crab+Market%2C+21+Chome-2-3+Kita+11+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+060-0011",
       "cid": "6848613501821624373",
       "google_id": "/g/11c55h_z15",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 42.920567399999996,
       "lng": 141.3627884,
-      "maps_url": "https://maps.google.com/?cid=6878452133234427991",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hill+of+the+Buddha%2C+Takino%2C+Minami+Ward%2C+Sapporo%2C+Hokkaido+005-0862",
       "cid": "6878452133234427991",
       "google_id": "/g/11g1p23shb",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 42.9420205,
       "lng": 141.3423619,
-      "maps_url": "https://maps.google.com/?cid=6878451732097822533",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Art+Park%2C+%E3%80%92005-0864+Hokkaido%2C+Sapporo%2C+Minami+Ward%2C+Geijutsunomori%2C+2+Chome%E2%88%92%EF%BC%97%EF%BC%95",
       "cid": "6878451732097822533",
       "google_id": "/g/120y8h2m",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 43.0678784,
       "lng": 141.3508723,
-      "maps_url": "https://maps.google.com/?cid=6878439647024416907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mikuni+Sapporo%2C+%E3%80%92060-0005+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+5+Jonishi%2C+2+Chome%E2%88%925+%E7%95%AA%E5%9C%B0+%E6%9C%AD%E5%B9%8C%E3%82%B9%E3%83%86%E3%83%A9%E3%83%97%E3%83%AC%E3%82%A4%E3%82%B9+%E3%82%BB%E3%83%B3%E3%82%BF+9%E9%9A%8E",
       "cid": "6878439647024416907",
       "google_id": "/g/1v1tmx0r",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 43.088875099999996,
       "lng": 141.2717042,
-      "maps_url": "https://maps.google.com/?cid=6848611717812308819",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shiroi+Koibito+Park%2C+2+Chome-11-36+Miyanosawa+2+Jo%2C+Nishi+Ward%2C+Sapporo%2C+Hokkaido+063-0052",
       "cid": "6848611717812308819",
       "google_id": "/g/11gnrm0wlz",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 43.066896799999995,
       "lng": 141.35433989999999,
-      "maps_url": "https://maps.google.com/?cid=6848613237722494041",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Ichiryuan%2C+%E3%80%92060-0004+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+4+Jonishi%2C+1+Chome%E2%88%92%EF%BC%91%E7%95%AA+%E3%83%9B%E3%82%AF%E3%83%AC%E3%83%B3%E3%83%93%E3%83%AB+%E5%9C%B0%E4%B8%8B%EF%BC%91%E9%9A%8E",
       "cid": "6848613237722494041",
       "google_id": "/g/1tt0qxzn",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 43.0573809,
       "lng": 141.3116186,
-      "maps_url": "https://maps.google.com/?cid=6848613578277225943",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moliere",
       "cid": "6848613578277225943",
       "google_id": null,
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 43.071334199999995,
       "lng": 141.3690782,
-      "maps_url": "https://maps.google.com/?cid=6848613202336415743",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Beer+Garden%2C+9+Chome-2-10+Kita+7+Johigashi%2C+Higashi+Ward%2C+Sapporo%2C+Hokkaido+065-0007",
       "cid": "6848613202336415743",
       "google_id": "/g/1tfcn4bn",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 43.073412399999995,
       "lng": 141.3221065,
-      "maps_url": "https://maps.google.com/?cid=6848613485278929105",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Central+Wholesale+Market%2C+20+Chome-2-1+Kita+12+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+060-0012",
       "cid": "6848613485278929105",
       "google_id": "/g/120q2cq8",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 43.0711017,
       "lng": 141.3484699,
-      "maps_url": "https://maps.google.com/?cid=6848612785736000929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%83%BC%E7%AB%B9%E5%86%85+Bar+Takeuchi%2C+%E3%80%92060-0808+Hokkaido%2C+Sapporo%2C+Kita+Ward%2C+Kita+8+Jonishi%2C+4+Chome%E2%88%92%EF%BC%92%EF%BC%90%E2%88%921+%E3%83%90%E3%83%AD%E3%83%B3%E3%83%89%E3%83%BC%E3%83%AB+B1F",
       "cid": "6848612785736000929",
       "google_id": "/g/1txy23v9",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 43.0569706,
       "lng": 141.3343866,
-      "maps_url": "https://maps.google.com/?cid=6848613373989719269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Space+1-15%2C+%E3%80%92060-0061+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+1+Jonishi%2C+15+Chome%E2%88%921-319+%E3%82%B7%E3%83%A3%E3%83%88%E3%83%BC%E3%83%BB%E3%83%AB%E3%83%BB%E3%83%AC%E3%82%A7%E3%83%BC%E3%83%96",
       "cid": "6848613373989719269",
       "google_id": "/g/11b6_t8m2h",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 43.0645744,
       "lng": 141.3598102,
-      "maps_url": "https://maps.google.com/?cid=6848613248762820531",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=boulangerie+coron%2C+%E3%80%92060-0032+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+2+Johigashi%2C+3+Chome%E2%88%922-4+%EF%BD%90%EF%BD%92%EF%BD%8F%EF%BD%84%EF%BC%8E%EF%BC%92%EF%BC%93+1F",
       "cid": "6848613248762820531",
       "google_id": "/g/1hm2k60wv",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 43.0637288,
       "lng": 141.34532629999998,
-      "maps_url": "https://maps.google.com/?cid=6848613421767820855",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SPICE+DINING+CHANDAMA%2C+%E3%80%92060-0003+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+3+Jonishi%2C+7+Chome%E2%88%92%EF%BC%91%E2%88%921+%E7%B7%91%E8%8B%91%E3%83%93%E3%83%AB+%E5%9C%B0%E4%B8%8B1%E9%9A%8E",
       "cid": "6848613421767820855",
       "google_id": "/g/1tcvtnh7",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 43.0562974,
       "lng": 141.35369559999998,
-      "maps_url": "https://maps.google.com/?cid=6848613306942562823",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yamazaki%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+3+Chome%2C+%E5%85%8B%E7%BE%8E%E3%83%93%E3%83%AB4%E9%9A%8E",
       "cid": "6848613306942562823",
       "google_id": null,
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 43.056425999999995,
       "lng": 141.35401819999998,
-      "maps_url": "https://maps.google.com/?cid=6848613307137996867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=the+bar+nano.+femto.%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+3+Chome%E2%88%925-2+%E9%83%BD%E3%83%93%E3%83%AB+7%E9%9A%8E",
       "cid": "6848613307137996867",
       "google_id": "/g/1tlgxrg2",
       "maps_place_token": null
@@ -425,9 +425,21 @@
       "is_favorite": false,
       "lat": 43.0562974,
       "lng": 141.3536957,
-      "maps_url": "https://maps.google.com/?cid=6848613325468488087",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakiniku+Gurumans+Ito%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+3+Chome%E2%88%928+%E5%85%8B%E7%BE%8E%E3%83%93%E3%83%AB+1F",
       "cid": "6848613325468488087",
       "google_id": "/g/1hc2fwvcn",
+      "maps_place_token": null
+    },
+    {
+      "name": "Steak & Wine Ishizaki Main shop | Susukino Teppanyaki",
+      "address": "〒064-0804 Hokkaido, Sapporo, Chuo Ward, Minami 4 Jonishi, 3 Chome, ニュー北星ビル 4F",
+      "note": null,
+      "is_favorite": false,
+      "lat": 43.056120299999996,
+      "lng": 141.35401729999998,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Steak+%26+Wine+Ishizaki+Main+shop+%7C+Susukino+Teppanyaki%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+3+Chome%2C+%E3%83%8B%E3%83%A5%E3%83%BC%E5%8C%97%E6%98%9F%E3%83%93%E3%83%AB+4F",
+      "cid": "6848613307120296535",
+      "google_id": null,
       "maps_place_token": null
     },
     {
@@ -437,7 +449,7 @@
       "is_favorite": false,
       "lat": 43.056664,
       "lng": 141.3541917,
-      "maps_url": "https://maps.google.com/?cid=6848613309554360319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%AA%E3%82%A4%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%90%E3%83%BC+%E3%83%90%E3%83%BC%E3%83%AB%E3%83%90%E3%83%BC%E3%83%AB%E3%83%97%E3%83%AD%E3%83%9A%E3%83%83%E3%83%81%E3%83%A7%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+3+Chome%E2%88%923%E2%88%922+%E7%AC%AC2%E3%82%BF%E3%83%A0%E3%83%A9%E3%83%93%E3%83%AB+2F",
       "cid": "6848613309554360319",
       "google_id": "/g/11c60dgwmm",
       "maps_place_token": null
@@ -449,7 +461,7 @@
       "is_favorite": false,
       "lat": 43.0560204,
       "lng": 141.3528971,
-      "maps_url": "https://maps.google.com/?cid=6848613306593748835",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Steak+House+es+%E3%81%99%E3%81%99%E3%81%8D%E3%81%AE%E5%BA%97%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+4+%E6%81%B5%E6%84%9B%E3%83%93%E3%83%AB8F",
       "cid": "6848613306593748835",
       "google_id": "/g/1tffz92j",
       "maps_place_token": null
@@ -461,7 +473,7 @@
       "is_favorite": false,
       "lat": 43.056803099999996,
       "lng": 141.35231,
-      "maps_url": "https://maps.google.com/?cid=6848613307793036629",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JYOTI+The+Door+to+India%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+4+Chome%E2%88%92%EF%BC%91%EF%BC%96%E2%88%921%2C+Wakatsuki+Square.Bld%2C+7F",
       "cid": "6848613307793036629",
       "google_id": "/g/1tdyql7k",
       "maps_place_token": null
@@ -473,7 +485,7 @@
       "is_favorite": false,
       "lat": 43.0568305,
       "lng": 141.3521233,
-      "maps_url": "https://maps.google.com/?cid=6848613309338878071",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=the+bar+nano.+gould.%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+4+Chome%2C+J%E3%83%BBBox%E3%83%93%E3%83%AB+%EF%BC%94%E9%9A%8E",
       "cid": "6848613309338878071",
       "google_id": "/g/12qgl52wy",
       "maps_place_token": null
@@ -485,7 +497,7 @@
       "is_favorite": false,
       "lat": 43.0576584,
       "lng": 141.3497611,
-      "maps_url": "https://maps.google.com/?cid=6848520865338729457",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Ikko%2C+5+Chome-31-4+Minami+2+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+060-0062",
       "cid": "6848520865338729457",
       "google_id": "/g/1ptycppr9",
       "maps_place_token": null
@@ -497,7 +509,7 @@
       "is_favorite": false,
       "lat": 43.0567523,
       "lng": 141.3515908,
-      "maps_url": "https://maps.google.com/?cid=6848613307739528343",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Piece+of+Dream%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+4+Chome%2C+4+%E3%83%93%E3%83%AB+1F",
       "cid": "6848613307739528343",
       "google_id": "/g/12qg3v262",
       "maps_place_token": null
@@ -509,7 +521,7 @@
       "is_favorite": false,
       "lat": 43.062272899999996,
       "lng": 141.3473171,
-      "maps_url": "https://maps.google.com/?cid=6848613308583752337",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kobutaya%2C+%E3%80%92060-0062+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+2+Jonishi%2C+5+%E6%9C%AD%E5%B9%8C%E3%83%97%E3%83%A9%E3%82%B62%E3%83%BB5%E3%83%93%E3%83%AB+1F",
       "cid": "6848613308583752337",
       "google_id": null,
       "maps_place_token": null
@@ -521,7 +533,7 @@
       "is_favorite": false,
       "lat": 43.0557369,
       "lng": 141.3512699,
-      "maps_url": "https://maps.google.com/?cid=6848613306681672127",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Suage%2B%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+5+Chome%E2%88%926-1+%E9%83%BD%E5%BF%97%E6%9D%BE%E3%83%93%E3%83%AB+%EF%BC%92%E9%9A%8E",
       "cid": "6848613306681672127",
       "google_id": "/g/1wn_5xkl",
       "maps_place_token": null
@@ -533,7 +545,7 @@
       "is_favorite": false,
       "lat": 43.0568777,
       "lng": 141.3506244,
-      "maps_url": "https://maps.google.com/?cid=6848613309073087661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%B4%85%E3%81%84%E6%89%89%E3%81%AE%E4%B8%AD%E8%8F%AF%E3%82%84+%E7%9A%86%E6%85%B6%28%E3%81%BF%E3%81%AA%E3%82%88%E3%81%97%29%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+5+Chome%E2%88%9214+%E4%B8%89%E6%9D%A1%E7%BE%8E%E6%9D%BE%E3%83%93%E3%83%AB+4%E9%9A%8E",
       "cid": "6848613309073087661",
       "google_id": "/g/11cs1srclr",
       "maps_place_token": null
@@ -545,7 +557,7 @@
       "is_favorite": false,
       "lat": 43.0555477,
       "lng": 141.3504989,
-      "maps_url": "https://maps.google.com/?cid=6848613309696274505",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%85%92%E5%A0%B4+NATURE%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+5+Chome%E2%88%9210+%E7%AC%AC%EF%BC%94%E8%97%A4%E4%BA%95%E3%83%93%E3%83%AB%EF%BC%96%EF%BC%A6",
       "cid": "6848613309696274505",
       "google_id": "/g/11b7hj8klm",
       "maps_place_token": null
@@ -557,7 +569,7 @@
       "is_favorite": false,
       "lat": 43.0561486,
       "lng": 141.35081879999998,
-      "maps_url": "https://maps.google.com/?cid=6848613309441879581",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Katsuissen%2C+%E3%80%92060-0063+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Jonishi%2C+5+Chome%E2%88%92%EF%BC%91%E2%88%921+%E3%83%8E%E3%83%AB%E3%83%99%E3%82%B5%E5%9C%B0%E4%B8%8B+1%E9%9A%8E",
       "cid": "6848613309441879581",
       "google_id": "/g/1tdyql7l",
       "maps_place_token": null
@@ -569,7 +581,7 @@
       "is_favorite": false,
       "lat": 43.0546629,
       "lng": 141.3540506,
-      "maps_url": "https://maps.google.com/?cid=6848613316488771817",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR+%E9%BB%92%E3%81%AE50%2C+%E3%80%92064-0805+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+5+Jonishi%2C+3+Chome%2C+%E4%BA%94%E6%9D%A1%E3%83%93%E3%83%AB+1F",
       "cid": "6848613316488771817",
       "google_id": "/g/12qg1j654",
       "maps_place_token": null
@@ -581,7 +593,7 @@
       "is_favorite": false,
       "lat": 43.0549506,
       "lng": 141.3542979,
-      "maps_url": "https://maps.google.com/?cid=6848613305869709779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+Ramen+Haruka%2C+%E3%80%92064-0805+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+5+Jonishi%2C+3+Chome%2C+%E5%85%83%E7%A5%96%E3%81%95%E3%81%A3%E3%81%BD%E3%82%8D%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B3%E6%A8%AA%E4%B8%81",
       "cid": "6848613305869709779",
       "google_id": "/g/11hbn_zy26",
       "maps_place_token": null
@@ -593,7 +605,7 @@
       "is_favorite": false,
       "lat": 43.055687899999995,
       "lng": 141.3519663,
-      "maps_url": "https://maps.google.com/?cid=6848613306665943271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%B2%9D%C3%97%E3%82%B7%E3%83%A3%E3%83%96%E3%83%AA+jiji%2C+4+Chome-13-1+Minami+4+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0804",
       "cid": "6848613306665943271",
       "google_id": "/g/11f08bd8_3",
       "maps_place_token": null
@@ -605,7 +617,7 @@
       "is_favorite": false,
       "lat": 43.0555106,
       "lng": 141.3545507,
-      "maps_url": "https://maps.google.com/?cid=6848613305632811553",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Tradition%2C+%E3%80%92064-0804+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+4+Jonishi%2C+3+Chome%2C+%E7%AC%AC3%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3%E3%83%93%E3%83%AB5F",
       "cid": "6848613305632811553",
       "google_id": "/g/11c1vnvj3j",
       "maps_place_token": null
@@ -617,7 +629,7 @@
       "is_favorite": false,
       "lat": 43.0522704,
       "lng": 141.3475557,
-      "maps_url": "https://maps.google.com/?cid=6848613353202756267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ramen+Shingen%2C+%E3%80%92064-0806+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+6+Jonishi%2C+8+Chome%E2%88%92%EF%BC%98%E2%88%922",
       "cid": "6848613353202756267",
       "google_id": "/g/1tmbvxt_",
       "maps_place_token": null
@@ -629,7 +641,7 @@
       "is_favorite": false,
       "lat": 43.053993999999996,
       "lng": 141.3524607,
-      "maps_url": "https://maps.google.com/?cid=6848613762807346025",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%89%A1%E8%A0%A3%E5%87%A6AZUMASI%2C+%E3%80%92064-0805+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+5+Jonishi%2C+4+Chome%E2%88%925%E2%88%92%E7%95%AA%E5%9C%B0+%E3%81%99%E3%81%99%E3%81%8D%E3%81%AE%E5%AF%BF%E3%83%93%E3%83%AB+2%E9%9A%8E",
       "cid": "6848613762807346025",
       "google_id": "/g/11c1lk7sd3",
       "maps_place_token": null
@@ -641,7 +653,7 @@
       "is_favorite": false,
       "lat": 43.051285,
       "lng": 141.3455081,
-      "maps_url": "https://maps.google.com/?cid=6848613351204227791",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ebisoba+Ichigen+Main+Shop%2C+9+Chome-1024-10+Minami+7+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0807",
       "cid": "6848613351204227791",
       "google_id": "/g/1tmbvxtz",
       "maps_place_token": null
@@ -653,9 +665,21 @@
       "is_favorite": false,
       "lat": 43.0537162,
       "lng": 141.3530973,
-      "maps_url": "https://maps.google.com/?cid=6848613315842813175",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR%E4%B8%80%E6%85%B6%28%E3%83%90%E3%83%BC%E3%82%A4%E3%83%83%E3%82%B1%E3%82%A4%E3%80%81BAR+IKKEI%29%2C+%E3%80%92064-0806+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+6+Jonishi%2C+4+Chome%E2%88%925-11+%E3%82%B8%E3%83%A3%E3%82%B9%E3%83%9E%E3%83%83%E3%82%AF%E3%82%B5%E3%83%83%E3%83%9D%E3%83%AD+2F",
       "cid": "6848613315842813175",
       "google_id": "/g/1v4pssxr",
+      "maps_place_token": null
+    },
+    {
+      "name": "Hyousetsu No Mon",
+      "address": "2 Chome Minami 5 Jonishi, Chuo Ward, Sapporo, Hokkaido 064-0805",
+      "note": null,
+      "is_favorite": false,
+      "lat": 43.0549338,
+      "lng": 141.35596089999999,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hyousetsu+No+Mon%2C+2+Chome+Minami+5+Jonishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+064-0805",
+      "cid": "6878439647024416907",
+      "google_id": "/g/1wrtcnq7",
       "maps_place_token": null
     },
     {
@@ -665,7 +689,7 @@
       "is_favorite": false,
       "lat": 43.0582852,
       "lng": 141.3582894,
-      "maps_url": "https://maps.google.com/?cid=6848613298207374601",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nijo+Market%2C+%E3%80%92060-0052+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Minami+3+Johigashi%2C+1+Chome%2C+%E3%80%9C%EF%BC%92%E4%B8%81%E7%9B%AE",
       "cid": "6848613298207374601",
       "google_id": "/g/120wx6zf",
       "maps_place_token": null
@@ -677,7 +701,7 @@
       "is_favorite": false,
       "lat": 43.0648623,
       "lng": 141.3499018,
-      "maps_url": "https://maps.google.com/?cid=6848613417606950901",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hakodate+Uni+Murakami+Sapporo+Branch%2C+%E3%80%92060-0003+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+3+Jonishi%2C+4+Chome%E2%88%921-1+%E6%97%A5%E6%9C%AC%E7%94%9F%E5%91%BD%E6%9C%AD%E5%B9%8C%E3%83%93%E3%83%AB",
       "cid": "6848613417606950901",
       "google_id": "/g/1tmxwcx6",
       "maps_place_token": null
@@ -689,7 +713,7 @@
       "is_favorite": false,
       "lat": 43.0611047,
       "lng": 141.3564246,
-      "maps_url": "https://maps.google.com/?cid=6848613414236284045",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+TV+Tower%2C+1+Chome+Odorinishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+060-0042",
       "cid": "6848613414236284045",
       "google_id": null,
       "maps_place_token": null
@@ -701,7 +725,7 @@
       "is_favorite": false,
       "lat": 43.0603912,
       "lng": 141.3556338,
-      "maps_url": "https://maps.google.com/?cid=6848613413536137297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Donguri+Odori%2C+%E3%80%92060-0042+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Odorinishi%2C+1+Chome%E2%88%9213+%E3%83%AB%E3%83%BB%E3%83%88%E3%83%AD%E3%83%AF+%EF%BC%91%E9%9A%8E",
       "cid": "6848613413536137297",
       "google_id": "/g/11c3t_sj0m",
       "maps_place_token": null
@@ -713,7 +737,7 @@
       "is_favorite": false,
       "lat": 43.060752099999995,
       "lng": 141.3544308,
-      "maps_url": "https://maps.google.com/?cid=6848613087436985129",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Odori+Park%2C+2+Chome+Odorinishi%2C+Chuo+Ward%2C+Sapporo%2C+Hokkaido+060-0042",
       "cid": "6848613087436985129",
       "google_id": null,
       "maps_place_token": null
@@ -725,7 +749,7 @@
       "is_favorite": false,
       "lat": 43.0628053,
       "lng": 141.35228899999998,
-      "maps_url": "https://maps.google.com/?cid=6848613416569150803",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cocktail+Bar+HARADA%2C+%E3%80%92060-0001+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+1+Jonishi%2C+3+Chome%E2%88%923-31+%E5%8F%A4%E4%B9%85%E6%A0%B9%E3%83%93%E3%83%AB",
       "cid": "6848613416569150803",
       "google_id": "/g/1td_4zxw",
       "maps_place_token": null
@@ -737,7 +761,7 @@
       "is_favorite": false,
       "lat": 43.0638967,
       "lng": 141.3526762,
-      "maps_url": "https://maps.google.com/?cid=6848613416806131455",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Snow+Brand+Parlor+Sapporo+Flagship+Shop%2C+%E3%80%92060-0002+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+2+Jonishi%2C+3+Chome%E2%88%92%EF%BC%91%E2%88%9231+%E5%A4%AA%E9%99%BD%E7%94%9F%E5%91%BD%E6%9C%AD%E5%B9%8C%E3%83%93%E3%83%AB+1%E9%9A%8E",
       "cid": "6848613416806131455",
       "google_id": "/g/11b6mrks73",
       "maps_place_token": null
@@ -749,7 +773,7 @@
       "is_favorite": false,
       "lat": 43.063888899999995,
       "lng": 141.3502778,
-      "maps_url": "https://maps.google.com/?cid=6848613417155169235",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Akarenga+Terrace%2C+%E3%80%92060-0002+Hokkaido%2C+Sapporo%2C+Chuo+Ward%2C+Kita+2+Jonishi%2C+4+Chome%E2%88%92%EF%BC%91",
       "cid": "6848613417155169235",
       "google_id": "/g/11b6cpb11y",
       "maps_place_token": null
@@ -761,7 +785,7 @@
       "is_favorite": false,
       "lat": 43.0536992,
       "lng": 141.3543532,
-      "maps_url": "https://maps.google.com/?cid=6848613211235668967",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gotsubo+Oyster+Bar",
       "cid": "6848613211235668967",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +797,7 @@
       "is_favorite": false,
       "lat": 43.0549493,
       "lng": 141.35429209999998,
-      "maps_url": "https://maps.google.com/?cid=6848613305899302007",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tenhou+Ramen+%E5%A4%A9%E9%B3%B3",
       "cid": "6848613305899302007",
       "google_id": null,
       "maps_place_token": null
@@ -785,7 +809,7 @@
       "is_favorite": false,
       "lat": 43.0497246,
       "lng": 141.35238999999999,
-      "maps_url": "https://maps.google.com/?cid=6848613323377737727",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=UNWIND+HOTEL%26BAR+SAPPORO",
       "cid": "6848613323377737727",
       "google_id": null,
       "maps_place_token": null
@@ -797,7 +821,7 @@
       "is_favorite": false,
       "lat": 43.0528665,
       "lng": 141.3541835,
-      "maps_url": "https://maps.google.com/?cid=6848613314989858991",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Houryu+Ramen+Flagship+Store",
       "cid": "6848613314989858991",
       "google_id": null,
       "maps_place_token": null
@@ -809,7 +833,7 @@
       "is_favorite": false,
       "lat": 43.052465,
       "lng": 141.35342,
-      "maps_url": "https://maps.google.com/?cid=6848613314929203787",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%8A%B1%E5%B0%8F%E8%B7%AF%E3%81%95%E3%82%8F%E7%94%B0",
       "cid": "6848613314929203787",
       "google_id": null,
       "maps_place_token": null
@@ -821,7 +845,7 @@
       "is_favorite": false,
       "lat": 43.0525416,
       "lng": 141.3535713,
-      "maps_url": "https://maps.google.com/?cid=6848613314810199835",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Araki+Tempura+Restaurant",
       "cid": "6848613314810199835",
       "google_id": null,
       "maps_place_token": null
@@ -833,7 +857,7 @@
       "is_favorite": false,
       "lat": 43.0499297,
       "lng": 141.29896499999998,
-      "maps_url": "https://maps.google.com/?cid=6848613698513472839",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Mus%C3%A9e",
       "cid": "6848613698513472839",
       "google_id": null,
       "maps_place_token": null
@@ -845,7 +869,7 @@
       "is_favorite": false,
       "lat": 43.071754,
       "lng": 141.3221284,
-      "maps_url": "https://maps.google.com/?cid=6848613485929289115",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sapporo+morning+market",
       "cid": "6848613485929289115",
       "google_id": null,
       "maps_place_token": null

@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:49:17.224428+00:00",
-  "refresh_after": "2026-04-29T23:49:17.224428+00:00",
+  "fetched_at": "2026-04-20T16:01:35.687085+00:00",
+  "refresh_after": "2026-05-07T06:28:23.687085+00:00",
   "source_signature": "b7907f02e03cc10c5dc2152780b21987463593a65ad38f3db9bfbf1b6806d170",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/kDUwsyoCCXL3Q3TU8",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 30.270121999999997,
       "lng": -97.73134209999999,
-      "maps_url": "https://maps.google.com/?cid=3579139785445756036",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Franklin+Barbecue%2C+900+E+11th+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "3579139785445756036",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 30.4060122,
       "lng": -97.874192,
-      "maps_url": "https://maps.google.com/?cid=896230120428279408",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oasis+Texas+Brewing+Company%2C+6650+Comanche+Trail+Suite+%23301%2C+Austin%2C+TX+78732%2C+United+States",
       "cid": "896230120428279408",
       "google_id": "/g/11b5w0tvk4",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 30.2635667,
       "lng": -97.7628972,
-      "maps_url": "https://maps.google.com/?cid=1088958808265557517",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Picnic+-+Food+Truck+Park%2C+1720+Barton+Springs+Rd%2C+Austin%2C+TX+78704%2C+United+States",
       "cid": "1088958808265557517",
       "google_id": "/g/1z449yzbf",
       "maps_place_token": null
@@ -53,8 +53,8 @@
       "is_favorite": false,
       "lat": 30.2597015,
       "lng": -97.75482339999999,
-      "maps_url": "https://maps.google.com/?q=30.2597015,-97.7548234",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Terry+Black%27s+Barbecue%2C+1003+Barton+Springs+Rd%2C+Austin%2C+TX+78704",
+      "cid": "13851597096564644039",
       "google_id": "/g/1ptw839c8",
       "maps_place_token": null
     },
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 30.2668732,
       "lng": -97.7454326,
-      "maps_url": "https://maps.google.com/?cid=2371908426973362301",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=DuMont%27s+Down+Low%2C+214+W+4th+St+Suite+B%2C+Austin%2C+TX+78701%2C+United+States",
       "cid": "2371908426973362301",
       "google_id": "/g/11fhng7shs",
       "maps_place_token": null
@@ -77,8 +77,8 @@
       "is_favorite": false,
       "lat": 30.266036099999997,
       "lng": -97.74965279999999,
-      "maps_url": "https://maps.google.com/?q=30.2660361,-97.7496528",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Flower+Child%2C+500+W+2nd+St+Suite+133%2C+Austin%2C+TX+78701%2C+United+States",
+      "cid": "12629844343293996943",
       "google_id": "/g/11f37w1qvv",
       "maps_place_token": null
     },
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 30.2684109,
       "lng": -97.7413784,
-      "maps_url": "https://maps.google.com/?cid=685283831439639801",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Here+Nor+There%2C+612+Brazos+St%2C+Austin%2C+TX+78701%2C+United+States",
       "cid": "685283831439639801",
       "google_id": "/g/11gsbmlkfz",
       "maps_place_token": null
@@ -101,8 +101,8 @@
       "is_favorite": false,
       "lat": 30.268925999999997,
       "lng": -97.7416927,
-      "maps_url": "https://maps.google.com/?q=30.2689260,-97.7416927",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Small+Victory%2C+108+E+7th+St%2C+Austin%2C+TX+78701%2C+United+States",
+      "cid": "18062964085335453191",
       "google_id": "/g/11bxfsn30w",
       "maps_place_token": null
     },
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 30.2676259,
       "lng": -97.7407858,
-      "maps_url": "https://maps.google.com/?cid=5040330783418647592",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Happy+Chicks%2C+214+E+6th+St%2C+Austin%2C+TX+78701%2C+United+States",
       "cid": "5040330783418647592",
       "google_id": "/g/11f03yrvns",
       "maps_place_token": null
@@ -125,8 +125,8 @@
       "is_favorite": false,
       "lat": 30.264063399999998,
       "lng": -97.7379309,
-      "maps_url": "https://maps.google.com/?q=30.2640634,-97.7379309",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kinfolk+Lounge+%26+Library%2C+303+B+Red+River+St%2C+Austin%2C+TX+78701%2C+United+States",
+      "cid": "10908487070075501918",
       "google_id": "/g/11sgktdmrv",
       "maps_place_token": null
     },
@@ -137,8 +137,8 @@
       "is_favorite": false,
       "lat": 30.2676883,
       "lng": -97.7386274,
-      "maps_url": "https://maps.google.com/?q=30.2676883,-97.7386274",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Las+Perlas%2C+405+E+7th+St%2C+Austin%2C+TX+78701%2C+United+States",
+      "cid": "10810529899631204575",
       "google_id": "/g/11f0__r9xc",
       "maps_place_token": null
     },
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 30.2686584,
       "lng": -97.72804939999999,
-      "maps_url": "https://maps.google.com/?cid=7492122358231467023",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nickel+City%2C+1133+E+11th+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "7492122358231467023",
       "google_id": "/g/11ddytpm42",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 30.2690254,
       "lng": -97.72925459999999,
-      "maps_url": "https://maps.google.com/?cid=1613765359628645237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vintage+Bookstore+and+Wine+Bar%2C+1101+E+11th+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "1613765359628645237",
       "google_id": "/g/11sx22bstl",
       "maps_place_token": null
@@ -173,8 +173,8 @@
       "is_favorite": false,
       "lat": 30.2688103,
       "lng": -97.7287539,
-      "maps_url": "https://maps.google.com/?q=30.2688103,-97.7287539",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Try+Hard+Coffee+Roasters%2C+1115+E+11th+St%2C+Austin%2C+TX+78702%2C+United+States",
+      "cid": "16434015262399555686",
       "google_id": "/g/11k5zn4k55",
       "maps_place_token": null
     },
@@ -185,8 +185,8 @@
       "is_favorite": false,
       "lat": 30.2598535,
       "lng": -97.73180579999999,
-      "maps_url": "https://maps.google.com/?q=30.2598535,-97.7318058",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Las+Trancas+Taco+Stand%2C+1210+E+Cesar+Chavez+St%2C+Austin%2C+TX+78702%2C+United+States",
+      "cid": "16057589366301091223",
       "google_id": "/g/11bcd_2wvb",
       "maps_place_token": null
     },
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 30.263989799999997,
       "lng": -97.7288647,
-      "maps_url": "https://maps.google.com/?cid=906797388716795360",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Licha%27s+Cantina%2C+1306+E+6th+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "906797388716795360",
       "google_id": "/g/1pwfx8_lr",
       "maps_place_token": null
@@ -209,8 +209,8 @@
       "is_favorite": false,
       "lat": 30.2569554,
       "lng": -97.7233859,
-      "maps_url": "https://maps.google.com/?q=30.2569554,-97.7233859",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=High+Noon%2C+2000+E+Cesar+Chavez+St%2C+Austin%2C+TX+78702%2C+United+States",
+      "cid": "17263794606806108223",
       "google_id": "/g/11j8lgfxx8",
       "maps_place_token": null
     },
@@ -221,8 +221,8 @@
       "is_favorite": false,
       "lat": 30.2626833,
       "lng": -97.7241581,
-      "maps_url": "https://maps.google.com/?q=30.2626833,-97.7241581",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Grackle%2C+1700+E+6th+St%2C+Austin%2C+TX+78702%2C+United+States",
+      "cid": "10686401820363385111",
       "google_id": "/g/1hc8wq4_h",
       "maps_place_token": null
     },
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 30.254677899999997,
       "lng": -97.7173081,
-      "maps_url": "https://maps.google.com/?cid=2914414295542934348",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Juniper%2C+2400+E+Cesar+Chavez+St+UNIT+304%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "2914414295542934348",
       "google_id": "/g/11b7qxpk3s",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 30.256465,
       "lng": -97.7232574,
-      "maps_url": "https://maps.google.com/?cid=4502994430924086984",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Drinks+Lounge%2C+2001+E+Cesar+Chavez+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "4502994430924086984",
       "google_id": "/g/11b62sjvgt",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 30.2590196,
       "lng": -97.7144697,
-      "maps_url": "https://maps.google.com/?cid=2162809300622987953",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Holly%2C+2500+E+6th+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "2162809300622987953",
       "google_id": "/g/11c6tyjsbm",
       "maps_place_token": null
@@ -269,8 +269,8 @@
       "is_favorite": false,
       "lat": 30.2477396,
       "lng": -97.7713502,
-      "maps_url": "https://maps.google.com/?q=30.2477396,-97.7713502",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Loro%2C+2115+S+Lamar+Blvd%2C+Austin%2C+TX+78704%2C+United+States",
+      "cid": "13539345899590166404",
       "google_id": "/g/11gcqgwfn9",
       "maps_place_token": null
     },
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 30.2514045,
       "lng": -97.7021716,
-      "maps_url": "https://maps.google.com/?cid=5659552000657878281",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=De+Nada+Cantina%2C+4715+E+Cesar+Chavez+St%2C+Austin%2C+TX+78702%2C+United+States",
       "cid": "5659552000657878281",
       "google_id": "/g/11mw7352l3",
       "maps_place_token": null

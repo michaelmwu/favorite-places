@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:28:41.486837+00:00",
-  "refresh_after": "2026-04-29T15:28:41.486837+00:00",
+  "fetched_at": "2026-04-20T16:08:31.379034+00:00",
+  "refresh_after": "2026-05-01T17:01:12.379034+00:00",
   "source_signature": "02b1021b683203043c0afb71f647cdff3bdcbf86fa58bdcfa8253af959fbf0b0",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/zEyn4yr3h3ovtVr9A",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 24.7770418,
       "lng": 121.7877874,
-      "maps_url": "https://maps.google.com/?cid=3776263110352544563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CALMA+%E5%AE%9C%E8%87%AA%E8%8B%A5%2C+No.+6+No.+6%E8%99%9F%2C+Lane+47%2C+Section+3%2C+Dafu+Rd%2C+Zhuangwei+Township%2C+Yilan+County%2C+263",
       "cid": "3776263110352544563",
       "google_id": "/g/11vlh8bpdv",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 24.7605644,
       "lng": 121.7520974,
-      "maps_url": "https://maps.google.com/?cid=3776238508850782305",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Garlic+Meat+Heritage%2C+No.+148%2C+Jiucheng+N+Rd%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776238508850782305",
       "google_id": "/g/124yf6slv",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 24.6756462,
       "lng": 121.7592492,
-      "maps_url": "https://maps.google.com/?cid=3776240267907773805",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%A6%99%E5%BB%9A%E7%B1%B3%E7%B2%89%E7%BE%B9%2C+No.+122%E8%99%9F%2C+Section+1%2C+Beicheng+Rd%2C+Luodong+Township%2C+Yilan+County%2C+Taiwan+265",
       "cid": "3776240267907773805",
       "google_id": "/g/1vc6b3w8",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 24.7536907,
       "lng": 121.750255,
-      "maps_url": "https://maps.google.com/?cid=3776238341368049689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Red+Lantern%2C+260%2C+Taiwan%2C+Yilan+County%2C+Yilan+City%2C+Section+2%2C+Minquan+Rd%2C+36%E8%99%9F6%E6%A8%93",
       "cid": "3776238341368049689",
       "google_id": "/g/1pztb6lqz",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 24.8287124,
       "lng": 121.7718786,
-      "maps_url": "https://maps.google.com/?cid=3776263066787969797",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%99%B3%E6%97%BA%E8%A8%98%E9%B4%A8%E7%89%87%E9%A3%AF%2C+No.+30%E8%99%9F%2C+Deyang+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776263066787969797",
       "google_id": "/g/11jlb_qkyx",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 24.669419899999998,
       "lng": 121.76523619999999,
-      "maps_url": "https://maps.google.com/?cid=3776240282032164875",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%9C%E8%98%AD%E7%BE%85%E6%9D%B1%E9%A7%BF%E6%87%B7%E8%88%8A%E9%A4%90%E5%BB%B3%2C+No.+53%2C+Section+1%2C+Chunjing+Rd%2C+Luodong+Township%2C+Yilan+County%2C+Taiwan+265",
       "cid": "3776240282032164875",
       "google_id": "/g/1tdhjknb",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 24.6833335,
       "lng": 121.7897814,
-      "maps_url": "https://maps.google.com/?cid=3776238938111478713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BE%E5%8C%AF%E7%AA%AF%E7%83%A4%E9%9B%9E%E9%A4%90%E5%BB%B3%2F%E4%BA%8C%E9%80%A3%E9%9C%B8%E6%A6%AE%E7%8D%B2%E5%8D%81%E5%A4%A7%E5%A5%BD%E9%A3%9F%E9%A4%90%E5%BB%B3%2C+No.+171%E8%99%9F%2C+Section+3%2C+Wujie+Rd%2C+Wujie+Township%2C+Yilan+County%2C+Taiwan+268",
       "cid": "3776238938111478713",
       "google_id": "/g/11f53mvq2w",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 24.760391499999997,
       "lng": 121.7524852,
-      "maps_url": "https://maps.google.com/?cid=3776238394256540409",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%87%91%E6%BE%A4%E9%AD%AF%E8%82%89%E9%A3%AF%2C+No.+140%E8%99%9F%2C+Xihou+St%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776238394256540409",
       "google_id": "/g/11b638_xkc",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 24.836267,
       "lng": 121.78420679999999,
-      "maps_url": "https://maps.google.com/?cid=3776261951662601065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%81%AB%E5%B1%B1%E7%88%86%E7%99%BC%E9%9B%9E%2C+No.+39%E8%99%9F%2C+Section+7%2C+Jiaoxi+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776261951662601065",
       "google_id": "/g/1hc1l_zq4",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 24.776238199999998,
       "lng": 121.7791937,
-      "maps_url": "https://maps.google.com/?cid=3776263454618636037",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A7%E4%BB%81%E5%93%A5%E8%94%97%E9%A6%99%E8%84%86%E7%9A%AE%E6%A1%B6%E4%BB%94%E9%9B%9E-%E5%AE%9C%E8%98%AD%E6%97%97%E8%89%A6%E5%BA%97%2C+No.+20%E8%99%9F%2C+Lane+232%2C+Section+3%2C+Dafu+Rd%2C+Zhuangwei+Township%2C+Yilan+County%2C+Taiwan+263",
       "cid": "3776263454618636037",
       "google_id": "/g/11sf6x0smd",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 24.7265904,
       "lng": 121.8109786,
-      "maps_url": "https://maps.google.com/?cid=3776239024036946869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%9C%E8%98%AD%E5%A3%AF%E5%9C%8D%E5%BF%85%E5%90%83%E7%BE%8E%E9%A3%9F%E9%A4%90%E5%BB%B3%E6%8E%A8%E8%96%A6%E3%80%90%E5%A4%A7%E5%B5%8C%E5%9F%8E%E7%94%95%E7%BC%B8%E9%9B%9E%E3%80%91%2C+No.+102-6%E8%99%9F%2C+Xinnan+Rd%2C+Zhuangwei+Township%2C+Yilan+County%2C+Taiwan+263",
       "cid": "3776239024036946869",
       "google_id": "/g/11bvt1j6fc",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 24.6139302,
       "lng": 121.8298607,
-      "maps_url": "https://maps.google.com/?cid=3776239593983007605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%95%AA%E5%89%B2%E7%94%B0%E7%94%95%E7%BC%B8%E9%9B%9E%2C+No.+309%2C+Haishan+W+Rd%2C+Su%27ao+Township%2C+Yilan+County%2C+Taiwan+268",
       "cid": "3776239593983007605",
       "google_id": "/g/11bzt6sgj8",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 24.8366685,
       "lng": 121.7856674,
-      "maps_url": "https://maps.google.com/?cid=3776261840116337769",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%A6%8F%E5%93%A5%E7%9F%B3%E7%AA%AF%E9%9B%9E%2C+No.+11%E8%99%9F%2C+Baiyun+3rd+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776261840116337769",
       "google_id": "/g/12hlf7kqx",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 24.6748671,
       "lng": 121.675608,
-      "maps_url": "https://maps.google.com/?cid=3776234241585510533",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zhang+Mei+Ama%E2%80%99s+Farm%2C+266%2C+Taiwan%2C+Yilan+County%2C+Sanxing+Township%2C+%E8%A1%8C%E5%81%A5%E6%BA%AA%E4%B8%80%E8%B7%AF%E4%BA%8C%E6%AE%B5161%E8%99%9F",
       "cid": "3776234241585510533",
       "google_id": "/g/11c1n2nf2s",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 24.4662857,
       "lng": 121.804367,
-      "maps_url": "https://maps.google.com/?cid=3776227806036565907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JianHua+Ice+Cream+shop%2C+No.+419%E8%99%9F%2C+Section+2%2C+Suhua+Rd%2C+Nan%27ao+Township%2C+Yilan+County%2C+Taiwan+272",
       "cid": "3776227806036565907",
       "google_id": "/g/1thmc3xm",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 24.8256697,
       "lng": 121.7711207,
-      "maps_url": "https://maps.google.com/?cid=3776262933342644849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sinbow+Scallion+Expert%2C+No.+7%E8%99%9F%2C+Section+5%2C+Jiaoxi+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776262933342644849",
       "google_id": "/g/11jfd11l4y",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 24.8211975,
       "lng": 121.76983129999999,
-      "maps_url": "https://maps.google.com/?cid=3776262024599469037",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9F%AF%E6%B0%8F%E8%94%A5%E6%B2%B9%E9%A4%85%2C+No.+128%E8%99%9F%2C+Section+4%2C+Jiaoxi+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776262024599469037",
       "google_id": "/g/1xgz8jd7",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 24.8326024,
       "lng": 121.7766784,
-      "maps_url": "https://maps.google.com/?cid=3776262008156326723",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jiaoxi+Hot+Springs+Park%2C+262%2C+Taiwan%2C+Yilan+County%2C+Jiaoxi+Township%2C+%E5%85%AC%E5%9C%92%E8%B7%AF70%E5%B7%B760%E8%99%9F",
       "cid": "3776262008156326723",
       "google_id": "/g/11b6hh6_h3",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 24.8285141,
       "lng": 121.76995579999999,
-      "maps_url": "https://maps.google.com/?cid=3776262010148142575",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tangweigou+Hot+Spring+Park%2C+No.+99-11%E8%99%9F%2C+Deyang+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776262010148142575",
       "google_id": "/g/12q4xy_wd",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 24.7506113,
       "lng": 121.7501932,
-      "maps_url": "https://maps.google.com/?cid=3776238336189859957",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E4%B9%85%E8%A8%98%E7%83%A4%E9%B4%A8+%3A+%28%E9%80%A3%E5%81%87%E5%85%AC%E4%BC%91%E6%97%A5%E8%AB%8B%E6%9F%A5%E9%96%B1%E8%87%89%E6%9B%B8%E8%B3%87%E8%A8%8A%EF%BC%89%2C+No.+13%E8%99%9F%2C+Section+3%2C+Jiankang+Rd%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776238336189859957",
       "google_id": "/g/11xbkwrd4",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 24.7447956,
       "lng": 121.7463258,
-      "maps_url": "https://maps.google.com/?cid=3776239555744969877",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Whisky+Dude%2C+No.+55%E8%99%9F%2C+Section+3%2C+Nuzhong+Rd%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776239555744969877",
       "google_id": "/g/11h2ffftz8",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 24.747592899999997,
       "lng": 121.76172109999999,
-      "maps_url": "https://maps.google.com/?cid=3776238517673122523",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xi+Yue+Hong+Kong+Restaurant%2C+No.+319%E8%99%9F%2C+Section+1%2C+Nuzhong+Rd%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776238517673122523",
       "google_id": "/g/11f15jm2ks",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 24.6751051,
       "lng": 121.77490909999999,
-      "maps_url": "https://maps.google.com/?cid=3776240222293547703",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%80%B8%E9%A6%A8%E8%84%86%E7%9A%AE%E7%83%A4%E9%B4%A8%2C+No.+447%E8%99%9F%2C+Section+2%2C+Zhongshan+Rd%2C+Luodong+Township%2C+Yilan+County%2C+Taiwan+265",
       "cid": "3776240222293547703",
       "google_id": "/g/11f5q795_v",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 24.8356556,
       "lng": 121.78342719999999,
-      "maps_url": "https://maps.google.com/?cid=3776261951281425445",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%94%95%E7%AA%AF%E9%9B%9E+%E7%A4%81%E6%BA%AA%E7%B8%BD%E5%BA%97%2C+262%2C+Taiwan%2C+Yilan+County%2C+Jiaoxi+Township%2C+Section+7%2C+Jiaoxi+Rd%2C+7%E8%99%9F%E4%B9%8B7",
       "cid": "3776261951281425445",
       "google_id": "/g/1tfrdhhh",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 24.856517099999998,
       "lng": 121.8207011,
-      "maps_url": "https://maps.google.com/?cid=3776258678875841683",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Longji+Beef+Noodle+Restaurant%2C+No.+13%2C+Jixiang+Rd%2C+Toucheng+Township%2C+Yilan+County%2C+Taiwan+261",
       "cid": "3776258678875841683",
       "google_id": "/g/11b7q6k131",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 24.8280291,
       "lng": 121.7726287,
-      "maps_url": "https://maps.google.com/?cid=3776262007313277063",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hot+Spring+Onion%2C+No.+77%E8%99%9F%2C+Section+5%2C+Jiaoxi+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776262007313277063",
       "google_id": "/g/11bc96469w",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 24.7512267,
       "lng": 121.74007759999999,
-      "maps_url": "https://maps.google.com/?cid=3776238143238297563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Du+Xiao+Yue+Restaurant%2C+No.+58%E8%99%9F%2C+Section+3%2C+Fuxing+Rd%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776238143238297563",
       "google_id": "/g/1tfthytz",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 24.7236728,
       "lng": 121.7305052,
-      "maps_url": "https://maps.google.com/?cid=3776238487378051923",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chang+Cang+Xishi+Restaurant%2C+No.+449%E8%99%9F%2C+Gongyuan+Rd%2C+Yilan+City%2C+Yilan+County%2C+Taiwan+260",
       "cid": "3776238487378051923",
       "google_id": "/g/11hbl1y32w",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 24.7476065,
       "lng": 121.7531789,
-      "maps_url": "https://maps.google.com/?cid=3776239320164222559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coming+Home+Bar%2C+260%2C+Taiwan%2C+Yilan+County%2C+Yilan+City%2C+Nongquan+Rd%2C+110%E8%99%9F1F",
       "cid": "3776239320164222559",
       "google_id": "/g/11flgdfv2x",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 24.751401899999998,
       "lng": 121.7489403,
-      "maps_url": "https://maps.google.com/?cid=3776238335464864701",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Deyi+Lou+Restaurant%2C+260%2C+Taiwan%2C+Yilan+County%2C+Yilan+City%2C+%E6%B0%91%E6%AC%8A%E6%96%B0%E8%B7%AF104%E8%99%9F",
       "cid": "3776238335464864701",
       "google_id": "/g/1vpfg8wd",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 24.8363563,
       "lng": 121.7858864,
-      "maps_url": "https://maps.google.com/?cid=3776261953727321497",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%A4%81%E6%BA%AA%E5%BA%84%E6%AB%BB%E6%A1%83%E8%B0%B7%2C+No.+72%E8%99%9F%2C+Section+7%2C+Jiaoxi+Rd%2C+Jiaoxi+Township%2C+Yilan+County%2C+Taiwan+262",
       "cid": "3776261953727321497",
       "google_id": "/g/11b64t51ty",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 24.8610401,
       "lng": 121.82899649999999,
-      "maps_url": "https://maps.google.com/?cid=3776258608698061403",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%94%98%E9%9C%B2%E5%92%96%E5%95%A1+%EF%BD%9CNectar+coffee%2C+261%2C+Taiwan%2C+Yilan+County%2C+Toucheng+Township%2C+%E6%96%87%E5%8C%96%E8%B7%AF205%E5%B7%B728%E8%99%9F%E9%A0%82%E6%A8%93%28%E7%AC%AC%E4%B8%80%E5%B1%B1%E6%B5%B7%E8%A1%8C%E9%A4%A8",
       "cid": "3776258608698061403",
       "google_id": "/g/11rvb_s2g9",
       "maps_place_token": null

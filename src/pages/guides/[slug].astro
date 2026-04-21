@@ -98,15 +98,41 @@ export function getStaticPaths() {
 
 const { guide } = Astro.props;
 
+const permanentlyClosedPlaces = guide.places.filter(
+  (place) => !place.hidden && place.status === "closed-permanently",
+);
+const visiblePlaces = guide.places.filter(
+  (place) => !place.hidden && place.status !== "closed-permanently",
+);
+const permanentlyClosedWarning =
+  permanentlyClosedPlaces.length === 0
+    ? null
+    : permanentlyClosedPlaces.length === 1
+      ? `${permanentlyClosedPlaces[0].name} is permanently closed and hidden from this guide.`
+      : `${permanentlyClosedPlaces.length} saved places are permanently closed and hidden from this guide.`;
 const placeTagGuideContext = {
   cityName: guide.city_name,
   countryCode: guide.country_code,
   countryName: guide.country_name,
 };
-const visiblePlaces = guide.places.filter((place) => !place.hidden);
-const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includes(place.id)).slice(0, 3);
+const featuredPlaceIds = new Set(guide.featured_place_ids ?? []);
+const topPicks = visiblePlaces.filter((place) => featuredPlaceIds.has(place.id)).slice(0, 3);
+const visiblePlacesById = new Map(visiblePlaces.map((place) => [place.id, place] as const));
+const bestHits = (guide.best_hit_place_ids ?? [])
+  .map((placeId) => visiblePlacesById.get(placeId))
+  .filter((place): place is Place => Boolean(place));
 const areaFilters = getGuideAreaFilters(visiblePlaces);
 const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
+const reviewCountFormatter = new Intl.NumberFormat("en-US");
+const bestHitsDescription = [
+  "Highly rated Google Maps standouts",
+  typeof guide.best_hit_min_rating === "number" ? `at ${guide.best_hit_min_rating.toFixed(1)}+ stars` : null,
+  typeof guide.best_hit_min_reviews === "number"
+    ? `with at least ${reviewCountFormatter.format(guide.best_hit_min_reviews)} reviews for this guide`
+    : null,
+]
+  .filter(Boolean)
+  .join(" ");
 const explicitTypes = [
   ...visiblePlaces.reduce((typeCounts, place) => {
     if (place.primary_category) {
@@ -171,6 +197,7 @@ const guideDescriptionHtml = renderRichText(guide.description);
             </a>
           )}
         </div>
+        {permanentlyClosedWarning && <p class="guide-warning small-copy">{permanentlyClosedWarning}</p>}
       </div>
 
       {displayGuideTags.length > 0 && (
@@ -190,13 +217,33 @@ const guideDescriptionHtml = renderRichText(guide.description);
     <section class="section">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Start here</p>
-          <h2 class="section-title">Top picks</h2>
+          <p class="eyebrow">DEM Flyers</p>
+          <h2 class="section-title">Top suggestions</h2>
         </div>
       </div>
 
       <div class="top-picks-grid">
         {topPicks.map((place) => (
+          <PlaceCard place={place} guideContext={placeTagGuideContext} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {bestHits.length > 0 && (
+    <section class="section">
+      <div class="section-head">
+        <div class="section-stack">
+          <div>
+            <p class="eyebrow">Crowd signal</p>
+            <h2 class="section-title">Best hits</h2>
+          </div>
+          <p class="small-copy">{bestHitsDescription}.</p>
+        </div>
+      </div>
+
+      <div class="top-picks-grid">
+        {bestHits.map((place) => (
           <PlaceCard place={place} guideContext={placeTagGuideContext} />
         ))}
       </div>
@@ -247,6 +294,7 @@ const guideDescriptionHtml = renderRichText(guide.description);
               <label class="control-label" for="guide-sort">Sort</label>
               <select id="guide-sort" name="guide-sort" data-sort-select>
                 <option value="curated">Curated order</option>
+                <option value="rating">Rating</option>
                 <option value="name">Name</option>
                 <option value="neighborhood">Neighborhood</option>
               </select>

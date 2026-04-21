@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:18:00.750269+00:00",
-  "refresh_after": "2026-04-29T15:18:00.750269+00:00",
+  "fetched_at": "2026-04-20T16:03:14.859338+00:00",
+  "refresh_after": "2026-05-04T11:29:10.859338+00:00",
   "source_signature": "07d28a7ebe260c4a46d0d76db1b3aaed82d93f30a7aaacfadefbcebd9e463974",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/odyDkTtTf9X3sxxB7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.6963721,
       "lng": 7.2767192,
-      "maps_url": "https://maps.google.com/?cid=1354980352609774299",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maranna",
       "cid": "1354980352609774299",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.6974824,
       "lng": 7.274969,
-      "maps_url": "https://maps.google.com/?cid=1354979458088922183",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Comptoir+du+March%C3%A9",
       "cid": "1354979458088922183",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.653030199999996,
       "lng": 7.155793699999999,
-      "maps_url": "https://maps.google.com/?cid=1354971728722257839",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ino+Plage%2C+15+ter+Prom.+de+la+Plage%2C+06800+Cagnes-sur-Mer%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354971728722257839",
       "google_id": "/g/11jznp87x8",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.7040102,
       "lng": 7.2642568,
-      "maps_url": "https://maps.google.com/?cid=1354967795247902375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Le+Sa%C3%ABtone%2C+8+Rue+d%27Alsace-Lorraine%2C+06000+Nice%2C+France",
       "cid": "1354967795247902375",
       "google_id": "/g/1tf8hlbs",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.701036599999995,
       "lng": 7.2711846,
-      "maps_url": "https://maps.google.com/?cid=1354979468611650601",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Bistrot+de+Gillou%2C+30+Rue+Alberti%2C+06000+Nice%2C+France",
       "cid": "1354979468611650601",
       "google_id": "/g/1thfbnjl",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 43.696799,
       "lng": 7.2755116,
-      "maps_url": "https://maps.google.com/?cid=1354979458311604739",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Maquis%2C+7+Rue+de+l%27Abbaye%2C+06300+Nice%2C+France",
       "cid": "1354979458311604739",
       "google_id": "/g/1tl5_kp6",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.6960322,
       "lng": 7.2710197999999995,
-      "maps_url": "https://maps.google.com/?cid=1354979460086311539",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Peixes%2C+4+Rue+Jacques+M%C3%A9decin%2C+06300+Nice%2C+France",
       "cid": "1354979460086311539",
       "google_id": "/g/11c0sy9b8g",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.6981379,
       "lng": 7.277526699999999,
-      "maps_url": "https://maps.google.com/?cid=1354979561227158551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chez+Palmyre%2C+5+Rue+Droite%2C+06300+Nice%2C+France",
       "cid": "1354979561227158551",
       "google_id": "/g/1tkzjm6q",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.696468499999995,
       "lng": 7.2771308999999995,
-      "maps_url": "https://maps.google.com/?cid=1354979567130426923",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chez+Acchiardo%2C+38+Rue+Droite%2C+06300+Nice%2C+France",
       "cid": "1354979567130426923",
       "google_id": "/g/1trzm4mt",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.720108599999996,
       "lng": 7.2790458,
-      "maps_url": "https://maps.google.com/?cid=1354956008802674645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cimiez+Monastery%2C+Place+Jean-Paul+II+Pape%2C+06000+Nice%2C+France",
       "cid": "1354956008802674645",
       "google_id": "/g/121_znx8",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 43.694438299999995,
       "lng": 7.279220899999999,
-      "maps_url": "https://maps.google.com/?cid=1354979570927577937",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ascenseur+du+Ch%C3%A2teau%2C+1+Rue+des+Ponchettes%2C+06300+Nice%2C+France",
       "cid": "1354979570927577937",
       "google_id": "/g/12m8_74wy",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 43.6959352,
       "lng": 7.2796601,
-      "maps_url": "https://maps.google.com/?cid=1354967765711239923",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Castle+Hill%2C+06300+Nice%2C+France",
       "cid": "1354967765711239923",
       "google_id": "/g/122jqvn4",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 43.695771699999995,
       "lng": 7.2682636,
-      "maps_url": "https://maps.google.com/?cid=1354979448056637471",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%83%AB%E3%83%99%E3%83%BC%E3%83%AB1%E4%B8%96%E5%BA%AD%E5%9C%92%2C+2-16+Av.+de+Verdun%2C+06000+Nice%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354979448056637471",
       "google_id": "/g/122bxpwh",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 43.6954101,
       "lng": 7.258928999999999,
-      "maps_url": "https://maps.google.com/?cid=1354967815444574597",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9E%E3%82%BB%E3%83%8A%E7%BE%8E%E8%A1%93%E9%A4%A8%2C+65+Rue+de+France%2C+06000+Nice%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354967815444574597",
       "google_id": "/g/122044py",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 43.7038984,
       "lng": 7.253944,
-      "maps_url": "https://maps.google.com/?cid=1354979445762097567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cath%C3%A9drale+Saint-Nicolas+de+Nice%2C+Av.+Nicolas+II%2C+06000+Nice%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354979445762097567",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 43.7196189,
       "lng": 7.2756175,
-      "maps_url": "https://maps.google.com/?cid=1354956011034132127",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9E%E3%83%86%E3%82%A3%E3%82%B9%E7%BE%8E%E8%A1%93%E9%A4%A8%2C+164+Av.+des+Ar%C3%A8nes+de+Cimiez%2C+06000+Nice%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354956011034132127",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 43.709475399999995,
       "lng": 7.2701651,
-      "maps_url": "https://maps.google.com/?cid=1354979493984918051",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B7%E3%83%A3%E3%82%AC%E3%83%BC%E3%83%AB%E7%BE%8E%E8%A1%93%E9%A4%A8%2C+Av.+Dr+M%C3%A9nard%2C+06000+Nice%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354979493984918051",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 43.696974399999995,
       "lng": 7.269887499999999,
-      "maps_url": "https://maps.google.com/?cid=1354979449567719449",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pl.+Massena%2C+Pl.+Massena%2C+Nice%2C+%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9",
       "cid": "1354979449567719449",
       "google_id": "/g/1tf91x9p",
       "maps_place_token": null

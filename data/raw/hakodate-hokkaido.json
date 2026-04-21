@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:23:07.291023+00:00",
-  "refresh_after": "2026-04-29T15:23:07.291023+00:00",
+  "fetched_at": "2026-04-20T16:06:20.766898+00:00",
+  "refresh_after": "2026-05-03T12:35:05.766898+00:00",
   "source_signature": "6e7e331355e2ec4d49de82928edc95297fe8d09d44b8112bab6f18912fc34f83",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/kFhPT3qS9gfzoCCL6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 41.747705499999995,
       "lng": 140.7163398,
-      "maps_url": "https://maps.google.com/?cid=6890211552051443797",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kira%2C+Japan%2C+%E3%80%92040-0045+Hokkaido%2C+Hakodate%2C+Sumiyoshicho%2C+17%E2%88%921+%E5%89%B2%E7%83%B9%E7%85%8C",
       "cid": "6890211552051443797",
       "google_id": "/g/1tdw_ch9",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 41.7748086,
       "lng": 140.7877086,
-      "maps_url": "https://maps.google.com/?cid=6890213406876901525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AE%A8%E5%87%A6+%E6%9C%A8%E3%81%AF%E3%82%89+Sushi-Dokoro+Kihara%2C+2+Chome-1-2+Yunokawacho%2C+Hakodate%2C+Hokkaido+042-0932%2C+Japan",
       "cid": "6890213406876901525",
       "google_id": "/g/1vc81n2z",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 41.7865739,
       "lng": 140.76376729999998,
-      "maps_url": "https://maps.google.com/?cid=6890213186050539073",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Umeno+Sushi%2C+1-19%E5%8F%B7+Kashiwagicho%2C+Hakodate%2C+Hokkaido+042-0942%2C+Japan",
       "cid": "6890213186050539073",
       "google_id": "/g/1wk4cx95",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 41.790985,
       "lng": 140.7644865,
-      "maps_url": "https://maps.google.com/?cid=6890213201203730289",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27oiseau+par+Matsunaga%2C+4-5+Kashiwagicho%2C+Hakodate%2C+Hokkaido+042-0942%2C+Japan",
       "cid": "6890213201203730289",
       "google_id": "/g/1pzwy9345",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 41.794669899999995,
       "lng": 140.75402,
-      "maps_url": "https://maps.google.com/?cid=6890213223362727603",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gory%C5%8Dkaku+Tower%2C+43-9+Goryokakucho%2C+Hakodate%2C+Hokkaido+040-0001%2C+Japan",
       "cid": "6890213223362727603",
       "google_id": "/g/120kngn6",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 41.7910307,
       "lng": 140.75007209999998,
-      "maps_url": "https://maps.google.com/?cid=6890213249173667131",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bari+bari+SARAN%2C+10-7+Honcho%2C+Hakodate%2C+Hokkaido+040-0011%2C+Japan",
       "cid": "6890213249173667131",
       "google_id": "/g/1tftl12_",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 41.7720699,
       "lng": 140.7257292,
-      "maps_url": "https://maps.google.com/?cid=6890212356001235933",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hakodate+Ramen+Kamom%C3%AB%2C+8-8+Wakamatsucho%2C+Hakodate%2C+Hokkaido+040-0063%2C+Japan",
       "cid": "6890212356001235933",
       "google_id": "/g/1vzv3hk6",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 41.7726624,
       "lng": 140.7298111,
-      "maps_url": "https://maps.google.com/?cid=6890212344232898077",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Mojito%2C+18-22+Wakamatsucho%2C+Hakodate%2C+Hokkaido+040-0063%2C+Japan",
       "cid": "6890212344232898077",
       "google_id": "/g/1tplkksz",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 41.773108199999996,
       "lng": 140.73084799999998,
-      "maps_url": "https://maps.google.com/?cid=6890212344066720265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jiyouken%2C+7-12+Matsukazecho%2C+Hakodate%2C+Hokkaido+040-0035%2C+Japan",
       "cid": "6890212344066720265",
       "google_id": "/g/1tdp9g44",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 41.772515399999996,
       "lng": 140.72913269999998,
-      "maps_url": "https://maps.google.com/?cid=6890212344450318335",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gyosanko%2C+19-3+Wakamatsucho%2C+Hakodate%2C+Hokkaido+040-0063%2C+Japan",
       "cid": "6890212344450318335",
       "google_id": "/g/12hk5cm9g",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 41.7726487,
       "lng": 140.7257955,
-      "maps_url": "https://maps.google.com/?cid=6890212357009320737",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yamasan+Michishita+Shouten%2C+Japan%2C+%E3%80%92040-0063+Hokkaido%2C+Hakodate%2C+Wakamatsucho%2C+9%E2%88%9215+%E5%86%85+%E5%87%BD%E9%A4%A8%E6%9C%9D%E5%B8%82%E3%81%A9%E3%82%93%E3%81%B6%E3%82%8A%E6%A8%AA%E4%B8%81",
       "cid": "6890212357009320737",
       "google_id": "/g/1tjbr_mx",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 41.7717666,
       "lng": 140.7255401,
-      "maps_url": "https://maps.google.com/?cid=6890212344148787199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lucky+Pierrot+Hakodate+Ekimae+branch%2C+Japan%2C+%E3%80%92040-0063+Hokkaido%2C+Hakodate%2C+Wakamatsucho%2C+8%E2%88%928+%EF%BC%92%E9%9A%8E",
       "cid": "6890212344148787199",
       "google_id": "/g/11fpgqfx3r",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 41.7567649,
       "lng": 140.71772529999998,
-      "maps_url": "https://maps.google.com/?cid=6890211674034967275",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%94%90%E8%8D%89%E9%A4%A8%2C+21-23+Aoyagicho%2C+Hakodate%2C+Hokkaido+040-0044%2C+Japan",
       "cid": "6890211674034967275",
       "google_id": "/g/1tdw39m7",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 41.7677908,
       "lng": 140.71895329999998,
-      "maps_url": "https://maps.google.com/?cid=6890212381408616507",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+de+Norte%2C+Japan%2C+%E3%80%92040-0065+Hokkaido%2C+Hakodate%2C+Toyokawacho%2C+12%E2%88%926+1F",
       "cid": "6890212381408616507",
       "google_id": "/g/1tj4yk2h",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 41.771901299999996,
       "lng": 140.7243531,
-      "maps_url": "https://maps.google.com/?cid=6890212355120924717",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%86%E3%81%AB+%E3%82%80%E3%82%89%E3%81%8B%E3%81%BF+%E5%87%BD%E9%A4%A8%E6%9C%AC%E5%BA%97%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92040-0064+%E5%8C%97%E6%B5%B7%E9%81%93%E5%87%BD%E9%A4%A8%E5%B8%82%E5%A4%A7%E6%89%8B%E7%94%BA%EF%BC%92%EF%BC%92%E2%88%92%EF%BC%91",
       "cid": "6890212355120924717",
       "google_id": "/g/1tgh7dcl",
       "maps_place_token": null

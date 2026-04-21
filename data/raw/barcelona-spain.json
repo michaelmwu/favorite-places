@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:44:50.083418+00:00",
-  "refresh_after": "2026-04-29T15:44:50.083418+00:00",
+  "fetched_at": "2026-04-20T16:04:58.346118+00:00",
+  "refresh_after": "2026-05-04T04:17:01.346118+00:00",
   "source_signature": "9bafb4efb8191323345d80f22e5a1d76c559b437ab59cbab5f892c41d6ddacfe",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/jarXYbTH9FUrNVzn9",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 41.3767217,
       "lng": 2.1541006,
-      "maps_url": "https://maps.google.com/?cid=1343377245457394435",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Enigma%2C+Carrer+de+Sep%C3%BAlveda%2C+38%2C+40%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343377245457394435",
       "google_id": "/g/11cmts9dwc",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 41.3891275,
       "lng": 2.1627026,
-      "maps_url": "https://maps.google.com/?cid=1343377315589786475",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+L%27Oliv%C3%A9%2C+Carrer+de+Balmes%2C+47%2C+Eixample%2C+08007+Barcelona%2C+Spain",
       "cid": "1343377315589786475",
       "google_id": "/g/1vt_s9p2",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 41.3894089,
       "lng": 2.1636435,
-      "maps_url": "https://maps.google.com/?cid=1343378048703211865",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bilmonte",
       "cid": "1343378048703211865",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 41.382096999999995,
       "lng": 2.1734755,
-      "maps_url": "https://maps.google.com/?cid=1343377773102789823",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Irati+Taverna+Basca%2C+Carrer+del+Cardenal+Casa%C3%B1as%2C+17%2C+Ciutat+Vella%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377773102789823",
       "google_id": "/g/1vv2pd87",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 41.384246499999996,
       "lng": 2.1826518999999998,
-      "maps_url": "https://maps.google.com/?cid=1343378805529271337",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Funky+Bakers%2C+Pg.+del+Born%2C+10%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378805529271337",
       "google_id": "/g/11ff0scl23",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 41.387769399999996,
       "lng": 2.1782295,
-      "maps_url": "https://maps.google.com/?cid=1343378004219966001",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Couleur+Caf%C3%A9+Barcelona%2C+Carrer+de+Sant+Pere+M%C3%A9s+Baix%2C+54%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378004219966001",
       "google_id": "/g/11gfdcr67b",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 41.394016099999995,
       "lng": 2.1476055,
-      "maps_url": "https://maps.google.com/?cid=1343377952358828981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Leche+de+Tigre%2C+Carrer+de+Casanova%2C+262%2C+Sarri%C3%A0-Sant+Gervasi%2C+08021+Barcelona%2C+Spain",
       "cid": "1343377952358828981",
       "google_id": "/g/11h461q4fv",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 41.377693,
       "lng": 2.161762,
-      "maps_url": "https://maps.google.com/?cid=1343377895709988527",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+G%C3%BCerita+Mexicana%2C+Carrer+de+Manso%2C+53%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343377895709988527",
       "google_id": "/g/11h0b6114f",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 41.3864026,
       "lng": 2.1756892999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377783887227331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xurreria+Laietana%2C+Via+Laietana%2C+46%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377783887227331",
       "google_id": "/g/11_t55mt1",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 41.3979631,
       "lng": 2.1610472,
-      "maps_url": "https://maps.google.com/?cid=1343377346615359639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Pepita%2C+Carrer+de+C%C3%B2rsega%2C+343%2C+Gr%C3%A0cia%2C+08037+Barcelona%2C+Spain",
       "cid": "1343377346615359639",
       "google_id": "/g/1tdtyjmk",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 41.3900504,
       "lng": 2.1798497,
-      "maps_url": "https://maps.google.com/?cid=1343377795022747041",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=fismuler+barcelona%2C+Carrer+del+Rec+Comtal%2C+17%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377795022747041",
       "google_id": "/g/11f4plws9v",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 41.389980699999995,
       "lng": 2.1577191,
-      "maps_url": "https://maps.google.com/?cid=1343378521397550645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xuba+Tacos%2C+Carrer+de+Mallorca%2C+194%2C+Eixample%2C+08036+Barcelona%2C+Spain",
       "cid": "1343378521397550645",
       "google_id": "/g/11pd6wq2st",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 41.3788367,
       "lng": 2.160424,
-      "maps_url": "https://maps.google.com/?cid=1343378426162146365",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jiribilla%2C+Carrer+del+Comte+Borrell%2C+85%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343378426162146365",
       "google_id": "/g/11vl40hksj",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 41.388854699999996,
       "lng": 2.1670032999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377753349892505",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ciutat+Comtal%2C+Rambla+de+Catalunya%2C+18%2C+Eixample%2C+08007+Barcelona%2C+Spain",
       "cid": "1343377753349892505",
       "google_id": "/g/1tkgtb29",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 41.389052,
       "lng": 2.1762460999999997,
-      "maps_url": "https://maps.google.com/?cid=1343378066720732255",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Banksy+Museum%2C+Carrer+de+Trafalgar%2C+34%2C+Ciutat+Vella%2C+08010+Barcelona%2C+Spain",
       "cid": "1343378066720732255",
       "google_id": "/g/11j7d1d7tx",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 41.3819618,
       "lng": 2.1751863,
-      "maps_url": "https://maps.google.com/?cid=1343378334897646493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cake-me+I+G%C3%B3tico+I+Cheesecake+0%2C99%E2%82%AC%2C+Carrer+dels+Banys+Nous%2C+3%2C+Ciutat+Vella%2C+08002+Barcelona%2C+Spain",
       "cid": "1343378334897646493",
       "google_id": "/g/11yj0s9hg3",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 41.3862723,
       "lng": 2.1812548,
-      "maps_url": "https://maps.google.com/?cid=1343378655257518681",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JONCAKE+%7C+JONBAKE%2C+Carrer+dels+Assaonadors%2C+29%2C+Bajos+local+3%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378655257518681",
       "google_id": "/g/11w_v0bmzg",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 41.3873142,
       "lng": 2.1776090999999997,
-      "maps_url": "https://maps.google.com/?cid=1343378808575967249",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jon+Cake%2C+Carrer+de+Sant+Pere+M%C3%A9s+Baix%2C+36%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378808575967249",
       "google_id": "/g/11qps43076",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 41.3833073,
       "lng": 2.1802970999999998,
-      "maps_url": "https://maps.google.com/?cid=1343377883861206003",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alegor%C3%ADa+Restaurante+Born%2C+Carrer+de+Manresa%2C+4%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377883861206003",
       "google_id": "/g/11mkjx241b",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 41.3892514,
       "lng": 2.1720313,
-      "maps_url": "https://maps.google.com/?cid=1343377747862651095",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Asador+de+Aranda+%7C+Urquinaona%2C+Carrer+de+Pau+Claris%2C+70%2C+Eixample%2C+08010+Barcelona%2C+Spain",
       "cid": "1343377747862651095",
       "google_id": "/g/1tf7zrn3",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 41.3862635,
       "lng": 2.1839919,
-      "maps_url": "https://maps.google.com/?cid=1343377800406025619",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Puertecillo+Born%2C+Carrer+Comercial%2C+7%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377800406025619",
       "google_id": "/g/1tcy_ccx",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 41.384606399999996,
       "lng": 2.181762,
-      "maps_url": "https://maps.google.com/?cid=1343377802987441875",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tapeo%2C+Carrer+de+Montcada%2C+29%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377802987441875",
       "google_id": "/g/11bxbb3fyj",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 41.372075599999995,
       "lng": 2.1574561,
-      "maps_url": "https://maps.google.com/?cid=1343377146206485239",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Santamadre+Carn%2C+peix+i+marisc%2C+Carrer+de+la+Fran%C3%A7a+Xica%2C+25%2C+Sants-Montju%C3%AFc%2C+08004+Barcelona%2C+Spain",
       "cid": "1343377146206485239",
       "google_id": "/g/1vkr0m_d",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 41.3755032,
       "lng": 2.1586464999999997,
-      "maps_url": "https://maps.google.com/?cid=1343378685728903955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=V+de+Vermut%2C+Carrer+de+Manso%2C+1%2C+Local+2%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343378685728903955",
       "google_id": "/g/11hdngb8zb",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 41.3764956,
       "lng": 2.1534443999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377811340546951",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Rectangle+%7C+Open+Kitchen+Bar%2C+Carrer+de+Sep%C3%BAlveda%2C+23%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343377811340546951",
       "google_id": "/g/11x5jt8lrq",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 41.376435,
       "lng": 2.1502097,
-      "maps_url": "https://maps.google.com/?cid=1343377253736817187",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Arrosseria+las+Arenas%2C+Carrer+de+Llan%C3%A7a%2C+15%2C+21%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343377253736817187",
       "google_id": "/g/11d_wvz5mr",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 41.384708499999995,
       "lng": 2.1815377,
-      "maps_url": "https://maps.google.com/?cid=1343378573861155385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moco+Museum+Barcelona",
       "cid": "1343378573861155385",
       "google_id": null,
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 41.3758677,
       "lng": 2.1875815999999997,
-      "maps_url": "https://maps.google.com/?cid=1343378545951111147",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Barceloneta+restaurant%2C+Moll+dels+Pescador%2C+Port+Vell%2C+Carrer+de+l%27Escar%2C+22%2C+Ciutat+Vella%2C+08039+Barcelona%2C+Spain",
       "cid": "1343378545951111147",
       "google_id": "/g/113fbdbx8",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 41.3834945,
       "lng": 2.1710008,
-      "maps_url": "https://maps.google.com/?cid=1343377770451101715",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Isabela+Restaurant%2C+La+Rambla%2C+109%2C+7th+Floor%2C+Ciutat+Vella%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377770451101715",
       "google_id": "/g/1tkhf4vy",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 41.3798315,
       "lng": 2.1762981999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377086727482785",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Viana+Barcelona%2C+Carrer+del+Vidre%2C+7%2C+Ciutat+Vella%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377086727482785",
       "google_id": "/g/11bw567jmr",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 41.384992499999996,
       "lng": 2.1786544,
-      "maps_url": "https://maps.google.com/?cid=1343377780355555695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arcano+Restaurant+cave%2C+Carrer+dels+Mercaders%2C+10%2C+Ciutat+Vella%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377780355555695",
       "google_id": "/g/1vsmv1tg",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 41.376170099999996,
       "lng": 2.1541304,
-      "maps_url": "https://maps.google.com/?cid=1343377245140814679",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=COME%2C+Av.+de+Mistral%2C+54%2C+Eixample%2C+08015+Barcelona%2C+Spain",
       "cid": "1343377245140814679",
       "google_id": "/g/11b6gd9082",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 41.3960297,
       "lng": 2.1634105999999997,
-      "maps_url": "https://maps.google.com/?cid=1343378268694330633",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Xavier+Pellicer",
       "cid": "1343378268694330633",
       "google_id": null,
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 41.390125,
       "lng": 2.164202,
-      "maps_url": "https://maps.google.com/?cid=1343377316662756351",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=2254+Barcelona+Restaurant",
       "cid": "1343377316662756351",
       "google_id": null,
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 41.3917,
       "lng": 2.164918,
-      "maps_url": "https://maps.google.com/?cid=1343377728883868001",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+Batll%C3%B3",
       "cid": "1343377728883868001",
       "google_id": null,
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 41.3851282,
       "lng": 2.1679969999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377759565861663",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Teresa+Carles",
       "cid": "1343377759565861663",
       "google_id": null,
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 41.3826655,
       "lng": 2.1633589,
-      "maps_url": "https://maps.google.com/?cid=1343377539985362661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alkimia%2C+Rda.+de+Sant+Antoni%2C+41%2C+L%27Eixample%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377539985362661",
       "google_id": "/g/11b60mth_b",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 41.3892813,
       "lng": 2.1589514999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377321504438771",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Alchemix%2C+C%2F+de+Val%C3%A8ncia%2C+212%2C+08011+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377321504438771",
       "google_id": "/g/11gfxl85dh",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 41.397726299999995,
       "lng": 2.1678422,
-      "maps_url": "https://maps.google.com/?cid=1343377311654812993",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Maroteca%2C+C%2F+d%27Aribau%2C+37%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377311654812993",
       "google_id": "/g/11g0b7zkq9",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 41.391895,
       "lng": 2.1669703,
-      "maps_url": "https://maps.google.com/?cid=1343377729605167307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chao+Pescao%2C+C.+del+Consell+de+Cent%2C+318%2C+08007+Barcelona%2C+Spain",
       "cid": "1343377729605167307",
       "google_id": "/g/11bw6h5dbr",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 41.3820018,
       "lng": 2.1696242,
-      "maps_url": "https://maps.google.com/?cid=1343377766489050271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tosca+del+Carme%2C+C%2F+del+Carme%2C+40%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377766489050271",
       "google_id": "/g/11fxxk8c2z",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 41.3850522,
       "lng": 2.1670298,
-      "maps_url": "https://maps.google.com/?cid=1343377760022046387",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pelai%2C+C%2F+dels+Tallers%2C+62%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377760022046387",
       "google_id": "/g/1thrg2db",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 41.3825692,
       "lng": 2.1814980999999998,
-      "maps_url": "https://maps.google.com/?cid=1343377805061515893",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Collage+Cocktail+Bar%2C+Carrer+dels+Consellers%2C+4%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377805061515893",
       "google_id": "/g/11h_1wrkds",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 41.3815058,
       "lng": 2.1796200999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377806247465387",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+maison%2C+Carrer+del+Correu+Vell%2C+3%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377806247465387",
       "google_id": "/g/11bw5yfcpn",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 41.3803913,
       "lng": 2.1789557999999998,
-      "maps_url": "https://maps.google.com/?cid=1343377079172272415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Sincopa%2C+Carrer+d%27Aviny%C3%B3%2C+35%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377079172272415",
       "google_id": "/g/12lrzr2d7",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 41.381032999999995,
       "lng": 2.175375,
-      "maps_url": "https://maps.google.com/?cid=1343377775147486065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=First+Cocktail+Bar+Barcelona%2C+C%2F+d%27en+Rauric%2C+9%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377775147486065",
       "google_id": "/g/1wb441k4",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 41.384616,
       "lng": 2.1772375,
-      "maps_url": "https://maps.google.com/?cid=1343377781131262555",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Spritz%2C+Carrer+de+la+Tapineria%2C+4%2C+08002+Barcelona%2C+Spain",
       "cid": "1343377781131262555",
       "google_id": "/g/11b6v2cdbm",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 41.3846048,
       "lng": 2.1798745999999998,
-      "maps_url": "https://maps.google.com/?cid=1343377803740709629",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Story%2C+Carrer+del+Pou+de+la+Cadena%2C+8%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377803740709629",
       "google_id": "/g/11cn8zz77_",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 41.3857089,
       "lng": 2.1807634,
-      "maps_url": "https://maps.google.com/?cid=1343378050904719417",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ESPECIARIUM+BAR+-+Barcelona%2C+Carrer+de+la+Princesa%2C+29%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378050904719417",
       "google_id": "/g/11fp8j1k3r",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 41.384409999999995,
       "lng": 2.180063,
-      "maps_url": "https://maps.google.com/?cid=1343377803756050373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dux+Gins+%26+Cocktails+Borne%2C+C%2F+dels+Vigatans%2C+13%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377803756050373",
       "google_id": "/g/11cjnp3m7d",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 41.3853934,
       "lng": 2.1825726999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377802665940067",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marlowe+Bar%2C+C%2F+del+Rec%2C+24%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377802665940067",
       "google_id": "/g/11f08wpdxr",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 41.3890506,
       "lng": 2.1650925,
-      "maps_url": "https://maps.google.com/?cid=1343377752610334197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=M%C3%B3n+V%C3%ADnic%2C+C%2F+de+la+Diputaci%C3%B3%2C+251%2C+08007+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377752610334197",
       "google_id": "/g/11hbkfkpy3",
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 41.376477,
       "lng": 2.1623585999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377125671431161",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Calders%2C+C%2F+del+Parlament%2C+25%2C+08015+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377125671431161",
       "google_id": "/g/1tcynctm",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 41.384794199999995,
       "lng": 2.1798975,
-      "maps_url": "https://maps.google.com/?cid=1343377803441830005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Can+Cisa%2FBar+Brutal%2C+Carrer+de+la+Princesa%2C+14%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377803441830005",
       "google_id": "/g/1tfj562w",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 41.3896926,
       "lng": 2.1574131999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377320865943867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ideal+Cocktail+Bar%2C+C%2F+d%27Aribau%2C+89%2C+08036+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377320865943867",
       "google_id": "/g/1w9351r7",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 41.392233399999995,
       "lng": 2.1540405,
-      "maps_url": "https://maps.google.com/?cid=1343377374354475331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Solange+Cocktail+Bar%2C+C%2F+d%27Aribau%2C+143%2C+08036+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377374354475331",
       "google_id": "/g/11b5q_1hgn",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 41.3836813,
       "lng": 2.1836944,
-      "maps_url": "https://maps.google.com/?cid=1343377801660406867",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Paradiso%2C+Carrer+de+Rera+Palau%2C+4%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377801660406867",
       "google_id": "/g/11c1nyymy5",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 41.384675,
       "lng": 2.1703139,
-      "maps_url": "https://maps.google.com/?cid=1343377769482220997",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boadas+Cocktails%2C+C%2F+dels+Tallers%2C+1%2C+08001+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377769482220997",
       "google_id": "/g/1tk09s1n",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 41.382932,
       "lng": 2.1654676,
-      "maps_url": "https://maps.google.com/?cid=1343377762632626651",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Negroni+Cocktail+Bar%2C+C%2F+de+Joaqu%C3%ADn+Costa%2C+46%2C+08001+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377762632626651",
       "google_id": "/g/113dkz7b7",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 41.3870637,
       "lng": 2.1590116,
-      "maps_url": "https://maps.google.com/?cid=1343378176409564665",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Son+Hao%2C+C%2F+de+Muntaner%2C+66%2C+08011+Barcelona%2C+Spain",
       "cid": "1343378176409564665",
       "google_id": "/g/11frnmpnsr",
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 41.3816577,
       "lng": 2.1575099,
-      "maps_url": "https://maps.google.com/?cid=1343378614897654551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Poderosa%2C+Gran+Via+de+les+Corts+Catalanes%2C+511%2C+08015+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343378614897654551",
       "google_id": "/g/11gjj2z9y3",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 41.3853874,
       "lng": 2.1617036,
-      "maps_url": "https://maps.google.com/?cid=1343377309341783935",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nappuccino+Corner%2C+Dentro+del+restaurante+The+Lobster+Roll%2C+C%2F+de+Muntaner%2C+22%2C+08011+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377309341783935",
       "google_id": "/g/11f24vf9_k",
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 41.3818446,
       "lng": 2.1569038,
-      "maps_url": "https://maps.google.com/?cid=1343377292022575689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gatblau%2C+C%2F+del+Comte+Borrell%2C+122%2C+08015+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377292022575689",
       "google_id": "/g/1tcy1g8n",
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 41.384402,
       "lng": 2.162586,
-      "maps_url": "https://maps.google.com/?cid=1343377306950947279",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Macrobi%C3%B2tic+Zen%2C+C%2F+de+Muntaner%2C+12%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377306950947279",
       "google_id": "/g/1tcy14k9",
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 41.3834191,
       "lng": 2.1806433,
-      "maps_url": "https://maps.google.com/?cid=1343378813238349151",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mimo%27s+Born%2C+Pla%C3%A7a+de+Jacint+Revent%C3%B3s%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378813238349151",
       "google_id": "/g/11flbsz5bf",
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 41.3693708,
       "lng": 2.1254486999999997,
-      "maps_url": "https://maps.google.com/?cid=1343366345264275653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Perla%2C+C%2F+Holanda%2C+61%2C+08903+L%27Hospitalet+de+Llobregat%2C+Barcelona%2C+Spain",
       "cid": "1343366345264275653",
       "google_id": "/g/1hc1mr_sn",
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 41.3863304,
       "lng": 2.1753679,
-      "maps_url": "https://maps.google.com/?cid=1343378046843396639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Luigi+Ristorante+-+Via+Laietana%2C+Via+Laietana%2C+41%2C+08003+Barcelona%2C+Spain",
       "cid": "1343378046843396639",
       "google_id": "/g/11fnkt8lw0",
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 41.3837027,
       "lng": 2.1773463,
-      "maps_url": "https://maps.google.com/?cid=1343378860705586049",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Steak+house+-+Grill+Restaurant%2C+Carrer+de+la+Freneria%2C+5%2C+08002+Barcelona%2C+Spain",
       "cid": "1343378860705586049",
       "google_id": "/g/11jvpdd_gx",
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 41.3860147,
       "lng": 2.1614567,
-      "maps_url": "https://maps.google.com/?cid=1343377313025462603",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wild+Beef+Barcelona%2C+C%2F+de+la+Diputaci%C3%B3%2C+214%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377313025462603",
       "google_id": "/g/11b6df6zkv",
       "maps_place_token": null
@@ -845,7 +845,7 @@
       "is_favorite": false,
       "lat": 41.3884817,
       "lng": 2.1718698,
-      "maps_url": "https://maps.google.com/?cid=1343378403245555403",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Burritos+Sant+Pere%2C+Rda.+de+Sant+Pere%2C+16%2C+08010+Barcelona%2C+Spain",
       "cid": "1343378403245555403",
       "google_id": "/g/11hdqvjysq",
       "maps_place_token": null
@@ -857,7 +857,7 @@
       "is_favorite": false,
       "lat": 41.375196599999995,
       "lng": 2.1618537,
-      "maps_url": "https://maps.google.com/?cid=1343378802831927337",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Pala+Pizza+Bar%2C+Av.+del+Paral%C2%B7lel%2C+126%2C+08015+Barcelona%2C+Spain",
       "cid": "1343378802831927337",
       "google_id": "/g/11hdjvjcn0",
       "maps_place_token": null
@@ -869,7 +869,7 @@
       "is_favorite": false,
       "lat": 41.383111199999995,
       "lng": 2.1646025,
-      "maps_url": "https://maps.google.com/?cid=1343378820300233389",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CactusCat+Bar%2C+Carrer+de+Valldonzella%2C+52%2C+08001+Barcelona%2C+Spain",
       "cid": "1343378820300233389",
       "google_id": "/g/11fl0bs_5f",
       "maps_place_token": null
@@ -881,7 +881,7 @@
       "is_favorite": false,
       "lat": 41.3882257,
       "lng": 2.1728855,
-      "maps_url": "https://maps.google.com/?cid=1343377744670315331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Cuina+de+Laietana%2C+Via+Laietana%2C+71%2C+08003+Barcelona%2C+Spain",
       "cid": "1343377744670315331",
       "google_id": "/g/11g6_d36pw",
       "maps_place_token": null
@@ -893,7 +893,7 @@
       "is_favorite": false,
       "lat": 41.382316599999996,
       "lng": 2.1686034,
-      "maps_url": "https://maps.google.com/?cid=1343377765294737207",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+l%27Hortet%2C+C%2F+del+Pintor+Fortuny%2C+32%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377765294737207",
       "google_id": "/g/1td228sl",
       "maps_place_token": null
@@ -905,7 +905,7 @@
       "is_favorite": false,
       "lat": 41.3817649,
       "lng": 2.1615059999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377304151370539",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Los+Hermanos+%7C+Villarroel%2C+Barcelona%2C+C.+de+Villarroel%2C+28%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377304151370539",
       "google_id": "/g/11bc6z7pwg",
       "maps_place_token": null
@@ -917,7 +917,7 @@
       "is_favorite": false,
       "lat": 41.3805832,
       "lng": 2.1609819999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377152447481667",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rekons%2C+Carrer+del+Comte+d%27Urgell%2C+32%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377152447481667",
       "google_id": "/g/1th2n5sd",
       "maps_place_token": null
@@ -929,7 +929,7 @@
       "is_favorite": false,
       "lat": 41.3868179,
       "lng": 2.1616939,
-      "maps_url": "https://maps.google.com/?cid=1343377313142982003",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Micu+Maku+-+Mediterranean+Restaurant+in+Barcelona%2C+C%2F+d%27Aribau%2C+22%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377313142982003",
       "google_id": "/g/1q627x0bt",
       "maps_place_token": null
@@ -941,7 +941,7 @@
       "is_favorite": false,
       "lat": 41.3826591,
       "lng": 2.1665288,
-      "maps_url": "https://maps.google.com/?cid=1343377762280260319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KINO%2C+C%2F+de+Ferlandina%2C+23%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377762280260319",
       "google_id": "/g/1pv1ntgr6",
       "maps_place_token": null
@@ -953,7 +953,7 @@
       "is_favorite": false,
       "lat": 41.3926395,
       "lng": 2.1656752,
-      "maps_url": "https://maps.google.com/?cid=1343377728661416639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vinitus%2C+C%2F+d%27Arag%C3%B3%2C+282%2C+08007+Barcelona%2C+Spain",
       "cid": "1343377728661416639",
       "google_id": "/g/1tk0sqkc",
       "maps_place_token": null
@@ -965,7 +965,7 @@
       "is_favorite": false,
       "lat": 41.3793903,
       "lng": 2.1697767999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377091082488619",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+El+Nou+Cafeti%2C+Carrer+de+Sant+Rafael%2C+18%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377091082488619",
       "google_id": "/g/1tv57vrn",
       "maps_place_token": null
@@ -977,7 +977,7 @@
       "is_favorite": false,
       "lat": 41.3838272,
       "lng": 2.1691892999999998,
-      "maps_url": "https://maps.google.com/?cid=1343377758504324151",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Elisabets+Restaurant%2C+Carrer+de+les+Ramelleres%2C+3%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377758504324151",
       "google_id": "/g/1typr2jm",
       "maps_place_token": null
@@ -989,7 +989,7 @@
       "is_favorite": false,
       "lat": 41.385490499999996,
       "lng": 2.1590154,
-      "maps_url": "https://maps.google.com/?cid=1343378264773859295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Argentin%C3%ADsimo+%22El+Sal%C3%B3n+De+La+Milanesa%22%2C+C.+de+Casanova%2C+70%2C+08011+Barcelona%2C+Spain",
       "cid": "1343378264773859295",
       "google_id": "/g/11clyt4xbb",
       "maps_place_token": null
@@ -1001,7 +1001,7 @@
       "is_favorite": false,
       "lat": 41.3816738,
       "lng": 2.1612771,
-      "maps_url": "https://maps.google.com/?cid=1343377304295809871",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Gu%C3%A0rdia+Bar+Restaurant%2C+C.+de+Villarroel%2C+31%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377304295809871",
       "google_id": "/g/11cns6_2wl",
       "maps_place_token": null
@@ -1013,7 +1013,7 @@
       "is_favorite": false,
       "lat": 41.3823994,
       "lng": 2.1707489,
-      "maps_url": "https://maps.google.com/?cid=1343377768075813439",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Mi%C3%B1o%2C+C%2F+del+Carme%2C+19%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377768075813439",
       "google_id": "/g/1pzxrttql",
       "maps_place_token": null
@@ -1025,7 +1025,7 @@
       "is_favorite": false,
       "lat": 41.3835416,
       "lng": 2.1641247,
-      "maps_url": "https://maps.google.com/?cid=1343377307412937127",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Restaurant+Poma%2C+Rda.+de+Sant+Antoni%2C+80%2C+08001+Barcelona%2C+Spain",
       "cid": "1343377307412937127",
       "google_id": "/g/11c6pr8kmm",
       "maps_place_token": null
@@ -1037,7 +1037,7 @@
       "is_favorite": false,
       "lat": 41.380924,
       "lng": 2.1606614,
-      "maps_url": "https://maps.google.com/?cid=1343377129605334977",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Rebost+de+Sant+Antoni%2C+Carrer+del+Comte+d%27Urgell%2C+19%2C+08011+Barcelona%2C+Spain",
       "cid": "1343377129605334977",
       "google_id": "/g/11c5330qjd",
       "maps_place_token": null
@@ -1049,7 +1049,7 @@
       "is_favorite": false,
       "lat": 41.3817399,
       "lng": 2.1715853,
-      "maps_url": "https://maps.google.com/?cid=1343377773642537473",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%96%E3%82%B1%E3%83%AA%E3%82%A2%E5%B8%82%E5%A0%B4%2C+La+Rambla%2C+91%2C+08001+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377773642537473",
       "google_id": null,
       "maps_place_token": null
@@ -1061,7 +1061,7 @@
       "is_favorite": false,
       "lat": 41.3846371,
       "lng": 2.1825883,
-      "maps_url": "https://maps.google.com/?cid=1343377802423110755",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Sauvage%2C+Passeig+del+Born%2C+13%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377802423110755",
       "google_id": "/g/11g7zhnvj9",
       "maps_place_token": null
@@ -1073,7 +1073,7 @@
       "is_favorite": false,
       "lat": 41.3868596,
       "lng": 2.1610638,
-      "maps_url": "https://maps.google.com/?cid=1343377312862914413",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Flauta",
       "cid": "1343377312862914413",
       "google_id": null,
       "maps_place_token": null
@@ -1085,7 +1085,7 @@
       "is_favorite": false,
       "lat": 41.3711603,
       "lng": 2.1517402,
-      "maps_url": "https://maps.google.com/?cid=1343377193037044023",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Magic+Fountain+of+Montju%C3%AFc",
       "cid": "1343377193037044023",
       "google_id": null,
       "maps_place_token": null
@@ -1097,7 +1097,7 @@
       "is_favorite": false,
       "lat": 41.403408,
       "lng": 2.1895932,
-      "maps_url": "https://maps.google.com/?cid=1343377963270611997",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mirador+torre+Gl%C3%B2ries",
       "cid": "1343377963270611997",
       "google_id": null,
       "maps_place_token": null
@@ -1109,7 +1109,7 @@
       "is_favorite": false,
       "lat": 41.4144948,
       "lng": 2.1526945,
-      "maps_url": "https://maps.google.com/?cid=1343377458460901803",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Park+G%C3%BCell",
       "cid": "1343377458460901803",
       "google_id": null,
       "maps_place_token": null
@@ -1121,7 +1121,7 @@
       "is_favorite": false,
       "lat": 41.4034408,
       "lng": 2.1506898,
-      "maps_url": "https://maps.google.com/?cid=1343377406373953697",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+Vicens+Gaud%C3%AD",
       "cid": "1343377406373953697",
       "google_id": null,
       "maps_place_token": null
@@ -1133,7 +1133,7 @@
       "is_favorite": false,
       "lat": 41.3889218,
       "lng": 2.1770391,
-      "maps_url": "https://maps.google.com/?cid=1343377787376729367",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nomad+Coffee+Lab+%26+Shop",
       "cid": "1343377787376729367",
       "google_id": null,
       "maps_place_token": null
@@ -1145,7 +1145,7 @@
       "is_favorite": false,
       "lat": 41.3952155,
       "lng": 2.1619024,
-      "maps_url": "https://maps.google.com/?cid=1343377343683158485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+Mil%C3%A0",
       "cid": "1343377343683158485",
       "google_id": null,
       "maps_place_token": null
@@ -1157,7 +1157,7 @@
       "is_favorite": false,
       "lat": 41.384302999999996,
       "lng": 2.1826976,
-      "maps_url": "https://maps.google.com/?cid=1343377801783540849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Creps+al+Born",
       "cid": "1343377801783540849",
       "google_id": null,
       "maps_place_token": null
@@ -1169,7 +1169,7 @@
       "is_favorite": false,
       "lat": 41.38622,
       "lng": 2.161686,
-      "maps_url": "https://maps.google.com/?cid=1343377313114084305",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mont+Bar",
       "cid": "1343377313114084305",
       "google_id": null,
       "maps_place_token": null
@@ -1181,7 +1181,7 @@
       "is_favorite": false,
       "lat": 41.3831899,
       "lng": 2.1652514,
-      "maps_url": "https://maps.google.com/?cid=1343378331132551753",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TWO+SCHMUCKS",
       "cid": "1343378331132551753",
       "google_id": null,
       "maps_place_token": null
@@ -1193,7 +1193,7 @@
       "is_favorite": false,
       "lat": 41.3791601,
       "lng": 2.1731121,
-      "maps_url": "https://maps.google.com/?cid=1343377088797461273",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ca%C3%B1ete",
       "cid": "1343377088797461273",
       "google_id": null,
       "maps_place_token": null
@@ -1205,7 +1205,7 @@
       "is_favorite": false,
       "lat": 41.3845251,
       "lng": 2.1816641999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377803012397895",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Xampanyet%2C+Carrer+de+Montcada%2C+22%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377803012397895",
       "google_id": "/g/1thn7k2p",
       "maps_place_token": null
@@ -1217,7 +1217,7 @@
       "is_favorite": false,
       "lat": 41.384191699999995,
       "lng": 2.1806574,
-      "maps_url": "https://maps.google.com/?cid=1343377803917738671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dr+Stravinsky%2C+Carrer+dels+Mirallers%2C+5%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377803917738671",
       "google_id": "/g/11dxkdg8z5",
       "maps_place_token": null
@@ -1229,7 +1229,7 @@
       "is_favorite": false,
       "lat": 41.3841858,
       "lng": 2.1817173999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377804767742731",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Estimar%2C+Carrer+de+Sant+Antoni+dels+Sombrerers%2C+3%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377804767742731",
       "google_id": "/g/11cjkp6rlx",
       "maps_place_token": null
@@ -1241,7 +1241,7 @@
       "is_favorite": false,
       "lat": 41.3818911,
       "lng": 2.1872758,
-      "maps_url": "https://maps.google.com/?cid=1343377813345758585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cerveseria+Vaso+de+Oro%2C+C%2F+de+Balboa%2C+6%2C+08003+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377813345758585",
       "google_id": "/g/1tzvyl8t",
       "maps_place_token": null
@@ -1253,7 +1253,7 @@
       "is_favorite": false,
       "lat": 41.4036299,
       "lng": 2.1743558,
-      "maps_url": "https://maps.google.com/?cid=1343377658267696019",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B5%E3%82%B0%E3%83%A9%E3%83%80%E3%83%BB%E3%83%95%E3%82%A1%E3%83%9F%E3%83%AA%E3%82%A2%2C+C%2F+de+Mallorca%2C+401%2C+08013+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377658267696019",
       "google_id": null,
       "maps_place_token": null
@@ -1265,7 +1265,7 @@
       "is_favorite": false,
       "lat": 41.419300299999996,
       "lng": 2.1618258999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377486674511185",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MUHBA+Tur%C3%B3+de+la+Rovira%2C+Carrer+de+Mari%C3%A0+Lab%C3%A8rnia%2C+s%2Fn%2C+08032+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377486674511185",
       "google_id": "/g/1yg5783h6",
       "maps_place_token": null
@@ -1277,7 +1277,7 @@
       "is_favorite": false,
       "lat": 41.3912453,
       "lng": 2.1610451999999998,
-      "maps_url": "https://maps.google.com/?cid=1343378366585338505",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Compartir+Barcelona%2C+C%2F+de+Val%C3%A8ncia%2C+225%2C+08007+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343378366585338505",
       "google_id": "/g/11t1h2hnhc",
       "maps_place_token": null
@@ -1289,7 +1289,7 @@
       "is_favorite": false,
       "lat": 41.3936111,
       "lng": 2.1619444,
-      "maps_url": "https://maps.google.com/?cid=1343377343977857235",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lasarte%2C+C%2F+de+Mallorca%2C+259%2C+08008+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377343977857235",
       "google_id": "/g/11b5yknqqf",
       "maps_place_token": null
@@ -1301,7 +1301,7 @@
       "is_favorite": false,
       "lat": 41.386221,
       "lng": 2.1598124999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377311073630807",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BierCaB%2C+C%2F+de+Muntaner%2C+55%2C+08011+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377311073630807",
       "google_id": "/g/1pp2x7bbn",
       "maps_place_token": null
@@ -1313,7 +1313,7 @@
       "is_favorite": false,
       "lat": 41.3864935,
       "lng": 2.1401238,
-      "maps_url": "https://maps.google.com/?cid=1343367559498940589",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cocina+Hermanos+Torres%2C+Carrer+del+Taqu%C3%ADgraf+Serra%2C+20%2C+08029+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343367559498940589",
       "google_id": "/g/11gj74nz2g",
       "maps_place_token": null
@@ -1325,7 +1325,7 @@
       "is_favorite": false,
       "lat": 41.378387,
       "lng": 2.1524156,
-      "maps_url": "https://maps.google.com/?cid=1343377321898423281",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cinc+Sentits%2C+C%2F+d%27Enten%C3%A7a%2C+60%2C+08015+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377321898423281",
       "google_id": "/g/1pxy17mst",
       "maps_place_token": null
@@ -1337,7 +1337,7 @@
       "is_favorite": false,
       "lat": 41.3736307,
       "lng": 2.1649198,
-      "maps_url": "https://maps.google.com/?cid=1343377111343996929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Calle+Blai%2C+Carrer+de+Blai%2C+22%2C+08004+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377111343996929",
       "google_id": "/g/11bw67jwyx",
       "maps_place_token": null
@@ -1347,9 +1347,9 @@
       "address": "Carrer del Poeta Cabanyes, 25, 08004 Barcelona, スペイン",
       "note": null,
       "is_favorite": false,
-      "lat": 41.373947199999996,
-      "lng": 2.1655579,
-      "maps_url": "https://maps.google.com/?cid=1343377111605717613",
+      "lat": 41.3739462,
+      "lng": 2.1655606,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Quimet+%26+Quimet%2C+Carrer+del+Poeta+Cabanyes%2C+25%2C+08004+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377111605717613",
       "google_id": "/g/1vzxgzfg",
       "maps_place_token": null
@@ -1361,7 +1361,7 @@
       "is_favorite": false,
       "lat": 41.3696075,
       "lng": 2.1725414,
-      "maps_url": "https://maps.google.com/?cid=1343377006672484027",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Terraza+Mart%C3%ADnez%2C+Ctra.+de+Miramar%2C+38%2C+08038+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377006672484027",
       "google_id": "/g/1yh8075jh",
       "maps_place_token": null
@@ -1373,7 +1373,7 @@
       "is_favorite": false,
       "lat": 41.383339199999995,
       "lng": 2.1549964999999998,
-      "maps_url": "https://maps.google.com/?cid=1343377295944035773",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Morro+Fi%2C+C.+del+Consell+de+Cent%2C+171%2C+08015+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377295944035773",
       "google_id": "/g/1hhgjlp0m",
       "maps_place_token": null
@@ -1385,7 +1385,7 @@
       "is_favorite": false,
       "lat": 41.3877947,
       "lng": 2.1531732999999997,
-      "maps_url": "https://maps.google.com/?cid=1343377284127927373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Disfrutar%2C+C.+de+Villarroel%2C+163%2C+08036+Barcelona%2C+%E3%82%B9%E3%83%9A%E3%82%A4%E3%83%B3",
       "cid": "1343377284127927373",
       "google_id": "/g/11b6p9j0sw",
       "maps_place_token": null

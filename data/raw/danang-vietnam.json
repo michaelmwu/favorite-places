@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:54:23.513739+00:00",
-  "refresh_after": "2026-05-02T06:13:22.513739+00:00",
+  "fetched_at": "2026-04-20T16:08:39.702027+00:00",
+  "refresh_after": "2026-05-02T08:27:38.702027+00:00",
   "source_signature": "1cf0a2d23d93462fd21b633cd0e18fbf1fadc48ac328885a6afb4a11c7234d64",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/49wdVqBdRiP6MFqTA",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 16.0838873,
       "lng": 108.24530929999999,
-      "maps_url": "https://maps.google.com/?cid=3549425348895689019",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%E1%BA%A3i+s%E1%BA%A3n+Th%E1%BA%A1nh+N%E1%BB%91i%2C+166+H%C3%A0+K%E1%BB%B3+Ng.%2C+M%C3%A2n+Th%C3%A1i%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000%2C+Vietnam",
       "cid": "3549425348895689019",
       "google_id": "/g/11hcx9nzfm",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 16.0679317,
       "lng": 108.22345709999999,
-      "maps_url": "https://maps.google.com/?cid=3549427429687466849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=T%C3%AA+Bar%2C+3rd+Floor%2C+39-41+Nguy%E1%BB%85n+Th%C3%A1i+H%E1%BB%8Dc%2C+%C4%90%C3%A0+N%E1%BA%B5ng%2C+550000",
       "cid": "3549427429687466849",
       "google_id": "/g/11fmbbtn2p",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 16.0477499,
       "lng": 108.2451383,
-      "maps_url": "https://maps.google.com/?cid=3549425180666137851",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vertigo",
       "cid": "3549425180666137851",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 16.0771856,
       "lng": 108.22383509999999,
-      "maps_url": "https://maps.google.com/?cid=3549426097555595285",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B9%E3%82%AB%E3%82%A436%2C+36+B%E1%BA%A1ch+%C4%90%E1%BA%B1ng%2C+Th%E1%BA%A1ch+Thang%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426097555595285",
       "google_id": "/g/11gcplt_4x",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 16.0670125,
       "lng": 108.22469629999999,
-      "maps_url": "https://maps.google.com/?cid=3549427909785926549",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sophie+Mixology%2C+150+B%E1%BA%A1ch+%C4%90%E1%BA%B1ng%2C+H%E1%BA%A3i+Ch%C3%A2u+1%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+50000",
       "cid": "3549427909785926549",
       "google_id": "/g/11sm7bh0f0",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 16.0544563,
       "lng": 108.0717219,
-      "maps_url": "https://maps.google.com/?cid=3549426051631362361",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Simple+Man+Pub%2C+267+%C4%90.+Tr%E1%BA%A7n+H%C6%B0ng+%C4%90%E1%BA%A1o%2C+An+H%E1%BA%A3i+B%E1%BA%AFc%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426051631362361",
       "google_id": "/g/11g8_nmvhv",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 16.077652399999998,
       "lng": 108.24512399999999,
-      "maps_url": "https://maps.google.com/?cid=3549425268822365139",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Horizon+Bar%2C+120+V%C3%B5+Nguy%C3%AAn+Gi%C3%A1p%2C+Street%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425268822365139",
       "google_id": "/g/11flr8h6x2",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 16.0659264,
       "lng": 108.2460097,
-      "maps_url": "https://maps.google.com/?cid=3549425448126472123",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Esco+Beach+Bar+Lounge+%26+Restaurant%2C+L%C3%B4+12+V%C3%B5+Nguy%C3%AAn+Gi%C3%A1p%2C+M%C3%A2n+Th%C3%A1i%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425448126472123",
       "google_id": "/g/11ll5sqxhh",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 16.0726626,
       "lng": 108.22104189999999,
-      "maps_url": "https://maps.google.com/?cid=3549426052954244541",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%83%BC%E3%83%AA%E3%83%96%E3%83%AC+%E3%83%80%E3%83%8A%E3%83%B3%2C+125a+Nguy%E1%BB%85n+Ch%C3%AD+Thanh%2C+H%E1%BA%A3i+Ch%C3%A2u+1%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426052954244541",
       "google_id": "/g/11f2dsmrbv",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 16.0652451,
       "lng": 108.2213507,
-      "maps_url": "https://maps.google.com/?cid=3549426151736449169",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=On+The+Radio+Bar%2C+76+Th%C3%A1i+Phi%C3%AAn%2C+Ph%C6%B0%E1%BB%9Bc+Ninh%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426151736449169",
       "google_id": "/g/1hhgq87wx",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 16.0661971,
       "lng": 108.2219325,
-      "maps_url": "https://maps.google.com/?cid=3549426063886948519",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+1920%27s+Lounge%2C+53+Tr%E1%BA%A7n+Qu%E1%BB%91c+To%E1%BA%A3n%2C+Ph%C6%B0%E1%BB%9Bc+Ninh%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426063886948519",
       "google_id": "/g/11hbkdn8y4",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 16.081406299999998,
       "lng": 108.2232528,
-      "maps_url": "https://maps.google.com/?cid=3549426058515006843",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9E%E3%83%80%E3%83%A0%E3%83%A9%E3%83%B3%2C+04+B%E1%BA%A1ch+%C4%90%E1%BA%B1ng%2C+Th%E1%BA%A1ch+Thang%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426058515006843",
       "google_id": "/g/11b7vz9kgm",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 15.8770873,
       "lng": 108.32607039999999,
-      "maps_url": "https://maps.google.com/?cid=3549415382815272025",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%97%A5%E6%9C%AC%E6%A9%8B%2C+186+Tr%E1%BA%A7n+Ph%C3%BA%2C+Ph%C6%B0%E1%BB%9Dng+Minh+An%2C+H%E1%BB%99i+An%2C+Qu%E1%BA%A3ng+Nam",
       "cid": "3549415382815272025",
       "google_id": "/g/122xw9sk",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 16.0704682,
       "lng": 108.24174269999999,
-      "maps_url": "https://maps.google.com/?cid=3549428028525153447",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thi%C3%AAn+%C4%90%C6%B0%E1%BB%9Dng+Restaurant%2C+22+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng%2C+An+H%E1%BA%A3i+B%E1%BA%AFc%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549428028525153447",
       "google_id": "/g/11rjv8v7bs",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 16.0579628,
       "lng": 108.2451505,
-      "maps_url": "https://maps.google.com/?cid=3549425794724350201",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%E1%BA%BFp+Cu%E1%BB%91n+%C4%90%C3%A0+N%E1%BA%B5ng%2C+54+Nguy%E1%BB%85n+V%C4%83n+Tho%E1%BA%A1i%2C+B%E1%BA%AFc+M%E1%BB%B9+Ph%C3%BA%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425794724350201",
       "google_id": "/g/11hz90gsyw",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 16.036025,
       "lng": 108.2447273,
-      "maps_url": "https://maps.google.com/?cid=3549427060661124221",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+H%C3%A0ng+Ng%E1%BB%8Dc+N%E1%BB%AF+Qu%C3%A1n+%28Good+Restaurant+in+DaNang%29%29%2C+02+H%C3%A0m+T%E1%BB%AD%2C+B%E1%BA%AFc+M%E1%BB%B9+Ph%C3%BA%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549427060661124221",
       "google_id": "/g/11sxvl48yp",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 16.0704992,
       "lng": 108.24221779999999,
-      "maps_url": "https://maps.google.com/?cid=3549425330436139287",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sofia+Restaurant+Danang%2C+L%C3%B4+I%2C+11+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng%2C+An+H%E1%BA%A3i+B%E1%BA%AFc%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425330436139287",
       "google_id": "/g/12vsyhb54",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 16.0527272,
       "lng": 108.24686849999999,
-      "maps_url": "https://maps.google.com/?cid=3549425721317785829",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%C4%90%C3%B4ng+L%C3%A2m+Restaurant%2C+B%E1%BA%AFc+M%E1%BB%B9+Ph%C3%BA%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+Da+Nang+550000",
       "cid": "3549425721317785829",
       "google_id": "/g/11hxnxvf89",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 16.0544509,
       "lng": 108.2460579,
-      "maps_url": "https://maps.google.com/?cid=3549425048649295433",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=restaurant+N%E1%BA%ACM%2C+126+Tr%E1%BA%A7n+B%E1%BA%A1ch+%C4%90%E1%BA%B1ng%2C+B%E1%BA%AFc+M%E1%BB%B9+Ph%C3%BA%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425048649295433",
       "google_id": "/g/11fm3lx9r3",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 16.0800029,
       "lng": 108.2435617,
-      "maps_url": "https://maps.google.com/?cid=3549424788096274001",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ORGANIC+RESTAURANT%2C+07-09+H%E1%BB%93+Nghinh%2C+Ph%C6%B0%E1%BB%9Bc+M%E1%BB%B9%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549424788096274001",
       "google_id": "/g/11f9w516ts",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 16.0685473,
       "lng": 108.2429635,
-      "maps_url": "https://maps.google.com/?cid=3549425237004167265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A0ng+h%E1%BA%A3i+s%E1%BA%A3n+%C4%90%C3%A0+N%E1%BA%B5ng+-+Brilliant+Seafood+Restaurant%2C+178+H%E1%BB%93+Nghinh%2C+Ph%C6%B0%E1%BB%9Bc+M%E1%BB%B9%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425237004167265",
       "google_id": "/g/11fb0q_0vf",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 16.0419366,
       "lng": 108.2482737,
-      "maps_url": "https://maps.google.com/?cid=3549425184036480319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A0ng+Nh%C3%A0+B%E1%BA%BFp+c%E1%BB%A7a+Vi%E1%BB%87t+Nam%2C+416+V%C3%B5+Nguy%C3%AAn+Gi%C3%A1p%2C+B%E1%BA%AFc+M%E1%BB%B9+An%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425184036480319",
       "google_id": "/g/11hc_0pl51",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 16.074108799999998,
       "lng": 108.221254,
-      "maps_url": "https://maps.google.com/?cid=3549426053966964585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%E1%BB%9Dn+Fishcake+Noodle+Soup%2C+113%2F3+Nguy%E1%BB%85n+Ch%C3%AD+Thanh%2C+H%E1%BA%A3i+Ch%C3%A2u+1%2C+H%E1%BA%A3i+Ch%C3%A2u%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426053966964585",
       "google_id": "/g/11r8_gz51",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 16.063997,
       "lng": 108.2415015,
-      "maps_url": "https://maps.google.com/?cid=3549425235160379335",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%E1%BA%A3i+s%E1%BA%A3n+M%E1%BB%99c+qu%C3%A1n%2C+26+T%C3%B4+Hi%E1%BA%BFn+Th%C3%A0nh%2C+Ph%C6%B0%E1%BB%9Bc+M%E1%BB%B9%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425235160379335",
       "google_id": "/g/11h64qj0wn",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 16.047599899999998,
       "lng": 108.2446133,
-      "maps_url": "https://maps.google.com/?cid=3549426094885267535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Happy+Heart+Cafe%2C+57+%C4%90.+Ng.+Th%C3%AC+S%C4%A9%2C+B%E1%BA%AFc+M%E1%BB%B9+An%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426094885267535",
       "google_id": "/g/11c3t_wvb_",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 16.0637762,
       "lng": 108.23024129999999,
-      "maps_url": "https://maps.google.com/?cid=3549426037587515959",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fatfish+Restaurant+%26+Lounge+Bar%2C+439+%C4%90.+Tr%E1%BA%A7n+H%C6%B0ng+%C4%90%E1%BA%A1o%2C+An+H%E1%BA%A3i+Trung%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549426037587515959",
       "google_id": "/g/11b8tnp0rh",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 16.0493512,
       "lng": 108.245916,
-      "maps_url": "https://maps.google.com/?cid=3549425162637753647",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taco+NGON%2C+83+Ho%C3%A0ng+K%E1%BA%BF+Vi%C3%AAm%2C+B%E1%BA%AFc+M%E1%BB%B9+Ph%C3%BA%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425162637753647",
       "google_id": "/g/11g9jr61q0",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 16.052986699999998,
       "lng": 108.2415777,
-      "maps_url": "https://maps.google.com/?cid=3549427784672352471",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Th%C3%ACa+G%E1%BB%97+%E3%83%80%E3%83%8A%E3%83%B3%E3%83%AC%E3%82%B9%E3%83%88%E3%83%A9%E3%83%B3%2C+53+Phan+Th%C3%BAc+Duy%E1%BB%87n%2C+B%E1%BA%AFc+M%E1%BB%B9+Ph%C3%BA%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+50507",
       "cid": "3549427784672352471",
       "google_id": "/g/11f3q_8q_1",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 16.0676123,
       "lng": 108.24485879999999,
-      "maps_url": "https://maps.google.com/?cid=3549425418881676425",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sky+View+Restaurant%2C+216+V%C3%B5+Nguy%C3%AAn+Gi%C3%A1p%2C+Ph%C6%B0%E1%BB%9Bc+M%E1%BB%B9%2C+S%C6%A1n+Tr%C3%A0%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425418881676425",
       "google_id": "/g/11gr1h3_31",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 15.912959599999999,
       "lng": 108.34136799999999,
-      "maps_url": "https://maps.google.com/?cid=3549419242694365631",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Plage%2C+L%E1%BA%A1c+Long+Qu%C3%A2n%2C+Tp.+H%E1%BB%99i+An%2C+Qu%E1%BA%A3ng+Nam+51300",
       "cid": "3549419242694365631",
       "google_id": "/g/1tffg7mm",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 16.046466499999998,
       "lng": 108.2468586,
-      "maps_url": "https://maps.google.com/?cid=3549424873935673235",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Craftsman+Cocktail+Bar%2C+48+Phan+T%E1%BB%A9%2C+B%E1%BA%AFc+M%E1%BB%B9+An%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549424873935673235",
       "google_id": "/g/11h2qtp75k",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 16.042674599999998,
       "lng": 108.2454296,
-      "maps_url": "https://maps.google.com/?cid=3549425237464705219",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Comptoir%2C+16+Ch%E1%BA%BF+Lan+Vi%C3%AAn%2C+B%E1%BA%AFc+M%E1%BB%B9+An%2C+Ng%C5%A9+H%C3%A0nh+S%C6%A1n%2C+%C4%90%C3%A0+N%E1%BA%B5ng+550000",
       "cid": "3549425237464705219",
       "google_id": "/g/11gl587yy9",
       "maps_place_token": null

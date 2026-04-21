@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:44:14.995115+00:00",
-  "refresh_after": "2026-04-29T15:44:14.995115+00:00",
+  "fetched_at": "2026-04-20T16:03:43.846363+00:00",
+  "refresh_after": "2026-05-03T10:56:30.846363+00:00",
   "source_signature": "9e3cbfe7e0595a16b0c29a3ca3c5f58a2090b3c2bbe407da20b6553ac4096ce4",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/BKhiAsr1hjpoaiPc7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 48.7773693,
       "lng": 9.1719705,
-      "maps_url": "https://maps.google.com/?cid=5159395881023783541",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jigger+%26+Spoon%2C+Gymnasiumstra%C3%9Fe+33%2C+70174+Stuttgart%2C+Germany",
       "cid": "5159395881023783541",
       "google_id": "/g/11fyz96r9c",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 48.7737817,
       "lng": 9.1777231,
-      "maps_url": "https://maps.google.com/?cid=5159395966234852527",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mata+Hari%2C+Gei%C3%9Fstra%C3%9Fe+3%2C+70173+Stuttgart%2C+Germany",
       "cid": "5159395966234852527",
       "google_id": "/g/1v9gtf0y",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 48.7750305,
       "lng": 9.172354,
-      "maps_url": "https://maps.google.com/?cid=5159396275051846677",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ZEIT+F%C3%9CR+BROT",
       "cid": "5159396275051846677",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 48.7746267,
       "lng": 9.1857999,
-      "maps_url": "https://maps.google.com/?cid=5159371132537268827",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MMC+Kult",
       "cid": "5159371132537268827",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 48.770679699999995,
       "lng": 9.1820235,
-      "maps_url": "https://maps.google.com/?cid=5159395973259489333",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ALATURKA+-+Das+Stuttgarter+Original",
       "cid": "5159395973259489333",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 48.7735284,
       "lng": 9.177554599999999,
-      "maps_url": "https://maps.google.com/?cid=5159395966111404847",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Weinstube+Kachelofen",
       "cid": "5159395966111404847",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 48.77512,
       "lng": 9.18304,
-      "maps_url": "https://maps.google.com/?cid=5159371130996980559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Weinstube+Zur+Kiste",
       "cid": "5159371130996980559",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 48.772201599999995,
       "lng": 9.1798015,
-      "maps_url": "https://maps.google.com/?cid=5159395964427488773",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Weinstube+Fr%C3%B6hlich",
       "cid": "5159395964427488773",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 48.76475,
       "lng": 9.16856,
-      "maps_url": "https://maps.google.com/?cid=5159395988947599959",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gelateria+Kaiserbau",
       "cid": "5159395988947599959",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 48.8040951,
       "lng": 9.2079984,
-      "maps_url": "https://maps.google.com/?cid=5159371658689591393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wilhelma",
       "cid": "5159371658689591393",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 48.7783294,
       "lng": 9.1775786,
-      "maps_url": "https://maps.google.com/?cid=5159395872057752011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Art+Museum+Stuttgart",
       "cid": "5159395872057752011",
       "google_id": null,
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 48.7899922,
       "lng": 9.183067699999999,
-      "maps_url": "https://maps.google.com/?cid=5159371131275392915",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=City+Library+at+the+Mail%C3%A4nder+Platz",
       "cid": "5159371131275392915",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 48.7773476,
       "lng": 9.179635,
-      "maps_url": "https://maps.google.com/?cid=5159395870812645445",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=History+Museum+W%C3%BCrttemberg",
       "cid": "5159395870812645445",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 48.804117399999996,
       "lng": 9.173753999999999,
-      "maps_url": "https://maps.google.com/?cid=5159396384675990071",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%C3%B6henpark+Killesberg",
       "cid": "5159396384675990071",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 48.899321699999994,
       "lng": 9.196038999999999,
-      "maps_url": "https://maps.google.com/?cid=5159385285660120375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ludwigsburg+Residential+Palace%2C+Schlossstra%C3%9Fe+30%2C+71634+Ludwigsburg%2C+Germany",
       "cid": "5159385285660120375",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 48.776647,
       "lng": 9.1778987,
-      "maps_url": "https://maps.google.com/?cid=5159395960984613845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Stiftskirche%2C+Stuttgart%2C+Stiftstra%C3%9Fe+12%2C+70173+Stuttgart%2C+Germany",
       "cid": "5159395960984613845",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 48.755860899999995,
       "lng": 9.190105599999999,
-      "maps_url": "https://maps.google.com/?cid=5159371072026713765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Stuttgart+TV+Tower%2C+Jahnstra%C3%9Fe+120%2C+70597+Stuttgart%2C+Germany",
       "cid": "5159371072026713765",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 48.7881453,
       "lng": 9.233982,
-      "maps_url": "https://maps.google.com/?cid=5159371446989741969",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mercedes-Benz+Museum%2C+Mercedesstra%C3%9Fe+100%2C+70372+Stuttgart%2C+Germany",
       "cid": "5159371446989741969",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 48.7762502,
       "lng": 9.179409699999999,
-      "maps_url": "https://maps.google.com/?cid=5159396263721222211",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Markthalle+Stuttgart%2C+Dorotheenstra%C3%9Fe+4%2C+70173+Stuttgart%2C+Germany",
       "cid": "5159396263721222211",
       "google_id": "/g/122sgfd9",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 48.835101699999996,
       "lng": 9.216868999999999,
-      "maps_url": "https://maps.google.com/?cid=5159382907795098165",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Max-Eyth-See",
       "cid": "5159382907795098165",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 48.7868934,
       "lng": 9.084336799999999,
-      "maps_url": "https://maps.google.com/?cid=5159396600942998447",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Schloss+Solitude%2C+Solitude+1%2C+70197+Stuttgart%2C+Germany",
       "cid": "5159396600942998447",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 48.778343799999995,
       "lng": 9.1806319,
-      "maps_url": "https://maps.google.com/?cid=5159395869073777265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Schlo%C3%9Fpl.%2C+Schlo%C3%9Fpl.%2C+70173+Stuttgart%2C+Germany",
       "cid": "5159395869073777265",
       "google_id": "/g/1v1vc4h0",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 48.7740801,
       "lng": 9.163998699999999,
-      "maps_url": "https://maps.google.com/?cid=5159395944128634269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Feuersee%2C+Feuersee%2C+Stuttgart-West%2C+Germany",
       "cid": "5159395944128634269",
       "google_id": "/g/1tfslysh",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 48.7803028,
       "lng": 9.177834899999999,
-      "maps_url": "https://maps.google.com/?cid=5159395865127566905",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Brauhaus+Sch%C3%B6nbuch%2C+Bolzstra%C3%9Fe+10%2C+70173+Stuttgart%2C+Germany",
       "cid": "5159395865127566905",
       "google_id": "/g/1tgnw5hy",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 48.779463299999996,
       "lng": 9.1799805,
-      "maps_url": "https://maps.google.com/?cid=5159395868799691639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Carls+Brauhaus%2C+Stauffenbergstra%C3%9Fe+1%2C+70173+Stuttgart%2C+Germany",
       "cid": "5159395868799691639",
       "google_id": "/g/11bbrkxbmw",
       "maps_place_token": null

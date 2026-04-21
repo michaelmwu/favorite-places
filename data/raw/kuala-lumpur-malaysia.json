@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:20:42.969760+00:00",
-  "refresh_after": "2026-05-01T19:08:34.969760+00:00",
+  "fetched_at": "2026-04-20T16:07:47.731012+00:00",
+  "refresh_after": "2026-05-01T21:55:39.731012+00:00",
   "source_signature": "cf9e39152721bbfeb408f2c98bd242e622770633ee2a3a168e4482a53c317da8",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/VcA2SXG6KcFWMcU77",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 3.1546765999999997,
       "lng": 101.718419,
-      "maps_url": "https://maps.google.com/?cid=3588328453656386575",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dewakan+Restaurant%2C+Platinum+Park%2C+Level+48%2C+Skyviews%2C+Naza+Tower+%40%2C+Persiaran+KLCC%2C+Kuala+Lumpur+City+Centre%2C+50088+Kuala+Lumpur%2C+Federal+Territory+of+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588328453656386575",
       "google_id": "/g/11ckqsbtf9",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 2.7452517999999997,
       "lng": 101.68599909999999,
-      "maps_url": "https://maps.google.com/?cid=3588734761040498937",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oriental+Kopi+KLIA+Terminal+2+Level+2+Arrival%2C+L2-58%2C+59%2C+KLIA2+Arrival+Ln%2C+43900+Sepang%2C+Selangor%2C+Malaysia",
       "cid": "3588734761040498937",
       "google_id": "/g/11tmt_jmf2",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 3.1634659999999997,
       "lng": 101.6952888,
-      "maps_url": "https://maps.google.com/?cid=3588323561096656589",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=STEG+Kuala+Lumpur%2C+51%2C+Jalan+Tiong+Nam%2C+Off%2C+Jln+Raja+Laut%2C+50350+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323561096656589",
       "google_id": "/g/11spxjyltq",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 3.1502841,
       "lng": 101.6980913,
-      "maps_url": "https://maps.google.com/?cid=3588323467735963265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Mizukami%2C+Bangunan+Ming+Annexe%2C+50100+Kuala+Lumpur%2C+Federal+Territory+of+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323467735963265",
       "google_id": "/g/11t9m4jr9m",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 3.1574693,
       "lng": 101.7115639,
-      "maps_url": "https://maps.google.com/?cid=3588304374656834591",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Petronas+Twin+Towers%2C+Petronas+Twin+Tower%2C+Lower+Ground+%28Concourse%29+Level%2C+Kuala+Lumpur+City+Centre%2C+50088+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588304374656834591",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 3.1628534999999998,
       "lng": 101.6490778,
-      "maps_url": "https://maps.google.com/?cid=3588324245271258661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wellcraft+Restaurant+and+bar+Craft+beers+%26+Pizza+%40Hartamas%2C+20%2C+Jalan+28%2F70a%2C+Desa+Sri+Hartamas%2C+50480+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588324245271258661",
       "google_id": "/g/11mw7q319f",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 3.1544593,
       "lng": 101.6225868,
-      "maps_url": "https://maps.google.com/?cid=3588323924189007267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nasi+Lemak+Burung+Hantu+2%2C+44%2C+Ground+Floor%2C+Lorong+Rahim+Kajai+14%2C+Taman+Tun+Dr+Ismail%2C+60000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323924189007267",
       "google_id": "/g/11kp_xsb05",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 3.1523825,
       "lng": 101.6208429,
-      "maps_url": "https://maps.google.com/?cid=3588323086933793475",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nasi+Lemak+Rosli%2C+74%2C+Jalan+Burhanuddin+Helmi%2C+Taman+Tun+Dr+Ismail%2C+60000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323086933793475",
       "google_id": "/g/11c5s4v_m8",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 3.1493406,
       "lng": 101.65377339999999,
-      "maps_url": "https://maps.google.com/?cid=3588322530324280559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Aliyaa%2C+No+48+G%26M%2C+Jalan+Medan+Setia+2%2C+Bukit+Damansara%2C+50490+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588322530324280559",
       "google_id": "/g/11r96rvm7",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 3.1292826999999996,
       "lng": 101.67950739999999,
-      "maps_url": "https://maps.google.com/?cid=3588324123768330821",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chinta+Restaurant%2C+24%2C+Jalan+Kemuja%2C+Bangsar%2C+59000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588324123768330821",
       "google_id": "/g/11kqs8538g",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 3.1330750999999997,
       "lng": 101.6870344,
-      "maps_url": "https://maps.google.com/?cid=3588324102195425191",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Banana+Bistro+Banana+Leaf+Restaurant+%40+Nu+Sentral%2C+level+4+lot+4.12%2C+Nu+Sentral%2C+Kuala+Lumpur+Sentral%2C+50470+Kuala+Lumpur%2C+Federal+Territory+of+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588324102195425191",
       "google_id": "/g/11trfws5fc",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 3.129702,
       "lng": 101.6798692,
-      "maps_url": "https://maps.google.com/?cid=3588324093610371173",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Lankan+Crabs%2C+4%2C+Jalan+Kemuja%2C+Bangsar%2C+59000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588324093610371173",
       "google_id": "/g/11frhkkdtf",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 3.1194496999999997,
       "lng": 101.6775,
-      "maps_url": "https://maps.google.com/?cid=3588323881218017075",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fong+Lye+Teahouse+Taiwan+Restaurant+%28The+Gardens%29+%E8%93%AC%E8%8E%B1%E8%8C%B6%E6%88%BF%2C+The+Gardens%2C+Lot+T208%2C+3rd+Floor%2C+Lingkaran+Syed+Putra%2C+Mid+Valley+City%2C+59200+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323881218017075",
       "google_id": "/g/12qfhtrrf",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 3.1332524999999998,
       "lng": 101.6883283,
-      "maps_url": "https://maps.google.com/?cid=3588323375990081769",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TAZYEEN+Arabic+and+Mughlai+Cuisine%2C+TAZYEEN+Opposite+NU+Sentral+Mall%2C+82%2C+Jalan+Tun+Sambanthan%2C+Brickfields%2C+50470+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323375990081769",
       "google_id": "/g/11p6h54ql0",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 3.1281271999999998,
       "lng": 101.6755757,
-      "maps_url": "https://maps.google.com/?cid=3588323638258922185",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gajaa+at+8+Indian+Restaurant+Kuala+Lumpur%2C+No.+8%2C+Lrg+Maarof%2C+Bangsar%2C+59000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323638258922185",
       "google_id": "/g/11f6mjb_57",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 3.1269221999999997,
       "lng": 101.68266709999999,
-      "maps_url": "https://maps.google.com/?cid=3588323723976248351",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Madurai+Muniyandi+Villas%2C+No+7+level%2C+1%2C+Jalan+Tun+Sambanthan+1%2C+Brickfields%2C+50470+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323723976248351",
       "google_id": "/g/11jm21bgb8",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 3.1312834,
       "lng": 101.68603829999999,
-      "maps_url": "https://maps.google.com/?cid=3588324098905388203",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mr+Naan+%26+Mrs+Idly%2C+190%2C+Jalan+Tun+Sambanthan%2C+Brickfields%2C+50470+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588324098905388203",
       "google_id": "/g/11cn8pd5f_",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 3.1282958,
       "lng": 101.6838832,
-      "maps_url": "https://maps.google.com/?cid=3588323726732600713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kaara+Saaram+Claypot+Brickfields%2C+Little+India+Brickfields%2C+290%2C+Jalan+Tun+Sambanthan%2C+Brickfields%2C+50470+Kuala+Lumpur%2C+Federal+Territory+of+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323726732600713",
       "google_id": "/g/11kj2k1l30",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 3.1270488,
       "lng": 101.6826681,
-      "maps_url": "https://maps.google.com/?cid=3588323900425830817",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seni+SattiSorru%2C+Tun+Sambanthan+Complex%2C+Jalan+Tun+Sambanthan%2C+Brickfields%2C+50470+Kuala+Lumpur%2C+Federal+Territory+of+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323900425830817",
       "google_id": "/g/11ggrl_ng2",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 3.1282756999999997,
       "lng": 101.6812265,
-      "maps_url": "https://maps.google.com/?cid=3588323592655504925",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seni+Sattisorru+Indian+Restaurant%2C+113%2C+Jalan+Thamby+Abdullah%2C+Brickfields%2C+50470+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur%2C+Malaysia",
       "cid": "3588323592655504925",
       "google_id": "/g/11r1jk701j",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 3.1429847,
       "lng": 101.6847241,
-      "maps_url": "https://maps.google.com/?cid=3588324049930840337",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Perdana+Botanical+Garden",
       "cid": "3588324049930840337",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 3.1507586,
       "lng": 101.70918479999999,
-      "maps_url": "https://maps.google.com/?cid=3588302566038116243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Suzie+Wong+-+Dinner+and+Show",
       "cid": "3588302566038116243",
       "google_id": null,
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 3.1452635,
       "lng": 101.69541579999999,
-      "maps_url": "https://maps.google.com/?cid=3588324168760431191",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Central+Market",
       "cid": "3588324168760431191",
       "google_id": null,
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 3.1487179,
       "lng": 101.6944582,
-      "maps_url": "https://maps.google.com/?cid=3588324150534573565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sultan+Abdul+Samad+Building",
       "cid": "3588324150534573565",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 3.1490332,
       "lng": 101.65311679999999,
-      "maps_url": "https://maps.google.com/?cid=3588304414065275705",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Umameat",
       "cid": "3588304414065275705",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 3.143164,
       "lng": 101.6884845,
-      "maps_url": "https://maps.google.com/?cid=3588324129701809339",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KL+Bird+Park",
       "cid": "3588324129701809339",
       "google_id": null,
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 3.1219525,
       "lng": 101.6876678,
-      "maps_url": "https://maps.google.com/?cid=3588324308838918057",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thean+Hou+Temple",
       "cid": "3588324308838918057",
       "google_id": null,
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 3.1573012,
       "lng": 101.7005308,
-      "maps_url": "https://maps.google.com/?cid=3588324212834241195",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JOLOKO%2C+43%2C+Jalan+Kamunting%2C+Chow+Kit%2C+50300+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324212834241195",
       "google_id": "/g/11f6np13mm",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 3.1406449999999997,
       "lng": 101.7102718,
-      "maps_url": "https://maps.google.com/?cid=3588302531333970093",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%BA%B8%E8%A8%98%E7%89%9B%E8%85%A9+Yung+Kee+Beef+Noodles%2C+9%2C+Jalan+Kancil%2C+Pudu%2C+55100+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588302531333970093",
       "google_id": "/g/11cn93vwb1",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 3.158464,
       "lng": 101.7094092,
-      "maps_url": "https://maps.google.com/?cid=3588303745398131195",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=WET%C2%AE+Deck%2C+W+Kuala+Lumpur%2C+Level+12%2C+W%2C+121%2C+Jln+Ampang%2C+Kuala+Lumpur%2C+50450+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588303745398131195",
       "google_id": "/g/11f9x4y0yt",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 3.1408723999999997,
       "lng": 101.6978896,
-      "maps_url": "https://maps.google.com/?cid=3588323511238605847",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jann%2C+2%2C+Jalan+Balai+Polis%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323511238605847",
       "google_id": "/g/11j4mnx31h",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 3.1443950999999997,
       "lng": 101.69764959999999,
-      "maps_url": "https://maps.google.com/?cid=3588324168018908997",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%95%E3%83%AA%E3%83%BC%E3%83%9E%E3%83%BC%E3%82%B1%E3%83%83%E3%83%88+%E3%83%9A%E3%82%BF%E3%83%AA%E3%83%B3+%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%88%2C+Jalan+Petaling%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324168018908997",
       "google_id": "/g/11xbn0q21",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 3.1416329,
       "lng": 101.69790169999999,
-      "maps_url": "https://maps.google.com/?cid=3588324286025082563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Small+Shifting+Space+%28SSS%29%2C+141%2C+Jalan+Petaling%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324286025082563",
       "google_id": "/g/11ll3j7g0r",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 3.1449097999999998,
       "lng": 101.6984315,
-      "maps_url": "https://maps.google.com/?cid=3588323858579495419",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shhhbuuuleee+Restaurant%2C+80%2C+Jalan+Sultan%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323858579495419",
       "google_id": "/g/11pdsl_v6s",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 3.1225079,
       "lng": 101.6710646,
-      "maps_url": "https://maps.google.com/?cid=3588324024901564319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Baba+Low%E2%80%99s+%40+Lorong+Kurau%2C+11%2C+Lorong+Kurau%2C+Bangsar%2C+59100+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324024901564319",
       "google_id": "/g/11fj2v16hj",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 3.1241507,
       "lng": 101.6742182,
-      "maps_url": "https://maps.google.com/?cid=3588323887268813423",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A+%E3%83%97%E3%83%AC%E3%82%A4%E3%82%B9%E3%83%BB%E3%82%A6%E3%82%A7%E3%82%A2+-+APW%2C+29%2C+Jalan+Riong%2C+Bangsar%2C+59100+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323887268813423",
       "google_id": "/g/1td07fhp",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 3.1504944,
       "lng": 101.7137683,
-      "maps_url": "https://maps.google.com/?cid=3588302571778076653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Horizon+Grill%2C+Level+58%2C+Banyan+Tree+Kuala+Lumpur%2C+No.+2%2C+Jalan+Conlay%2C+50450+Kuala+Lumpur%2C+Wilayah+Persekutuan",
       "cid": "3588302571778076653",
       "google_id": "/g/11ff2mkb7m",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 3.1379601,
       "lng": 101.6972014,
-      "maps_url": "https://maps.google.com/?cid=3588324209853080891",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tommy+Le+Baker+-+Kampung+Attap%2C+No+82%2C+Zhongshan+Building%2C+80%2C+Jalan+Rotan%2C+Kampung+Attap%2C+50460+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324209853080891",
       "google_id": "/g/12qh8tnzs",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 3.1392208,
       "lng": 101.7110496,
-      "maps_url": "https://maps.google.com/?cid=3588302541567339207",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pudu+roast+pork%2C+30%2C+Jalan+Nyonya%2C+Pudu%2C+55100+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588302541567339207",
       "google_id": "/g/1tq4nlrh",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 3.1607702,
       "lng": 101.69828919999999,
-      "maps_url": "https://maps.google.com/?cid=3588322371945474829",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%AC%E3%82%B9%E3%83%88%E3%83%A9%E3%83%B3+%E3%82%AD%E3%83%B3%E3%82%AD%E3%83%B3%2C+40%2C+Jalan+Dewan+Sultan+Sulaiman%2C+Kampung+Baru%2C+50300+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588322371945474829",
       "google_id": "/g/1hf77w5qw",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 3.1586893999999996,
       "lng": 101.6965683,
-      "maps_url": "https://maps.google.com/?cid=3588322382837840271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nasi+Kandar+Saddam%2C+239%2C+Jalan+Tuanku+Abdul+Rahman%2C+Chow+Kit%2C+50100+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588322382837840271",
       "google_id": "/g/11h938lst_",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 3.1068016,
       "lng": 101.62393329999999,
-      "maps_url": "https://maps.google.com/?cid=3588304544659963679",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Rebel+Penguin+of+Funky+Town%2C+Lot+1.24%2C+Cosway+Guesthouse%2C+88%2C+Jalan+Raja+Chulan%2C+Kuala+Lumpur%2C+50200+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588304544659963679",
       "google_id": "/g/11s38kxshq",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 3.1417959,
       "lng": 101.6975702,
-      "maps_url": "https://maps.google.com/?cid=3588323844990905997",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Concubine+KL%2C+Lot+2%2C+Jalan+Panggong%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323844990905997",
       "google_id": "/g/11fmgcgjqs",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 3.1417305,
       "lng": 101.6975542,
-      "maps_url": "https://maps.google.com/?cid=3588323714539255689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Baijiu+KL%2C+Lorong+Panggung%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323714539255689",
       "google_id": "/g/11r_dkhcf0",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 3.1413457,
       "lng": 101.6976538,
-      "maps_url": "https://maps.google.com/?cid=3588324106887651383",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Panggung+KL%2C+3%2C+Jalan+Balai+Polis%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324106887651383",
       "google_id": "/g/11qbcdh4t3",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 3.1352550999999997,
       "lng": 101.6210146,
-      "maps_url": "https://maps.google.com/?cid=3588323491538945565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=HYDE+at+53M%2C+53M%2C+Jalan+SS+21%2F1a%2C+Damansara+Utama%2C+47400+Petaling+Jaya%2C+Selangor",
       "cid": "3588323491538945565",
       "google_id": "/g/11bzzygyt5",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 3.1351518,
       "lng": 101.6290391,
-      "maps_url": "https://maps.google.com/?cid=3588323515276748199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Locker+%26+Loft%2C+40A%2C+Jalan+SS+20%2F10%2C+Damansara+Kim%2C+47400+Petaling+Jaya%2C+Selangor",
       "cid": "3588323515276748199",
       "google_id": "/g/11ckkyzc9m",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 3.1495002999999997,
       "lng": 101.7090645,
-      "maps_url": "https://maps.google.com/?cid=3588302561257608247",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taps+Beer+Bar%2C+1%2C+Jalan+Nagasari%2C+Bukit+Bintang%2C+50200+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588302561257608247",
       "google_id": "/g/1tfthq7n",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 3.1326535,
       "lng": 101.6210388,
-      "maps_url": "https://maps.google.com/?cid=3588323585408420639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Great+Beer+Bar%2C+86%2C+Jalan+SS+21%2F62%2C+Damansara+Utama%2C+47400+Petaling+Jaya%2C+Selangor",
       "cid": "3588323585408420639",
       "google_id": "/g/11b7kh8wm8",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 3.1349199999999997,
       "lng": 101.621078,
-      "maps_url": "https://maps.google.com/?cid=3588323491540143789",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=61Monarchy%2C+61M%2C+Jalan+SS+21%2F1a%2C+Damansara+Utama%2C+47400+Petaling+Jaya%2C+Selangor",
       "cid": "3588323491540143789",
       "google_id": "/g/11b6hm5v0r",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 3.1485860999999997,
       "lng": 101.70868779999999,
-      "maps_url": "https://maps.google.com/?cid=3588302558630045493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pisco+Bar%2C+29%2C+Jln+Mesui%2C+Bukit+Bintang%2C+50200+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588302558630045493",
       "google_id": "/g/12qg0b0vm",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 3.1566118,
       "lng": 101.71159209999999,
-      "maps_url": "https://maps.google.com/?cid=3588304398075316835",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marini%E2%80%99s+on+57%2C+Petronas%2C+Level+57%2C+Menara+3%2C+Persiaran+KLCC%2C+50088+Kuala+Lumpur",
       "cid": "3588304398075316835",
       "google_id": null,
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 3.1433940999999996,
       "lng": 101.7051091,
-      "maps_url": "https://maps.google.com/?cid=3588324193607218271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pahit%2C+3%2C+Jln+Sin+Chew+Kee%2C+Bukit+Bintang%2C+50150+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324193607218271",
       "google_id": "/g/11b6hylgfs",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 3.1409966999999996,
       "lng": 101.6981964,
-      "maps_url": "https://maps.google.com/?cid=3588324205415605599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PS150%2C+Ground+Floor%2C+150%2C+Jalan+Petaling%2C+City+Centre%2C+50000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324205415605599",
       "google_id": "/g/11bwym0wcy",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 3.1565163,
       "lng": 101.7003615,
-      "maps_url": "https://maps.google.com/?cid=3588322357435337741",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yut+Kee+Restaurant%2C+1%2C+Jalan+Kamunting%2C+Chow+Kit%2C+50300+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588322357435337741",
       "google_id": "/g/1tg9kmp_",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 3.1455461,
       "lng": 101.6964474,
-      "maps_url": "https://maps.google.com/?cid=3588324168482988167",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sin+Sze+Si+Ya+Temple+%E4%BB%99%E5%B8%AB%E5%9B%9B%E5%B8%AB%E5%AE%AE%2C+113A%2C+Jalan+Tun+H+S+Lee%2C+City+Centre%2C+50050+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588324168482988167",
       "google_id": null,
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 3.1555902,
       "lng": 101.71478719999999,
-      "maps_url": "https://maps.google.com/?cid=3588304386157602309",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KLCC%E5%85%AC%E5%9C%92%2C+KLCC%2C+Lot+No.+241%2C+Level+2%2C+Suria%2C+Kuala+Lumpur+City+Centre%2C+50088+Kuala+Lumpur",
       "cid": "3588304386157602309",
       "google_id": null,
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 3.1535482999999997,
       "lng": 101.713178,
-      "maps_url": "https://maps.google.com/?cid=3588304385122342707",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KLCC%E6%B0%B4%E6%97%8F%E9%A4%A8%2C+Kuala+Lumpur+Convention+Centre%2C+Jalan+Pinang%2C+Kuala+Lumpur+City+Centre%2C+50088+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588304385122342707",
       "google_id": null,
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 3.1511918999999997,
       "lng": 101.7098985,
-      "maps_url": "https://maps.google.com/?cid=3588302562147776861",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%98%E3%83%AA%E3%83%A9%E3%82%A6%E3%83%B3%E3%82%B8%E3%83%90%E3%83%BC%2C+34+Menara+KH%2C+Jln+Sultan+Ismail%2C+Bukit+Bintang%2C+50450%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588302562147776861",
       "google_id": "/g/12qg50r_q",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 3.1449491999999997,
       "lng": 101.7079835,
-      "maps_url": "https://maps.google.com/?cid=3588302556086491525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%BB%84%E4%BA%9E%E8%8F%AF%E5%B0%8F%E9%A3%9F%E5%BA%97%2C+No+1%2C+%E4%BA%9A%E7%BD%97%E8%A1%97%2C+Bukit+Bintang%2C+50200+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588302556086491525",
       "google_id": "/g/11bv1p8cw_",
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 3.1502851,
       "lng": 101.6535038,
-      "maps_url": "https://maps.google.com/?cid=3588323280833328825",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JungleBird%2C+61M%2C+Jalan+Medan+Setia+1%2C+Bukit+Damansara%2C+50490+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323280833328825",
       "google_id": "/g/11g6rlbv0f",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 3.1300117999999997,
       "lng": 101.6801297,
-      "maps_url": "https://maps.google.com/?cid=3588323910452629177",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coley%2C+6-G%2C+Jalan+Abdullah%2C+Bangsar%2C+59000+Kuala+Lumpur%2C+Wilayah+Persekutuan+Kuala+Lumpur",
       "cid": "3588323910452629177",
       "google_id": "/g/11c44fnp0f",
       "maps_place_token": null

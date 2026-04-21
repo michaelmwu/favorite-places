@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:16:43.775559+00:00",
-  "refresh_after": "2026-04-29T15:16:43.775559+00:00",
+  "fetched_at": "2026-04-20T16:02:41.091598+00:00",
+  "refresh_after": "2026-05-01T16:39:50.091598+00:00",
   "source_signature": "dd8d549c96e400bcf84249e217b746925e32f1319b04dbbfbd3eac73b9ee6142",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/hXEPKiFKKwWS3BQ46",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": -13.1542742,
       "lng": -72.5252197,
-      "maps_url": "https://maps.google.com/?cid=4433510417116546333",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ministry+of+Culture+%28Machu+Picchu+Park+Passes%29%2C+Ave+Pachacutec%2C+Aguas+Calientes+08681%2C+Peru",
       "cid": "4433510417116546333",
       "google_id": "/g/1vj6089x",
       "maps_place_token": null
@@ -29,8 +29,8 @@
       "is_favorite": false,
       "lat": -13.150913099999999,
       "lng": -72.5213836,
-      "maps_url": "https://maps.google.com/?q=-13.1509131,-72.5213836",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ba%C3%B1os+Termales+%28Machu+Picchu%29%2C+Avenida+Hermanos+Ayar%2C+Aguas+Calientes+08681%2C+Peru",
+      "cid": "15264186070483398692",
       "google_id": "/g/11c5hj28kp",
       "maps_place_token": null
     },
@@ -41,8 +41,8 @@
       "is_favorite": false,
       "lat": -13.154995699999999,
       "lng": -72.52526639999999,
-      "maps_url": "https://maps.google.com/?q=-13.1549957,-72.5252664",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bus+to+Machu+Picchu%2C+Aguas+Calientes+08681%2C+Peru",
+      "cid": "17213730784934053095",
       "google_id": "/g/1v6wqd7h",
       "maps_place_token": null
     },
@@ -53,8 +53,8 @@
       "is_favorite": false,
       "lat": -13.1557073,
       "lng": -72.5250223,
-      "maps_url": "https://maps.google.com/?q=-13.1557073,-72.5250223",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mapacho+Craft+Beer+Restaurant%2C+Imperio+de+los+Incas+614%2C+Cusco+08681%2C+Peru",
+      "cid": "14063537238082844765",
       "google_id": "/g/11c59xr4t8",
       "maps_place_token": null
     },
@@ -65,8 +65,8 @@
       "is_favorite": false,
       "lat": -13.154355899999999,
       "lng": -72.52498109999999,
-      "maps_url": "https://maps.google.com/?q=-13.1543559,-72.5249811",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Bistro+Bar+Indio+Feliz%2C+Pje.+Lloque+Yupanqui+103%2C+Aguas+Calientes+08681%2C+Peru",
+      "cid": "15302451059277344504",
       "google_id": "/g/1v_vtzfd",
       "maps_place_token": null
     },
@@ -77,8 +77,8 @@
       "is_favorite": false,
       "lat": -13.1542882,
       "lng": -72.5256101,
-      "maps_url": "https://maps.google.com/?q=-13.1542882,-72.5256101",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Manco+Capac+Square%2C+Ca.+Collasuyo+s%2Fn%2C+Aguas+Calientes+08681%2C+Peru",
+      "cid": "12781028075886109247",
       "google_id": "/g/1tfhhgsj",
       "maps_place_token": null
     },
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": -13.1616848,
       "lng": -72.5346029,
-      "maps_url": "https://maps.google.com/?cid=7542742601844488029",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mariposario+of+Machu+Picchu%2C+Avenida+Hermanos+Ayar%2C+08680%2C+Peru",
       "cid": "7542742601844488029",
       "google_id": "/g/11bbrn1nqm",
       "maps_place_token": null
@@ -101,8 +101,8 @@
       "is_favorite": false,
       "lat": -13.1605619,
       "lng": -72.5393299,
-      "maps_url": "https://maps.google.com/?q=-13.1605619,-72.5393299",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Manuel+Ch%C3%A1vez+Ball%C3%B3n+Site+Museum%2C+Sendero+al+Museo%2C+08680%2C+Peru",
+      "cid": "12663997430415331194",
       "google_id": "/g/1hm2cpzc9",
       "maps_place_token": null
     },
@@ -113,8 +113,8 @@
       "is_favorite": false,
       "lat": -13.1556552,
       "lng": -72.52505169999999,
-      "maps_url": "https://maps.google.com/?q=-13.1556552,-72.5250517",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chullos+Restaurant+%26+Craft+Beer%2C+Imperio+de+los+Incas+612%2C+Aguas+Calientes+08681%2C+Peru",
+      "cid": "11367173520677119213",
       "google_id": "/g/11h_bx8f5y",
       "maps_place_token": null
     },
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": -13.155864999999999,
       "lng": -72.5248069,
-      "maps_url": "https://maps.google.com/?cid=8102094132329945557",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Julian+Restaurant%2C+Imperio+de+los+Incas+618%2C+Aguas+Calientes+08681%2C+Peru",
       "cid": "8102094132329945557",
       "google_id": "/g/11c5q9jqy9",
       "maps_place_token": null
@@ -137,8 +137,8 @@
       "is_favorite": false,
       "lat": -13.1559379,
       "lng": -72.52477429999999,
-      "maps_url": "https://maps.google.com/?q=-13.1559379,-72.5247743",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Full+House+Peruvian+cuisine+%26craft+beer%2C+Imperio+de+los+Incas+620%2C+Aguas+Calientes+08681%2C+Peru",
+      "cid": "16761366072816991833",
       "google_id": "/g/11ddxnpx6g",
       "maps_place_token": null
     }

@@ -48,6 +48,10 @@ export function matchesCardSearch(card, { normalizedQuery = "", searchResultIds 
     : !normalizedQuery || (card.dataset.search || "").includes(normalizedQuery);
 }
 
+function getCardAreaComparisonValue(card) {
+  return getTagComparisonValue(card.dataset.neighborhood || "");
+}
+
 export function cardMatchesType(card, { activeTypeValue = "", activeTypeSeedValues = [] } = {}) {
   const normalizedType = getTagComparisonValue(activeTypeValue);
   const normalizedCardCategory = getTagComparisonValue(card.dataset.category || "");
@@ -64,9 +68,10 @@ export function countMatchingCards(cards, {
   searchResultIds = null,
   tag = "",
 } = {}) {
+  const normalizedActiveArea = getTagComparisonValue(activeArea);
   return cards.filter((card) => {
     const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-    const matchesArea = !activeArea || (card.dataset.neighborhood || "") === activeArea;
+    const matchesArea = !normalizedActiveArea || getCardAreaComparisonValue(card) === normalizedActiveArea;
     const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
     return matchesSearch && matchesArea && matchesMapFrame && cardHasTag(card, tag);
   }).length;
@@ -340,6 +345,10 @@ if (root) {
       return Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0)
         || (left.dataset.name || "").localeCompare(right.dataset.name || "");
     },
+    rating: (left, right) =>
+      Number(right.dataset.rating || 0) - Number(left.dataset.rating || 0)
+      || Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0)
+      || sorters.curated(left, right),
     name: (left, right) => (left.dataset.name || "").localeCompare(right.dataset.name || ""),
     neighborhood: (left, right) =>
       (left.dataset.neighborhood || "").localeCompare(right.dataset.neighborhood || "")
@@ -356,7 +365,7 @@ if (root) {
     selectedTagValues = [],
   } = {}) => {
     const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-    const matchesArea = !activeAreaLabelValue || (card.dataset.neighborhood || "") === activeAreaLabelValue;
+    const matchesArea = !activeAreaLabelValue || getCardAreaComparisonValue(card) === activeAreaLabelValue;
     const matchesMapFrame = !mapFrameIds || mapFrameIds.has(card.dataset.placeId || "");
     const matchesSelectedTags = selectedTagValues.every((tag) => cardHasTag(card, tag));
     const matchesType = cardMatchesType(card, {

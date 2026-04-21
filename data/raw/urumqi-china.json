@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:34:13.315330+00:00",
-  "refresh_after": "2026-04-29T23:34:13.315330+00:00",
+  "fetched_at": "2026-04-20T16:05:48.825478+00:00",
+  "refresh_after": "2026-05-05T00:03:34.825478+00:00",
   "source_signature": "a545f6583edbe484c1965cb99e1b5cd60928a8eed1fa438d0bf6716f06992ecf",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/uJwUTPTJchDfj98FA",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 43.779697299999995,
       "lng": 87.6181076,
-      "maps_url": "https://maps.google.com/?cid=4036914886110843881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xinjiang+Int%27l.+Dabazha+Scenic+Spot%2C+Xinjiang+Int%27l.+Dabazha+Scenic+Spot%2C+Tian+Shan+Qu%2C+Wu+Lu+Mu+Qi+Shi%2C+Xin+Jiang+Wei+Wu+Er+Zi+Zhi+Qu%2C+China%2C+830094",
       "cid": "4036914886110843881",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 43.8021537,
       "lng": 87.62957929999999,
-      "maps_url": "https://maps.google.com/?cid=4036921976660183911",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Confucian+Temple%2C+231+Qianjin+Rd%2C+Tianshan+District%2C+%C3%9Cr%C3%BCmqi%2C+Xinjiang%2C+China%2C+830002",
       "cid": "4036921976660183911",
       "google_id": "/g/1v8hzs_n",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 43.826937,
       "lng": 87.670442,
-      "maps_url": "https://maps.google.com/?cid=4036921314008842289",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shui+Mo+Gou+Feng+Jing+Qu%2C+Shuimogou+District%2C+%C3%9Cr%C3%BCmqi%2C+China",
       "cid": "4036921314008842289",
       "google_id": "/g/11bw3xqkvk",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 43.808040999999996,
       "lng": 87.603364,
-      "maps_url": "https://maps.google.com/?cid=4036915358392426879",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%BA%A2%E5%B1%B1%E5%85%AC%E5%9B%AD%E8%BF%9C%E7%9C%BA%E6%A5%BC%2C+China%2C+Xinjiang%2C+%C3%9Cr%C3%BCmqi%2C+Shuimogou+District%2C+%E7%BA%A2%E5%B1%B1%E5%85%AC%E5%9B%AD%E5%86%85",
       "cid": "4036915358392426879",
       "google_id": "/g/1tgft_8x",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 43.8194163,
       "lng": 87.5837325,
-      "maps_url": "https://maps.google.com/?cid=4036915269086462993",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%96%B0%E7%96%86%E7%BB%B4%E5%90%BE%E5%B0%94%E8%87%AA%E6%B2%BB%E5%8C%BA%E5%8D%9A%E7%89%A9%E9%A6%86%2C+581+Xibei+Rd%2C+Saybag+District%2C+%C3%9Cr%C3%BCmqi%2C+Xinjiang%2C+China%2C+830000",
       "cid": "4036915269086462993",
       "google_id": "/g/1233g162",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 48.817005699999996,
       "lng": 87.0429996,
-      "maps_url": "https://maps.google.com/?cid=4808122936085860163",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ka+Nasi+Lake%2C+Ka+Nasi+Lake%2C+Burqin+County%2C+Altay+Prefecture%2C+China",
       "cid": "4808122936085860163",
       "google_id": null,
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 43.8082551,
       "lng": 87.60444319999999,
-      "maps_url": "https://maps.google.com/?cid=4036915371124553699",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hong+Shan+Gong+Yuan%2C+Shuimogou+District%2C+%C3%9Cr%C3%BCmqi%2C+China%2C+830092",
       "cid": "4036915371124553699",
       "google_id": "/g/11b6g9l9lx",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 43.292522,
       "lng": 84.229038,
-      "maps_url": "https://maps.google.com/?cid=4067771898895857027",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nalati+Grassland%2C+China%2C+Xinjiang%2C+Ili%2C+Xinyuan+County%2C+218+Guo+Dao%2C+%E9%82%A3%E6%8B%89%E6%8F%90%E9%95%87+%E9%82%AE%E6%94%BF%E7%BC%96%E7%A0%81%3A+835805",
       "cid": "4067771898895857027",
       "google_id": "/g/11b6hpssll",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 43.881316999999996,
       "lng": 88.12900499999999,
-      "maps_url": "https://maps.google.com/?cid=4037050810608212073",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tianshan+Tianchi+Scenic+Area%2C+V4JH%2BGJC%2C+Fukang%2C+Changji+Hui+Autonomous+Prefecture%2C+Xinjiang%2C+China%2C+831506",
       "cid": "4037050810608212073",
       "google_id": "/g/11c2nvzncv",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 43.780192,
       "lng": 87.618872,
-      "maps_url": "https://maps.google.com/?cid=4036914886148964933",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xinjiang+International+Grand+Bazaar+Development+Co.%2C+Ltd.%2C+QJJ9%2B3GH%2C+Heping+S+Rd%2C+Tianshan+District%2C+%C3%9Cr%C3%BCmqi%2C+Xinjiang%2C+China%2C+830004",
       "cid": "4036914886148964933",
       "google_id": "/g/1tcwphrv",
       "maps_place_token": null

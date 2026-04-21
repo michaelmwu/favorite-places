@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:22:01.622030+00:00",
-  "refresh_after": "2026-04-29T15:22:01.622030+00:00",
+  "fetched_at": "2026-04-20T16:05:33.087675+00:00",
+  "refresh_after": "2026-05-01T19:49:14.087675+00:00",
   "source_signature": "da7cbf69da251ebc30b67261b4840feb6b6d97fd9fcbc681fcdb2c95dd450b79",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/1ddU6qhj2QfYBur27",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 54.5961402,
       "lng": -5.9219548,
-      "maps_url": "https://maps.google.com/?cid=5215459737364049429",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=St+George%27s+Market%2C+12+East+Bridge+St%2C+Belfast+BT1+3NQ%2C+United+Kingdom",
       "cid": "5215459737364049429",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 54.603576,
       "lng": -5.927396,
-      "maps_url": "https://maps.google.com/?cid=5215458995382007849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+MAC%2C+10+Exchange+St%2C+West%2C+Belfast+BT1+2NJ%2C+United+Kingdom",
       "cid": "5215458995382007849",
       "google_id": "/g/11btw_vsd9",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 54.6028567,
       "lng": -5.9285309,
-      "maps_url": "https://maps.google.com/?cid=5215458988610733329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=St+Anne%E2%80%99s+Cathedral%2C+Belfast%2C+Donegall+St%2C+Belfast+BT1+2HB%2C+United+Kingdom",
       "cid": "5215458988610733329",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 54.6025,
       "lng": -5.927777799999999,
-      "maps_url": "https://maps.google.com/?cid=5215458999851134675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Made+in+Belfast+Talbot+Street%2C+25+Talbot+St%2C+Belfast+BT1+2LD%2C+United+Kingdom",
       "cid": "5215458999851134675",
       "google_id": "/g/1jkz6l0gm",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 54.6018,
       "lng": -5.9274,
-      "maps_url": "https://maps.google.com/?cid=5215459000220895439",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Duke+of+York%2C+7-11+Commercial+Ct%2C+Belfast+BT1+2NB%2C+United+Kingdom",
       "cid": "5215459000220895439",
       "google_id": "/g/1q5bmfc38",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 54.599278299999995,
       "lng": -5.921965999999999,
-      "maps_url": "https://maps.google.com/?cid=5215459004098972597",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=OX+Belfast%2C+1+Oxford+St%2C+Belfast+BT1+3LA%2C+United+Kingdom",
       "cid": "5215459004098972597",
       "google_id": "/g/11bw8dn5n6",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 54.5996186,
       "lng": -5.9275877,
-      "maps_url": "https://maps.google.com/?cid=5215459011122774747",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bright%27s+Restaurant%2C+23-25+High+St%2C+Belfast+BT1+2AA%2C+United+Kingdom",
       "cid": "5215459011122774747",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 54.5946759,
       "lng": -5.9341121,
-      "maps_url": "https://maps.google.com/?cid=5215459704585251117",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Crown+Liquor+Saloon%2C+County+Antrim%2C+46+Great+Victoria+St%2C+Belfast+BT2+7BA%2C+United+Kingdom",
       "cid": "5215459704585251117",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 54.5964727,
       "lng": -5.9323577,
-      "maps_url": "https://maps.google.com/?cid=5215459017105670799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Made+in+Belfast+Wellington+Street%2C+4+Wellington+St%2C+Belfast+BT1+6HT%2C+United+Kingdom",
       "cid": "5215459017105670799",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 54.5995761,
       "lng": -5.9323834,
-      "maps_url": "https://maps.google.com/?cid=5215459013526131845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mourne+Seafood+Bar%2C+34-36+Bank+St%2C+Belfast+BT1+1HL%2C+United+Kingdom",
       "cid": "5215459013526131845",
       "google_id": "/g/1hc2w49m7",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 54.5970459,
       "lng": -5.932817399999999,
-      "maps_url": "https://maps.google.com/?cid=5215459016470410955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Home+Restaurant%2C+22+Wellington+Pl%2C+Belfast+BT1+6GE%2C+United+Kingdom",
       "cid": "5215459016470410955",
       "google_id": "/g/1yh9vf9b_",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 54.5857513,
       "lng": -5.932144999999999,
-      "maps_url": "https://maps.google.com/?cid=5215459624524882765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Molly%27s+Yard%2C+1+College+Green+Mews%2C+Botanic+Ave%2C+Belfast+BT7+1LW%2C+United+Kingdom",
       "cid": "5215459624524882765",
       "google_id": "/g/1tmxqf17",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 54.5835266,
       "lng": -5.9336552,
-      "maps_url": "https://maps.google.com/?cid=5215459669164557551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Palm+House%2C+3+College+Gardens%2C+Belfast+BT7+1NN%2C+United+Kingdom",
       "cid": "5215459669164557551",
       "google_id": "/g/11cn7j0q1y",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 54.5932633,
       "lng": -5.934024399999999,
-      "maps_url": "https://maps.google.com/?cid=5215459702610318225",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Ginger+Bistro%2C+68-72+Great+Victoria+St%2C+Belfast+BT2+7AF%2C+United+Kingdom",
       "cid": "5215459702610318225",
       "google_id": "/g/1tmxqf1b",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 54.608110599999996,
       "lng": -5.9099511,
-      "maps_url": "https://maps.google.com/?cid=5215460495651473777",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Titanic+Belfast%2C+1+Olympic+Wy%2C+Belfast+BT3+9EP%2C+United+Kingdom",
       "cid": "5215460495651473777",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 54.582422799999996,
       "lng": -5.9353219,
-      "maps_url": "https://maps.google.com/?cid=5215459665834111193",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ulster+Museum%2C+Botanic+Gardens%2C+Belfast+BT9+5AB%2C+United+Kingdom",
       "cid": "5215459665834111193",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 54.5824152,
       "lng": -5.932474399999999,
-      "maps_url": "https://maps.google.com/?cid=5215459624196507669",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Botanic+Gardens%2C+College+Park+Ave%2C+Botanic+Ave%2C+Belfast+BT7+1LP%2C+United+Kingdom",
       "cid": "5215459624196507669",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 54.5953221,
       "lng": -5.9352246,
-      "maps_url": "https://maps.google.com/?cid=5215459704267098541",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grand+Opera+House",
       "cid": "5215459704267098541",
       "google_id": null,
       "maps_place_token": null

@@ -9,15 +9,15 @@ from gmaps_scraper.debug_dump import write_debug_dump
 
 _LIST_URL = (
     "https://www.google.com/maps/@35.6501307,139.6868459,15z/"
-    "data=!4m3!11m2!2sUGEPbA20Qd-OH4uoWjmDgQ!3e3"
+    "data=!4m3!11m2!2sTESTLISTABC123456789!3e3"
 )
 _LIST_NODE = [
-    ["UGEPbA20Qd-OH4uoWjmDgQ", 1, None, 1, 1],
+    ["TESTLISTABC123456789", 1, None, 1, 1],
     4,
-    "https://www.google.com/maps/placelists/list/UGEPbA20Qd-OH4uoWjmDgQ",
+    "https://www.google.com/maps/placelists/list/TESTLISTABC123456789",
     "Owner",
-    "Tokyo Dinners",
-    "Best spots in the city",
+    "Sample Coffee Stops",
+    "Curated fixture data for parser tests",
     None,
     None,
     [
@@ -28,13 +28,13 @@ _LIST_NODE = [
                 None,
                 "",
                 None,
-                "Shibuya, Tokyo",
+                "Example District",
                 [None, None, 35.6501307, 139.6868459],
                 ["7451636382641713350", "aux"],
-                "/g/11yakumo",
-                "Reservation note: order the udon",
+                "/g/11northwind",
+                "Fixture note: order the sampler",
             ],
-            "Yakumo",
+            "Northwind Cafe",
         ]
     ],
 ]
@@ -53,7 +53,7 @@ class DebugDumpTests(unittest.TestCase):
 
             summary = json.loads(summary_path.read_text(encoding="utf-8"))
 
-            self.assertEqual(summary["list_id"], "UGEPbA20Qd-OH4uoWjmDgQ")
+            self.assertEqual(summary["list_id"], "TESTLISTABC123456789")
             self.assertGreaterEqual(summary["candidate_count"], 1)
             self.assertEqual(len(summary["places"]), 1)
 
@@ -64,5 +64,5 @@ class DebugDumpTests(unittest.TestCase):
             self.assertTrue(place_summary_path.exists())
 
             place_summary = json.loads(place_summary_path.read_text(encoding="utf-8"))
-            self.assertEqual(place_summary["name"], "Yakumo")
-            self.assertIn("Reservation note: order the udon", place_summary["strings"])
+            self.assertEqual(place_summary["name"], "Northwind Cafe")
+            self.assertIn("Fixture note: order the sampler", place_summary["strings"])

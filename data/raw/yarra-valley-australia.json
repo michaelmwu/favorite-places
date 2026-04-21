@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:45:14.150677+00:00",
-  "refresh_after": "2026-04-29T23:45:14.150677+00:00",
+  "fetched_at": "2026-04-20T16:09:17.559465+00:00",
+  "refresh_after": "2026-05-04T01:32:40.559465+00:00",
   "source_signature": "218b9a9636b367741e3557fd56e0dc823075c9e6fd5b799cc70ec457cc09ca93",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/JNdx6Y7wHqDwfXk96",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": -37.6888222,
       "lng": 145.48918279999998,
-      "maps_url": "https://maps.google.com/?cid=7698856698557116149",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Riverstone+Estate+Yarra+Valley%2C+105+Skye+Rd%2C+Coldstream+VIC+3770%2C+Australia",
       "cid": "7698856698557116149",
       "google_id": "/g/1tfc24r0",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": -37.6004919,
       "lng": 145.6338082,
-      "maps_url": "https://maps.google.com/?cid=7721462773207322451",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Black+Spur+Drive%2C+Maroondah+Hwy%2C+Fernshaw+VIC+3778%2C+Australia",
       "cid": "7721462773207322451",
       "google_id": "/g/11c5rtrh55",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": -37.6571129,
       "lng": 145.5096939,
-      "maps_url": "https://maps.google.com/?cid=7698394208082498377",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Four+Pillars+Gin+Distillery%2C+2A+Lilydale+Rd%2C+Healesville+VIC+3777%2C+Australia",
       "cid": "7698394208082498377",
       "google_id": "/g/11bvv4_h60",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": -37.65327,
       "lng": 145.5192198,
-      "maps_url": "https://maps.google.com/?cid=7721467902375183031",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Giant+Steps%2C+314+Maroondah+Hwy%2C+Healesville+VIC+3777%2C+Australia",
       "cid": "7721467902375183031",
       "google_id": "/g/1hg4sp3dy",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": -37.654442599999996,
       "lng": 145.5146066,
-      "maps_url": "https://maps.google.com/?cid=7721468006578674049",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monroe%27s+Burgers+%26+Beers%2C+228+Maroondah+Hwy%2C+Healesville+VIC+3777%2C+Australia",
       "cid": "7721468006578674049",
       "google_id": "/g/1hc193q8r",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": -37.740053499999995,
       "lng": 145.3907331,
-      "maps_url": "https://maps.google.com/?cid=7698389068681769881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Helen%27s+Hill+Estate%2C+16+Ingram+Rd%2C+Lilydale+VIC+3140%2C+Australia",
       "cid": "7698389068681769881",
       "google_id": "/g/1td055mr",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": -37.6485199,
       "lng": 145.5446852,
-      "maps_url": "https://maps.google.com/?cid=7721467175032959299",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boat+O%27Craigo+-+Yarra+Valley+Winery%2C+Cellar+Door%2C+Restaurant+%26+Functions%2C+458+Maroondah+Hwy%2C+Healesville+VIC+3777%2C+Australia",
       "cid": "7721467175032959299",
       "google_id": "/g/1td42ngs",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": -37.7736843,
       "lng": 145.4890694,
-      "maps_url": "https://maps.google.com/?cid=7721938289918145881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Killara+Estate%2C+Cnr+Warburton+Hwy+%26%2C+Sunnyside+Rd%2C+Seville+East+VIC+3139%2C+Australia",
       "cid": "7721938289918145881",
       "google_id": "/g/1tvq48yx",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": -37.786280999999995,
       "lng": 145.4860994,
-      "maps_url": "https://maps.google.com/?cid=7698386787347584825",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Morgans+Winery+%26+Distillery%2C+30+Davross+Ct%2C+Seville+VIC+3139%2C+Australia",
       "cid": "7698386787347584825",
       "google_id": "/g/1ptzvvhqr",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": -37.6595274,
       "lng": 145.4693192,
-      "maps_url": "https://maps.google.com/?cid=7698856316461517901",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TarraWarra+Yarra+Valley+Winery%2C+Restaurant+%26+Cellar+Door%2C+311+Healesville-Yarra+Glen+Rd%2C+Yarra+Glen+VIC+3775%2C+Australia",
       "cid": "7698856316461517901",
       "google_id": "/g/1tdxl00z",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": -37.612076699999996,
       "lng": 145.4141498,
-      "maps_url": "https://maps.google.com/?cid=7698855198619036857",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=DiVino+Ristorante+at+Mandala+Wines%2C+1568+Melba+Hwy%2C+Dixons+Creek+VIC+3775%2C+Australia",
       "cid": "7698855198619036857",
       "google_id": "/g/11c1nchn2_",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": -37.719566199999996,
       "lng": 145.38147419999999,
-      "maps_url": "https://maps.google.com/?cid=7698389438745143727",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coombe+Yarra+Valley+-+Wedding+Venue%2C+Restaurant%2C+Cellar+Door%2C+and+Tours%2C+673-675+Maroondah+Hwy%2C+Coldstream+VIC+3770%2C+Australia",
       "cid": "7698389438745143727",
       "google_id": "/g/1q67sd3bv",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": -37.6801582,
       "lng": 145.43010769999998,
-      "maps_url": "https://maps.google.com/?cid=7698389431404621061",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CHANDON+Australia%2C+727+Maroondah+Hwy%2C+Coldstream+VIC+3770%2C+Australia",
       "cid": "7698389431404621061",
       "google_id": "/g/1tywy2q0",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": -37.6975139,
       "lng": 145.4157247,
-      "maps_url": "https://maps.google.com/?cid=7698388193879810255",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=St+Huberts+Cellar+Door%2C+1%2F3+St+Huberts+Rd%2C+Coldstream+VIC+3770%2C+Australia",
       "cid": "7698388193879810255",
       "google_id": "/g/1tfddlsy",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": -37.6953629,
       "lng": 145.4892044,
-      "maps_url": "https://maps.google.com/?cid=7698856665404175783",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SOUMAH+of+Yarra+Valley%2C+18+Hexham+Rd%2C+Gruyere+VIC+3770%2C+Australia",
       "cid": "7698856665404175783",
       "google_id": "/g/1hc243nj9",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": -37.691254799999996,
       "lng": 145.4084839,
-      "maps_url": "https://maps.google.com/?cid=7698388187834903011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Meletos%2C+12+St+Huberts+Rd%2C+Coldstream+VIC+3770%2C+Australia",
       "cid": "7698388187834903011",
       "google_id": "/g/11b635k78t",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": -37.681616,
       "lng": 145.5298812,
-      "maps_url": "https://maps.google.com/?cid=7721468109719440307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Healesville+Sanctuary+%28Zoos+Victoria%29%2C+Glen+Eadie+Ave%2C+Healesville+VIC+3777%2C+Australia",
       "cid": "7721468109719440307",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": -37.6631579,
       "lng": 145.3997388,
-      "maps_url": "https://maps.google.com/?cid=7698854505241717409",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zonzo+Estate+Yarra+Valley%2C+957+Healesville-Yarra+Glen+Rd%2C+Yarra+Glen+VIC+3775%2C+Australia",
       "cid": "7698854505241717409",
       "google_id": "/g/1v8gc5cd",
       "maps_place_token": null

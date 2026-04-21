@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:21:11.135933+00:00",
-  "refresh_after": "2026-04-29T15:21:11.135933+00:00",
+  "fetched_at": "2026-04-20T16:05:05.730411+00:00",
+  "refresh_after": "2026-05-06T13:04:48.730411+00:00",
   "source_signature": "26b0e316991f913317fa9f302d0a873965fc2914b2fccc3f428912b2066a6005",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/fG3MPprsjnLnSrjN9",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 38.9182275,
       "lng": 1.4432002,
-      "maps_url": "https://maps.google.com/?cid=1340174060371462405",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pacha%2C+Av.+8+d%27Agost%2C+07800+Eivissa%2C+Illes+Balears%2C+Spain",
       "cid": "1340174060371462405",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 38.8854444,
       "lng": 1.4048859,
-      "maps_url": "https://maps.google.com/?cid=1340179112440363153",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ushua%C3%AFa%2C+Av.+Pere+Matutes+Noguera%2C+118%2C+07800+Eivissa%2C+Illes+Balears%2C+Spain",
       "cid": "1340179112440363153",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 38.9476661,
       "lng": 1.4080028,
-      "maps_url": "https://maps.google.com/?cid=1340180455756982459",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Amnesia+Ibiza%2C+Ctra.+Ibiza+a+San+Antonio%2C+Km+5%2C+07816+Ibiza%2C+Balearic+Islands%2C+Spain",
       "cid": "1340180455756982459",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 38.8857636,
       "lng": 1.4041367999999999,
-      "maps_url": "https://maps.google.com/?cid=1340179112262906125",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%C3%AF+Ibiza%2C+Platja+d%27en+Bossa%2C+07817%2C+Balearic+Islands%2C+Spain",
       "cid": "1340179112262906125",
       "google_id": "/g/11dyxn92gb",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 38.986387799999996,
       "lng": 1.4788181999999999,
-      "maps_url": "https://maps.google.com/?cid=1340172304732550663",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oleoteca+Ses+Escoles%2C+Carretera+Sant+Joan%2C+km.+9%2C+8%2C+07840%2C+Illes+Balears%2C+Spain",
       "cid": "1340172304732550663",
       "google_id": "/g/1q69kgxjq",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 38.7078653,
       "lng": 1.4588337999999998,
-      "maps_url": "https://maps.google.com/?cid=1340206539734819631",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Can+Forn%2C+Carrer+Major%2C+39%2C+07871+Sant+Ferran+de+Ses+Roques%2C+Illes+Balears%2C+Spain",
       "cid": "1340206539734819631",
       "google_id": "/g/1tcw0f_k",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 39.0752239,
       "lng": 1.5903834,
-      "maps_url": "https://maps.google.com/?cid=1340127312778856051",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Boat+House%2C+Carrer+Cala+Sant+Vicent+A%2C+3%2C+07811+Cala+de+Sant+Vicent%2C+Illes+Balears%2C+Spain",
       "cid": "1340127312778856051",
       "google_id": "/g/11g724_jlh",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 38.9810385,
       "lng": 1.2997321,
-      "maps_url": "https://maps.google.com/?cid=1340161863854062359",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Bar+Benitez%2C+edif+Reino+I%2C+Carrer+de+Madrid%2C+07820+Sant+Antoni+de+Portmany%2C+Balearic+Islands%2C+Spain",
       "cid": "1340161863854062359",
       "google_id": "/g/11c0xppd61",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 38.876297,
       "lng": 1.2651413,
-      "maps_url": "https://maps.google.com/?cid=1340186210435248449",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ses+Boques%2C+Playa+de+Ses+boques%2C+07839+Sant+Josep+de+sa+Talaia%2C+Balearic+Islands%2C+Spain",
       "cid": "1340186210435248449",
       "google_id": "/g/11b6cygtj6",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 38.908794,
       "lng": 1.433187,
-      "maps_url": "https://maps.google.com/?cid=1340180130488185859",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+La+Bufalina%2C+Passeig+de+Vara+de+Rey%2C+13%2C+07800+Eivissa%2C+Illes+Balears%2C+Spain",
       "cid": "1340180130488185859",
       "google_id": "/g/1tg_69xh",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 39.000676399999996,
       "lng": 1.5775002999999999,
-      "maps_url": "https://maps.google.com/?cid=1340125364183250609",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marvent+Restaurant%2C+Avinguda+Punta+Arab%C3%AD%2C+126%2C+07849+es+Canar%2C+Illes+Balears%2C+Spain",
       "cid": "1340125364183250609",
       "google_id": "/g/11bt_hlf4v",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 38.9848013,
       "lng": 1.537018,
-      "maps_url": "https://maps.google.com/?cid=1340125767836199571",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Project+Social%2C+Carrer+de+Sant+Lloren%C3%A7%2C+22%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Illes+Balears%2C+Spain",
       "cid": "1340125767836199571",
       "google_id": "/g/11c43fccy7",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 38.9625038,
       "lng": 1.2201411,
-      "maps_url": "https://maps.google.com/?cid=1340184516725638087",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cala+Comte",
       "cid": "1340184516725638087",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 38.9083379,
       "lng": 1.4352783999999998,
-      "maps_url": "https://maps.google.com/?cid=1340180087332111289",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Oliva",
       "cid": "1340180087332111289",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 38.9852209,
       "lng": 1.5337756,
-      "maps_url": "https://maps.google.com/?cid=1340125792694965001",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+27+Restaurant%2C+Carrer+de+Sant+Vicent%2C+27%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Illes+Balears%2C+Spain",
       "cid": "1340125792694965001",
       "google_id": "/g/11b6vgqd2b",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 38.9839449,
       "lng": 1.5357906,
-      "maps_url": "https://maps.google.com/?cid=1340125768574023013",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Bahia%2C+C%2F+de+Molins+de+Rei%2C+2%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Illes+Balears%2C+Spain",
       "cid": "1340125768574023013",
       "google_id": "/g/11cmzn_9ds",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 38.9839069,
       "lng": 1.5375731,
-      "maps_url": "https://maps.google.com/?cid=1340125769348159915",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Grill+Sa+Brasa%2C+Puerto+Deportivo+Santa+Eulalia+Zona+2%2C+Local+5%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Balearic+Islands%2C+Spain",
       "cid": "1340125769348159915",
       "google_id": "/g/11d_29s84n",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 38.985662399999995,
       "lng": 1.5346924,
-      "maps_url": "https://maps.google.com/?cid=1340125793808189489",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Es+Terral+Restaurant%2C+Carrer+de+Sant+Vicent%2C+47%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Illes+Balears%2C+Spain",
       "cid": "1340125793808189489",
       "google_id": "/g/11cjg9zmwz",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 38.963347299999995,
       "lng": 1.2691257999999999,
-      "maps_url": "https://maps.google.com/?cid=1340184184547118617",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Es+Roman%C3%AD%2C+Carrer+Val%C3%A8ncia%2C+19%2C+07829+Sant+Josep+de+sa+Talaia%2C+Illes+Balears%2C+Spain",
       "cid": "1340184184547118617",
       "google_id": "/g/1q5bmzy2w",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 38.955786599999996,
       "lng": 1.271955,
-      "maps_url": "https://maps.google.com/?cid=1340183999166023931",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+Es+Cuc%C3%B3%2C+Carr.+de+Cala+Conta%2C+07829%2C+Balearic+Islands%2C+Spain",
       "cid": "1340183999166023931",
       "google_id": "/g/11b5s2fpqh",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 38.985770099999996,
       "lng": 1.4380435,
-      "maps_url": "https://maps.google.com/?cid=1340171495502568651",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=RESTAURANT+CAN+CAUS%2C+CARRETERA+STA.+MIGUEL%2C+Km.+3%2C5%2C+07814+Santa+Gertrudis+de+Fruitera%2C+Illes+Balears%2C+Spain",
       "cid": "1340171495502568651",
       "google_id": "/g/1td5bncq",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 38.9839394,
       "lng": 1.5066255,
-      "maps_url": "https://maps.google.com/?cid=1340180093089836173",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+cafeteria+Can+Mars%C3%A0%2C+N%C2%B0+22%2C+carretera%2C+4%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Balearic+Islands%2C+Spain",
       "cid": "1340180093089836173",
       "google_id": "/g/11y1f_f_f",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 38.988042,
       "lng": 1.524095,
-      "maps_url": "https://maps.google.com/?cid=1340125829174948799",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+restaurante+Ca+n%27Ant%C3%B2nia%2C+Carrer+Can+Guasch%2C+68%2C+07840+Santa+Eul%C3%A0ria+des+Riu%2C+Illes+Balears%2C+Spain",
       "cid": "1340125829174948799",
       "google_id": "/g/11f3vfglmn",
       "maps_place_token": null

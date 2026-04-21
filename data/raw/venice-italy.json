@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:44:02.860791+00:00",
-  "refresh_after": "2026-04-29T23:44:02.860791+00:00",
+  "fetched_at": "2026-04-20T16:04:22.324752+00:00",
+  "refresh_after": "2026-05-06T23:13:46.324752+00:00",
   "source_signature": "50107e093ab2d7580054b4a5d0f9b1e5a775ce81a22d78ad7d8b422d04a0ded9",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/XE5jJ74ccMFNBnKt6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 45.4377407,
       "lng": 12.3372622,
-      "maps_url": "https://maps.google.com/?cid=5151750581426945869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rosticceria+Gislon%2C+Calle+de+la+Bissa%2C+5424%2FA%2C+30124+Venezia+VE%2C+Italy",
       "cid": "5151750581426945869",
       "google_id": "/g/1hhj2c3d1",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 45.432983899999996,
       "lng": 12.338291499999999,
-      "maps_url": "https://maps.google.com/?cid=5151750560838232881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Giardini+Reali%2C+P.za+San+Marco%2C+30124+Venezia+VE%2C+Italy",
       "cid": "5151750560838232881",
       "google_id": "/g/1223q81d",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 45.4370449,
       "lng": 12.3213074,
-      "maps_url": "https://maps.google.com/?cid=5151750527714528787",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hostaria+Osottoosopra%2C+Santa+Croce%2C+164%2C+30135+Venezia+VE%2C+Italy",
       "cid": "5151750527714528787",
       "google_id": "/g/11fylv_3p7",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 45.4324193,
       "lng": 12.3229489,
-      "maps_url": "https://maps.google.com/?cid=5151750525079386801",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Al+Profeta%2C+C.+Lunga+S.+Barnaba%2C+2671%2C+30123+Venezia+VE%2C+Italy",
       "cid": "5151750525079386801",
       "google_id": "/g/11bwpz4r6g",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 45.4438159,
       "lng": 12.327565499999999,
-      "maps_url": "https://maps.google.com/?cid=5151750279261867373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+da+Mimmo%2C+Rio+Ter%C3%A0+S.+Leonardo%2C+1372%2C+30121+Venezia+VE%2C+Italy",
       "cid": "5151750279261867373",
       "google_id": "/g/1w97t747",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 45.444570399999996,
       "lng": 12.3241237,
-      "maps_url": "https://maps.google.com/?cid=5151750279156402167",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+Alla+Fontana%2C+Fondamenta+Cannaregio%2C+1102%2C+30121+Venezia+VE%2C+Italy",
       "cid": "5151750279156402167",
       "google_id": "/g/12mkvn8fv",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 45.437761099999996,
       "lng": 12.3331976,
-      "maps_url": "https://maps.google.com/?cid=5151750065397736299",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+San+Silvestro%2C+Rio+Ter%C3%A0+S.+Silvestro%2C+1022B%2C+30125+Venezia+VE%2C+Italy",
       "cid": "5151750065397736299",
       "google_id": "/g/11gybkn9jx",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 45.4357572,
       "lng": 12.338830699999999,
-      "maps_url": "https://maps.google.com/?cid=5151750581960014061",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Piazza%2C+S.+Marco%2C+615%2C+30124+Venezia+VE%2C+Italy",
       "cid": "5151750581960014061",
       "google_id": "/g/11fr7vhk9q",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 45.4359933,
       "lng": 12.344246499999999,
-      "maps_url": "https://maps.google.com/?cid=5151746508817102347",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+alla+Conchiglia%2C+Fondamenta+S.+Lorenzo%2C+4990%2C+30122+Venezia+VE%2C+Italy",
       "cid": "5151746508817102347",
       "google_id": "/g/1tgcl413",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 45.434280199999996,
       "lng": 12.346391899999999,
-      "maps_url": "https://maps.google.com/?cid=5151746502597869511",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taverna+Scalinetto+-+Ristorante%2C+Campo+Bandiera+e+Moro%2C+3803%2C+30122+Venezia+VE%2C+Italy",
       "cid": "5151746502597869511",
       "google_id": "/g/11bwqgcxf5",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 45.4396645,
       "lng": 12.337459599999999,
-      "maps_url": "https://maps.google.com/?cid=5151750582324060565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+Tre+Spiedi%2C+San+Canzian%2C+5906%2C+30121+Venezia+VE%2C+Italy",
       "cid": "5151750582324060565",
       "google_id": "/g/1tj29vsk",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 45.439625299999996,
       "lng": 12.337299199999999,
-      "maps_url": "https://maps.google.com/?cid=5151750582324059247",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+Ca%E2%80%99+Dolfin%2C+Salizada+S.+Canzian%2C+5903%2C+30121+Venezia+VE%2C+Italy",
       "cid": "5151750582324059247",
       "google_id": "/g/1tcwdtvg",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 45.4571457,
       "lng": 12.3580141,
-      "maps_url": "https://maps.google.com/?cid=5151750429425104053",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Osteria+Al+Duomo%2C+Fondamenta+Andrea+Navagero%2C+20%2F21%2C+30141+Venezia+VE%2C+Italy",
       "cid": "5151750429425104053",
       "google_id": "/g/1tdp_zk9",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 45.4514639,
       "lng": 12.3498896,
-      "maps_url": "https://maps.google.com/?cid=5151748353592224719",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+La+Fornace%2C+Fondamenta+Manin%2C+1%2C+30141+Venezia+VE%2C+Italy",
       "cid": "5151748353592224719",
       "google_id": "/g/11qbkrqhpy",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 45.4533272,
       "lng": 12.3514421,
-      "maps_url": "https://maps.google.com/?cid=5151746350510719631",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Osteria+ai+cacciatori%2C+Fondamenta+dei+Vetrai%2C+69%2C+30141+Venezia+VE%2C+Italy",
       "cid": "5151746350510719631",
       "google_id": "/g/11bzsgqvfs",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 45.4433668,
       "lng": 12.331112599999999,
-      "maps_url": "https://maps.google.com/?cid=5151750472021449659",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+Da+Poggi%2C+Rio+Ter%C3%A0+de+la+Maddalena%2C+2103%2C+30121+Venezia+VE%2C+Italy",
       "cid": "5151750472021449659",
       "google_id": "/g/1tfwnt4x",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 45.4398108,
       "lng": 12.3380573,
-      "maps_url": "https://maps.google.com/?cid=5151749683219170993",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ostaria+La+Busara%2C+Sestiere+Cannaregio%2C+5550%2C+30121+Venezia+VE%2C+Italy",
       "cid": "5151749683219170993",
       "google_id": "/g/11h3__77h4",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 45.4377827,
       "lng": 12.3322101,
-      "maps_url": "https://maps.google.com/?cid=5151749892658335757",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hostaria+Sant%27Aponal%2C+Calle+del+Scaleter%2C+1251%2C+30125+Venezia+VE%2C+Italy",
       "cid": "5151749892658335757",
       "google_id": "/g/11s1bjb4ns",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 45.436607099999996,
       "lng": 12.320011,
-      "maps_url": "https://maps.google.com/?cid=5151750496501602889",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rio+Novo%2C+Fondamenta%2C+C.+de+ca%27+Bernardo%2C+30135+Venezia+VE%2C+Italy",
       "cid": "5151750496501602889",
       "google_id": "/g/12mkvn81n",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 45.4348579,
       "lng": 12.3345337,
-      "maps_url": "https://maps.google.com/?cid=5151750533292183163",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Palazzo+Contarini+del+Bovolo%2C+Calle+Contarini+del+Bovolo%2C+4303%2C+30124+Venezia+VE%2C+Italy",
       "cid": "5151750533292183163",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 45.433329199999996,
       "lng": 12.3305391,
-      "maps_url": "https://maps.google.com/?cid=5151750538401797009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Campo+Santo+Stefano%2C+Campo+Santo+Stefano%2C+30124+Venezia+VE%2C+Italy",
       "cid": "5151750538401797009",
       "google_id": "/g/122x7vjb",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 45.430675,
       "lng": 12.3347626,
-      "maps_url": "https://maps.google.com/?cid=5151748757106757083",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Basilica+Santa+Maria+della+Salute%2C+Dorsoduro%2C+1%2C+30123+Venezia+VE%2C+Italy",
       "cid": "5151748757106757083",
       "google_id": null,
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 45.4341668,
       "lng": 12.3384717,
-      "maps_url": "https://maps.google.com/?cid=5151750562584298633",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Piazza+San+Marco%2C+P.za+San+Marco%2C+30100+Venezia+VE%2C+Italy",
       "cid": "5151750562584298633",
       "google_id": null,
       "maps_place_token": null
@@ -293,8 +293,20 @@
       "is_favorite": false,
       "lat": 45.437984199999995,
       "lng": 12.335898,
-      "maps_url": "https://maps.google.com/?cid=5151750496220035643",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ponte+di+Rialto%2C+30125+Venice%2C+Metropolitan+City+of+Venice%2C+Italy",
       "cid": "5151750496220035643",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Doge's Palace",
+      "address": "P.za San Marco, 1, 30124 Venezia VE, Italy",
+      "note": null,
+      "is_favorite": false,
+      "lat": 45.4337035,
+      "lng": 12.3403894,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Doge%27s+Palace%2C+P.za+San+Marco%2C+1%2C+30124+Venezia+VE%2C+Italy",
+      "cid": "5151750562584298633",
       "google_id": null,
       "maps_place_token": null
     },
@@ -305,7 +317,7 @@
       "is_favorite": false,
       "lat": 45.4345606,
       "lng": 12.3397125,
-      "maps_url": "https://maps.google.com/?cid=5151750562417634495",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Saint+Mark%27s+Basilica%2C+P.za+San+Marco%2C+328%2C+30100+Venezia+VE%2C+Italy",
       "cid": "5151750562417634495",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +329,7 @@
       "is_favorite": false,
       "lat": 45.4340359,
       "lng": 12.3390331,
-      "maps_url": "https://maps.google.com/?cid=5151750533665709495",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=St+Mark%27s+Campanile%2C+P.za+San+Marco%2C+30124+Venezia+VE%2C+Italy",
       "cid": "5151750533665709495",
       "google_id": null,
       "maps_place_token": null
@@ -329,7 +341,7 @@
       "is_favorite": false,
       "lat": 45.434049599999994,
       "lng": 12.3408544,
-      "maps_url": "https://maps.google.com/?cid=5151750564545298883",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bridge+of+Sighs%2C+30124+Venice%2C+Metropolitan+City+of+Venice%2C+Italy",
       "cid": "5151750564545298883",
       "google_id": null,
       "maps_place_token": null

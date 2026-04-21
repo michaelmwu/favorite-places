@@ -61,7 +61,7 @@ describe("getGuideAreaFilters", () => {
       ),
     ).toEqual([
       { label: "Ginza", value: "ginza", count: 3 },
-      { label: "Juárez", value: "juárez", count: 3 },
+      { label: "Juárez", value: "juarez", count: 3 },
       { label: "Shibuya", value: "shibuya", count: 3 },
     ]);
   });
@@ -74,6 +74,21 @@ describe("getGuideAreaFilters", () => {
         { neighborhood: "Tokyo" },
       ]),
     ).toEqual([]);
+  });
+
+  it("groups area filters by normalized text so variant spellings share one pill", () => {
+    expect(
+      getGuideAreaFilters([
+        { neighborhood: "São Paulo" },
+        { neighborhood: "Sao Paulo" },
+        { neighborhood: "São Paulo" },
+        { neighborhood: "Pinheiros" },
+        { neighborhood: "Pinheiros" },
+      ]),
+    ).toEqual([
+      { label: "São Paulo", value: "sao-paulo", count: 3 },
+      { label: "Pinheiros", value: "pinheiros", count: 2 },
+    ]);
   });
 });
 

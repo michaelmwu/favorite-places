@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly PUBLIC_MAP_PROVIDER?: string;
+  readonly PUBLIC_PLACE_PHOTOS?: string;
 }
 
 interface ProcessEnv {

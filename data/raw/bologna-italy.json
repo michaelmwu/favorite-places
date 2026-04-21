@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:34:13.320794+00:00",
-  "refresh_after": "2026-04-29T23:34:13.320794+00:00",
+  "fetched_at": "2026-04-20T16:04:40.674561+00:00",
+  "refresh_after": "2026-05-03T00:47:33.674561+00:00",
   "source_signature": "b285f2692ddc41019befb2af2d50f752668242a68214c466436f3ef026fd4532",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/1u5aKzYfQxDpvcwL7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 44.5014161,
       "lng": 11.3441037,
-      "maps_url": "https://maps.google.com/?cid=5152071016699995227",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sabl%C3%A8+Gelato%2C+Via+dei+Mille%2C+3a%2C+40121+Bologna+BO%2C+Italy",
       "cid": "5152071016699995227",
       "google_id": "/g/11m_j4lj5h",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 44.4991072,
       "lng": 11.337779,
-      "maps_url": "https://maps.google.com/?cid=5152070217578022237",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Delizie+Bolognesi%2C+Via+Riva+di+Reno%2C+76f%2C+40122+Bologna+BO%2C+Italy",
       "cid": "5152070217578022237",
       "google_id": "/g/1thkw3dy",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 44.494566899999995,
       "lng": 11.3476451,
-      "maps_url": "https://maps.google.com/?cid=5152070696714227035",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=M%C3%92%21+MORTADELLA+LAB%2C+Via+S.+Vitale%2C+4%2FF%2C+40125+Bologna+BO%2C+Italy",
       "cid": "5152070696714227035",
       "google_id": "/g/11vjwnf_gp",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 44.4873623,
       "lng": 11.3411011,
-      "maps_url": "https://maps.google.com/?cid=5152070427995635805",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Osteria+Al+15%2C+Via+Mirasole%2C+13%2C+40124+Bologna+BO%2C+Italy",
       "cid": "5152070427995635805",
       "google_id": "/g/1tv3mjl7",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 44.4912773,
       "lng": 11.3408804,
-      "maps_url": "https://maps.google.com/?cid=5152070236420405565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Da+Cesari%2C+Via+de%27+Carbonesi%2C+8%2C+40123+Bologna+BO%2C+Italy",
       "cid": "5152070236420405565",
       "google_id": "/g/1vxdx40s",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 44.4869005,
       "lng": 11.3407,
-      "maps_url": "https://maps.google.com/?cid=5152070428384058553",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Al+Sangiovese+Restaurant%2C+Vicolo+del+Falcone%2C+2b%2C+40124+Bologna+BO%2C+Italy",
       "cid": "5152070428384058553",
       "google_id": "/g/1td2954f",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 44.4936633,
       "lng": 11.344253,
-      "maps_url": "https://maps.google.com/?cid=5152070412176885957",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Salumeria+Simoni+Laboratorio",
       "cid": "5152070412176885957",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 44.4933901,
       "lng": 11.3432131,
-      "maps_url": "https://maps.google.com/?cid=5152070237398714039",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Basilica+di+San+Petronio%2C+Piazza+Maggiore%2C+1%2Fe%2C+40124+Bologna+BO%2C+Italy",
       "cid": "5152070237398714039",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 44.496773499999996,
       "lng": 11.3461768,
-      "maps_url": "https://maps.google.com/?cid=5152070409714304285",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+del+Tempo+Buono",
       "cid": "5152070409714304285",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 44.4977187,
       "lng": 11.3430219,
-      "maps_url": "https://maps.google.com/?cid=5152071255585133679",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=M%C3%92%21+MORTADELLA+LAB",
       "cid": "5152071255585133679",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 44.4935106,
       "lng": 11.344627,
-      "maps_url": "https://maps.google.com/?cid=5152070412517596057",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Santuario+di+Santa+Maria+della+Vita",
       "cid": "5152070412517596057",
       "google_id": null,
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 44.495115899999995,
       "lng": 11.345030699999999,
-      "maps_url": "https://maps.google.com/?cid=5152071585921309355",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Osteria+Da+Fortunata+-+Bologna",
       "cid": "5152071585921309355",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 44.4960519,
       "lng": 11.3459487,
-      "maps_url": "https://maps.google.com/?cid=5152070410243775677",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Prosciutteria+Bologna%2C+Via+Guglielmo+Oberdan%2C+19%2Fa%2C+40125+Bologna+BO%2C+Italy",
       "cid": "5152070410243775677",
       "google_id": "/g/11clzr87_b",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 44.4922731,
       "lng": 11.3482658,
-      "maps_url": "https://maps.google.com/?cid=5152070452405993057",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Piazza+Santo+Stefano",
       "cid": "5152070452405993057",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 44.494209399999995,
       "lng": 11.346731199999999,
-      "maps_url": "https://maps.google.com/?cid=5152070413637033841",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Garisenda%2C+P.za+di+Porta+Ravegnana%2C+40126+Bologna+BO%2C+Italy",
       "cid": "5152070413637033841",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 44.4927825,
       "lng": 11.3437045,
-      "maps_url": "https://maps.google.com/?cid=5152070418983566955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Museo+Civico+Archeologico+Bologna",
       "cid": "5152070418983566955",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 44.489641999999996,
       "lng": 11.3440336,
-      "maps_url": "https://maps.google.com/?cid=5152070421563639037",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Basilica+of+San+Domenico%2C+P.za+S.+Domenico%2C+13%2C+40124+Bologna+BO%2C+Italy",
       "cid": "5152070421563639037",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 44.4937544,
       "lng": 11.3430945,
-      "maps_url": "https://maps.google.com/?cid=5152070237412545849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Piazza+Maggiore%2C+Piazza+Maggiore%2C+40124+Bologna+BO%2C+Italy",
       "cid": "5152070237412545849",
       "google_id": null,
       "maps_place_token": null

@@ -1,6 +1,6 @@
 """Google Maps scraping helpers."""
 
-from gmaps_scraper.models import Place, PlaceDetails, SavedList
+from gmaps_scraper.models import ListOwner, Place, PlaceDetails, SavedList
 from gmaps_scraper.parser import ParseError, parse_saved_list_artifacts
 from gmaps_scraper.place_scraper import scrape_place
 from gmaps_scraper.scraper import (
@@ -22,6 +22,7 @@ __all__ = [
     "BrowserProxyConfig",
     "BrowserSessionConfig",
     "HttpSessionConfig",
+    "ListOwner",
     "ParseError",
     "Place",
     "PlaceDetails",

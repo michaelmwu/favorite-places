@@ -1,8 +1,10 @@
 {
-  "fetched_at": "2026-04-14T06:12:39.951017+00:00",
-  "refresh_after": "2026-04-28T06:12:39.951017+00:00",
-  "source_signature": "cb7b47c358c4b5cdd9d60bde9a721e60e31bdb4f088d85a8d9976e921b5d8c29",
+  "fetched_at": "2026-04-20T16:09:03.551006+00:00",
+  "refresh_after": "2026-05-05T06:08:50.551006+00:00",
+  "source_signature": "1628a40c90206031519b53b05fe167d159f41bf10bd2523f613889a2b75a548d",
+  "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/HGxndKFgJNiVjZRL7",
+  "configured_source_path": null,
   "source_url": "https://maps.app.goo.gl/HGxndKFgJNiVjZRL7",
   "list_id": "lGgt3zsnSgSpSrxbO_ia3g",
   "title": "Melbourne, Australia 🇦🇺",
@@ -15,9 +17,10 @@
       "is_favorite": false,
       "lat": -37.8070131,
       "lng": 145.03137049999998,
-      "maps_url": "https://maps.google.com/?cid=7698414859055537019",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bianchetto%2C+26-28+Cotham+Rd%2C+Kew+VIC+3101%2C+Australia",
       "cid": "7698414859055537019",
-      "google_id": "/g/11vs80dn9d"
+      "google_id": "/g/11vs80dn9d",
+      "maps_place_token": null
     },
     {
       "name": "Wally's Albert Park",
@@ -26,9 +29,10 @@
       "is_favorite": false,
       "lat": -37.841174599999995,
       "lng": 144.9533792,
-      "maps_url": "https://maps.google.com/?cid=7698453964550688259",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wally%27s+Albert+Park%2C+67+Cardigan+Pl%2C+Albert+Park+VIC+3206%2C+Australia",
       "cid": "7698453964550688259",
-      "google_id": "/g/11y3k4_0kq"
+      "google_id": "/g/11y3k4_0kq",
+      "maps_place_token": null
     },
     {
       "name": "Sardinas",
@@ -37,9 +41,10 @@
       "is_favorite": false,
       "lat": -37.7286287,
       "lng": 145.00578389999998,
-      "maps_url": "https://maps.google.com/?cid=7698416806983727009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sardinas%2C+688+High+St%2C+Reservoir+VIC+3073%2C+Australia",
       "cid": "7698416806983727009",
-      "google_id": "/g/11l296t0b1"
+      "google_id": "/g/11l296t0b1",
+      "maps_place_token": null
     },
     {
       "name": "Gracie's Wine Room",
@@ -48,9 +53,10 @@
       "is_favorite": false,
       "lat": -37.838227499999995,
       "lng": 144.9874109,
-      "maps_url": "https://maps.google.com/?cid=7698414424517905819",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gracie%27s+Wine+Room%2C+27+Toorak+Rd%2C+South+Yarra+VIC+3141%2C+Australia",
       "cid": "7698414424517905819",
-      "google_id": "/g/11wx6ctp_5"
+      "google_id": "/g/11wx6ctp_5",
+      "maps_place_token": null
     },
     {
       "name": "Oakridge Wines",
@@ -59,9 +65,10 @@
       "is_favorite": false,
       "lat": -37.6878053,
       "lng": 145.4575995,
-      "maps_url": "https://maps.google.com/?cid=7698856443437633233",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oakridge+Wines%2C+864+Maroondah+Hwy%2C+Coldstream+VIC+3770%2C+Australia",
       "cid": "7698856443437633233",
-      "google_id": "/g/1vlqqbqx"
+      "google_id": "/g/1vlqqbqx",
+      "maps_place_token": null
     },
     {
       "name": "Sogumm",
@@ -70,9 +77,10 @@
       "is_favorite": false,
       "lat": -37.8262491,
       "lng": 144.99757879999999,
-      "maps_url": "https://maps.google.com/?cid=7698415117527596813",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sogumm%2C+466+Church+St%2C+Cremorne+VIC+3121%2C+Australia",
       "cid": "7698415117527596813",
-      "google_id": "/g/11x7zs_th1"
+      "google_id": "/g/11x7zs_th1",
+      "maps_place_token": null
     },
     {
       "name": "Baguette Studios",
@@ -81,9 +89,10 @@
       "is_favorite": false,
       "lat": -37.800503299999995,
       "lng": 144.95366479999998,
-      "maps_url": "https://maps.google.com/?cid=7698443828257498517",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Baguette+Studios%2C+15-27+Wreckyn+St%2C+North+Melbourne+VIC+3051%2C+Australia",
       "cid": "7698443828257498517",
-      "google_id": "/g/11rfbkbp9l"
+      "google_id": "/g/11rfbkbp9l",
+      "maps_place_token": null
     },
     {
       "name": "1pluspiece Cafe",
@@ -92,9 +101,10 @@
       "is_favorite": false,
       "lat": -37.813136,
       "lng": 145.082277,
-      "maps_url": "https://maps.google.com/?cid=7698412342569732559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=1pluspiece+Cafe%2C+266+Whitehorse+Rd%2C+Balwyn+VIC+3103%2C+Australia",
       "cid": "7698412342569732559",
-      "google_id": "/g/11b75mh4hg"
+      "google_id": "/g/11b75mh4hg",
+      "maps_place_token": null
     },
     {
       "name": "Aperitivo Bar Ristorante",
@@ -103,9 +113,10 @@
       "is_favorite": false,
       "lat": -37.799043399999995,
       "lng": 144.9670552,
-      "maps_url": "https://maps.google.com/?cid=7698415003176553759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Aperitivo+Bar+Ristorante%2C+275+Lygon+St%2C+Carlton+VIC+3053%2C+Australia",
       "cid": "7698415003176553759",
-      "google_id": "/g/11j2356pr8"
+      "google_id": "/g/11j2356pr8",
+      "maps_place_token": null
     },
     {
       "name": "Alimentari",
@@ -114,9 +125,10 @@
       "is_favorite": false,
       "lat": -37.7997186,
       "lng": 144.9780663,
-      "maps_url": "https://maps.google.com/?cid=7698414139861373543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alimentari%2C+251+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414139861373543",
-      "google_id": "/g/1q2w3t_t8"
+      "google_id": "/g/1q2w3t_t8",
+      "maps_place_token": null
     },
     {
       "name": "Operator25",
@@ -125,9 +137,10 @@
       "is_favorite": false,
       "lat": -37.8106796,
       "lng": 144.95698919999998,
-      "maps_url": "https://maps.google.com/?cid=7698443187404101637",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Operator25%2C+25+Wills+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698443187404101637",
-      "google_id": "/g/12mkvn50v"
+      "google_id": "/g/12mkvn50v",
+      "maps_place_token": null
     },
     {
       "name": "Soul Soul Cafe",
@@ -136,9 +149,10 @@
       "is_favorite": false,
       "lat": -37.8063351,
       "lng": 144.9619078,
-      "maps_url": "https://maps.google.com/?cid=7698414983860889671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soul+Soul+Cafe%2C+shop+1%2F158+Victoria+St%2C+Carlton+VIC+3053%2C+Australia",
       "cid": "7698414983860889671",
-      "google_id": "/g/11qr813n5t"
+      "google_id": "/g/11qr813n5t",
+      "maps_place_token": null
     },
     {
       "name": "Khabbay Restaurant",
@@ -147,9 +161,10 @@
       "is_favorite": false,
       "lat": -37.8038169,
       "lng": 144.966678,
-      "maps_url": "https://maps.google.com/?cid=7698415280706887085",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Khabbay+Restaurant%2C+140-146+Lygon+St%2C+Carlton+VIC+3053%2C+Australia",
       "cid": "7698415280706887085",
-      "google_id": "/g/11g4dythmj"
+      "google_id": "/g/11g4dythmj",
+      "maps_place_token": null
     },
     {
       "name": "Ziyka Restaurant",
@@ -158,9 +173,10 @@
       "is_favorite": false,
       "lat": -37.8016796,
       "lng": 144.9672055,
-      "maps_url": "https://maps.google.com/?cid=7698414452468041633",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ziyka+Restaurant%2C+234-236+Lygon+St%2C+Carlton+VIC+3053%2C+Australia",
       "cid": "7698414452468041633",
-      "google_id": "/g/11b5ythw1y"
+      "google_id": "/g/11b5ythw1y",
+      "maps_place_token": null
     },
     {
       "name": "Pidapipó Carlton",
@@ -169,9 +185,10 @@
       "is_favorite": false,
       "lat": -37.7983202,
       "lng": 144.9671769,
-      "maps_url": "https://maps.google.com/?cid=7698414102535671123",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pidapip%C3%B3+Carlton%2C+299+Lygon+St%2C+Carlton+VIC+3053%2C+Australia",
       "cid": "7698414102535671123",
-      "google_id": "/g/11b6hyrjvb"
+      "google_id": "/g/11b6hyrjvb",
+      "maps_place_token": null
     },
     {
       "name": "Higher Ground",
@@ -180,9 +197,10 @@
       "is_favorite": false,
       "lat": -37.8158034,
       "lng": 144.9530273,
-      "maps_url": "https://maps.google.com/?cid=7698443206922280953",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Higher+Ground%2C+650+Little+Bourke+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698443206922280953",
-      "google_id": "/g/11cm00hnch"
+      "google_id": "/g/11cm00hnch",
+      "maps_place_token": null
     },
     {
       "name": "KATA KITA",
@@ -191,9 +209,10 @@
       "is_favorite": false,
       "lat": -37.809977499999995,
       "lng": 144.9620272,
-      "maps_url": "https://maps.google.com/?cid=7698414734372236921",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KATA+KITA",
       "cid": "7698414734372236921",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Market Lane Coffee - Dairy Hall, QVM",
@@ -202,9 +221,10 @@
       "is_favorite": false,
       "lat": -37.8067018,
       "lng": 144.95915499999998,
-      "maps_url": "https://maps.google.com/?cid=7698443492074818035",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Market+Lane+Coffee+-+Dairy+Hall%2C+QVM%2C+Shop+73-76+Dairy+Produce+Hall+Queen+Victoria+Market%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698443492074818035",
-      "google_id": "/g/11h4kgphp2"
+      "google_id": "/g/11h4kgphp2",
+      "maps_place_token": null
     },
     {
       "name": "Axil Coffee Roasters Flinders Gate",
@@ -213,9 +233,10 @@
       "is_favorite": false,
       "lat": -37.8169329,
       "lng": 144.9686883,
-      "maps_url": "https://maps.google.com/?cid=7698415240291813507",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Axil+Coffee+Roasters+Flinders+Gate%2C+180+Flinders+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698415240291813507",
-      "google_id": "/g/11lt48wr1n"
+      "google_id": "/g/11lt48wr1n",
+      "maps_place_token": null
     },
     {
       "name": "Brother Baba Budan",
@@ -224,9 +245,10 @@
       "is_favorite": false,
       "lat": -37.813541,
       "lng": 144.9620988,
-      "maps_url": "https://maps.google.com/?cid=7698413959147311849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Brother+Baba+Budan%2C+359+Little+Bourke+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413959147311849",
-      "google_id": "/g/1v76zsyt"
+      "google_id": "/g/1v76zsyt",
+      "maps_place_token": null
     },
     {
       "name": "BENCH COFFEE CO. Lt Collins",
@@ -235,20 +257,22 @@
       "is_favorite": false,
       "lat": -37.8151891,
       "lng": 144.96418599999998,
-      "maps_url": "https://maps.google.com/?cid=7698414654808430365",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BENCH+COFFEE+CO.+Lt+Collins%2C+321+Little+Collins+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414654808430365",
-      "google_id": "/g/11ng15yshv"
+      "google_id": "/g/11ng15yshv",
+      "maps_place_token": null
     },
     {
-      "name": "Queen Victoria Market, Queen St, Melbourne VIC 3000, Australia",
+      "name": "Queen Victoria Market",
       "address": "Queen St, Melbourne VIC 3000, Australia",
       "note": null,
       "is_favorite": false,
       "lat": -37.8075798,
       "lng": 144.956785,
-      "maps_url": "https://maps.google.com/?cid=7698443091888330673",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Queen+Victoria+Market%2C+Queen+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698443091888330673",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Moonlit Sanctuary Wildlife Conservation Park",
@@ -257,9 +281,10 @@
       "is_favorite": false,
       "lat": -38.2110707,
       "lng": 145.2508389,
-      "maps_url": "https://maps.google.com/?cid=7698351337735031907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moonlit+Sanctuary+Wildlife+Conservation+Park",
       "cid": "7698351337735031907",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "The Dojo Ramen Bar",
@@ -268,9 +293,10 @@
       "is_favorite": false,
       "lat": -37.7706751,
       "lng": 144.998534,
-      "maps_url": "https://maps.google.com/?cid=7698414820665853407",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Dojo+Ramen+Bar%2C+333+High+St%2C+Northcote+VIC+3070%2C+Australia",
       "cid": "7698414820665853407",
-      "google_id": "/g/1pwfy17nj"
+      "google_id": "/g/1pwfy17nj",
+      "maps_place_token": null
     },
     {
       "name": "Level 3 Nightclubs",
@@ -279,9 +305,10 @@
       "is_favorite": false,
       "lat": -37.823436799999996,
       "lng": 144.9580861,
-      "maps_url": "https://maps.google.com/?cid=7698443224181130231",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Level+3+Nightclubs",
       "cid": "7698443224181130231",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "ShanDong MaMa",
@@ -290,9 +317,10 @@
       "is_favorite": false,
       "lat": -37.8125308,
       "lng": 144.9673157,
-      "maps_url": "https://maps.google.com/?cid=7698414046555770903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ShanDong+MaMa",
       "cid": "7698414046555770903",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Shinwa Izakaya",
@@ -301,9 +329,10 @@
       "is_favorite": false,
       "lat": -37.7741221,
       "lng": 144.9608003,
-      "maps_url": "https://maps.google.com/?cid=7698442546951905441",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shinwa+Izakaya%2C+139+Sydney+Rd%2C+Brunswick+VIC+3056%2C+Australia",
       "cid": "7698442546951905441",
-      "google_id": "/g/1q6j8vx8t"
+      "google_id": "/g/1q6j8vx8t",
+      "maps_place_token": null
     },
     {
       "name": "Phờ Nom Collins St",
@@ -312,9 +341,10 @@
       "is_favorite": false,
       "lat": -37.8187861,
       "lng": 144.9558269,
-      "maps_url": "https://maps.google.com/?cid=7698443202564167489",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ph%E1%BB%9D+Nom+Collins+St",
       "cid": "7698443202564167489",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Common Galaxia",
@@ -323,9 +353,10 @@
       "is_favorite": false,
       "lat": -37.8041108,
       "lng": 144.8921332,
-      "maps_url": "https://maps.google.com/?cid=7698443917099549737",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Common+Galaxia%2C+3%2F130+Victoria+St%2C+Seddon+VIC+3011%2C+Australia",
       "cid": "7698443917099549737",
-      "google_id": "/g/12cnyrh3_"
+      "google_id": "/g/12cnyrh3_",
+      "maps_place_token": null
     },
     {
       "name": "Rudimentary",
@@ -334,9 +365,10 @@
       "is_favorite": false,
       "lat": -37.7981549,
       "lng": 144.9011105,
-      "maps_url": "https://maps.google.com/?cid=7698443492468302021",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rudimentary%2C+16-20+Leeds+St%2C+Footscray+VIC+3011%2C+Australia",
       "cid": "7698443492468302021",
-      "google_id": "/g/11b7hll3v1"
+      "google_id": "/g/11b7hll3v1",
+      "maps_place_token": null
     },
     {
       "name": "Blackcat Fitzroy",
@@ -345,9 +377,10 @@
       "is_favorite": false,
       "lat": -37.7999139,
       "lng": 144.97835,
-      "maps_url": "https://maps.google.com/?cid=7698414139752273755",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Blackcat+Fitzroy%2C+252+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414139752273755",
-      "google_id": "/g/1tjhxt3b"
+      "google_id": "/g/1tjhxt3b",
+      "maps_place_token": null
     },
     {
       "name": "Shop Ramen",
@@ -356,9 +389,10 @@
       "is_favorite": false,
       "lat": -37.7992383,
       "lng": 144.98409189999998,
-      "maps_url": "https://maps.google.com/?cid=7698414415876398499",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shop+Ramen%2C+329+Smith+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414415876398499",
-      "google_id": "/g/11b6328hyj"
+      "google_id": "/g/11b6328hyj",
+      "maps_place_token": null
     },
     {
       "name": "Hector's Deli",
@@ -367,9 +401,10 @@
       "is_favorite": false,
       "lat": -37.801600199999996,
       "lng": 144.9786743,
-      "maps_url": "https://maps.google.com/?cid=7698414703559666899",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hector%27s+Deli%2C+111+Moor+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414703559666899",
-      "google_id": "/g/11sbs8xh7g"
+      "google_id": "/g/11sbs8xh7g",
+      "maps_place_token": null
     },
     {
       "name": "Seven Seeds Coffee Roasters",
@@ -378,9 +413,10 @@
       "is_favorite": false,
       "lat": -37.8029711,
       "lng": 144.95900269999998,
-      "maps_url": "https://maps.google.com/?cid=7698443084823518397",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seven+Seeds+Coffee+Roasters%2C+114+Berkeley+St%2C+Carlton+VIC+3053%2C+Australia",
       "cid": "7698443084823518397",
-      "google_id": "/g/1tcyxkm9"
+      "google_id": "/g/1tcyxkm9",
+      "maps_place_token": null
     },
     {
       "name": "Hecho en Mexico Fitzroy",
@@ -389,9 +425,10 @@
       "is_favorite": false,
       "lat": -37.797492999999996,
       "lng": 144.978841,
-      "maps_url": "https://maps.google.com/?cid=7698414421053774579",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hecho+en+Mexico+Fitzroy%2C+326+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414421053774579",
-      "google_id": "/g/1ptxbbj0v"
+      "google_id": "/g/1ptxbbj0v",
+      "maps_place_token": null
     },
     {
       "name": "Bon Ap' Petit Bistro",
@@ -400,9 +437,10 @@
       "is_favorite": false,
       "lat": -37.8017392,
       "lng": 144.9777499,
-      "maps_url": "https://maps.google.com/?cid=7698414113657825495",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bon+Ap%27+Petit+Bistro%2C+193+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414113657825495",
-      "google_id": "/g/11cjhbc6x6"
+      "google_id": "/g/11cjhbc6x6",
+      "maps_place_token": null
     },
     {
       "name": "Uptown Jazz Cafe",
@@ -411,9 +449,10 @@
       "is_favorite": false,
       "lat": -37.8021402,
       "lng": 144.9775539,
-      "maps_url": "https://maps.google.com/?cid=7698414137689937153",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Uptown+Jazz+Cafe%2C+1%2F177+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414137689937153",
-      "google_id": "/g/1hf4shkzx"
+      "google_id": "/g/1hf4shkzx",
+      "maps_place_token": null
     },
     {
       "name": "Black Pearl",
@@ -422,9 +461,10 @@
       "is_favorite": false,
       "lat": -37.7980522,
       "lng": 144.9786306,
-      "maps_url": "https://maps.google.com/?cid=7698414420964311983",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Black+Pearl%2C+304+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414420964311983",
-      "google_id": "/g/1tg9n8f4"
+      "google_id": "/g/1tg9n8f4",
+      "maps_place_token": null
     },
     {
       "name": "Auction Rooms",
@@ -433,9 +473,10 @@
       "is_favorite": false,
       "lat": -37.802501299999996,
       "lng": 144.94948829999998,
-      "maps_url": "https://maps.google.com/?cid=7698443116964316929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Auction+Rooms",
       "cid": "7698443116964316929",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Chaise Lounge",
@@ -444,9 +485,10 @@
       "is_favorite": false,
       "lat": -37.816116,
       "lng": 144.960926,
-      "maps_url": "https://maps.google.com/?cid=7698443191148915357",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chaise+Lounge",
       "cid": "7698443191148915357",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Laksa King",
@@ -455,9 +497,10 @@
       "is_favorite": false,
       "lat": -37.7878742,
       "lng": 144.9295306,
-      "maps_url": "https://maps.google.com/?cid=7698443841612212625",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Laksa+King%2C+6-12+Pin+Oak+Cres%2C+Flemington+VIC+3031%2C+Australia",
       "cid": "7698443841612212625",
-      "google_id": "/g/1tnbl8d2"
+      "google_id": "/g/1tnbl8d2",
+      "maps_place_token": null
     },
     {
       "name": "Degraves St",
@@ -466,9 +509,10 @@
       "is_favorite": false,
       "lat": -37.817315199999996,
       "lng": 144.9658047,
-      "maps_url": "https://maps.google.com/?cid=7698413954168687745",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Degraves+St%2C+Melbourne+VIC+3000",
       "cid": "7698413954168687745",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Little Ramen Bar",
@@ -477,9 +521,10 @@
       "is_favorite": false,
       "lat": -37.8156807,
       "lng": 144.9626968,
-      "maps_url": "https://maps.google.com/?cid=7698413959285667141",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Little+Ramen+Bar",
       "cid": "7698413959285667141",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "The Kettle Black",
@@ -488,9 +533,10 @@
       "is_favorite": false,
       "lat": -37.834078399999996,
       "lng": 144.97133829999999,
-      "maps_url": "https://maps.google.com/?cid=7698454973649017517",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Kettle+Black%2C+50+Albert+Rd%2C+South+Melbourne+VIC+3205%2C+Australia",
       "cid": "7698454973649017517",
-      "google_id": "/g/11b6wj5pvl"
+      "google_id": "/g/11b6wj5pvl",
+      "maps_place_token": null
     },
     {
       "name": "Shanghai Street",
@@ -499,9 +545,10 @@
       "is_favorite": false,
       "lat": -37.8115563,
       "lng": 144.9683296,
-      "maps_url": "https://maps.google.com/?cid=7698414053318760461",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shanghai+Street",
       "cid": "7698414053318760461",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Shujinko Russell",
@@ -510,9 +557,10 @@
       "is_favorite": false,
       "lat": -37.811283599999996,
       "lng": 144.9672186,
-      "maps_url": "https://maps.google.com/?cid=7698414046170573763",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shujinko+Russell",
       "cid": "7698414046170573763",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Rice Workshop Melbourne",
@@ -521,9 +569,10 @@
       "is_favorite": false,
       "lat": -37.8122184,
       "lng": 144.96579749999998,
-      "maps_url": "https://maps.google.com/?cid=7698414049419445515",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rice+Workshop+Melbourne",
       "cid": "7698414049419445515",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Yaowarat",
@@ -532,9 +581,10 @@
       "is_favorite": false,
       "lat": -37.8116564,
       "lng": 144.9669702,
-      "maps_url": "https://maps.google.com/?cid=7698414514776473883",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yaowarat",
       "cid": "7698414514776473883",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Roccella Italian Restaurant East Melbourne",
@@ -543,9 +593,10 @@
       "is_favorite": false,
       "lat": -37.8119728,
       "lng": 144.98354039999998,
-      "maps_url": "https://maps.google.com/?cid=7698414650796041865",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Roccella+Italian+Restaurant+East+Melbourne%2C+158+Clarendon+St%2C+East+Melbourne+VIC+3002%2C+Australia",
       "cid": "7698414650796041865",
-      "google_id": "/g/11j3s5sh_x"
+      "google_id": "/g/11j3s5sh_x",
+      "maps_place_token": null
     },
     {
       "name": "The Evelyn Hotel",
@@ -554,9 +605,10 @@
       "is_favorite": false,
       "lat": -37.796619,
       "lng": 144.9785765,
-      "maps_url": "https://maps.google.com/?cid=7698414422608732731",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Evelyn+Hotel%2C+351+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414422608732731",
-      "google_id": "/g/1tk8nr0v"
+      "google_id": "/g/1tk8nr0v",
+      "maps_place_token": null
     },
     {
       "name": "Mukka Indian Restaurant Fitzroy",
@@ -565,9 +617,10 @@
       "is_favorite": false,
       "lat": -37.796358999999995,
       "lng": 144.97903399999998,
-      "maps_url": "https://maps.google.com/?cid=7698414423042099131",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mukka+Indian+Restaurant+Fitzroy%2C+366+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414423042099131",
-      "google_id": "/g/11bwkq80lb"
+      "google_id": "/g/11bwkq80lb",
+      "maps_place_token": null
     },
     {
       "name": "Vegie Bar",
@@ -576,9 +629,10 @@
       "is_favorite": false,
       "lat": -37.795847599999995,
       "lng": 144.9791008,
-      "maps_url": "https://maps.google.com/?cid=7698414422406290393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vegie+Bar%2C+380+Brunswick+St%2C+Fitzroy+VIC+3065%2C+Australia",
       "cid": "7698414422406290393",
-      "google_id": "/g/1tgfdhvt"
+      "google_id": "/g/1tgfdhvt",
+      "maps_place_token": null
     },
     {
       "name": "Tall Timber Cafe",
@@ -587,9 +641,10 @@
       "is_favorite": false,
       "lat": -37.8461723,
       "lng": 144.98813719999998,
-      "maps_url": "https://maps.google.com/?cid=7698455114808003885",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tall+Timber+Cafe%2C+60+Commercial+Rd%2C+Prahran+VIC+3181%2C+Australia",
       "cid": "7698455114808003885",
-      "google_id": "/g/11b60d5k7h"
+      "google_id": "/g/11b60d5k7h",
+      "maps_place_token": null
     },
     {
       "name": "Inkerman Hotel",
@@ -598,9 +653,10 @@
       "is_favorite": false,
       "lat": -37.8663084,
       "lng": 144.99794409999998,
-      "maps_url": "https://maps.google.com/?cid=7698455276655151135",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Inkerman+Hotel%2C+375+Inkerman+St%2C+St+Kilda+East+VIC+3183%2C+Australia",
       "cid": "7698455276655151135",
-      "google_id": "/g/1tqyfn6f"
+      "google_id": "/g/1tqyfn6f",
+      "maps_place_token": null
     },
     {
       "name": "Batch Espresso",
@@ -609,9 +665,10 @@
       "is_favorite": false,
       "lat": -37.8688931,
       "lng": 144.9952004,
-      "maps_url": "https://maps.google.com/?cid=7698455304086025589",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Batch+Espresso%2C+Shop+1%2F320+Carlisle+St%2C+Balaclava+VIC+3183%2C+Australia",
       "cid": "7698455304086025589",
-      "google_id": "/g/1tf7gtjq"
+      "google_id": "/g/1tf7gtjq",
+      "maps_place_token": null
     },
     {
       "name": "Monk Bodhi Dharma",
@@ -620,9 +677,10 @@
       "is_favorite": false,
       "lat": -37.868003,
       "lng": 144.99085549999998,
-      "maps_url": "https://maps.google.com/?cid=7698455257970641423",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monk+Bodhi+Dharma%2C+Rear%2C+202+Carlisle+St%2C+Balaclava+VIC+3183%2C+Australia",
       "cid": "7698455257970641423",
-      "google_id": "/g/1w4f87km"
+      "google_id": "/g/1w4f87km",
+      "maps_place_token": null
     },
     {
       "name": "Two Birds One Stone Cafe South Yarra",
@@ -631,9 +689,10 @@
       "is_favorite": false,
       "lat": -37.8380083,
       "lng": 144.9940885,
-      "maps_url": "https://maps.google.com/?cid=7698415014133186927",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Two+Birds+One+Stone+Cafe+South+Yarra%2C+12+Claremont+St%2C+South+Yarra+VIC+3141%2C+Australia",
       "cid": "7698415014133186927",
-      "google_id": "/g/11cfdc3zj"
+      "google_id": "/g/11cfdc3zj",
+      "maps_place_token": null
     },
     {
       "name": "Top Paddock Cafe",
@@ -642,9 +701,10 @@
       "is_favorite": false,
       "lat": -37.8327859,
       "lng": 144.9964075,
-      "maps_url": "https://maps.google.com/?cid=7698413753534968277",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Top+Paddock+Cafe%2C+658+Church+St%2C+Richmond+VIC+3121%2C+Australia",
       "cid": "7698413753534968277",
-      "google_id": "/g/12lktcc8k"
+      "google_id": "/g/12lktcc8k",
+      "maps_place_token": null
     },
     {
       "name": "Soi 38 Melbourne",
@@ -653,9 +713,10 @@
       "is_favorite": false,
       "lat": -37.8138765,
       "lng": 144.9669012,
-      "maps_url": "https://maps.google.com/?cid=7698414042369842221",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soi+38+Melbourne%2C+38+Royal+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414042369842221",
-      "google_id": "/g/11cncb1rvc"
+      "google_id": "/g/11cncb1rvc",
+      "maps_place_token": null
     },
     {
       "name": "Mr Ramen San",
@@ -664,9 +725,10 @@
       "is_favorite": false,
       "lat": -37.812401,
       "lng": 144.96724799999998,
-      "maps_url": "https://maps.google.com/?cid=7698414046500150133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mr+Ramen+San%2C+12a%2F200+Bourke+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414046500150133",
-      "google_id": "/g/11b8jd1mkq"
+      "google_id": "/g/11b8jd1mkq",
+      "maps_place_token": null
     },
     {
       "name": "Heartbreaker",
@@ -675,20 +737,22 @@
       "is_favorite": false,
       "lat": -37.8109284,
       "lng": 144.96750459999998,
-      "maps_url": "https://maps.google.com/?cid=7698414045965254527",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Heartbreaker%2C+234A+Russell+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414045965254527",
-      "google_id": "/g/11bysjp_9f"
+      "google_id": "/g/11bysjp_9f",
+      "maps_place_token": null
     },
     {
-      "name": "/m/026v2_h",
+      "name": "Flower Drum Restaurant Melbourne",
       "address": "17 Market Ln, Melbourne VIC 3000, Australia",
       "note": null,
       "is_favorite": false,
       "lat": -37.8118772,
       "lng": 144.96924579999998,
-      "maps_url": "https://maps.google.com/?cid=7698414044167099311",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Flower+Drum+Restaurant+Melbourne%2C+17+Market+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414044167099311",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Bombabar",
@@ -697,9 +761,10 @@
       "is_favorite": false,
       "lat": -37.8104041,
       "lng": 144.9691967,
-      "maps_url": "https://maps.google.com/?cid=7698414044883853815",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bombabar%2C+103+Lonsdale+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414044883853815",
-      "google_id": "/g/1pwfy2ykt"
+      "google_id": "/g/1pwfy2ykt",
+      "maps_place_token": null
     },
     {
       "name": "Fancy Hank's Barbecue Restaurant",
@@ -708,9 +773,10 @@
       "is_favorite": false,
       "lat": -37.81217,
       "lng": 144.971057,
-      "maps_url": "https://maps.google.com/?cid=7698413956845797267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fancy+Hank%27s+Barbecue+Restaurant%2C+1%2F79+Bourke+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413956845797267",
-      "google_id": "/g/11b6msn3xf"
+      "google_id": "/g/11b6msn3xf",
+      "maps_place_token": null
     },
     {
       "name": "1806",
@@ -719,9 +785,10 @@
       "is_favorite": false,
       "lat": -37.811658099999995,
       "lng": 144.97007969999999,
-      "maps_url": "https://maps.google.com/?cid=7698414043658903009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=1806%2C+169+Exhibition+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414043658903009",
-      "google_id": "/g/1tg86svh"
+      "google_id": "/g/1tg86svh",
+      "maps_place_token": null
     },
     {
       "name": "HuTong",
@@ -730,9 +797,10 @@
       "is_favorite": false,
       "lat": -37.811880599999995,
       "lng": 144.969389,
-      "maps_url": "https://maps.google.com/?cid=7698414044047795985",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=HuTong%2C+14-16+Market+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414044047795985",
-      "google_id": "/g/1wrtc_9l"
+      "google_id": "/g/1wrtc_9l",
+      "maps_place_token": null
     },
     {
       "name": "Gami Chicken & Beer",
@@ -741,9 +809,10 @@
       "is_favorite": false,
       "lat": -37.809201099999996,
       "lng": 144.9687461,
-      "maps_url": "https://maps.google.com/?cid=7698414045051516709",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gami+Chicken+%26+Beer%2C+100+Little+Lonsdale+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414045051516709",
-      "google_id": "/g/1v2yy_mc"
+      "google_id": "/g/1v2yy_mc",
+      "maps_place_token": null
     },
     {
       "name": "Grain Store",
@@ -752,9 +821,10 @@
       "is_favorite": false,
       "lat": -37.8196089,
       "lng": 144.9566558,
-      "maps_url": "https://maps.google.com/?cid=7698443202415020305",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grain+Store%2C+517+Flinders+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698443202415020305",
-      "google_id": "/g/12hlvchfy"
+      "google_id": "/g/12hlvchfy",
+      "maps_place_token": null
     },
     {
       "name": "Heartattack and Vine",
@@ -763,9 +833,10 @@
       "is_favorite": false,
       "lat": -37.7976457,
       "lng": 144.9672841,
-      "maps_url": "https://maps.google.com/?cid=7698414102198457111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Heartattack+and+Vine",
       "cid": "7698414102198457111",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Healesville Sanctuary (Zoos Victoria)",
@@ -774,9 +845,10 @@
       "is_favorite": false,
       "lat": -37.681616,
       "lng": 145.5298812,
-      "maps_url": "https://maps.google.com/?cid=7721468109719440307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Healesville+Sanctuary+%28Zoos+Victoria%29",
       "cid": "7721468109719440307",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Wax Music Lounge",
@@ -785,9 +857,10 @@
       "is_favorite": false,
       "lat": -37.8176892,
       "lng": 144.9660972,
-      "maps_url": "https://maps.google.com/?cid=7698415183209388239",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wax+Music+Lounge",
       "cid": "7698415183209388239",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Waxflower",
@@ -796,9 +869,10 @@
       "is_favorite": false,
       "lat": -37.7756918,
       "lng": 144.9707362,
-      "maps_url": "https://maps.google.com/?cid=7698414488031372927",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Waxflower",
       "cid": "7698414488031372927",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Robot Bar",
@@ -807,9 +881,10 @@
       "is_favorite": false,
       "lat": -37.817070099999995,
       "lng": 144.9637152,
-      "maps_url": "https://maps.google.com/?cid=7698413956162637323",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Robot+Bar%2C+12+Bligh+Pl%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413956162637323",
-      "google_id": "/g/1v7tlj1_"
+      "google_id": "/g/1v7tlj1_",
+      "maps_place_token": null
     },
     {
       "name": "Cookie",
@@ -818,9 +893,10 @@
       "is_favorite": false,
       "lat": -37.812005299999996,
       "lng": 144.965164,
-      "maps_url": "https://maps.google.com/?cid=7698414049491324975",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cookie%2C+252+Swanston+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414049491324975",
-      "google_id": "/g/1pzxq38rt"
+      "google_id": "/g/1pzxq38rt",
+      "maps_place_token": null
     },
     {
       "name": "Manchuria",
@@ -829,9 +905,10 @@
       "is_favorite": false,
       "lat": -37.8116579,
       "lng": 144.9671022,
-      "maps_url": "https://maps.google.com/?cid=7698414046116140839",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Manchuria%2C+Level+1%2F7-9+Waratah+Pl%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414046116140839",
-      "google_id": "/g/1tfzb9yb"
+      "google_id": "/g/1tfzb9yb",
+      "maps_place_token": null
     },
     {
       "name": "Union Club Hotel",
@@ -840,9 +917,10 @@
       "is_favorite": false,
       "lat": -37.803902799999996,
       "lng": 144.9823278,
-      "maps_url": "https://maps.google.com/?cid=7698414134666314409",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Union+Club+Hotel",
       "cid": "7698414134666314409",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Pepe's Italian & Liquor",
@@ -851,9 +929,10 @@
       "is_favorite": false,
       "lat": -37.8092788,
       "lng": 144.969035,
-      "maps_url": "https://maps.google.com/?cid=7698415052726660491",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pepe%27s+Italian+%26+Liquor",
       "cid": "7698415052726660491",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Berlin Bar",
@@ -862,9 +941,10 @@
       "is_favorite": false,
       "lat": -37.811130899999995,
       "lng": 144.9684355,
-      "maps_url": "https://maps.google.com/?cid=7698414044420644185",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Berlin+Bar%2C+Level+2%2F16+Corrs+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414044420644185",
-      "google_id": "/g/1tcyrzj1"
+      "google_id": "/g/1tcyrzj1",
+      "maps_place_token": null
     },
     {
       "name": "Hakata Gensuke Tonkotsu Ramen",
@@ -873,9 +953,10 @@
       "is_favorite": false,
       "lat": -37.812275,
       "lng": 144.968152,
-      "maps_url": "https://maps.google.com/?cid=7698414046812264167",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hakata+Gensuke+Tonkotsu+Ramen%2C+168+Russell+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698414046812264167",
-      "google_id": "/g/11b5wlw67c"
+      "google_id": "/g/11b5wlw67c",
+      "maps_place_token": null
     },
     {
       "name": "Shanghai Street",
@@ -884,9 +965,10 @@
       "is_favorite": false,
       "lat": -37.8132447,
       "lng": 144.9623953,
-      "maps_url": "https://maps.google.com/?cid=7698413959294513201",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shanghai+Street",
       "cid": "7698413959294513201",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Rice Paper Scissors",
@@ -895,9 +977,10 @@
       "is_favorite": false,
       "lat": -37.8142795,
       "lng": 144.9614222,
-      "maps_url": "https://maps.google.com/?cid=7698414042918558451",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rice+Paper+Scissors",
       "cid": "7698414042918558451",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     },
     {
       "name": "Meatmaiden",
@@ -906,9 +989,10 @@
       "is_favorite": false,
       "lat": -37.814305,
       "lng": 144.96776069999999,
-      "maps_url": "https://maps.google.com/?cid=7698413964323265149",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Meatmaiden%2C+195+Little+Collins+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413964323265149",
-      "google_id": "/g/11bbw_kxlq"
+      "google_id": "/g/11bbw_kxlq",
+      "maps_place_token": null
     },
     {
       "name": "Hosier Ln",
@@ -917,9 +1001,10 @@
       "is_favorite": false,
       "lat": -37.816527199999996,
       "lng": 144.9691574,
-      "maps_url": "https://maps.google.com/?cid=7698413963865516565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hosier+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413963865516565",
-      "google_id": "/g/11bc5x8z7n"
+      "google_id": "/g/11bc5x8z7n",
+      "maps_place_token": null
     },
     {
       "name": "Japanese Teppanyaki Inn",
@@ -928,9 +1013,10 @@
       "is_favorite": false,
       "lat": -37.814970599999995,
       "lng": 144.9674068,
-      "maps_url": "https://maps.google.com/?cid=7698413962786454755",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Japanese+Teppanyaki+Inn%2C+182+Collins+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413962786454755",
-      "google_id": "/g/1tjpqmz1"
+      "google_id": "/g/1tjpqmz1",
+      "maps_place_token": null
     },
     {
       "name": "Supernormal",
@@ -939,9 +1025,10 @@
       "is_favorite": false,
       "lat": -37.8159826,
       "lng": 144.96842089999998,
-      "maps_url": "https://maps.google.com/?cid=7698413963620143413",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Supernormal%2C+180+Flinders+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413963620143413",
-      "google_id": "/g/11bbrm4m99"
+      "google_id": "/g/11bbrm4m99",
+      "maps_place_token": null
     },
     {
       "name": "Lucy Liu Kitchen and Bar",
@@ -950,9 +1037,10 @@
       "is_favorite": false,
       "lat": -37.8159928,
       "lng": 144.96995379999998,
-      "maps_url": "https://maps.google.com/?cid=7698413970152943455",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lucy+Liu+Kitchen+and+Bar%2C+23+Oliver+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413970152943455",
-      "google_id": "/g/11b6c65nzn"
+      "google_id": "/g/11b6c65nzn",
+      "maps_place_token": null
     },
     {
       "name": "Bowery To Williamsburg",
@@ -961,9 +1049,10 @@
       "is_favorite": false,
       "lat": -37.8162381,
       "lng": 144.970252,
-      "maps_url": "https://maps.google.com/?cid=7698413969870080567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bowery+To+Williamsburg%2C+16+Oliver+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413969870080567",
-      "google_id": "/g/12qh9qdwy"
+      "google_id": "/g/12qh9qdwy",
+      "maps_place_token": null
     },
     {
       "name": "Coda Melbourne",
@@ -972,9 +1061,10 @@
       "is_favorite": false,
       "lat": -37.8157661,
       "lng": 144.96988969999998,
-      "maps_url": "https://maps.google.com/?cid=7698413970250062837",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coda+Melbourne%2C+Basement%2F141+Flinders+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413970250062837",
-      "google_id": "/g/1tfjwd_2"
+      "google_id": "/g/1tfjwd_2",
+      "maps_place_token": null
     },
     {
       "name": "Eau De Vie Melbourne",
@@ -983,9 +1073,10 @@
       "is_favorite": false,
       "lat": -37.8158003,
       "lng": 144.9715874,
-      "maps_url": "https://maps.google.com/?cid=7698413971031192747",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Eau+De+Vie+Melbourne%2C+1+Malthouse+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413971031192747",
-      "google_id": "/g/1q5gqrcj1"
+      "google_id": "/g/1q5gqrcj1",
+      "maps_place_token": null
     },
     {
       "name": "Chin Chin",
@@ -994,9 +1085,10 @@
       "is_favorite": false,
       "lat": -37.8155491,
       "lng": 144.9703461,
-      "maps_url": "https://maps.google.com/?cid=7698413970085051903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chin+Chin%2C+125+Flinders+Ln%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698413970085051903",
-      "google_id": "/g/11bv18x2_w"
+      "google_id": "/g/11bv18x2_w",
+      "maps_place_token": null
     },
     {
       "name": "Patricia Coffee Brewers",
@@ -1005,9 +1097,10 @@
       "is_favorite": false,
       "lat": -37.814619,
       "lng": 144.9582054,
-      "maps_url": "https://maps.google.com/?cid=7698443192396698015",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Patricia+Coffee+Brewers%2C+Rear+of%2C+493-495+Little+Bourke+St%2C+Melbourne+VIC+3000%2C+Australia",
       "cid": "7698443192396698015",
-      "google_id": "/g/1tjg_hs3"
+      "google_id": "/g/1tjg_hs3",
+      "maps_place_token": null
     },
     {
       "name": "Archie's All Day",
@@ -1016,9 +1109,10 @@
       "is_favorite": false,
       "lat": -37.806031,
       "lng": 144.9809139,
-      "maps_url": "https://maps.google.com/?cid=7698414133058310601",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Archie%27s+All+Day",
       "cid": "7698414133058310601",
-      "google_id": null
+      "google_id": null,
+      "maps_place_token": null
     }
   ]
 }

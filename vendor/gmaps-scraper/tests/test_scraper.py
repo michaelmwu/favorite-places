@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import tempfile
 import unittest
@@ -238,7 +239,7 @@ class ScraperConsentTests(unittest.TestCase):
     def test_reads_resolved_url_from_page(self) -> None:
         page = _FakeContext(
             text="",
-            url="https://www.google.com/maps/@30.5370705,125.4120472,6z/data=!4m3!11m2!2sUGEPbA20Qd-OH4uoWjmDgQ!3e3?entry=ttu",
+            url="https://www.google.com/maps/@30.5370705,125.4120472,6z/data=!4m3!11m2!2sTESTLISTABC123456789!3e3?entry=ttu",
         )
 
         self.assertEqual(_read_resolved_url(page), page.url)
@@ -339,6 +340,85 @@ class HttpArtifactTests(unittest.TestCase):
         self.assertEqual(
             session.calls[1][0],
             "https://www.google.com/maps/preview/entitylist/getlist?pb=123",
+        )
+
+    def test_collect_http_artifacts_expands_entitylist_payload_when_total_exceeds_page(
+        self,
+    ) -> None:
+        def make_entitylist_payload(row_count: int, total_count: int) -> str:
+            rows = [
+                [
+                    None,
+                    [
+                        None,
+                        None,
+                        "",
+                        None,
+                        f"Address {index}",
+                        [None, None, 35.0 + index, 139.0 + index],
+                        [str(1000 + index), str(2000 + index)],
+                        f"/g/place-{index}",
+                    ],
+                    f"Place {index}",
+                ]
+                for index in range(row_count)
+            ]
+            candidate = [
+                ["list-id", 3, [[1], [9]], 1, 1],
+                4,
+                [2, 1, "https://www.google.com/maps/placelists/list/list-id"],
+                ["Owner", "https://example.com/avatar.jpg", "104356373423434804635"],
+                "Big list",
+                "",
+                None,
+                None,
+                rows,
+                [None, None, None, [11, "11"]],
+                [0, 0],
+                [0, 0],
+                total_count,
+            ]
+            return ")]}'\n" + json.dumps([candidate, "token", None])
+
+        fake_requests = _FakeCurlRequests(
+            responses=[
+                _FakeHttpResponse(
+                    text=(
+                        "<html><head>"
+                        '<link href="/maps/preview/entitylist/getlist?pb=%214i500" '
+                        'as="fetch" rel="preload">'
+                        "</head></html>"
+                    ),
+                    url="https://www.google.com/maps/@/data=!3m1!4b1",
+                ),
+                _FakeHttpResponse(
+                    text=make_entitylist_payload(row_count=2, total_count=4),
+                    url="https://www.google.com/maps/preview/entitylist/getlist?pb=%214i500",
+                ),
+                _FakeHttpResponse(
+                    text=make_entitylist_payload(row_count=4, total_count=4),
+                    url="https://www.google.com/maps/preview/entitylist/getlist?pb=%214i4",
+                ),
+            ]
+        )
+
+        with patch(
+            "gmaps_scraper.scraper._import_curl_requests",
+            return_value=fake_requests,
+        ):
+            artifacts = collect_http_artifacts(
+                "https://maps.app.goo.gl/example",
+                timeout_ms=15_000,
+                http_session=None,
+            )
+
+        self.assertEqual(len(artifacts.script_texts), 1)
+        self.assertIn('"Place 3"', artifacts.script_texts[0])
+
+        session = fake_requests.sessions[0]
+        self.assertEqual(
+            session.calls[2][0],
+            "https://www.google.com/maps/preview/entitylist/getlist?pb=%214i4",
         )
 
     def test_collect_http_artifacts_returns_html_without_preload(self) -> None:

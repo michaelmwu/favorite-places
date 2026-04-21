@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:54:07.182941+00:00",
-  "refresh_after": "2026-05-07T05:52:17.182941+00:00",
+  "fetched_at": "2026-04-20T16:08:04.388203+00:00",
+  "refresh_after": "2026-05-07T08:06:14.388203+00:00",
   "source_signature": "5f4f654b06877abda687e4238a7ceed11924c4ddd599e5bc3fb90377a448c764",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/CyBpVLMUL4jGuNep6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 23.5269679,
       "lng": 120.74443389999999,
-      "maps_url": "https://maps.google.com/?cid=3778200048335143355",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hana+village+kitchen%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+%E5%9B%9B%E9%84%B087-3%E8%99%9F",
       "cid": "3778200048335143355",
       "google_id": "/g/11b6yqlkz8",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 23.4389827,
       "lng": 120.60727949999999,
-      "maps_url": "https://maps.google.com/?cid=3778216369289457447",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Longyin+Temple%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+1%E8%99%9F",
       "cid": "3778216369289457447",
       "google_id": "/g/1trphz67",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 23.4466049,
       "lng": 120.5839843,
-      "maps_url": "https://maps.google.com/?cid=3778216276344041329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%84%92%E6%97%8F+%E9%80%90%E9%B9%BF%E6%96%87%E5%89%B5%E5%9C%92%E5%8D%80-%E5%98%89%E7%BE%A9%E9%98%BF%E9%87%8C%E5%B1%B1+%E5%8E%9F%E4%BD%8F%E6%B0%91%2F%E9%84%92%E6%97%8F%E9%A2%A8%E5%91%B3%E6%96%99%E7%90%86%2F%E9%A4%90%E5%BB%B3+%E5%8D%81%E5%A4%A7%E6%8E%A8%E8%96%A6+2024%E5%BF%85%E5%90%83%E4%BA%BA%E6%B0%A3%E9%A4%90%E5%BB%B3+%E8%8B%A6%E8%8C%B6%E6%B2%B9%E9%9B%9E%2F%E7%81%AB%E9%8D%8B+%0A%E9%84%92%E6%97%8F%E6%AD%8C%E8%88%9E%E8%A1%A8%E6%BC%94%2F%E8%A6%AA%E5%AD%90%E6%97%85%E9%81%8A%2F%E7%94%9F%E6%85%8B%E4%B9%8B%E6%97%85%2F%E5%93%A1%E5%B7%A5%E6%97%85%E9%81%8A%2F%E5%AE%B6%E6%97%8F%E6%97%85%E9%81%8A+IG+PTT+Dcard%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+%E6%A2%85%E8%8A%B1%E4%B8%80%E8%B7%AF1-1%E8%99%9F",
       "cid": "3778216276344041329",
       "google_id": "/g/1232z2j5p",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 23.485637699999998,
       "lng": 120.45481199999999,
-      "maps_url": "https://maps.google.com/?cid=3778121838387641657",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hinoki+Village%2C+No.+370%E8%99%9F%2C+Gonghe+Rd%2C+East+District%2C+Chiayi+City%2C+Taiwan+600",
       "cid": "3778121838387641657",
       "google_id": "/g/1pznmqd54",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 23.5108446,
       "lng": 120.8033301,
-      "maps_url": "https://maps.google.com/?cid=3778199170313680671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xiangyi+Xiaochi+%2821+noodle+dishes%29%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+605%E5%A8%9C%E8%8B%A5%E7%91%AA%E8%8F%B2%E7%BE%8E%E9%A3%9F",
       "cid": "3778199170313680671",
       "google_id": "/g/11h9rfhtk6",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 23.511205999999998,
       "lng": 120.80436569999999,
-      "maps_url": "https://maps.google.com/?cid=3778201921633710969",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Xinxin+Restaurant%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+24%E8%99%9F+Alishan+National+Forest+Recreation+Area",
       "cid": "3778201921633710969",
       "google_id": "/g/1pzrd7b7_",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 23.4718923,
       "lng": 120.71410449999999,
-      "maps_url": "https://maps.google.com/?cid=3778212184219912113",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%98%BF%E9%87%8C%E5%B1%B1%E8%BF%B7%E7%B3%8A%E6%AD%A5%E9%81%93%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+%E5%8F%B018%E7%B7%9A",
       "cid": "3778212184219912113",
       "google_id": "/g/11x9pt9db",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 23.473463,
       "lng": 120.700327,
-      "maps_url": "https://maps.google.com/?cid=3778212349002774035",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%98%BF%E9%87%8C%E5%B1%B1%E7%8F%A0%E9%9C%B2%E8%8C%B6-%E6%9E%97%E5%9C%92%E8%A3%BD%E8%8C%B6+Lin+Yuan+Tea+Factory%2C+60497%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+%E4%B8%AD%E5%92%8C%E6%9D%91%E7%9F%B3%E6%A3%B919-57%E8%99%9F",
       "cid": "3778212349002774035",
       "google_id": "/g/1td6pzxv",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 23.4776292,
       "lng": 120.70619099999999,
-      "maps_url": "https://maps.google.com/?cid=3778171169998629791",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trail+of+Tea%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+%E6%A8%82%E9%87%8E%E6%9D%91",
       "cid": "3778171169998629791",
       "google_id": "/g/11c6y_9vdw",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 23.494927399999998,
       "lng": 120.7416562,
-      "maps_url": "https://maps.google.com/?cid=3778200201839713821",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Communities+have+to+Enya+Na+-+Little+Switzerland+-+palms+Village%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+%E5%A4%9A%E6%9E%97-%E5%BE%97%E6%81%A9%E4%BA%9E%E7%B4%8D%E8%81%AF%E7%B5%A1%E9%81%93",
       "cid": "3778200201839713821",
       "google_id": "/g/11gc_h65x0",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 23.497871699999997,
       "lng": 120.71981539999999,
-      "maps_url": "https://maps.google.com/?cid=3778200340930186437",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dadongshan+Lookout%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township",
       "cid": "3778200340930186437",
       "google_id": "/g/1q63ck8wk",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 23.5033256,
       "lng": 120.69487339999999,
-      "maps_url": "https://maps.google.com/?cid=3778171284725759013",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E7%A9%BA%E7%AB%A5%E8%A9%B1%E6%9C%A8%E5%B1%8B%2C+%E7%AC%AC%E5%9B%9B%E9%84%B0%2C+Zhuqi+Township%2C+Chiayi+County%2C+Taiwan+604",
       "cid": "3778171284725759013",
       "google_id": "/g/11xbslx9g",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 23.504083599999998,
       "lng": 120.6954727,
-      "maps_url": "https://maps.google.com/?cid=3778171286356221809",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%99%BE%E5%B9%B4%E8%82%96%E6%A5%A0%E6%9E%97%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township",
       "cid": "3778171286356221809",
       "google_id": "/g/11ylnk8lc",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 23.505253,
       "lng": 120.6955349,
-      "maps_url": "https://maps.google.com/?cid=3778171286771687991",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fenchihu+Hotel%2C+60497%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+178-1%E8%99%9F",
       "cid": "3778171286771687991",
       "google_id": "/g/1vxw607t",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 23.503928199999997,
       "lng": 120.69436669999999,
-      "maps_url": "https://maps.google.com/?cid=3778171158494096043",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%A1%97%E4%BB%94%E5%B0%BE%E9%98%BF%E5%AC%A4%E8%8D%89%E4%BB%94%E7%B2%BF%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+7%E9%84%B080%E8%99%9F",
       "cid": "3778171158494096043",
       "google_id": "/g/11h15vvf1",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 23.5037345,
       "lng": 120.69502059999999,
-      "maps_url": "https://maps.google.com/?cid=3778171253746093111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%AE%E8%B5%B7%E6%B9%96%E7%8F%BE%E7%83%A4%E7%94%9C%E7%94%9C%E5%9C%88%EF%BC%8C%E7%99%BE%E5%B9%B4%E6%AA%9C%E6%9C%A8%E7%94%9C%E7%94%9C%E5%9C%88%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township",
       "cid": "3778171253746093111",
       "google_id": "/g/1tfq2d4h",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 23.504501599999998,
       "lng": 120.69458879999999,
-      "maps_url": "https://maps.google.com/?cid=3778171282435020019",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%AE%E8%B5%B7%E6%B9%96%E5%B0%8F%E8%88%8D%E6%B0%91%E5%AE%BF%E9%90%B5%E8%B7%AF%E4%BE%BF%E7%95%B6%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+112%E8%99%9F",
       "cid": "3778171282435020019",
       "google_id": "/g/11cjj7g1wf",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 23.504624,
       "lng": 120.6943962,
-      "maps_url": "https://maps.google.com/?cid=3778171282589308891",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%9B%85%E6%B9%96%E9%90%B5%E8%B7%AF%E4%BE%BF%E7%95%B6%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township",
       "cid": "3778171282589308891",
       "google_id": "/g/11bxg0_bqb",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 23.5046021,
       "lng": 120.6965022,
-      "maps_url": "https://maps.google.com/?cid=3778171739918165035",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%90%B5%E9%81%93%E5%B1%B1%E5%9F%8E%E6%87%B7%E8%88%8A%E9%90%B5%E8%B7%AF%E4%BE%BF%E7%95%B6%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+%E9%98%BF%E9%87%8C%E5%B1%B1%E5%85%AC%E8%B7%AF%E4%B8%AD%E5%92%8C%E6%94%AF%E7%B7%9A202%E8%99%9F",
       "cid": "3778171739918165035",
       "google_id": "/g/11sqf5k5td",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 23.472575499999998,
       "lng": 120.69689609999999,
-      "maps_url": "https://maps.google.com/?cid=3778214398819763387",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%B4%AA%E8%8C%B6%E5%9D%8A+HUNG+CHA+FANG%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+%E4%B8%AD%E5%92%8C%E6%9D%91%E7%9F%B3%E6%A3%B922-33%E8%99%9F",
       "cid": "3778214398819763387",
       "google_id": "/g/11fvqns3c2",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 23.429972,
       "lng": 120.6624203,
-      "maps_url": "https://maps.google.com/?cid=3778213337496346497",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%92%9F%E9%9A%86%E5%92%96%E5%95%A1%E8%8E%8A%E5%9C%92%E3%80%90%E7%87%9F%E6%A5%AD%E6%99%82%E9%96%93%E4%BB%A5FB%E7%82%BA%E6%BA%96%E3%80%91%E7%B2%BE%E7%B7%BB%E9%8D%8B%E7%89%A9+%E9%98%BF%E9%87%8C%E5%B1%B1%E7%B2%BE%E5%93%81%E5%92%96%E5%95%A1+%E5%98%89%E7%BE%A9%E9%A4%90%E5%BB%B3%E6%8E%A8%E8%96%A6+%E7%89%B9%E8%89%B2%E7%81%AB%E9%8D%8B+%E8%97%9D%E4%BC%8E%E5%92%96%E5%95%A1%E5%BB%B3%E9%A6%96%E9%81%B8+2024%E5%BF%85%E5%8E%BB%E6%99%AF%E8%A7%80%E9%A4%90%E5%BB%B3%E5%A5%BD%E8%A9%95+%E7%86%B1%E9%96%80%E4%BA%BA%E6%B0%A3%E6%99%AF%E9%BB%9E%E7%B6%B2%E7%BE%8E%E6%89%93%E5%8D%A1+%0A%E9%9A%99%E9%A0%82%E7%BE%8E%E9%A3%9F+%E5%B7%A5%E6%A5%AD%E9%A2%A8%E6%99%AF%E8%A7%80%E9%A4%90%E5%BB%B3+%E9%98%BF%E9%87%8C%E5%B1%B1%E5%AE%B6%E5%BA%AD%E8%81%9A%E6%9C%83+%E9%98%BF%E9%87%8C%E5%B1%B1%E4%B8%8A%E7%B2%BE%E5%93%81%E5%92%96%E5%95%A1+%E7%94%9C%E9%BB%9E%E4%B8%8B%E5%8D%88%E8%8C%B6%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+8-2%E8%99%9F",
       "cid": "3778213337496346497",
       "google_id": "/g/11bycgwffn",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 23.468002199999997,
       "lng": 120.6965079,
-      "maps_url": "https://maps.google.com/?cid=3778212326781280255",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%A1%97%E8%A7%92%E6%B0%B8%E5%AF%8C%E8%8B%A6%E8%8C%B6%E6%B2%B9%E9%9B%9E%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+%E6%A8%82%E9%87%8E114-2%E8%99%9F",
       "cid": "3778212326781280255",
       "google_id": "/g/1q62bknqm",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 23.5046614,
       "lng": 120.6974211,
-      "maps_url": "https://maps.google.com/?cid=3778171288755221667",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Meigu+Restaurant%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+191%E8%99%9F",
       "cid": "3778171288755221667",
       "google_id": "/g/11xdy8gjb",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 23.504228899999998,
       "lng": 120.6944875,
-      "maps_url": "https://maps.google.com/?cid=3778171282502663345",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%AE%E8%B5%B7%E6%B9%96%E6%A8%82%E6%A8%82%E8%8A%B1%E5%9C%92%E9%A4%90%E9%A3%B2%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+60477%E8%99%9F",
       "cid": "3778171282502663345",
       "google_id": "/g/11c5xfkhj4",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 23.5041524,
       "lng": 120.694401,
-      "maps_url": "https://maps.google.com/?cid=3778172610690766887",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fang+Mei+Tingyuan+Restaurant%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+75%E8%99%9F1%E6%A8%93",
       "cid": "3778172610690766887",
       "google_id": "/g/11s_24h87p",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 23.4728094,
       "lng": 120.6982788,
-      "maps_url": "https://maps.google.com/?cid=3778212348749795565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%9F%B3%E6%A3%B9+%E5%BD%A4%E7%82%98%E7%BE%8E%E9%A3%9F%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+%E4%B8%AD%E5%92%8C%E6%9D%91%E7%9F%B3%E6%A3%B922%E4%B9%8B41%E8%99%9F",
       "cid": "3778212348749795565",
       "google_id": "/g/11c2nxpb29",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 23.4726149,
       "lng": 120.6966214,
-      "maps_url": "https://maps.google.com/?cid=3778212351671881891",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%9F%B3%E6%A1%8C%E7%BE%8A%E8%82%89%E5%BA%97%2C+604%2C+Taiwan%2C+%E5%98%89%E7%BE%A9%E7%B8%A3%E7%AB%B9%E5%B4%8E%E9%84%89%E4%B8%AD%E5%92%8C%E6%9D%91%E7%9F%B3%E6%A3%B921%E4%B9%8B39%E8%99%9F",
       "cid": "3778212351671881891",
       "google_id": "/g/11bbrm3kc_",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 23.479739,
       "lng": 120.70378029999999,
-      "maps_url": "https://maps.google.com/?cid=3778170346466818917",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%B1%8A%E5%90%88%E8%B1%90%E7%A6%BE+%E6%99%AF%E8%A7%80%E9%A4%90%E5%BB%B3%2C+604026%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+%E7%9F%B3%E6%A7%954%E4%B9%8B1%E8%99%9F",
       "cid": "3778170346466818917",
       "google_id": "/g/11lszblncg",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 23.4714687,
       "lng": 120.7049588,
-      "maps_url": "https://maps.google.com/?cid=3778214312648757657",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%BD%90%E4%B8%80%E8%8C%B6%E5%B1%8B%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township",
       "cid": "3778214312648757657",
       "google_id": "/g/11y1jkwy_n",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 23.471486499999997,
       "lng": 120.7050577,
-      "maps_url": "https://maps.google.com/?cid=3778212233653092821",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Feng+Ba+Restaurant%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township",
       "cid": "3778212233653092821",
       "google_id": "/g/11g027fgbh",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 23.5048715,
       "lng": 120.69310619999999,
-      "maps_url": "https://maps.google.com/?cid=3778171374647375975",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fenrui+Historic+Trail",
       "cid": "3778171374647375975",
       "google_id": null,
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 23.423909599999998,
       "lng": 120.6581909,
-      "maps_url": "https://maps.google.com/?cid=3778213582658747493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tea+and+Mist+Trail+%E8%8C%B6%E9%9C%A7%E4%B9%8B%E9%81%93",
       "cid": "3778213582658747493",
       "google_id": null,
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 23.4175793,
       "lng": 120.650847,
-      "maps_url": "https://maps.google.com/?cid=3778216480209426645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Eryanping+Trail",
       "cid": "3778216480209426645",
       "google_id": null,
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 23.447098699999998,
       "lng": 120.5855452,
-      "maps_url": "https://maps.google.com/?cid=3778215811645755153",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%80%90%E9%B9%BF%E5%82%B3%E8%AA%AA%E6%A2%85%E8%8A%B1%E9%B9%BF%E5%9C%92%2C+602037%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+%E8%BB%8A%E5%9F%9551%E8%99%9F",
       "cid": "3778215811645755153",
       "google_id": "/g/11jl27fbtk",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 23.4462828,
       "lng": 120.5857786,
-      "maps_url": "https://maps.google.com/?cid=3778122626438277645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B1%B1%E4%B9%8B%E5%9F%95%EF%BC%8D%E5%98%89%E7%BE%A9%E6%99%AF%E9%BB%9E+%E8%A6%AA%E5%AD%90%E6%97%85%E9%81%8A%E5%9C%92%E5%8D%80+%E9%98%BF%E9%87%8C%E5%B1%B1%E6%99%AF%E9%BB%9E+%E5%A5%BD%E8%A9%95+%E6%89%93%E5%8D%A1%E6%99%AF%E9%BB%9E+%E5%9C%98%E9%AB%94%E6%97%85%E9%81%8A+%E9%98%BF%E9%87%8C%E5%B1%B1+%E7%89%B9%E8%89%B2+%E9%9B%95%E5%88%BB%E8%97%9D%E8%A1%93%E5%93%81+%E6%AA%9C%E6%9C%A8%E8%97%9D%E5%93%81+%E6%AA%9C%E6%9C%A8%E5%95%86%E5%93%81+%E6%96%87%E5%89%B5%E5%95%86%E5%93%81+%E4%BC%B4%E6%89%8B%E7%A6%AE%E6%8E%A8%E8%96%A6+2024%E8%A9%95%E5%83%B9%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+51%E8%99%9F1%E6%A8%93",
       "cid": "3778122626438277645",
       "google_id": "/g/1thlx5qb",
       "maps_place_token": null
@@ -437,9 +437,21 @@
       "is_favorite": false,
       "lat": 23.507211899999998,
       "lng": 120.82321639999999,
-      "maps_url": "https://maps.google.com/?cid=3778201866521730551",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mountain+Ali+Tea+No.35%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+103%E8%99%9F",
       "cid": "3778201866521730551",
       "google_id": "/g/11g4hc4vkd",
+      "maps_place_token": null
+    },
+    {
+      "name": "Shan Bin Restaurant",
+      "address": "605, Taiwan, Chiayi County, Alishan Township, 19號",
+      "note": null,
+      "is_favorite": false,
+      "lat": 23.5111134,
+      "lng": 120.8045822,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shan+Bin+Restaurant%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+19%E8%99%9F",
+      "cid": "3778201921633710969",
+      "google_id": "/g/1pzpxb6w7",
       "maps_place_token": null
     },
     {
@@ -449,7 +461,7 @@
       "is_favorite": false,
       "lat": 23.515341,
       "lng": 120.81019479999999,
-      "maps_url": "https://maps.google.com/?cid=3778200167625373623",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alishan+Hotel%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+16%E8%99%9F",
       "cid": "3778200167625373623",
       "google_id": "/g/1tg58vrn",
       "maps_place_token": null
@@ -461,7 +473,7 @@
       "is_favorite": false,
       "lat": 23.5109539,
       "lng": 120.80349919999999,
-      "maps_url": "https://maps.google.com/?cid=3778199170295665979",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alishan+National+Forest+Recreation+Area%2C+605%2C+Taiwan%2C+Chiayi+County%2C+Alishan+Township%2C+59%E8%99%9F",
       "cid": "3778199170295665979",
       "google_id": null,
       "maps_place_token": null
@@ -473,7 +485,7 @@
       "is_favorite": false,
       "lat": 23.5051784,
       "lng": 120.69439399999999,
-      "maps_url": "https://maps.google.com/?cid=3778171282266017589",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%9B%9B%E6%96%B9%E7%AB%B9%E6%9E%97%2C+Taiwan%2C+%E5%98%89%E7%BE%A9%E7%B8%A3%E7%AB%B9%E5%B4%8E%E9%84%89",
       "cid": "3778171282266017589",
       "google_id": "/g/11xtwjpw3",
       "maps_place_token": null
@@ -485,7 +497,7 @@
       "is_favorite": false,
       "lat": 23.506240599999998,
       "lng": 120.6960204,
-      "maps_url": "https://maps.google.com/?cid=3778171287579090331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fengqihu+Logging+Track+%E5%A5%AE%E8%B5%B7%E6%B9%96%E6%9C%A8%E9%A6%AC%E6%A3%A7%E9%81%93%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township",
       "cid": "3778171287579090331",
       "google_id": "/g/11csqhhgg4",
       "maps_place_token": null
@@ -497,9 +509,21 @@
       "is_favorite": false,
       "lat": 23.505323999999998,
       "lng": 120.69510799999999,
-      "maps_url": "https://maps.google.com/?cid=3778171286693732111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fen+Chi+Hu+Station%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township",
       "cid": "3778171286693732111",
       "google_id": "/g/155pbb6f",
+      "maps_place_token": null
+    },
+    {
+      "name": "Fenqihu Old Street",
+      "address": "604, Taiwan, Chiayi County, Zhuqi Township, 24",
+      "note": null,
+      "is_favorite": false,
+      "lat": 23.5051199,
+      "lng": 120.6949355,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fenqihu+Old+Street%2C+604%2C+Taiwan%2C+Chiayi+County%2C+Zhuqi+Township%2C+24",
+      "cid": "3778171158494096043",
+      "google_id": "/g/155r266v",
       "maps_place_token": null
     },
     {
@@ -509,7 +533,7 @@
       "is_favorite": false,
       "lat": 23.4395386,
       "lng": 120.60802679999999,
-      "maps_url": "https://maps.google.com/?cid=3778216369577590923",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%A7%B8%E5%8F%A3-%E5%A4%A9%E9%95%B7%E6%A9%8B%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+%E9%98%BF%E9%87%8C%E5%B1%B1%E5%85%AC%E8%B7%AF173-2%E8%99%9F",
       "cid": "3778216369577590923",
       "google_id": "/g/1tdqxgld",
       "maps_place_token": null
@@ -521,7 +545,7 @@
       "is_favorite": false,
       "lat": 23.4418828,
       "lng": 120.5914189,
-      "maps_url": "https://maps.google.com/?cid=3778216314879680691",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chukou+Niubu+Aberdeen+Prairie+%28Ali+Love+Silk+Road+No.+18%29%2C+602%2C+Taiwan%2C+Chiayi+County%2C+Fanlu+Township%2C+%E8%A7%B8%E5%8F%A3%E6%A9%8B12+%E8%99%9F",
       "cid": "3778216314879680691",
       "google_id": "/g/11b63568rh",
       "maps_place_token": null

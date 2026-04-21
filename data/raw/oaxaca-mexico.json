@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:16:08.036327+00:00",
-  "refresh_after": "2026-04-29T15:16:08.036327+00:00",
+  "fetched_at": "2026-04-20T16:02:51.229769+00:00",
+  "refresh_after": "2026-05-02T09:04:40.229769+00:00",
   "source_signature": "e2bb80347386f0cac39102a3cc12b606f73430e1ed54f5ee714be19641c16d07",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/eNrdv6E2KGqAWJcP6",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 17.061947,
       "lng": -96.72990999999999,
-      "maps_url": "https://maps.google.com/?cid=5810998757590095936",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Quinque%2C+Miguel+Hidalgo+218-A%2C+Zona+Lunes+Feb+09%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "5810998757590095936",
       "google_id": "/g/1tfntbf8",
       "maps_place_token": null
@@ -29,8 +29,8 @@
       "is_favorite": false,
       "lat": 17.0633043,
       "lng": -96.72223919999999,
-      "maps_url": "https://maps.google.com/?q=17.0633043,-96.7222392",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Expendio+Tradici%C3%B3n%2C+Reforma%2C+Murgu%C3%ADa+%26%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "14148045953726204646",
       "google_id": "/g/11b6s_y425",
       "maps_place_token": null
     },
@@ -41,8 +41,8 @@
       "is_favorite": false,
       "lat": 17.064127499999998,
       "lng": -96.7208785,
-      "maps_url": "https://maps.google.com/?q=17.0641275,-96.7208785",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Las+Quince+Letras+Restaurante%2C+C.+de+Mariano+Abasolo+300%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "9883798401318454083",
       "google_id": "/g/1tfjfwd9",
       "maps_place_token": null
     },
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 17.0603403,
       "lng": -96.72134559999999,
-      "maps_url": "https://maps.google.com/?cid=3283048074949862259",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+Taviche%2C+Miguel+Hidalgo+1111%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "3283048074949862259",
       "google_id": "/g/11bzsdf7_z",
       "maps_place_token": null
@@ -65,8 +65,8 @@
       "is_favorite": false,
       "lat": 17.060497299999998,
       "lng": -96.7221641,
-      "maps_url": "https://maps.google.com/?q=17.0604973,-96.7221641",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cabuche%2C+Miguel+Hidalgo+1017%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "9958607631847296897",
       "google_id": "/g/11bycfk9b6",
       "maps_place_token": null
     },
@@ -77,8 +77,8 @@
       "is_favorite": false,
       "lat": 17.060951799999998,
       "lng": -96.7258528,
-      "maps_url": "https://maps.google.com/?q=17.0609518,-96.7258528",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tr3s+3istro+Restaurant+%26+Oyster+Bar%2C+Portal+Las+Flores+3%2C+OAX_RE_BENITO+JUAREZ%2C+Centro%2C+68000+Centro%2C+Oax.%2C+Mexico",
+      "cid": "13559961370475080563",
       "google_id": "/g/11bvt5xqbm",
       "maps_place_token": null
     },
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 17.064986299999997,
       "lng": -96.72316359999999,
-      "maps_url": "https://maps.google.com/?cid=2499854033085621835",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Destilado%2C+5+de+Mayo+409%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "2499854033085621835",
       "google_id": "/g/11bxdtkp6z",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 17.0710125,
       "lng": -96.7240054,
-      "maps_url": "https://maps.google.com/?cid=7677889410873056198",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Adam%C3%A1%2C+Aldama+101%2C+RUTA+INDEPENDENCIA%2C+Barrio+de+Xochimilco%2C+68040+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "7677889410873056198",
       "google_id": "/g/11l0r00c04",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 17.068497,
       "lng": -96.72435499999999,
-      "maps_url": "https://maps.google.com/?cid=5600391141700397416",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Casa+del+T%C3%ADo+G%C3%BCero%2C+C.+de+Manuel+Garc%C3%ADa+Vigil+715%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "5600391141700397416",
       "google_id": "/g/1tfcj2cg",
       "maps_place_token": null
@@ -125,8 +125,8 @@
       "is_favorite": false,
       "lat": 17.0664609,
       "lng": -96.72437579999999,
-      "maps_url": "https://maps.google.com/?q=17.0664609,-96.7243758",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zandunga+Sabor+Istme%C3%B1o%2C+C.+de+Manuel+Garc%C3%ADa+Vigil+512-E%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "14473470333080831566",
       "google_id": "/g/1tlwfzts",
       "maps_place_token": null
     },
@@ -137,8 +137,8 @@
       "is_favorite": false,
       "lat": 17.0438035,
       "lng": -96.7681104,
-      "maps_url": "https://maps.google.com/?q=17.0438035,-96.7681104",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monte+Alb%C3%A1n%2C+Oaxaca%2C+Mexico",
+      "cid": "13746722085290583059",
       "google_id": null,
       "maps_place_token": null
     },
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 16.8656531,
       "lng": -96.2760065,
-      "maps_url": "https://maps.google.com/?cid=3286402776828710653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hierve+el+Agua",
       "cid": "3286402776828710653",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 17.0652024,
       "lng": -96.7239883,
-      "maps_url": "https://maps.google.com/?cid=9088579436276878064",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Los+Danzantes%2C+C.+Macedonio+Alcal%C3%A1+403-interior+4%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "9088579436276878064",
       "google_id": "/g/1vm7bsvk",
       "maps_place_token": null
@@ -173,8 +173,8 @@
       "is_favorite": false,
       "lat": 17.0758975,
       "lng": -96.7126325,
-      "maps_url": "https://maps.google.com/?q=17.0758975,-96.7126325",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Mezcalerita%2C+C.+Macedonio+Alcal%C3%A1+706%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "10371946687668102137",
       "google_id": "/g/11btxc_smh",
       "maps_place_token": null
     },
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 17.0630585,
       "lng": -96.72341999999999,
-      "maps_url": "https://maps.google.com/?cid=8358669311383593762",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sabina+Sabe%2C+5+de+Mayo+209%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "8358669311383593762",
       "google_id": "/g/11cjhc3n9q",
       "maps_place_token": null
@@ -197,8 +197,8 @@
       "is_favorite": false,
       "lat": 17.0669807,
       "lng": -96.72465509999999,
-      "maps_url": "https://maps.google.com/?q=17.0669807,-96.7246551",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cozana%3A+Rooftop%2C+Boutique+Destilados+Oaxaca%2C+Jes%C3%BAs+Carranza+100%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "16104215479699805404",
       "google_id": "/g/11pdrc09sw",
       "maps_place_token": null
     },
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 17.0652024,
       "lng": -96.7239883,
-      "maps_url": "https://maps.google.com/?cid=4654502014623774307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Selva+Oaxaca+Cocktail+Bar%2C+C.+Macedonio+Alcal%C3%A1+%23403-int.+6%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "4654502014623774307",
       "google_id": "/g/11h10st21h",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 17.066266799999998,
       "lng": -96.7247606,
-      "maps_url": "https://maps.google.com/?cid=7245584447515832827",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MEZCALOGIA%2C+C.+de+Manuel+Garc%C3%ADa+Vigil+%23+509%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "7245584447515832827",
       "google_id": "/g/11byckmc20",
       "maps_place_token": null
@@ -233,8 +233,8 @@
       "is_favorite": false,
       "lat": 17.069308499999998,
       "lng": -96.7057964,
-      "maps_url": "https://maps.google.com/?q=17.0693085,-96.7057964",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Parque+Ciudad+de+las+Canteras%2C+Agencia+Municipal+Sta+Maria+Ixcotel%2C+71229+Santa+Luc%C3%ADa+del+Camino%2C+Oaxaca%2C+Mexico",
+      "cid": "11015963630094683710",
       "google_id": "/g/1vd95fdt",
       "maps_place_token": null
     },
@@ -245,8 +245,8 @@
       "is_favorite": false,
       "lat": 17.0823921,
       "lng": -96.71888399999999,
-      "maps_url": "https://maps.google.com/?q=17.0823921,-96.7188840",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fuente+de+las+8+Regiones%2C+Calz.+Porfirio+D%C3%ADaz+S%2FN%2C+Reforma%2C+68050+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "12499898941008515120",
       "google_id": "/g/1tg35k5_",
       "maps_place_token": null
     },
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 17.0636178,
       "lng": -96.72970269999999,
-      "maps_url": "https://maps.google.com/?cid=7285603700606847575",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Plaza+de+la+Danza%2C+C.+2+de+Abril%2C+CALZADA+MADERO%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "7285603700606847575",
       "google_id": "/g/1w97vqm5",
       "maps_place_token": null
@@ -269,8 +269,8 @@
       "is_favorite": false,
       "lat": 17.0679057,
       "lng": -96.7195034,
-      "maps_url": "https://maps.google.com/?q=17.0679057,-96.7195034",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Llano%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca%2C+Mexico",
+      "cid": "16586935093633352717",
       "google_id": "/g/1tg4lqh7",
       "maps_place_token": null
     },
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 17.0638853,
       "lng": -96.72106699999999,
-      "maps_url": "https://maps.google.com/?cid=5400692013642482500",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Origen%2C+Miguel+Hidalgo+820%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "5400692013642482500",
       "google_id": "/g/1w_vnlr2",
       "maps_place_token": null
@@ -293,8 +293,8 @@
       "is_favorite": false,
       "lat": 17.0640288,
       "lng": -96.7250047,
-      "maps_url": "https://maps.google.com/?q=17.0640288,-96.7250047",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Casa+de+las+Artesan%C3%ADas+de+Oaxaca%2C+Mariano+Matamoros+105%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "13611639389578814705",
       "google_id": "/g/1tg_gcwp",
       "maps_place_token": null
     },
@@ -305,8 +305,8 @@
       "is_favorite": false,
       "lat": 17.0635639,
       "lng": -96.72993729999999,
-      "maps_url": "https://maps.google.com/?q=17.0635639,-96.7299373",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bas%C3%ADlica+de+Nuestra+Se%C3%B1ora+de+la+Soledad%2C+Av.+de+la+Independencia+107%2C+CALZADA+MADERO%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "10738356905734433769",
       "google_id": null,
       "maps_place_token": null
     },
@@ -317,8 +317,8 @@
       "is_favorite": false,
       "lat": 17.0654287,
       "lng": -96.7216704,
-      "maps_url": "https://maps.google.com/?q=17.0654287,-96.7216704",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Museo+De+La+Filatelia+MUFI%2C+C%2F+de+la+Constituci%C3%B3n+201%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "11476437800448654261",
       "google_id": "/g/11bzrkv42m",
       "maps_place_token": null
     },
@@ -329,8 +329,8 @@
       "is_favorite": false,
       "lat": 17.0711111,
       "lng": -96.7261111,
-      "maps_url": "https://maps.google.com/?q=17.0711111,-96.7261111",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurante+El+Fortincito%2C+Marcos+P%C3%A9rez+2011%2C+RUTA+INDEPENDENCIA%2C+Figueroa%2C+68070+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "11073622609953291725",
       "google_id": "/g/1tdqnz_9",
       "maps_place_token": null
     },
@@ -341,8 +341,8 @@
       "is_favorite": false,
       "lat": 17.0676918,
       "lng": -96.72447969999999,
-      "maps_url": "https://maps.google.com/?q=17.0676918,-96.7244797",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Escapulario%2C+C.+de+Manuel+Garc%C3%ADa+Vigil+617%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "14571889685333511534",
       "google_id": "/g/11bvt065hz",
       "maps_place_token": null
     },
@@ -353,8 +353,8 @@
       "is_favorite": false,
       "lat": 17.0660287,
       "lng": -96.7246538,
-      "maps_url": "https://maps.google.com/?q=17.0660287,-96.7246538",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gozobi+Restaurante+Bar%2C+C.+de+Manuel+Garc%C3%ADa+Vigil+504%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "17156893625430011779",
       "google_id": "/g/1v_z4nmc",
       "maps_place_token": null
     },
@@ -365,8 +365,8 @@
       "is_favorite": false,
       "lat": 17.0652084,
       "lng": -96.7222761,
-      "maps_url": "https://maps.google.com/?q=17.0652084,-96.7222761",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Casa+Oaxaca+el+Restaurante%2C+C%2F+de+la+Constituci%C3%B3n+%23104-A%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "16992981214232160064",
       "google_id": "/g/1tk63g38",
       "maps_place_token": null
     },
@@ -377,8 +377,8 @@
       "is_favorite": false,
       "lat": 17.063620099999998,
       "lng": -96.72631799999999,
-      "maps_url": "https://maps.google.com/?q=17.0636201,-96.7263180",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boulenc%2C+C.+Porfirio+D%C3%ADaz+207%2C+RUTA+INDEPENDENCIA%2C+Centro%2C+68000+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "14501664013514532095",
       "google_id": "/g/11b6t24mxj",
       "maps_place_token": null
     },
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 17.0755056,
       "lng": -96.72207449999999,
-      "maps_url": "https://maps.google.com/?cid=1845049417287073706",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chepiche+Cafe%2C+De%2C+Genaro+V%C3%A1squez+6+A%2C+Barrio+de+Xochimilco%2C+68040+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
       "cid": "1845049417287073706",
       "google_id": "/g/11ggrjws2h",
       "maps_place_token": null
@@ -401,8 +401,8 @@
       "is_favorite": false,
       "lat": 17.0554163,
       "lng": -96.71815959999999,
-      "maps_url": "https://maps.google.com/?q=17.0554163,-96.7181596",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Cevicheria+Oaxaca.%2C+Eucaliptos+%23108%2C+Reforma%2C+68050+Oaxaca+de+Ju%C3%A1rez%2C+Oax.%2C+Mexico",
+      "cid": "17282709232505064093",
       "google_id": "/g/11fmh410rp",
       "maps_place_token": null
     }

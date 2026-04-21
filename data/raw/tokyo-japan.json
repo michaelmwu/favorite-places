@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-20T13:20:28.097012+00:00",
-  "refresh_after": "2026-05-06T04:57:35.097012+00:00",
+  "fetched_at": "2026-04-20T16:06:06.746067+00:00",
+  "refresh_after": "2026-05-06T07:43:13.746067+00:00",
   "source_signature": "8b374f38f5952f5f0f206dcb676eb2a2aa34a4ed5fa3a5486425f4f09f00c189",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 35.6712742,
       "lng": 139.763679,
-      "maps_url": "https://maps.google.com/?cid=6924438246536460181",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Torigin+Honten%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%925%E2%88%927+%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%AE%E3%83%B3%E3%82%B6%E3%83%93%E3%83%AB%EF%BC%96%E5%8F%B7%E9%A4%A8",
       "cid": "6924438246536460181",
       "google_id": "/g/1tdbqw0v",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 35.6764959,
       "lng": 139.77142519999998,
-      "maps_url": "https://maps.google.com/?cid=6915154327249119873",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nihonryori+Yamazaki%2C+2+Chome-6-7+Kyobashi%2C+Chuo+City%2C+Tokyo+104-0031",
       "cid": "6915154327249119873",
       "google_id": "/g/1th23nf6",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 35.6613675,
       "lng": 139.58133949999998,
-      "maps_url": "https://maps.google.com/?cid=6924550209089344145",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kewpie+Mayo+Terrace+Museum%2C+%E3%80%92182-0002+Tokyo%2C+Chofu%2C+Sengawacho%2C+2+Chome%E2%88%92%EF%BC%95%E2%88%927",
       "cid": "6924550209089344145",
       "google_id": "/g/11b6llbkhk",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": true,
       "lat": 35.6189739,
       "lng": 139.6675385,
-      "maps_url": "https://maps.google.com/?cid=6924553706554696757",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakumo+Sary%C5%8D%2C+3+Chome-4-7+Yakumo%2C+Meguro+City%2C+Tokyo+152-0023%2C+Japan",
       "cid": "6924553706554696757",
       "google_id": "/g/11b7q55fjw",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": true,
       "lat": 35.6501237,
       "lng": 139.70337809999998,
-      "maps_url": "https://maps.google.com/?cid=6924438284137214567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=N%C3%89N+TOKYO%2C+%E3%80%92150-0034+Tokyo%2C+Shibuya%2C+Daikanyamacho%2C+14%E2%88%9218+4F",
       "cid": "6924438284137214567",
       "google_id": "/g/11yfn6y1lw",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 35.6426886,
       "lng": 139.6988208,
-      "maps_url": "https://maps.google.com/?cid=6924437575605096209",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MARU%2C+Japan%2C+%E3%80%92153-0051+Tokyo%2C+Meguro+City%2C+Kamimeguro%2C+2+Chome%E2%88%9212%E2%88%922+W.nakameguro+1F",
       "cid": "6924437575605096209",
       "google_id": "/g/1pty5xgj1",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 35.6691804,
       "lng": 139.708272,
-      "maps_url": "https://maps.google.com/?cid=6924440279717478581",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Quaro%2C+4+Chome-25-32+Jingumae%2C+Shibuya%2C+Tokyo+150-0001%2C+Japan",
       "cid": "6924440279717478581",
       "google_id": "/g/11yvbj97cn",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 35.6595867,
       "lng": 139.7014739,
-      "maps_url": "https://maps.google.com/?cid=6924437484155879327",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tsukishima+Monja+Kuuya+Shibuya%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya%2C+1+Chome%E2%88%9225%E2%88%926+%E3%83%91%E3%83%BC%E3%82%AF%E3%82%B5%E3%82%A4%E3%83%89%E5%85%B1%E5%90%8C%E3%83%93%E3%83%AB+1F",
       "cid": "6924437484155879327",
       "google_id": "/g/11hdprpcqh",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 35.6570186,
       "lng": 139.7032908,
-      "maps_url": "https://maps.google.com/?cid=6924438025798932869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=GANSO+EBIDASHI+MONJANO+EBISEN+SHIBUYA%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya%2C+3+Chome%E2%88%9221%E2%88%923+%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0+2F",
       "cid": "6924438025798932869",
       "google_id": "/g/11vd43t_dc",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 35.658336399999996,
       "lng": 139.7020523,
-      "maps_url": "https://maps.google.com/?cid=6924437778661536599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Matsue+Shibuya+Scramble+Square+Store%2C+%E3%80%92150-6101+Tokyo%2C+Shibuya%2C+2+Chome%E2%88%9224%E2%88%9212+%E3%82%B9%E3%82%AF%E3%83%A9%E3%83%B3%E3%83%96%E3%83%AB%E3%82%B9%E3%82%AF%E3%82%A8%E3%82%A2+12F",
       "cid": "6924437778661536599",
       "google_id": "/g/11h7q3pn7p",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 35.6583189,
       "lng": 139.7022323,
-      "maps_url": "https://maps.google.com/?cid=6924438044199040927",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moheji+Shibuya+Scramble+Square%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya%2C+2+Chome%E2%88%9224%E2%88%9212+%EF%BC%91%EF%BC%92%E9%9A%8E",
       "cid": "6924438044199040927",
       "google_id": "/g/11j0pvppyw",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 35.6690853,
       "lng": 139.7583747,
-      "maps_url": "https://maps.google.com/?cid=6924437657044365307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oyster+Shack+Shimbashi%2C+1+Chome-6-1+Uchisaiwaicho%2C+Chiyoda+City%2C+Tokyo+100-0011",
       "cid": "6924437657044365307",
       "google_id": "/g/11s7wdwyrb",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 35.660041899999996,
       "lng": 139.72276879999998,
-      "maps_url": "https://maps.google.com/?cid=6924437786327444989",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Osoba+no+Kouga%2C+2+Chome-14-5+Nishiazabu%2C+Minato+City%2C+Tokyo+106-0031",
       "cid": "6924437786327444989",
       "google_id": "/g/1tg2dgzq",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 35.6697078,
       "lng": 139.7596012,
-      "maps_url": "https://maps.google.com/?cid=6924438284938732457",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kushikatsu+Bon+Ginza%2C+GINZA+TAKAMOTO+BLD.%2C+3f%2C+8+Chome-2-8+Ginza%2C+Chuo+City%2C+Tokyo+104-0061",
       "cid": "6924438284938732457",
       "google_id": "/g/11bbxkwb2_",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 35.6501307,
       "lng": 139.68684589999998,
-      "maps_url": "https://maps.google.com/?cid=6924553449319447065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakumo%2C+%E3%80%92153-0043+Tokyo%2C+Meguro+City%2C+Higashiyama%2C+3+Chome%E2%88%926%E2%88%9215+%E3%82%A8%E3%83%93%E3%83%A4%E3%83%93%E3%83%AB+%EF%BC%91%EF%BC%A6",
       "cid": "6924553449319447065",
       "google_id": "/g/1z44b5xkd",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 35.660893099999996,
       "lng": 139.7403807,
-      "maps_url": "https://maps.google.com/?cid=6924437475692541043",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=RistoPizza+by+Napoli+sta+ca",
       "cid": "6924437475692541043",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 35.691577599999995,
       "lng": 139.78361089999999,
-      "maps_url": "https://maps.google.com/?cid=6924435392596317521",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+L%27insieme",
       "cid": "6924435392596317521",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 35.6809812,
       "lng": 139.7746068,
-      "maps_url": "https://maps.google.com/?cid=6924435399802894503",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Muto",
       "cid": "6924435399802894503",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 35.655638599999996,
       "lng": 139.7347168,
-      "maps_url": "https://maps.google.com/?cid=6924438063171275821",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Azabujuban+Hatano+Yoshiki",
       "cid": "6924438063171275821",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 35.6619041,
       "lng": 139.7540636,
-      "maps_url": "https://maps.google.com/?cid=6924437271696398267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tomidokoro",
       "cid": "6924437271696398267",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 35.6595096,
       "lng": 139.723112,
-      "maps_url": "https://maps.google.com/?cid=6924437740415815817",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushisho+Masa",
       "cid": "6924437740415815817",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 35.6713494,
       "lng": 139.7614256,
-      "maps_url": "https://maps.google.com/?cid=6924438285695582209",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Ya",
       "cid": "6924438285695582209",
       "google_id": null,
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 35.6446184,
       "lng": 139.7247061,
-      "maps_url": "https://maps.google.com/?cid=6924437329036792287",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Taira",
       "cid": "6924437329036792287",
       "google_id": null,
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 35.667656199999996,
       "lng": 139.7179121,
-      "maps_url": "https://maps.google.com/?cid=6924439036965005939",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Aoyama+sushi+Umi",
       "cid": "6924439036965005939",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 35.6794084,
       "lng": 139.7689311,
-      "maps_url": "https://maps.google.com/?cid=6924438199655968139",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+H%C5%8Dseki%2C+Bvlgari+Hotel+Tokyo",
       "cid": "6924438199655968139",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 35.6742784,
       "lng": 139.76794999999998,
-      "maps_url": "https://maps.google.com/?cid=6924438236502276659",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=HIGASHIYA+GINZA%2C+Japan%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+1+Chome%E2%88%927%E2%88%927+%E3%83%9D%E3%83%BC%E3%83%A9%E9%8A%80%E5%BA%A7%E3%83%93%E3%83%AB+2%E9%9A%8E",
       "cid": "6924438236502276659",
       "google_id": "/g/120_rv25",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 35.6831495,
       "lng": 139.7391559,
-      "maps_url": "https://maps.google.com/?cid=6924439459368339141",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kojimachi+Nihee%2C+3+Chome-5-19+Kojimachi%2C+Chiyoda+City%2C+Tokyo+102-0083%2C+Japan",
       "cid": "6924439459368339141",
       "google_id": "/g/11m5vh_l_f",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 35.650182799999996,
       "lng": 139.6858292,
-      "maps_url": "https://maps.google.com/?cid=6924554245568067605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakinikuya+Tecchan%2C+%E3%80%92153-0043+Tokyo%2C+Meguro+City%2C+Higashiyama%2C+3+Chome%E2%88%924%E2%88%9210+1F",
       "cid": "6924554245568067605",
       "google_id": "/g/11jz1rvzkn",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 35.6961976,
       "lng": 139.7743502,
-      "maps_url": "https://maps.google.com/?cid=6924442060206694923",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=fileja%2C+Japan%2C+%E3%80%92101-0041+Tokyo%2C+Chiyoda+City%2C+Kanda+Sudacho%2C+2+Chome%E2%88%9213%E2%88%921+%E3%83%8E%E3%83%AB%E3%83%B3%E7%A7%8B%E8%91%89%E5%8E%9F%E3%83%93%E3%83%AB+1%E9%9A%8E",
       "cid": "6924442060206694923",
       "google_id": "/g/11s179w0cv",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 35.6654054,
       "lng": 139.77366179999999,
-      "maps_url": "https://maps.google.com/?cid=6924435481357576535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Keita%2C+6+Chome-6-4+Tsukiji%2C+Chuo+City%2C+Tokyo+104-0045%2C+Japan",
       "cid": "6924435481357576535",
       "google_id": "/g/11f11fzvhl",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 35.689368,
       "lng": 139.7225642,
-      "maps_url": "https://maps.google.com/?cid=6924439399763544265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vowz+Bar%2C+Japan%2C+%E3%80%92160-0007+Tokyo%2C+Shinjuku+City%2C+Arakicho%2C+6%E2%88%9242+AG%E3%83%93%E3%83%AB+%EF%BC%92%EF%BC%A6",
       "cid": "6924439399763544265",
       "google_id": "/g/1thq58ss",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 35.6447657,
       "lng": 139.7104181,
-      "maps_url": "https://maps.google.com/?cid=6924437533850424661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Takumi+Sushi+Owana%2C+Japan%2C+%E3%80%92150-0022+Tokyo%2C+Shibuya%2C+Ebisuminami%2C+1+Chome%E2%88%9217%E2%88%9217+%E3%82%BF%E3%82%A4%E3%83%A0%E3%82%BE%E3%83%BC%E3%83%B3%E3%83%86%E3%83%A9%E3%82%B9%E3%83%93%E3%83%AB+4F",
       "cid": "6924437533850424661",
       "google_id": "/g/11g9jn9l6y",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 35.6688848,
       "lng": 139.7398426,
-      "maps_url": "https://maps.google.com/?cid=6924437833321154069",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kien%2C+Japan%2C+%E3%80%92107-0052+Tokyo%2C+Minato+City%2C+Akasaka%2C+2+Chome%E2%88%9218%E2%88%928+%E9%95%B7%E9%87%8E%E3%82%B3%E3%83%BC%E3%83%9D",
       "cid": "6924437833321154069",
       "google_id": "/g/1tqnlm8b",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 35.6446806,
       "lng": 139.7104905,
-      "maps_url": "https://maps.google.com/?cid=6924437259659653635",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kankoku+Shokudo+Iru+Zaka+Agaru%2C+Japan%2C+%E3%80%92150-0022+Tokyo%2C+Shibuya%2C+Ebisuminami%2C+1+Chome%E2%88%9217%E2%88%922+R%E3%83%9B%E3%83%BC%E3%83%AB+3F",
       "cid": "6924437259659653635",
       "google_id": "/g/11h37wsysl",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 35.7068611,
       "lng": 139.649984,
-      "maps_url": "https://maps.google.com/?cid=6924551646633040173",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tokimeki%2C+%E3%80%92166-0002+Tokyo%2C+Suginami+City%2C+Koenjikita%2C+2+Chome%E2%88%9221%E2%88%921+%E3%83%AA%E3%83%AA%E3%83%BC%E3%83%99%E3%83%AB%E9%AB%98%E5%86%86%E5%AF%BA%E3%82%B9%E3%82%AF%E3%82%A8%E3%82%A2%E3%83%93%E3%83%AB+B1F",
       "cid": "6924551646633040173",
       "google_id": "/g/11v3tn82_8",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 35.649541299999996,
       "lng": 139.721027,
-      "maps_url": "https://maps.google.com/?cid=6924437721643136945",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=New+Korean+HASUO",
       "cid": "6924437721643136945",
       "google_id": null,
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 35.6721338,
       "lng": 139.7384373,
-      "maps_url": "https://maps.google.com/?cid=6924437838586952545",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chungsol%2C+102+2+Chome-13-8+Akasaka%2C+Minato+City%2C+Tokyo+107-0052",
       "cid": "6924437838586952545",
       "google_id": "/g/1tn016m8",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 35.7020951,
       "lng": 139.7046928,
-      "maps_url": "https://maps.google.com/?cid=6924439658610789903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jinkoge%2C+%E3%80%92169-0072+Tokyo%2C+Shinjuku+City%2C+Okubo%2C+2+Chome%E2%88%9219%E2%88%9210+%E6%9D%B1%E5%92%8C%E3%83%93%E3%83%AB",
       "cid": "6924439658610789903",
       "google_id": "/g/11p_17d_q0",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 35.6469722,
       "lng": 139.6981379,
-      "maps_url": "https://maps.google.com/?cid=6924437598351221319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=solfa%2C+%E3%80%92153-0042+Tokyo%2C+Meguro+City%2C+Aobadai%2C+1+Chome%E2%88%9220%E2%88%925+oak+build.",
       "cid": "6924437598351221319",
       "google_id": "/g/11b6_hbs8x",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 35.6572803,
       "lng": 139.6942459,
-      "maps_url": "https://maps.google.com/?cid=6924440061049404677",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hone%2C+17-2+Maruyamacho%2C+Shibuya%2C+Tokyo+150-0044",
       "cid": "6924440061049404677",
       "google_id": "/g/11s1qq_s8p",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 35.6564817,
       "lng": 139.7514253,
-      "maps_url": "https://maps.google.com/?cid=6924438232766979607",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thai+Gohan+Senshu+Yatai%2C+2+Chome-2-10+Shibakoen%2C+Minato+City%2C+Tokyo+105-0011",
       "cid": "6924438232766979607",
       "google_id": "/g/11f0_g8bl1",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 35.6555301,
       "lng": 139.7347368,
-      "maps_url": "https://maps.google.com/?cid=6924437390387306805",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tachigui+Sushi+Tonari%2C+%E3%80%92106-0045+Tokyo%2C+Minato+City%2C+Azabujuban%2C+2+Chome%E2%88%928%E2%88%927+M2K+HoldingBLD+2%E9%9A%8E",
       "cid": "6924437390387306805",
       "google_id": "/g/11smk5nkk9",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 35.6567016,
       "lng": 139.7343922,
-      "maps_url": "https://maps.google.com/?cid=6924437260767358215",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Meino%2C+%E3%80%92106-0045+Tokyo%2C+Minato+City%2C+Azabujuban%2C+1+Chome%E2%88%926%E2%88%921+THE+V-CITY+%E9%BA%BB%E5%B8%83%E5%8D%81%E7%95%AA+PLACE+6F",
       "cid": "6924437260767358215",
       "google_id": "/g/11y2dxh6m7",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 35.6697761,
       "lng": 139.7619463,
-      "maps_url": "https://maps.google.com/?cid=6924438258772251241",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Take%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+7+Chome%E2%88%926%E2%88%925+%E7%9F%B3%E4%BA%95%E7%B4%80%E5%B7%9E%E5%B1%8B%E3%83%93%E3%83%AB+4F",
       "cid": "6924438258772251241",
       "google_id": "/g/11bbw_y93b",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 35.6507682,
       "lng": 139.72190469999998,
-      "maps_url": "https://maps.google.com/?cid=6924437429805350437",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushidan%2C+%E3%80%92150-0012+Tokyo%2C+Shibuya%2C+Hiroo%2C+5+Chome%E2%88%924%E2%88%9216+1F+Eat+Play+Works",
       "cid": "6924437429805350437",
       "google_id": "/g/11ny1m7gxj",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 35.7013156,
       "lng": 139.7556301,
-      "maps_url": "https://maps.google.com/?cid=6924439731824836803",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+Mi+Sandwich+Tokyo%2C+1+Chome-4-9+Misakicho%2C+Chiyoda+City%2C+Tokyo+101-0061",
       "cid": "6924439731824836803",
       "google_id": "/g/11g4jh7wrn",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 35.6960762,
       "lng": 139.7562785,
-      "maps_url": "https://maps.google.com/?cid=6924440460347132745",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Banh+Mi+Sandwich%2C+%E3%80%92101-0051+Tokyo%2C+Chiyoda+City%2C+Kanda+Jinbocho%2C+2+Chome%E2%88%924%E2%88%9229+%E6%9D%BE%E6%9C%AC%E3%83%93%E3%83%AB+%EF%BC%91%E9%9A%8E",
       "cid": "6924440460347132745",
       "google_id": "/g/11txvnzkxt",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 35.715074,
       "lng": 139.78560769999999,
-      "maps_url": "https://maps.google.com/?cid=6924442103746244083",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Craft+Burger+%26+Grill+JIRO%2C+%E3%80%92111-0036+Tokyo%2C+Taito+City%2C+Matsugaya%2C+2+Chome%E2%88%9231%E2%88%927+%E3%83%A6%E3%83%BC%E3%83%8F%E3%82%A4%E3%83%A0%E4%B9%85%E7%B1%B3+1F",
       "cid": "6924442103746244083",
       "google_id": "/g/11hdvv6wqn",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 35.642373299999996,
       "lng": 139.6990932,
-      "maps_url": "https://maps.google.com/?cid=6924437569752984353",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakitori+Toriyoshi+Nakameguro%2C+%E3%80%92153-0051+Tokyo%2C+Meguro+City%2C+Kamimeguro%2C+2+Chome%E2%88%928%E2%88%926+Yajima+Bldg.%2C+1F",
       "cid": "6924437569752984353",
       "google_id": "/g/1thx8l_j",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 35.6583128,
       "lng": 139.7233779,
-      "maps_url": "https://maps.google.com/?cid=6924437741373055243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakitori+Toriyoshi+Nishiazabu%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+4+Chome%E2%88%922%E2%88%926+Ryowa+Palace+%E8%A5%BF%E9%BA%BB%E5%B8%83+B1F",
       "cid": "6924437741373055243",
       "google_id": "/g/1vr1wmbh",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 35.6949872,
       "lng": 139.6955837,
-      "maps_url": "https://maps.google.com/?cid=6924439638906931277",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hinotori%2C+%E3%80%92160-0023+Tokyo%2C+Shinjuku+City%2C+Nishishinjuku%2C+7+Chome%E2%88%9222%E2%88%9248+%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B9%E3%83%AB%E3%83%9E%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%B3%E8%A5%BF%E6%96%B0%E5%AE%BF+101",
       "cid": "6924439638906931277",
       "google_id": "/g/11c0rny309",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 35.6501137,
       "lng": 139.6855138,
-      "maps_url": "https://maps.google.com/?cid=6924553435328612483",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TOLO+PAN+TOKYO%2C+3+Chome-14-3+Higashiyama%2C+Meguro+City%2C+Tokyo+153-0043",
       "cid": "6924553435328612483",
       "google_id": "/g/1td4k4lk",
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 35.6571334,
       "lng": 139.70380079999998,
-      "maps_url": "https://maps.google.com/?cid=6924437644095436227",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Joto+Curry%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya%2C+3+Chome%E2%88%9218%E2%88%927+%E6%9D%B1%E4%B8%80%E5%8F%B7%E9%A4%A8%E3%83%93%E3%83%AB+%EF%BC%91%EF%BC%A6",
       "cid": "6924437644095436227",
       "google_id": "/g/1yg5789sl",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 35.6803684,
       "lng": 139.7715378,
-      "maps_url": "https://maps.google.com/?cid=6924438346173325907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Philly+Tokyo%2C+%E3%80%92103-0027+Tokyo%2C+Chuo+City%2C+Nihonbashi%2C+3+Chome%E2%88%922%E2%88%9213+%E4%B8%AD%E6%A2%9D%E3%83%93%E3%83%AB+13+Chuoku+Tokyo+Japan",
       "cid": "6924438346173325907",
       "google_id": "/g/1tdbwrcv",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 35.6694257,
       "lng": 139.7073225,
-      "maps_url": "https://maps.google.com/?cid=6924439858657200133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hot+Sauce+Bar+Tokyo%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya%2C+Jingumae%2C+4+Chome%E2%88%9228%E2%88%924+%E3%82%A2%E3%83%AC%E3%82%B9%E3%82%AC%E3%83%BC%E3%83%87%E3%83%B3%E8%A1%A8%E5%8F%82%E9%81%93+1%E9%9A%8E",
       "cid": "6924439858657200133",
       "google_id": "/g/11wppfg7qb",
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 35.7020297,
       "lng": 139.74084349999998,
-      "maps_url": "https://maps.google.com/?cid=6924440101817120157",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mizunara%3A+In+Tokyo%2C+103%2C+3+Chome-1-11+Kagurazaka%2C+Shinjuku+City%2C+Tokyo+162-0825",
       "cid": "6924440101817120157",
       "google_id": "/g/11vzdjt1qk",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 35.7321892,
       "lng": 139.7100605,
-      "maps_url": "https://maps.google.com/?cid=6924545101123869109",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%87%91%E9%99%B5%E4%B8%80%E7%B5%B6+%E7%8E%8B%E6%B0%8F%E6%B9%AF%E5%8C%85%2C+%E3%80%92171-0021+Tokyo%2C+Toshima+City%2C+Nishiikebukuro%2C+1+Chome%E2%88%9235%E2%88%921+%E3%82%AB%E3%83%89%E3%83%93%E3%83%AB+2%E9%9A%8E",
       "cid": "6924545101123869109",
       "google_id": "/g/11j38477md",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 35.6608798,
       "lng": 139.70172,
-      "maps_url": "https://maps.google.com/?cid=6924360950884350273",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miyashita+Cafe%2C+%E3%80%9220200+Tokyo%2C+Shibuya%2C+Jingumae%2C+6+Chome%E2%88%9220%E2%88%9210+2F+MIYASHITA+PARK+South+JP+1500001",
       "cid": "6924360950884350273",
       "google_id": "/g/11hf8qp_fn",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 35.7082796,
       "lng": 139.7923203,
-      "maps_url": "https://maps.google.com/?cid=6924442365236510981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ASAKUSA+BAR+SMOKED+KOTOBUKI%2C+%E3%80%92111-0042+Tokyo%2C+Taito+City%2C+Kotobuki%2C+4+Chome%E2%88%926%E2%88%921+%EF%BC%91%EF%BC%A6+TOKYO-W-INN",
       "cid": "6924442365236510981",
       "google_id": "/g/11fjz_wlcn",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 35.6497332,
       "lng": 139.687245,
-      "maps_url": "https://maps.google.com/?cid=6924553446832663393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizzeria+Parentesi%2C+%E3%80%92153-0043+Tokyo%2C+Meguro+City%2C+Higashiyama%2C+3+Chome%E2%88%926%E2%88%928+%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E6%9D%B1%E5%B1%B1+2F",
       "cid": "6924553446832663393",
       "google_id": "/g/1tgfwnzw",
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 35.6556448,
       "lng": 139.7443631,
-      "maps_url": "https://maps.google.com/?cid=6924438070696235229",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PST+Higashi+Azabu+%28Pizza+Studio+Tamaki+Higashi+Azabu%29%2C+1+Chome-24-6+Higashiazabu%2C+Minato+City%2C+Tokyo+106-0044",
       "cid": "6924438070696235229",
       "google_id": "/g/11c2y937d0",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 35.655665299999995,
       "lng": 139.6891824,
-      "maps_url": "https://maps.google.com/?cid=6924552482495954607",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cignale+Enoteca%2C+1+Chome-5-11+Komaba%2C+Meguro+City%2C+Tokyo+153-0041",
       "cid": "6924552482495954607",
       "google_id": "/g/11bx8kqpt8",
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 35.663041199999995,
       "lng": 139.6940862,
-      "maps_url": "https://maps.google.com/?cid=6924439104579039345",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Gotoku",
       "cid": "6924439104579039345",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 35.6707603,
       "lng": 139.7179424,
-      "maps_url": "https://maps.google.com/?cid=6924439028913778527",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=AOYAMA+ASADA",
       "cid": "6924439028913778527",
       "google_id": null,
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 35.6579726,
       "lng": 139.71514109999998,
-      "maps_url": "https://maps.google.com/?cid=6924437698409223509",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mama",
       "cid": "6924437698409223509",
       "google_id": null,
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 35.6558448,
       "lng": 139.6934755,
-      "maps_url": "https://maps.google.com/?cid=6924437626257392907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Imakoko",
       "cid": "6924437626257392907",
       "google_id": null,
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 35.6599326,
       "lng": 139.7205043,
-      "maps_url": "https://maps.google.com/?cid=6924437453624729267",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=No+Code%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+2+Chome%E2%88%9225%E2%88%9231+%E3%82%AF%E3%82%AA%E3%83%BC%E3%83%AC%E8%A5%BF%E9%BA%BB%E5%B8%83",
       "cid": "6924437453624729267",
       "google_id": "/g/11t49_3mbn",
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 35.666917999999995,
       "lng": 139.7120376,
-      "maps_url": "https://maps.google.com/?cid=6924439676310613723",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marcy+Land+Omotesando%E3%80%9C%F0%9F%98%83%E8%A1%A8%E5%8F%82%E9%81%93%E5%88%9D%E4%B8%8A%E9%99%B8%E3%83%BB%E3%83%9E%E3%83%BC%E3%82%B7%E3%83%BC%E3%81%AE%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B3%E5%B1%8B%E5%8F%B0%E3%80%9C%2C+%E3%80%92107-0061+Tokyo%2C+Minato+City%2C+Kita-Aoyama%2C+3+Chome%E2%88%925%E2%88%9244+H%E3%83%BBT%E9%9D%92%E5%B1%B1%E3%83%93%E3%83%AB+1F+%E5%B1%8B%E5%8F%B0",
       "cid": "6924439676310613723",
       "google_id": "/g/11q21hjdkh",
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 35.7061612,
       "lng": 139.6187306,
-      "maps_url": "https://maps.google.com/?cid=6924545410373580981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%94%E3%83%83%E3%83%84%E3%82%A7%E3%83%AA%E3%82%A2+%E3%83%88%E3%83%A9%E3%83%83%E3%83%88%E3%83%AA%E3%82%A2+%E3%83%80+%E3%82%AA%E3%82%AB%E3%83%94%E3%83%BC%E3%83%88%2C+Japan%2C+%E3%80%92167-0032+Tokyo%2C+Suginami+City%2C+Amanuma%2C+3+Chome%E2%88%926%E2%88%922+%E3%82%AB%E3%83%8E%E3%83%B3%E6%AD%A6%E8%94%B5%E3%83%93%E3%83%AB+1%EF%BC%A6",
       "cid": "6924545410373580981",
       "google_id": "/g/11r0wq_nwz",
       "maps_place_token": null
@@ -845,7 +845,7 @@
       "is_favorite": false,
       "lat": 35.707004399999995,
       "lng": 139.6826437,
-      "maps_url": "https://maps.google.com/?cid=6924551368876615395",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizzeria+Ciro%2C+Japan%2C+%E3%80%92164-0003+Tokyo%2C+Nakano+City%2C+Higashinakano%2C+3+Chome%E2%88%928%E2%88%923+%E3%83%95%E3%82%A7%E3%83%8B%E3%83%83%E3%82%AF%E3%82%B9%E3%83%93%E3%83%AB+1F",
       "cid": "6924551368876615395",
       "google_id": "/g/1v6wpc6b",
       "maps_place_token": null
@@ -857,7 +857,7 @@
       "is_favorite": false,
       "lat": 35.676929799999996,
       "lng": 139.6427919,
-      "maps_url": "https://maps.google.com/?cid=6924550868816489487",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Massimotavio%2C+Japan%2C+%E3%80%92168-0064+Tokyo%2C+Suginami+City%2C+Eifuku%2C+4+Chome%E2%88%924%E2%88%924+%E5%85%AD%E6%9C%AC%E6%9C%A8%E3%83%95%E3%82%A1%E3%82%A4%E3%83%96%E3%83%93%E3%83%AB",
       "cid": "6924550868816489487",
       "google_id": "/g/1w04k42n",
       "maps_place_token": null
@@ -869,7 +869,7 @@
       "is_favorite": false,
       "lat": 35.7002259,
       "lng": 139.7393865,
-      "maps_url": "https://maps.google.com/?cid=6924439458827835439",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=400%E2%84%83+Pizza+Tokyo%2C+Kif+Annex%2C+102+13-1+Wakamiyacho%2C+Shinjuku+City%2C+Tokyo+162-0827",
       "cid": "6924439458827835439",
       "google_id": "/g/11vt52fy76",
       "maps_place_token": null
@@ -881,7 +881,7 @@
       "is_favorite": false,
       "lat": 35.707592999999996,
       "lng": 139.6660992,
-      "maps_url": "https://maps.google.com/?cid=6924551156748094883",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Okajoki%2C+5+Chome-59-3+Nakano%2C+Nakano+City%2C+Tokyo+164-0001%2C+Japan",
       "cid": "6924551156748094883",
       "google_id": "/g/1v83144c",
       "maps_place_token": null
@@ -893,7 +893,7 @@
       "is_favorite": false,
       "lat": 35.6662798,
       "lng": 139.77119159999998,
-      "maps_url": "https://maps.google.com/?cid=6924437833688832783",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ramen+Oyster+And+Shell%2C+%E3%80%92104-0045+Tokyo%2C+Chuo+City%2C+Tsukiji%2C+3+Chome%E2%88%9216%E2%88%929+%E3%82%A2%E3%83%BC%E3%83%90%E3%83%B3%E3%83%A1%E3%82%A4%E3%83%84%E3%83%93%E3%83%AB+%EF%BC%91F",
       "cid": "6924437833688832783",
       "google_id": "/g/11v67tvz4h",
       "maps_place_token": null
@@ -905,7 +905,7 @@
       "is_favorite": false,
       "lat": 35.6689272,
       "lng": 139.6803813,
-      "maps_url": "https://maps.google.com/?cid=6924552447345323421",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ukiyo",
       "cid": "6924552447345323421",
       "google_id": null,
       "maps_place_token": null
@@ -917,7 +917,7 @@
       "is_favorite": false,
       "lat": 35.6743653,
       "lng": 139.7653544,
-      "maps_url": "https://maps.google.com/?cid=6924438242737147845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hitsumabushi+Bincho",
       "cid": "6924438242737147845",
       "google_id": null,
       "maps_place_token": null
@@ -929,7 +929,7 @@
       "is_favorite": false,
       "lat": 35.6604166,
       "lng": 139.72644409999998,
-      "maps_url": "https://maps.google.com/?cid=6924437743158945629",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Qwang%2C+Japan%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+3+Chome%E2%88%921%E2%88%9218+Rd%E8%A5%BF%E9%BA%BB%E5%B8%83+B1",
       "cid": "6924437743158945629",
       "google_id": "/g/1tnbl3j3",
       "maps_place_token": null
@@ -941,7 +941,7 @@
       "is_favorite": false,
       "lat": 35.70448,
       "lng": 139.6378384,
-      "maps_url": "https://maps.google.com/?cid=6924551886149977023",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E6%B9%BE%E5%B0%8F%E8%8F%9C%E3%82%B9%E3%82%BF%E3%83%B3%E3%83%89%E3%80%8A%E7%8F%8D%E7%8F%A0%E3%81%97%E3%82%93%E3%81%98%E3%82%85by%E3%82%B8%E3%82%A7%E3%83%8B%E3%83%BC%E3%80%8B%2C+%E3%80%92166-0004+Tokyo%2C+Suginami+City%2C+Asagayaminami%2C+2+Chome%E2%88%9218%E2%88%921+%E3%82%B5%E3%83%B3%E3%83%95%E3%83%A9%E3%83%AF%E3%83%BC+%EF%BC%91+%E9%9A%8E+%EF%BC%91%EF%BC%90%EF%BC%91",
       "cid": "6924551886149977023",
       "google_id": "/g/11tn8jpxp7",
       "maps_place_token": null
@@ -953,7 +953,7 @@
       "is_favorite": false,
       "lat": 35.6641456,
       "lng": 139.71051409999998,
-      "maps_url": "https://maps.google.com/?cid=6924439753936156477",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=GOOD+MUSIC+BAR%2C+%E3%80%92107-0061+Tokyo%2C+Minato+City%2C+Kita-Aoyama%2C+3+Chome%E2%88%9210%E2%88%9214+B1",
       "cid": "6924439753936156477",
       "google_id": "/g/11vljm6cg0",
       "maps_place_token": null
@@ -965,7 +965,7 @@
       "is_favorite": false,
       "lat": 35.704680499999995,
       "lng": 139.7906449,
-      "maps_url": "https://maps.google.com/?cid=6924442302797671961",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Stage",
       "cid": "6924442302797671961",
       "google_id": null,
       "maps_place_token": null
@@ -977,7 +977,7 @@
       "is_favorite": false,
       "lat": 35.6610219,
       "lng": 139.7060282,
-      "maps_url": "https://maps.google.com/?cid=6924437561844857981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=INC+cocktails%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya+City%2C+Shibuya%2C+1+Chome%E2%88%925%E2%88%926+B1F",
       "cid": "6924437561844857981",
       "google_id": "/g/11gwj945t1",
       "maps_place_token": null
@@ -989,7 +989,7 @@
       "is_favorite": false,
       "lat": 35.6547999,
       "lng": 139.7038608,
-      "maps_url": "https://maps.google.com/?cid=6924437653039264913",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tofu+Cuisine+Sorano+Shibuya%2C+%E3%80%92150-0031+Tokyo%2C+Shibuya+City%2C+Sakuragaokacho%2C+4%E2%88%9217+%E3%83%81%E3%82%A7%E3%83%AA%E3%83%BC%E3%82%AC%E3%83%BC%E3%83%87%E3%83%B3+%EF%BC%91%E9%9A%8E",
       "cid": "6924437653039264913",
       "google_id": "/g/11b76lwjfv",
       "maps_place_token": null
@@ -1001,7 +1001,7 @@
       "is_favorite": false,
       "lat": 35.6570527,
       "lng": 139.7032573,
-      "maps_url": "https://maps.google.com/?cid=6924438186569777033",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ten%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya+City%2C+Shibuya%2C+3+Chome%E2%88%9221%E2%88%923+%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0",
       "cid": "6924438186569777033",
       "google_id": "/g/11gmsk1q30",
       "maps_place_token": null
@@ -1013,7 +1013,7 @@
       "is_favorite": false,
       "lat": 35.670803899999996,
       "lng": 139.73557169999998,
-      "maps_url": "https://maps.google.com/?cid=6924437813637026895",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sumibi+Kapp%C5%8D+Shirosaka%2C+6+Chome-3-9+Akasaka%2C+Minato+City%2C+Tokyo+107-0052",
       "cid": "6924437813637026895",
       "google_id": "/g/11b6ml3msl",
       "maps_place_token": null
@@ -1025,7 +1025,7 @@
       "is_favorite": false,
       "lat": 35.662979899999996,
       "lng": 139.7343419,
-      "maps_url": "https://maps.google.com/?cid=6924438076647566505",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Starman%2C+%E3%80%92106-0032+Tokyo%2C+Minato+City%2C+Roppongi%2C+3+Chome%E2%88%9213%E2%88%923+%E5%85%AD%E6%9C%AC%E6%9C%A8%E3%83%97%E3%83%81%E3%83%93%E3%83%AB+3F",
       "cid": "6924438076647566505",
       "google_id": "/g/11gxs5kpwp",
       "maps_place_token": null
@@ -1037,7 +1037,7 @@
       "is_favorite": false,
       "lat": 35.669250399999996,
       "lng": 139.76237989999998,
-      "maps_url": "https://maps.google.com/?cid=6924437410395335991",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ST+LOUIS+BAR+by+KEI%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+7+Chome%E2%88%928%E2%88%9217+%E8%99%8E%E5%B1%8B%E9%8A%80%E5%BA%A7%E3%83%93%E3%83%AB+12%E9%9A%8E",
       "cid": "6924437410395335991",
       "google_id": "/g/11vwl550dn",
       "maps_place_token": null
@@ -1049,7 +1049,7 @@
       "is_favorite": false,
       "lat": 35.6726448,
       "lng": 139.7675633,
-      "maps_url": "https://maps.google.com/?cid=6924437259450877643",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Punch+Room+Tokyo%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+2+Chome%E2%88%928%E2%88%9213+%E6%9D%B1%E4%BA%AC%E3%82%A8%E3%83%87%E3%82%A3%E3%82%B7%E3%83%A7%E3%83%B3%E9%8A%80%E5%BA%A7+2%E9%9A%8E",
       "cid": "6924437259450877643",
       "google_id": "/g/11y3bvzpq2",
       "maps_place_token": null
@@ -1061,7 +1061,7 @@
       "is_favorite": false,
       "lat": 35.6619429,
       "lng": 139.6988646,
-      "maps_url": "https://maps.google.com/?cid=6924440411091144559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kiwamiya%2C+%E3%80%92150-0042+Tokyo%2C+Shibuya+City%2C+Udagawacho%2C+15%E2%88%921+%E6%B8%8B%E8%B0%B7%E3%83%91%E3%83%AB%E3%82%B3%E5%9C%B0%E4%B8%8B+1%E9%9A%8E",
       "cid": "6924440411091144559",
       "google_id": "/g/11h89h50k8",
       "maps_place_token": null
@@ -1073,7 +1073,7 @@
       "is_favorite": false,
       "lat": 35.6625689,
       "lng": 139.6958027,
-      "maps_url": "https://maps.google.com/?cid=6924439097780603695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sake+Fun+Zokkon%2C+%E3%80%92150-0042+Tokyo%2C+Shibuya+City%2C+Udagawacho%2C+42%E2%88%929+D1+UDAGAWA+1F",
       "cid": "6924439097780603695",
       "google_id": "/g/11b7hqvtgy",
       "maps_place_token": null
@@ -1085,7 +1085,7 @@
       "is_favorite": false,
       "lat": 35.6628498,
       "lng": 139.695448,
-      "maps_url": "https://maps.google.com/?cid=6924439856017309565",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LIQUID+FACTORY%2C+%E3%80%92150-0042+Tokyo%2C+Shibuya+City%2C+Udagawacho%2C+42%E2%88%9212+SALON%E6%B8%8B%E8%B0%B7+1F",
       "cid": "6924439856017309565",
       "google_id": "/g/11h_4jn1tn",
       "maps_place_token": null
@@ -1097,7 +1097,7 @@
       "is_favorite": false,
       "lat": 35.6815431,
       "lng": 139.7004182,
-      "maps_url": "https://maps.google.com/?cid=6924439220219742313",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B1%B1%E5%BD%A2%E8%95%8E%E9%BA%A6%E8%8C%B6%E5%AF%AE+%E6%9C%88%E3%81%AE%E5%B1%B1",
       "cid": "6924439220219742313",
       "google_id": null,
       "maps_place_token": null
@@ -1109,7 +1109,7 @@
       "is_favorite": false,
       "lat": 35.6696767,
       "lng": 139.7153688,
-      "maps_url": "https://maps.google.com/?cid=6924439040399855105",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bli+Made",
       "cid": "6924439040399855105",
       "google_id": null,
       "maps_place_token": null
@@ -1121,7 +1121,7 @@
       "is_favorite": false,
       "lat": 35.662115299999996,
       "lng": 139.71401799999998,
-      "maps_url": "https://maps.google.com/?cid=6924437675313281647",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=WALL+Aoyama",
       "cid": "6924437675313281647",
       "google_id": null,
       "maps_place_token": null
@@ -1133,7 +1133,7 @@
       "is_favorite": false,
       "lat": 35.6665838,
       "lng": 139.7044202,
-      "maps_url": "https://maps.google.com/?cid=6924439074319564801",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=niko+and+...+TOKYO",
       "cid": "6924439074319564801",
       "google_id": null,
       "maps_place_token": null
@@ -1145,7 +1145,7 @@
       "is_favorite": false,
       "lat": 35.6647092,
       "lng": 139.72833989999998,
-      "maps_url": "https://maps.google.com/?cid=6924437624705726571",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PST+Roppongi+%28Pizza+Studio+Tamaki+Roppongi%29",
       "cid": "6924437624705726571",
       "google_id": null,
       "maps_place_token": null
@@ -1157,7 +1157,7 @@
       "is_favorite": false,
       "lat": 35.675269199999995,
       "lng": 139.7144346,
-      "maps_url": "https://maps.google.com/?cid=6924439458894554499",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=natuRe+tokyo%2C+5-1+Kasumigaokamachi%2C+Shinjuku+City%2C+Tokyo+160-0013",
       "cid": "6924439458894554499",
       "google_id": "/g/11vs97d0hk",
       "maps_place_token": null
@@ -1169,7 +1169,7 @@
       "is_favorite": false,
       "lat": 35.6533286,
       "lng": 139.7345713,
-      "maps_url": "https://maps.google.com/?cid=6924437953599216243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizza+Strada",
       "cid": "6924437953599216243",
       "google_id": null,
       "maps_place_token": null
@@ -1181,7 +1181,7 @@
       "is_favorite": false,
       "lat": 35.694708999999996,
       "lng": 139.82567799999998,
-      "maps_url": "https://maps.google.com/?cid=6924434798516414991",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pizzeria+e+Braceria+L%27INSIEME",
       "cid": "6924434798516414991",
       "google_id": null,
       "maps_place_token": null
@@ -1193,7 +1193,7 @@
       "is_favorite": false,
       "lat": 35.667049399999996,
       "lng": 139.7118686,
-      "maps_url": "https://maps.google.com/?cid=6924439896456533599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+Niwa%2C+%E3%80%92107-0061+Tokyo%2C+Minato+City%2C+Kita-Aoyama%2C+3+Chome%E2%88%925%E2%88%9243+%E8%A1%A8%E5%8F%82%E9%81%93LAB+1F",
       "cid": "6924439896456533599",
       "google_id": "/g/11ny4b6bys",
       "maps_place_token": null
@@ -1205,7 +1205,7 @@
       "is_favorite": false,
       "lat": 35.668459999999996,
       "lng": 139.71598799999998,
-      "maps_url": "https://maps.google.com/?cid=6924439502703434203",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=THE+CARNE+tokyo%2C+3+Chome-1-34+Minamiaoyama%2C+Minato+City%2C+Tokyo+107-0062",
       "cid": "6924439502703434203",
       "google_id": "/g/11l68w7d8j",
       "maps_place_token": null
@@ -1217,7 +1217,7 @@
       "is_favorite": false,
       "lat": 35.7111393,
       "lng": 139.7218638,
-      "maps_url": "https://maps.google.com/?cid=6924439478847764493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gantetsu+Ramen%2C+1+Chome-10-4+Nishiwaseda%2C+Shinjuku+City%2C+Tokyo+169-0051",
       "cid": "6924439478847764493",
       "google_id": "/g/11b7f2vzrn",
       "maps_place_token": null
@@ -1229,7 +1229,7 @@
       "is_favorite": false,
       "lat": 35.730367799999996,
       "lng": 139.7071392,
-      "maps_url": "https://maps.google.com/?cid=6924439853658705285",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pho+Trung+Ikebukuro+Vietnamese+Dining",
       "cid": "6924439853658705285",
       "google_id": null,
       "maps_place_token": null
@@ -1241,7 +1241,7 @@
       "is_favorite": false,
       "lat": 35.6900589,
       "lng": 139.712109,
-      "maps_url": "https://maps.google.com/?cid=6924440464239380329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Viet+Nhat",
       "cid": "6924440464239380329",
       "google_id": null,
       "maps_place_token": null
@@ -1253,7 +1253,7 @@
       "is_favorite": false,
       "lat": 35.628886,
       "lng": 139.68776409999998,
-      "maps_url": "https://maps.google.com/?cid=6924554827820222897",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Stand+Banh+Mi",
       "cid": "6924554827820222897",
       "google_id": null,
       "maps_place_token": null
@@ -1265,7 +1265,7 @@
       "is_favorite": false,
       "lat": 35.7034034,
       "lng": 139.752049,
-      "maps_url": "https://maps.google.com/?cid=6924437584028532987",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Banh+Xeo+Saigon+Ebisu",
       "cid": "6924437584028532987",
       "google_id": null,
       "maps_place_token": null
@@ -1277,7 +1277,7 @@
       "is_favorite": false,
       "lat": 35.6429091,
       "lng": 139.69877119999998,
-      "maps_url": "https://maps.google.com/?cid=6924437753117816723",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+m%C3%AC+B%C3%A0+Ba+Nakameguro",
       "cid": "6924437753117816723",
       "google_id": null,
       "maps_place_token": null
@@ -1289,7 +1289,7 @@
       "is_favorite": false,
       "lat": 35.662881399999996,
       "lng": 139.66573169999998,
-      "maps_url": "https://maps.google.com/?cid=6924552069565231169",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=B%C3%A1nh+m%C3%AC+B%C3%A0+Ba+Shimokitazawa",
       "cid": "6924552069565231169",
       "google_id": null,
       "maps_place_token": null
@@ -1301,7 +1301,7 @@
       "is_favorite": false,
       "lat": 35.689074999999995,
       "lng": 139.7776886,
-      "maps_url": "https://maps.google.com/?cid=6924435135869723097",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=333+Vietnamese+Restaurant",
       "cid": "6924435135869723097",
       "google_id": null,
       "maps_place_token": null
@@ -1313,7 +1313,7 @@
       "is_favorite": false,
       "lat": 35.709058,
       "lng": 139.66667379999998,
-      "maps_url": "https://maps.google.com/?cid=6924551158493079903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bia+Hoi+Chop",
       "cid": "6924551158493079903",
       "google_id": null,
       "maps_place_token": null
@@ -1325,7 +1325,7 @@
       "is_favorite": false,
       "lat": 35.6607263,
       "lng": 139.72417819999998,
-      "maps_url": "https://maps.google.com/?cid=6924437785483595527",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PHC%27+DRAGON",
       "cid": "6924437785483595527",
       "google_id": null,
       "maps_place_token": null
@@ -1337,7 +1337,7 @@
       "is_favorite": false,
       "lat": 35.6949608,
       "lng": 139.6984266,
-      "maps_url": "https://maps.google.com/?cid=6924439848932872253",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pho+Thin+Tokyo",
       "cid": "6924439848932872253",
       "google_id": null,
       "maps_place_token": null
@@ -1349,7 +1349,7 @@
       "is_favorite": false,
       "lat": 35.679426,
       "lng": 139.6863712,
-      "maps_url": "https://maps.google.com/?cid=6924551823902498089",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Maru+Cafe",
       "cid": "6924551823902498089",
       "google_id": null,
       "maps_place_token": null
@@ -1361,7 +1361,7 @@
       "is_favorite": false,
       "lat": 35.562449099999995,
       "lng": 139.720136,
-      "maps_url": "https://maps.google.com/?cid=6924390367338672303",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Thi-Thi",
       "cid": "6924390367338672303",
       "google_id": null,
       "maps_place_token": null
@@ -1373,7 +1373,7 @@
       "is_favorite": false,
       "lat": 35.6498747,
       "lng": 139.7047505,
-      "maps_url": "https://maps.google.com/?cid=6924437555384450067",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Spring+Valley+Brewery+Tokyo%2C+%E3%80%92150-0034+Tokyo%2C+Shibuya+City%2C+Daikanyamacho%2C+13%E2%88%921+%E3%83%AD%E3%82%B0%E3%83%AD%E3%83%BC%E3%83%89%E4%BB%A3%E5%AE%98%E5%B1%B1+%E5%86%85",
       "cid": "6924437555384450067",
       "google_id": "/g/11bv3mqcys",
       "maps_place_token": null
@@ -1385,7 +1385,7 @@
       "is_favorite": false,
       "lat": 35.647701999999995,
       "lng": 139.710861,
-      "maps_url": "https://maps.google.com/?cid=6924437534838005829",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JAPANESE+ICE+OUCA+%E3%82%B8%E3%83%A3%E3%83%91%E3%83%8B%E3%83%BC%E3%82%BA%E3%82%A2%E3%82%A4%E3%82%B9%E6%AB%BB%E8%8A%B1%2C+1+Chome-6-6+Ebisu%2C+Shibuya+City%2C+Tokyo+150-0013",
       "cid": "6924437534838005829",
       "google_id": "/g/1th23swk",
       "maps_place_token": null
@@ -1397,7 +1397,7 @@
       "is_favorite": false,
       "lat": 35.6583544,
       "lng": 139.72267779999999,
-      "maps_url": "https://maps.google.com/?cid=6924437740610772949",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Usukifugu+Yamadaya%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+4+Chome%E2%88%9211%E2%88%9214+%E5%9C%B0%E9%9A%8EA+%E3%83%95%E3%83%AC%E3%83%83%E3%82%B0%E8%A5%BF%E9%BA%BB%E5%B8%83%E3%83%B4%E3%82%A7%E3%83%AB%E3%82%B8%E3%83%A5",
       "cid": "6924437740610772949",
       "google_id": "/g/1tfshd0q",
       "maps_place_token": null
@@ -1409,7 +1409,7 @@
       "is_favorite": false,
       "lat": 35.671048899999995,
       "lng": 139.71362929999998,
-      "maps_url": "https://maps.google.com/?cid=6924439015373741503",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%98%89%E9%BA%9F%E9%A6%99%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya+City%2C+Jingumae%2C+3+Chome%E2%88%9241%E2%88%922+%E5%B2%A1%E6%9C%AC%E3%83%93%E3%83%AB+%EF%BC%92%E9%9A%8E",
       "cid": "6924439015373741503",
       "google_id": "/g/11h3kcx70g",
       "maps_place_token": null
@@ -1421,7 +1421,7 @@
       "is_favorite": false,
       "lat": 35.660762,
       "lng": 139.708599,
-      "maps_url": "https://maps.google.com/?cid=6924437667281645285",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LATURE%2C+Japan%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya+City%2C+Shibuya%2C+2+Chome%E2%88%922%E2%88%922%2C+Luke+Building%2C+%E5%9C%B0%E4%B8%8B%EF%BC%91%E9%9A%8E",
       "cid": "6924437667281645285",
       "google_id": "/g/1tf8t2jz",
       "maps_place_token": null
@@ -1433,7 +1433,7 @@
       "is_favorite": false,
       "lat": 35.6776194,
       "lng": 139.7323102,
-      "maps_url": "https://maps.google.com/?cid=6924438894868429603",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hashiguchi%2C+1+Chome-5-20+Motoakasaka%2C+Minato+City%2C+Tokyo+107-0051",
       "cid": "6924438894868429603",
       "google_id": "/g/1tfl9n8x",
       "maps_place_token": null
@@ -1445,7 +1445,7 @@
       "is_favorite": false,
       "lat": 35.6485517,
       "lng": 139.7098028,
-      "maps_url": "https://maps.google.com/?cid=6924437957584997665",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=unknown%2C+Lions+Plaza+Ebisu%2C+3+Chome-25-3+Higashi%2C+Shibuya+City%2C+Tokyo+150-0011",
       "cid": "6924437957584997665",
       "google_id": "/g/11kpvpb57b",
       "maps_place_token": null
@@ -1457,7 +1457,7 @@
       "is_favorite": false,
       "lat": 35.6625483,
       "lng": 139.6951092,
-      "maps_url": "https://maps.google.com/?cid=6924439068068987229",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Singapore+Holic+Laksa%2C+%E3%80%92150-0042+Tokyo%2C+Shibuya+City%2C+Udagawacho%2C+37%E2%88%9215+2%E9%9A%8E",
       "cid": "6924439068068987229",
       "google_id": "/g/11bx2lk9f_",
       "maps_place_token": null
@@ -1469,7 +1469,7 @@
       "is_favorite": false,
       "lat": 35.6734647,
       "lng": 139.71011959999998,
-      "maps_url": "https://maps.google.com/?cid=6924439171407900503",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Handmade+buckwheat+Matsunaga%2C+2+Chome-19-12+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001",
       "cid": "6924439171407900503",
       "google_id": "/g/1xtf1kjf",
       "maps_place_token": null
@@ -1481,7 +1481,7 @@
       "is_favorite": false,
       "lat": 35.644444,
       "lng": 139.7155481,
-      "maps_url": "https://maps.google.com/?cid=6924437346841034845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Kuriyagawa%2C+%E3%80%92150-0013+Tokyo%2C+Shibuya+City%2C+Ebisu%2C+4+Chome%E2%88%9223%E2%88%9210+%E3%83%92%E3%83%AB%E3%82%B5%E3%82%A4%E3%83%89%E3%83%AC%E3%82%B8%E3%83%87%E3%83%B3%E3%82%B9+%E5%9C%B0%E4%B8%8B%EF%BC%91%E9%9A%8E",
       "cid": "6924437346841034845",
       "google_id": "/g/1hc7w633w",
       "maps_place_token": null
@@ -1493,7 +1493,7 @@
       "is_favorite": false,
       "lat": 35.6565897,
       "lng": 139.69574649999998,
-      "maps_url": "https://maps.google.com/?cid=6924437466634316197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%BF%A0%E6%9C%88+%2F+Mitsuki%2C+%E3%80%92150-0043+Tokyo%2C+Shibuya+City%2C+Dogenzaka%2C+1+Chome%E2%88%9222%E2%88%9212+%E9%95%B7%E5%B3%B6%E7%AC%AC%E4%B8%80%E3%83%93%E3%83%AB+B1",
       "cid": "6924437466634316197",
       "google_id": "/g/11hzhvm1xf",
       "maps_place_token": null
@@ -1505,7 +1505,7 @@
       "is_favorite": false,
       "lat": 35.6585487,
       "lng": 139.67279159999998,
-      "maps_url": "https://maps.google.com/?cid=6924551895577356135",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bistro+Tonerico%2C+2+Chome-7-9+Daizawa%2C+Setagaya+City%2C+Tokyo+155-0032",
       "cid": "6924551895577356135",
       "google_id": "/g/11g6qzs69r",
       "maps_place_token": null
@@ -1517,7 +1517,7 @@
       "is_favorite": false,
       "lat": 35.6985405,
       "lng": 139.7025852,
-      "maps_url": "https://maps.google.com/?cid=6924439571763394775",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=bacon%2C+Tonchang+Building%2C+2F%2C+1+Chome-17-5+Okubo%2C+Tokyo+169-0072",
       "cid": "6924439571763394775",
       "google_id": "/g/11s7fwd_wk",
       "maps_place_token": null
@@ -1529,7 +1529,7 @@
       "is_favorite": false,
       "lat": 35.6948593,
       "lng": 139.7004665,
-      "maps_url": "https://maps.google.com/?cid=6924439811774894905",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakiniku+Futago+Shinjuku+Kabukicho+%28bbq+japanese%29%2C+%E3%80%92160-0021+Tokyo%2C+Shinjuku+City%2C+Kabukicho%2C+1+Chome%E2%88%9226%E2%88%922+%E4%BA%AC%E5%B1%8B%E3%83%93%E3%83%AB",
       "cid": "6924439811774894905",
       "google_id": "/g/11rmrzbx7c",
       "maps_place_token": null
@@ -1541,7 +1541,7 @@
       "is_favorite": false,
       "lat": 35.6512446,
       "lng": 139.6903879,
-      "maps_url": "https://maps.google.com/?cid=6924554661846533331",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chiisha%2C+3+Chome-9-9+Aobadai%2C+Meguro+City%2C+Tokyo+153-0042",
       "cid": "6924554661846533331",
       "google_id": "/g/1tmqltyn",
       "maps_place_token": null
@@ -1553,7 +1553,7 @@
       "is_favorite": false,
       "lat": 35.6727874,
       "lng": 139.7397296,
-      "maps_url": "https://maps.google.com/?cid=6924437838897513719",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Isshin%2C+2+Chome-5-6+Akasaka%2C+Minato+City%2C+Tokyo+107-0052",
       "cid": "6924437838897513719",
       "google_id": "/g/1tld04t_",
       "maps_place_token": null
@@ -1565,7 +1565,7 @@
       "is_favorite": false,
       "lat": 35.706371499999996,
       "lng": 139.6804927,
-      "maps_url": "https://maps.google.com/?cid=6924552042670612515",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kuma+Cantina+Mexican+Food+%26+Cocktails%2C+FAITH+1F%2C+3+Chome-2-7+Higashinakano%2C+Nakano+City%2C+Tokyo+164-0003%2C+Japan",
       "cid": "6924552042670612515",
       "google_id": "/g/11vz922zy_",
       "maps_place_token": null
@@ -1577,7 +1577,7 @@
       "is_favorite": false,
       "lat": 35.6743583,
       "lng": 139.7123974,
-      "maps_url": "https://maps.google.com/?cid=6924440118467315661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CENSU+TOKYO%2C+2+Chome-12-9+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001%2C+Japan",
       "cid": "6924440118467315661",
       "google_id": "/g/11v05m3nhf",
       "maps_place_token": null
@@ -1589,7 +1589,7 @@
       "is_favorite": false,
       "lat": 35.6567238,
       "lng": 139.7344004,
-      "maps_url": "https://maps.google.com/?cid=6924438047413351935",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tokyo+Confidential%2C+9F%2C+THE+V-CITY+AZABU-JUBAN+PLACE+1-chome%2C+6-1+Azabujuban%2C+Minato+City%2C+Tokyo+106-0045%2C+Japan",
       "cid": "6924438047413351935",
       "google_id": "/g/11l2xzpr0k",
       "maps_place_token": null
@@ -1601,7 +1601,7 @@
       "is_favorite": false,
       "lat": 35.6580228,
       "lng": 139.6995074,
-      "maps_url": "https://maps.google.com/?cid=6924437635951318357",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=igu%EF%BC%86peace%2C+Japan%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya+City%2C+Dogenzaka%2C+1+Chome%E2%88%925%E2%88%922+%E6%B8%8B%E8%B0%B7%EF%BC%B3%EF%BC%A5%EF%BC%A4%EF%BC%A5+4F+%E3%83%93%E3%83%AB",
       "cid": "6924437635951318357",
       "google_id": "/g/11bbw_w4wt",
       "maps_place_token": null
@@ -1613,7 +1613,7 @@
       "is_favorite": false,
       "lat": 35.6957513,
       "lng": 139.70058939999998,
-      "maps_url": "https://maps.google.com/?cid=6924440547032214079",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tokyu+Kabukicho+Tower%2C+1+Chome-29-1+Kabukicho%2C+Shinjuku+City%2C+Tokyo+160-0021",
       "cid": "6924440547032214079",
       "google_id": "/g/11s18b39qm",
       "maps_place_token": null
@@ -1625,7 +1625,7 @@
       "is_favorite": false,
       "lat": 35.6536275,
       "lng": 139.75587489999998,
-      "maps_url": "https://maps.google.com/?cid=6924438120617650251",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Miyaba%2C+2+Chome-11-8+Hamamatsucho%2C+Minato+City%2C+Tokyo+105-0013",
       "cid": "6924438120617650251",
       "google_id": "/g/1v1sl6dz",
       "maps_place_token": null
@@ -1637,7 +1637,7 @@
       "is_favorite": false,
       "lat": 35.689755399999996,
       "lng": 139.7023757,
-      "maps_url": "https://maps.google.com/?cid=6924439297391030247",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jazz+Bar+Samurai%2C+%E3%80%92160-0022+Tokyo%2C+Shinjuku+City%2C+Shinjuku%2C+3+Chome%E2%88%9235%E2%88%925+%E5%AE%88%E3%83%93%E3%83%AB+5F",
       "cid": "6924439297391030247",
       "google_id": "/g/1tg9spfv",
       "maps_place_token": null
@@ -1649,7 +1649,7 @@
       "is_favorite": false,
       "lat": 35.7047399,
       "lng": 139.5801205,
-      "maps_url": "https://maps.google.com/?cid=6924546419149711675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Some+Time%2C+%E3%80%92180-0004+Tokyo%2C+Musashino%2C+Kichijoji+Honcho%2C+1+Chome%E2%88%9211%E2%88%9231+B1F",
       "cid": "6924546419149711675",
       "google_id": "/g/1tdbl092",
       "maps_place_token": null
@@ -1661,7 +1661,7 @@
       "is_favorite": false,
       "lat": 35.6673178,
       "lng": 139.7553589,
-      "maps_url": "https://maps.google.com/?cid=6924437997901162221",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakiniku+Futago%2C+%E3%80%92105-0004+Tokyo%2C+Minato+City%2C+Shinbashi%2C+2+Chome%E2%88%9211%E2%88%9210%2C+Hulic+%26New+Shinbashi%2C+2F",
       "cid": "6924437997901162221",
       "google_id": "/g/11w8y9x36m",
       "maps_place_token": null
@@ -1673,7 +1673,7 @@
       "is_favorite": false,
       "lat": 35.6564163,
       "lng": 139.7317761,
-      "maps_url": "https://maps.google.com/?cid=6924438013716101665",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ippei+Hanten%2C+3+Chome-12-41+Motoazabu%2C+Minato+City%2C+Tokyo+106-0046",
       "cid": "6924438013716101665",
       "google_id": "/g/11pz1ty0p4",
       "maps_place_token": null
@@ -1685,7 +1685,7 @@
       "is_favorite": false,
       "lat": 35.6546003,
       "lng": 139.7347164,
-      "maps_url": "https://maps.google.com/?cid=6924437954235066273",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakinikuen%2C+My+Square+Bldg%2C+%E5%9C%B0%E4%B8%8B%EF%BC%91%E9%9A%8E%2C+2+Chome-10-3+Azabujuban%2C+Minato+City%2C+Tokyo+106-0045",
       "cid": "6924437954235066273",
       "google_id": "/g/1tgqjdr6",
       "maps_place_token": null
@@ -1697,7 +1697,7 @@
       "is_favorite": false,
       "lat": 35.655364,
       "lng": 139.73457299999998,
-      "maps_url": "https://maps.google.com/?cid=6924437944120115199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soul+Food+House%2C+%E3%80%92106-0045+Tokyo%2C+Minato+City%2C+Azabujuban%2C+2+Chome%E2%88%928%E2%88%9210+%EF%BC%B0%EF%BD%81%EF%BD%94%EF%BD%89%EF%BD%8F%EF%BC%96F",
       "cid": "6924437944120115199",
       "google_id": "/g/1234cz67j",
       "maps_place_token": null
@@ -1709,7 +1709,7 @@
       "is_favorite": false,
       "lat": 35.6564771,
       "lng": 139.7343098,
-      "maps_url": "https://maps.google.com/?cid=6924437944889850379",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gen+Yamamoto%2C+%E3%80%92106-0045+Tokyo%2C+Minato+City%2C+Azabujuban%2C+1+Chome%E2%88%926%E2%88%924+%E3%82%A2%E3%83%8B%E3%83%90%E3%83%BC%E3%82%B5%E3%83%AA%E3%83%BC%E3%83%93%E3%83%AB+1F",
       "cid": "6924437944889850379",
       "google_id": "/g/1hm4f02ym",
       "maps_place_token": null
@@ -1721,7 +1721,7 @@
       "is_favorite": false,
       "lat": 35.664297399999995,
       "lng": 139.7571519,
-      "maps_url": "https://maps.google.com/?cid=6924438264332387415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hinomarushokudo+Shinbashi+Sohonten%2C+%E3%80%92105-0004+Tokyo%2C+Minato+City%2C+Shinbashi%2C+4+Chome%E2%88%9218%E2%88%924+%E5%8D%81%E5%90%88%E3%83%93%E3%83%AB+%EF%BC%91%E9%9A%8E%EF%BC%A1%E5%8F%B7%E5%AE%A4",
       "cid": "6924438264332387415",
       "google_id": "/g/1w0j45f7",
       "maps_place_token": null
@@ -1733,7 +1733,7 @@
       "is_favorite": false,
       "lat": 35.670043199999995,
       "lng": 139.7727736,
-      "maps_url": "https://maps.google.com/?cid=6924437798826507425",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LUONTO+%E3%83%AB%E3%82%AA%E3%83%B3%E3%83%88",
       "cid": "6924437798826507425",
       "google_id": null,
       "maps_place_token": null
@@ -1745,7 +1745,7 @@
       "is_favorite": false,
       "lat": 35.6593763,
       "lng": 139.6959669,
-      "maps_url": "https://maps.google.com/?cid=6924439794532738559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TORA%2C+2+Chome-19-10+Dogenzaka%2C+Shibuya+City%2C+Tokyo+150-0043",
       "cid": "6924439794532738559",
       "google_id": "/g/11rcgdywll",
       "maps_place_token": null
@@ -1757,7 +1757,7 @@
       "is_favorite": false,
       "lat": 35.6610012,
       "lng": 139.7222658,
-      "maps_url": "https://maps.google.com/?cid=6924437786704605133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=THESE%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+2+Chome%E2%88%9215%E2%88%9212+%E3%82%AB%E3%83%AB%E3%83%86%E3%83%83%E3%83%88%E3%83%93%E3%83%AB+1F+%EF%BC%A2%EF%BC%91",
       "cid": "6924437786704605133",
       "google_id": "/g/1tj96dn0",
       "maps_place_token": null
@@ -1769,7 +1769,7 @@
       "is_favorite": false,
       "lat": 35.671656,
       "lng": 139.766189,
-      "maps_url": "https://maps.google.com/?cid=6924438249579547585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zakuro+Ginza",
       "cid": "6924438249579547585",
       "google_id": null,
       "maps_place_token": null
@@ -1781,7 +1781,7 @@
       "is_favorite": false,
       "lat": 35.6701972,
       "lng": 139.7591266,
-      "maps_url": "https://maps.google.com/?cid=6924437858195469861",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=mixology+heritage",
       "cid": "6924437858195469861",
       "google_id": null,
       "maps_place_token": null
@@ -1793,7 +1793,7 @@
       "is_favorite": false,
       "lat": 35.6685747,
       "lng": 139.7669052,
-      "maps_url": "https://maps.google.com/?cid=6924438252491591071",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Ginza+Onodera+-+Souhonten",
       "cid": "6924438252491591071",
       "google_id": null,
       "maps_place_token": null
@@ -1805,7 +1805,7 @@
       "is_favorite": false,
       "lat": 35.6663172,
       "lng": 139.7545848,
-      "maps_url": "https://maps.google.com/?cid=6924438268726745755",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Umasakababoburi%2C+%E3%80%92105-0004+Tokyo%2C+Minato+City%2C+Shinbashi%2C+3+Chome%E2%88%922%E2%88%924+%E6%9A%96%E9%A6%99%E5%9C%92%E3%83%93%E3%83%AB",
       "cid": "6924438268726745755",
       "google_id": "/g/11bbxjvyt6",
       "maps_place_token": null
@@ -1817,7 +1817,7 @@
       "is_favorite": false,
       "lat": 35.658798499999996,
       "lng": 139.7557589,
-      "maps_url": "https://maps.google.com/?cid=6924438113042912597",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tonkatsu+Aoki+Daimon%2C+1+Chome-11-12+Hamamatsucho%2C+Minato+City%2C+Tokyo+105-0013",
       "cid": "6924438113042912597",
       "google_id": "/g/11bxg5_ybj",
       "maps_place_token": null
@@ -1829,7 +1829,7 @@
       "is_favorite": false,
       "lat": 35.666423099999996,
       "lng": 139.7573577,
-      "maps_url": "https://maps.google.com/?cid=6924437661135199837",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Land+Bar+Artisan+%28New%29%2C+New+Shimbashi%2C+Bldg+412%2C+Japan%2C+%E3%80%92105-0004%2C+2+Chome-16-1+Shinbashi%2C+Minato+City%2C+Tokyo+4F",
       "cid": "6924437661135199837",
       "google_id": "/g/11t2b3fsp4",
       "maps_place_token": null
@@ -1841,7 +1841,7 @@
       "is_favorite": false,
       "lat": 35.6675965,
       "lng": 139.76007339999998,
-      "maps_url": "https://maps.google.com/?cid=6924438259918722695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Steak+Ginza+Honten%2C+%E3%80%92105-0004+Tokyo%2C+Minato+City%2C+Shinbashi%2C+1+Chome%E2%88%925%E2%88%925+%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%99%E3%83%AB%E9%8A%80%E5%BA%A7%E2%85%A1+8F%E3%83%BB9F",
       "cid": "6924438259918722695",
       "google_id": "/g/11b77w6fb5",
       "maps_place_token": null
@@ -1853,7 +1853,7 @@
       "is_favorite": false,
       "lat": 35.6697577,
       "lng": 139.76536199999998,
-      "maps_url": "https://maps.google.com/?cid=6924438251318652805",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SHU%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%9210%E2%88%9210+5%E9%9A%8E",
       "cid": "6924438251318652805",
       "google_id": "/g/11bwq922d8",
       "maps_place_token": null
@@ -1865,7 +1865,7 @@
       "is_favorite": false,
       "lat": 35.6680858,
       "lng": 139.7620312,
-      "maps_url": "https://maps.google.com/?cid=6924438257736833401",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cafe+Paulista%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+8+Chome%E2%88%929%E2%88%9216+%E9%95%B7%E5%B4%8E%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%93%E3%83%AB+1F",
       "cid": "6924438257736833401",
       "google_id": "/g/1tdx8ps9",
       "maps_place_token": null
@@ -1877,7 +1877,7 @@
       "is_favorite": false,
       "lat": 35.673043799999995,
       "lng": 139.76985109999998,
-      "maps_url": "https://maps.google.com/?cid=6924435420716023137",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Oniku+Karyu%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+1+Chome%E2%88%9214%E2%88%926+7F+LOUIS",
       "cid": "6924435420716023137",
       "google_id": "/g/1tx4pbl_",
       "maps_place_token": null
@@ -1889,7 +1889,7 @@
       "is_favorite": false,
       "lat": 35.6749416,
       "lng": 139.7670896,
-      "maps_url": "https://maps.google.com/?cid=6924438240105442883",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ichiyanagi%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+1+Chome%E2%88%925%E2%88%9214+%E9%8A%80%E5%BA%A7%E3%82%B3%E3%82%B9%E3%83%9F%E3%82%AA%E3%83%B3%E3%83%93%E3%83%AB+1F",
       "cid": "6924438240105442883",
       "google_id": "/g/12qgdm8d7",
       "maps_place_token": null
@@ -1901,7 +1901,7 @@
       "is_favorite": false,
       "lat": 35.679745,
       "lng": 139.7755813,
-      "maps_url": "https://maps.google.com/?cid=6924435653281978463",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=rece+Nihonbashi%2C+%E3%80%92103-0027+Tokyo%2C+Chuo+City%2C+Nihonbashi%2C+2+Chome%E2%88%9216%E2%88%923+%E3%83%96%E3%83%AA%E3%83%AA%E3%82%A2%E3%83%B3%E3%83%93%E3%83%AB+1F",
       "cid": "6924435653281978463",
       "google_id": "/g/11fjbnmn9h",
       "maps_place_token": null
@@ -1913,7 +1913,7 @@
       "is_favorite": false,
       "lat": 35.687263099999996,
       "lng": 139.7732302,
-      "maps_url": "https://maps.google.com/?cid=6924435426933983275",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sembikiya-Sohonten+Nihonbashi+Flagship+Store%2C+2+Chome-1-2+Nihonbashimuromachi%2C+Chuo+City%2C+Tokyo+103-0022",
       "cid": "6924435426933983275",
       "google_id": "/g/12ltx1vd9",
       "maps_place_token": null
@@ -1925,7 +1925,7 @@
       "is_favorite": false,
       "lat": 35.686865,
       "lng": 139.7723438,
-      "maps_url": "https://maps.google.com/?cid=6924438134979571583",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=aca%2C+%E3%80%92103-0002+Tokyo%2C+Chuo+City%2C+Nihonbashimuromachi%2C+2+Chome%E2%88%921%E2%88%921+%E4%B8%89%E4%BA%95%E4%BA%8C%E5%8F%B7%E9%A4%A8+1F",
       "cid": "6924438134979571583",
       "google_id": "/g/11bbx01t9w",
       "maps_place_token": null
@@ -1937,7 +1937,7 @@
       "is_favorite": false,
       "lat": 35.689592999999995,
       "lng": 139.77115129999999,
-      "maps_url": "https://maps.google.com/?cid=6924438359856250985",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=DevilCraft+Kanda%2C+%E3%80%92103-0022+Tokyo%2C+Chuo+City%2C+Nihonbashimuromachi%2C+4+Chome%E2%88%922%E2%88%923+%E7%9F%B3%E5%B7%9D%E3%83%93%E3%83%AB",
       "cid": "6924438359856250985",
       "google_id": "/g/1vxz9m3s",
       "maps_place_token": null
@@ -1949,7 +1949,7 @@
       "is_favorite": false,
       "lat": 35.6938005,
       "lng": 139.7613086,
-      "maps_url": "https://maps.google.com/?cid=6924438428000589327",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=GLITCH+COFFEE+%26+ROASTERS%2C+%E3%80%92101-0054+Tokyo%2C+Chiyoda+City%2C+Kanda+Nishikicho%2C+3+Chome%E2%88%9216+%E9%A6%99%E6%9D%91%E3%83%93%E3%83%AB+%EF%BC%91%E9%9A%8E",
       "cid": "6924438428000589327",
       "google_id": "/g/11b7k1xvjl",
       "maps_place_token": null
@@ -1961,7 +1961,7 @@
       "is_favorite": false,
       "lat": 35.690881,
       "lng": 139.7653943,
-      "maps_url": "https://maps.google.com/?cid=6924438376730188049",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bondy%2C+%E3%80%92101-0047+Tokyo%2C+Chiyoda+City%2C+Uchikanda%2C+1+Chome%E2%88%9212%E2%88%923+%E7%BF%94%E5%92%8C%E5%86%85%E7%A5%9E%E7%94%B0%E3%83%93%E3%83%AB+B1",
       "cid": "6924438376730188049",
       "google_id": "/g/1ptxgly60",
       "maps_place_token": null
@@ -1973,7 +1973,7 @@
       "is_favorite": false,
       "lat": 35.6949128,
       "lng": 139.76396689999999,
-      "maps_url": "https://maps.google.com/?cid=6924438473588982057",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kanda+Ponchiken%2C+%E3%80%92101-0052+Tokyo%2C+Chiyoda+City%2C+Kanda+Ogawamachi%2C+2+Chome%E2%88%928%2C+Ougi+Building%2C+1%E9%9A%8E",
       "cid": "6924438473588982057",
       "google_id": "/g/11cffk4y8",
       "maps_place_token": null
@@ -1985,7 +1985,7 @@
       "is_favorite": false,
       "lat": 35.692747499999996,
       "lng": 139.7692214,
-      "maps_url": "https://maps.google.com/?cid=6924439957822710071",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%AD%E3%83%B3%E3%82%B0%E3%83%A9%E3%83%A0%E3%83%AA%E3%82%AB%E3%83%BC+%E7%A5%9E%E7%94%B0%E5%BA%97%2C+%E3%80%92101-0046+Tokyo%2C+Chiyoda+City%2C+Kanda+Tacho%2C+2+Chome%E2%88%923%E2%88%921+%E7%AC%AC1%E3%83%8B%E3%82%B5%E3%83%AF%E3%83%93%E3%83%AB",
       "cid": "6924439957822710071",
       "google_id": "/g/11hlwk0_pb",
       "maps_place_token": null
@@ -1997,7 +1997,7 @@
       "is_favorite": false,
       "lat": 35.6879978,
       "lng": 139.7632237,
-      "maps_url": "https://maps.google.com/?cid=6924439652957010581",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=VIRT%C3%99%2C+1+Chome-2-1+%C5%8Ctemachi%2C+Chiyoda+City%2C+Tokyo+100-0004",
       "cid": "6924439652957010581",
       "google_id": "/g/11kxk1ch88",
       "maps_place_token": null
@@ -2009,7 +2009,7 @@
       "is_favorite": false,
       "lat": 35.684410299999996,
       "lng": 139.7640883,
-      "maps_url": "https://maps.google.com/?cid=6924437746582573057",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=THE+UPPER%2C+%E3%80%92100-0005+Tokyo%2C+Chiyoda+City%2C+Marunouchi%2C+1+Chome%E2%88%923%E2%88%924+%E4%B8%B8%E3%81%AE%E5%86%85%E3%83%86%E3%83%A9%E3%82%B9+10F",
       "cid": "6924437746582573057",
       "google_id": "/g/11ljj8q5sq",
       "maps_place_token": null
@@ -2021,7 +2021,7 @@
       "is_favorite": false,
       "lat": 35.6854775,
       "lng": 139.7656705,
-      "maps_url": "https://maps.google.com/?cid=6924438326517343429",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Pesquera+MARISQUERIA%2C+1+Chome-5-5+%C5%8Ctemachi%2C+Chiyoda+City%2C+Tokyo+100-0004",
       "cid": "6924438326517343429",
       "google_id": "/g/1yfjn5pdw",
       "maps_place_token": null
@@ -2033,7 +2033,7 @@
       "is_favorite": false,
       "lat": 35.6845001,
       "lng": 139.7612211,
-      "maps_url": "https://maps.google.com/?cid=6924439837143847101",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Esterre%2C+1+Chome-1-1+Marunouchi%2C+Chiyoda+City%2C+Tokyo+100-0005",
       "cid": "6924439837143847101",
       "google_id": "/g/11h7g2nx9x",
       "maps_place_token": null
@@ -2045,7 +2045,7 @@
       "is_favorite": false,
       "lat": 35.681197499999996,
       "lng": 139.7637454,
-      "maps_url": "https://maps.google.com/?cid=6924438331107526691",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Usukifugu+Yamadaya+Marunouchi%2C+%E3%80%92100-0005+Tokyo%2C+Chiyoda+City%2C+Marunouchi%2C+2+Chome%E2%88%924%E2%88%921%2C+Marunouchi+Building%2C+35%E9%9A%8E",
       "cid": "6924438331107526691",
       "google_id": "/g/11f25jg6ky",
       "maps_place_token": null
@@ -2057,7 +2057,7 @@
       "is_favorite": false,
       "lat": 35.682027399999996,
       "lng": 139.76682839999998,
-      "maps_url": "https://maps.google.com/?cid=6924438137821735385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MAISON+CACAO+Gransta+Tokyo+Store%2C+%E3%80%92100-0005+Tokyo%2C+Chiyoda+City%2C+Marunouchi%2C+1+Chome%E2%88%929%E2%88%921+JR%E6%9D%B1%E6%97%A5%E6%9C%AC%E6%9D%B1%E4%BA%AC%E9%A7%85%E6%A7%8B%E5%86%851F+%E3%82%B0%E3%83%A9%E3%83%B3%E3%82%B9%E3%82%BF%E6%9D%B1%E4%BA%AC%EF%BC%88%E4%B8%B8%E3%81%AE%E5%86%85%E5%8C%97%E5%8F%A3%E5%81%B4",
       "cid": "6924438137821735385",
       "google_id": "/g/11jkssyzh0",
       "maps_place_token": null
@@ -2069,7 +2069,7 @@
       "is_favorite": false,
       "lat": 35.6795237,
       "lng": 139.7649491,
-      "maps_url": "https://maps.google.com/?cid=6924438334192041147",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kaitenzushi+Nemuro+Hanamaru+KITTE+Marunouchi%2C+%E3%80%92100-7005+Tokyo%2C+Chiyoda+City%2C+Marunouchi%2C+2+Chome%2C+7%E7%95%AA2%E5%8F%B7+5F+JP%E3%82%BF%E3%83%AF",
       "cid": "6924438334192041147",
       "google_id": "/g/12hp18yfh",
       "maps_place_token": null
@@ -2081,7 +2081,7 @@
       "is_favorite": false,
       "lat": 35.6787845,
       "lng": 139.7627699,
-      "maps_url": "https://maps.google.com/?cid=6924438333155246715",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Manten+Sushi+Marunouchi%2C+%E3%80%92100-6990+Tokyo%2C+Chiyoda+City%2C+Marunouchi%2C+2+Chome%E2%88%926%E2%88%921+%E3%83%96%E3%83%AA%E3%83%83%E3%82%AF%E3%82%B9%E3%82%AF%E3%82%A8%E3%82%A2+B1",
       "cid": "6924438333155246715",
       "google_id": "/g/1vk6z6gy",
       "maps_place_token": null
@@ -2093,7 +2093,7 @@
       "is_favorite": false,
       "lat": 35.6776993,
       "lng": 139.7617349,
-      "maps_url": "https://maps.google.com/?cid=6924438121773761581",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=YAUMAY%2C+%E3%80%92100-0005+Tokyo%2C+Chiyoda+City%2C+Marunouchi%2C+3+Chome%E2%88%922%E2%88%923+%E4%BA%8C%E9%87%8D%E6%A9%8B%E3%82%B9%E3%82%AF%E3%82%A8%E3%82%A2%E3%83%93%E3%83%AB+2F",
       "cid": "6924438121773761581",
       "google_id": "/g/11gsly2jww",
       "maps_place_token": null
@@ -2105,7 +2105,7 @@
       "is_favorite": false,
       "lat": 35.6771162,
       "lng": 139.7686373,
-      "maps_url": "https://maps.google.com/?cid=6924438235320914815",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dhaba+India%2C+%E3%80%92103-0028+Tokyo%2C+Chuo+City%2C+Yaesu%2C+2+Chome%E2%88%927%E2%88%929+%E7%9B%B8%E6%A8%A1%E3%83%93%E3%83%AB+%EF%BC%91F",
       "cid": "6924438235320914815",
       "google_id": "/g/1td7n9b_",
       "maps_place_token": null
@@ -2117,7 +2117,7 @@
       "is_favorite": false,
       "lat": 35.6792355,
       "lng": 139.7678334,
-      "maps_url": "https://maps.google.com/?cid=6924438345555306481",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Cave+De+Oyster+by+Gumbo+%26+Oyster+Bar%2C+%E3%80%92104-0028+Tokyo%2C+Chuo+City%2C+Yaesu%2C+2+Chome%E2%88%921+%E5%85%AB%E9%87%8D%E6%B4%B2%E5%9C%B0%E4%B8%8B%E5%8D%971%E5%8F%B7",
       "cid": "6924438345555306481",
       "google_id": "/g/1v9tzx5m",
       "maps_place_token": null
@@ -2129,7 +2129,7 @@
       "is_favorite": false,
       "lat": 35.6736888,
       "lng": 139.767161,
-      "maps_url": "https://maps.google.com/?cid=6924438238668940633",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Aroma+Fresca%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+2+Chome%E2%88%926%E2%88%925+GINZA+TRECIOUS+12F",
       "cid": "6924438238668940633",
       "google_id": "/g/1tdn421z",
       "maps_place_token": null
@@ -2141,7 +2141,7 @@
       "is_favorite": false,
       "lat": 35.6731203,
       "lng": 139.7655234,
-      "maps_url": "https://maps.google.com/?cid=6924437395577302925",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Ishiyama%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+3+Chome%E2%88%923%E2%88%926+%E6%A3%AE%E7%94%B0%E3%83%93%E3%83%AB+4F",
       "cid": "6924437395577302925",
       "google_id": "/g/11g1p1tr__",
       "maps_place_token": null
@@ -2153,7 +2153,7 @@
       "is_favorite": false,
       "lat": 35.6716749,
       "lng": 139.7633836,
-      "maps_url": "https://maps.google.com/?cid=6924438246774371243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jojoen%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%924%E2%88%926+%E3%83%AD%E3%82%A4%E3%83%A4%E3%83%AB%E3%82%AF%E3%83%AA%E3%82%B9%E3%82%BF%E3%83%AB%E9%8A%80%E5%BA%A7+6F",
       "cid": "6924438246774371243",
       "google_id": "/g/1vv2s714",
       "maps_place_token": null
@@ -2165,7 +2165,7 @@
       "is_favorite": false,
       "lat": 35.672740399999995,
       "lng": 139.7639378,
-      "maps_url": "https://maps.google.com/?cid=6924438245962792021",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sukiyabashi+Jiro%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+4+Chome%E2%88%922%E2%88%9215+%E5%A1%9A%E6%9C%AC%E7%B7%8F%E6%A5%AD%E3%83%93%E3%83%ABB1%E9%9A%8E",
       "cid": "6924438245962792021",
       "google_id": null,
       "maps_place_token": null
@@ -2177,7 +2177,7 @@
       "is_favorite": false,
       "lat": 35.671641,
       "lng": 139.762943,
-      "maps_url": "https://maps.google.com/?cid=6924438285050819773",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=High+Five%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%924%E2%88%9215+Efflore+Ginza5+Bldg%2C+B1F",
       "cid": "6924438285050819773",
       "google_id": "/g/119wjwkcp",
       "maps_place_token": null
@@ -2189,7 +2189,7 @@
       "is_favorite": false,
       "lat": 35.670671999999996,
       "lng": 139.763948,
-      "maps_url": "https://maps.google.com/?cid=6924437716844929553",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Air%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%927%E2%88%9210+EXIT+MELSA+8%E9%9A%8E",
       "cid": "6924437716844929553",
       "google_id": "/g/1v5frx68",
       "maps_place_token": null
@@ -2201,7 +2201,7 @@
       "is_favorite": false,
       "lat": 35.670218,
       "lng": 139.76568319999998,
-      "maps_url": "https://maps.google.com/?cid=6924438251242788269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=T%C3%ADr+na+n%C3%93g%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%929%E2%88%925+%E3%83%81%E3%82%A2%E3%83%BC%E3%82%BA%E9%8A%80%E5%BA%A7+B%EF%BC%91",
       "cid": "6924438251242788269",
       "google_id": null,
       "maps_place_token": null
@@ -2213,7 +2213,7 @@
       "is_favorite": false,
       "lat": 35.6711228,
       "lng": 139.7630816,
-      "maps_url": "https://maps.google.com/?cid=6924438246992339807",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Seamon+Ginza%2C+5+Chome-5-13+Ginza%2C+Chuo+City%2C+Tokyo+104-0061",
       "cid": "6924438246992339807",
       "google_id": "/g/1tvrzqby",
       "maps_place_token": null
@@ -2225,7 +2225,7 @@
       "is_favorite": false,
       "lat": 35.6704625,
       "lng": 139.7652439,
-      "maps_url": "https://maps.google.com/?cid=6924438251165436981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sawada%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%929%E2%88%9219+%E9%8A%80%E5%BA%A7%EF%BC%AD%EF%BC%A3%E3%83%93%E3%83%AB",
       "cid": "6924438251165436981",
       "google_id": "/g/1vd3vsqc",
       "maps_place_token": null
@@ -2237,7 +2237,7 @@
       "is_favorite": false,
       "lat": 35.6697996,
       "lng": 139.7620059,
-      "maps_url": "https://maps.google.com/?cid=6924437943754925931",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Komon%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+7+Chome%E2%88%926%E2%88%924+GINZA7BLDG+9%E9%9A%8E",
       "cid": "6924437943754925931",
       "google_id": "/g/11j5bpj7ny",
       "maps_place_token": null
@@ -2249,7 +2249,7 @@
       "is_favorite": false,
       "lat": 35.669249,
       "lng": 139.76376539999998,
-      "maps_url": "https://maps.google.com/?cid=6924438247916223737",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MIXOLOGY+SALON%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%9210%E2%88%921+GINZA+SIX+13F",
       "cid": "6924438247916223737",
       "google_id": null,
       "maps_place_token": null
@@ -2261,7 +2261,7 @@
       "is_favorite": false,
       "lat": 35.6693111,
       "lng": 139.76202229999998,
-      "maps_url": "https://maps.google.com/?cid=6924437584057050949",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=USHIGORO+S.+GINZA%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+7+Chome%E2%88%927%E2%88%927%2C+Ginza+777+Adc+Building%2C+6%E9%9A%8E",
       "cid": "6924437584057050949",
       "google_id": "/g/11g0trygys",
       "maps_place_token": null
@@ -2273,7 +2273,7 @@
       "is_favorite": false,
       "lat": 35.6695493,
       "lng": 139.7623971,
-      "maps_url": "https://maps.google.com/?cid=6924438258304326933",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hamasaku%2C+7+Chome-7-4+Ginza%2C+Chuo+City%2C+Tokyo+104-0061",
       "cid": "6924438258304326933",
       "google_id": "/g/1tjz7yfb",
       "maps_place_token": null
@@ -2285,7 +2285,7 @@
       "is_favorite": false,
       "lat": 35.6707126,
       "lng": 139.76362559999998,
-      "maps_url": "https://maps.google.com/?cid=6924438344294716305",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Katsukami%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%926%E2%88%9210+%E3%83%9F%E3%83%A4%E3%82%B3%E3%83%93%E3%83%AB+%EF%BC%95%E9%9A%8E",
       "cid": "6924438344294716305",
       "google_id": "/g/11f8msh46r",
       "maps_place_token": null
@@ -2297,7 +2297,7 @@
       "is_favorite": false,
       "lat": 35.6703471,
       "lng": 139.76286629999998,
-      "maps_url": "https://maps.google.com/?cid=6924438247551557605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CALI+STYLE+YUZAN+by+KEIICHIRO+KUROBE%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%928%E2%88%927+%E4%BA%A4%E8%A9%A2%E3%83%93%E3%83%AB+4%E9%9A%8E",
       "cid": "6924438247551557605",
       "google_id": "/g/11h9vqg5yc",
       "maps_place_token": null
@@ -2309,7 +2309,7 @@
       "is_favorite": false,
       "lat": 35.6709989,
       "lng": 139.7618419,
-      "maps_url": "https://maps.google.com/?cid=6924438287207587445",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bifteck+Kawamura+Ginza%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%925%E2%88%921%2C+Brioni+Ginza+Bldg.%2C+%EF%BC%98%E9%9A%8E",
       "cid": "6924438287207587445",
       "google_id": "/g/1tdft3qp",
       "maps_place_token": null
@@ -2321,9 +2321,21 @@
       "is_favorite": false,
       "lat": 35.671386999999996,
       "lng": 139.7630787,
-      "maps_url": "https://maps.google.com/?cid=6924438259318218837",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Kojyu%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%924%E2%88%928+%E9%8A%80%E5%BA%A7%E3%82%AB%E3%83%AA%E3%82%AA%E3%82%AB%E3%83%93%E3%83%AB+4F",
       "cid": "6924438259318218837",
       "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Tempura Kondo",
+      "address": "〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−5−13, Sakaguchi Bld., ９F",
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.6711696,
+      "lng": 139.7631786,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tempura+Kondo%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+5+Chome%E2%88%925%E2%88%9213%2C+Sakaguchi+Bld.%2C+%EF%BC%99F",
+      "cid": "6924438246992339807",
+      "google_id": "/g/1tj57s43",
       "maps_place_token": null
     },
     {
@@ -2333,7 +2345,7 @@
       "is_favorite": false,
       "lat": 35.6708962,
       "lng": 139.7625741,
-      "maps_url": "https://maps.google.com/?cid=6924437304318964849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%BE%E3%81%A8%E3%81%84+%E9%8A%80%E5%BA%A7%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%926%E2%88%925+HULIC%26New+GINZA+NAMIKI%EF%BC%96+%EF%BC%97F",
       "cid": "6924437304318964849",
       "google_id": "/g/11jzfmbvdv",
       "maps_place_token": null
@@ -2345,7 +2357,7 @@
       "is_favorite": false,
       "lat": 35.671597299999995,
       "lng": 139.76163979999998,
-      "maps_url": "https://maps.google.com/?cid=6924438287474935491",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Rooster%2C+6+Chome-4-18+Ginza%2C+Chuo+City%2C+Tokyo+104-0061",
       "cid": "6924438287474935491",
       "google_id": "/g/11b5wl4xj8",
       "maps_place_token": null
@@ -2357,7 +2369,7 @@
       "is_favorite": false,
       "lat": 35.6720028,
       "lng": 139.7617613,
-      "maps_url": "https://maps.google.com/?cid=6924438287556367701",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Les+Copains+de+Dominique+Bouchet%2C+5+Chome-1-8+Ginza%2C+Chuo+City%2C+Tokyo+104-0061",
       "cid": "6924438287556367701",
       "google_id": "/g/11bzy6hrlx",
       "maps_place_token": null
@@ -2369,7 +2381,7 @@
       "is_favorite": false,
       "lat": 35.671510399999995,
       "lng": 139.76184569999998,
-      "maps_url": "https://maps.google.com/?cid=6924437500906166647",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SPICE+LAB+TOKYO%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%924%E2%88%923%2C+Gicros+Ginza+Gems%2C+10F",
       "cid": "6924437500906166647",
       "google_id": "/g/11fp7srgj1",
       "maps_place_token": null
@@ -2381,7 +2393,7 @@
       "is_favorite": false,
       "lat": 35.671602299999996,
       "lng": 139.7619734,
-      "maps_url": "https://maps.google.com/?cid=6924437550391235555",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Yamashina%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%924%E2%88%923%2C+Gicros+Ginza+Gems%2C+7%2F8F",
       "cid": "6924437550391235555",
       "google_id": "/g/11j3w6n3rl",
       "maps_place_token": null
@@ -2393,7 +2405,7 @@
       "is_favorite": false,
       "lat": 35.6712001,
       "lng": 139.7600962,
-      "maps_url": "https://maps.google.com/?cid=6924438285798677707",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marugin%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+7+Chome%E2%88%922%E7%95%AA%E5%85%88+%E3%82%B3%E3%83%AA%E3%83%89%E3%83%BC%E8%A1%97+105",
       "cid": "6924438285798677707",
       "google_id": "/g/1th7yb99",
       "maps_place_token": null
@@ -2405,7 +2417,7 @@
       "is_favorite": false,
       "lat": 35.6709743,
       "lng": 139.7610861,
-      "maps_url": "https://maps.google.com/?cid=6924438286747663971",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LITTLE+SMITH%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%924%E2%88%9212+KN%E3%83%93%E3%83%AB+B2F",
       "cid": "6924438286747663971",
       "google_id": "/g/11gsmvwpwp",
       "maps_place_token": null
@@ -2417,7 +2429,7 @@
       "is_favorite": false,
       "lat": 35.6979944,
       "lng": 139.7854666,
-      "maps_url": "https://maps.google.com/?cid=1524111636131988299",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Motenashi+Kuroki%2C+1+Chome-28-9+Asakusabashi%2C+Taito+City%2C+Tokyo+111-0053",
       "cid": "1524111636131988299",
       "google_id": "/g/1v_nchw6",
       "maps_place_token": null
@@ -2429,7 +2441,7 @@
       "is_favorite": false,
       "lat": 35.6693413,
       "lng": 139.7596685,
-      "maps_url": "https://maps.google.com/?cid=6924438260690188301",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Tokami",
       "cid": "6924438260690188301",
       "google_id": null,
       "maps_place_token": null
@@ -2441,7 +2453,7 @@
       "is_favorite": false,
       "lat": 35.6650086,
       "lng": 139.7298423,
-      "maps_url": "https://maps.google.com/?cid=6924437924943927665",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tsuru+Ton+Tan%2C+%E3%80%92106-0032+Tokyo%2C+Minato+City%2C+Roppongi%2C+3+Chome%E2%88%9214%E2%88%9212+%E5%85%AD%E6%9C%AC%E6%9C%A8%E4%B8%89%E4%B8%81%E7%9B%AE%E3%83%93%E3%83%AB",
       "cid": "6924437924943927665",
       "google_id": "/g/1tcw84wy",
       "maps_place_token": null
@@ -2453,7 +2465,7 @@
       "is_favorite": false,
       "lat": 35.732101,
       "lng": 139.70801319999998,
-      "maps_url": "https://maps.google.com/?cid=6924439864530348733",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Music+Cafe+Bar+%22ONE%27s%22%2C+%E3%80%92171-0014+Tokyo%2C+Toshima+City%2C+Ikebukuro%2C+2+Chome%E2%88%922%E2%88%926+Palace%E6%B1%A0%E8%A2%8B+4F",
       "cid": "6924439864530348733",
       "google_id": "/g/11gf8f5dbv",
       "maps_place_token": null
@@ -2465,7 +2477,7 @@
       "is_favorite": false,
       "lat": 35.6705477,
       "lng": 139.77015,
-      "maps_url": "https://maps.google.com/?cid=6924438248725106271",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ch%C5%ABka+Soba+Ginza+Hachigo%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+3+Chome%E2%88%9214%E2%88%922+%E7%AC%AC%E4%B8%80%E3%81%AF%E3%81%AA%E3%81%B6%E3%81%95%E3%83%93%E3%83%AB+1%E9%9A%8E",
       "cid": "6924438248725106271",
       "google_id": "/g/11f9x3zj8t",
       "maps_place_token": null
@@ -2477,7 +2489,7 @@
       "is_favorite": false,
       "lat": 35.667591,
       "lng": 139.71335689999998,
-      "maps_url": "https://maps.google.com/?cid=6924440109694699165",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hotel%27s%2C+%E3%80%92107-0061+Tokyo%2C+Minato+City%2C+Kita-Aoyama%2C+3+Chome%E2%88%924%E2%88%923+%EF%BC%92F",
       "cid": "6924440109694699165",
       "google_id": "/g/11rcd7528z",
       "maps_place_token": null
@@ -2489,7 +2501,7 @@
       "is_favorite": false,
       "lat": 35.619134599999995,
       "lng": 139.7023897,
-      "maps_url": "https://maps.google.com/?cid=6924437395488928277",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AE%A8+%E5%AD%A3%E3%82%89%E3%81%8F%2C+%E3%80%92142-0062+Tokyo%2C+Shinagawa+City%2C+Koyama%2C+4+Chome%E2%88%9210%E2%88%921%2C+Be-Re+Musashikoyama%2C+1F",
       "cid": "6924437395488928277",
       "google_id": "/g/11twhtr141",
       "maps_place_token": null
@@ -2501,7 +2513,7 @@
       "is_favorite": false,
       "lat": 35.663573,
       "lng": 139.71176,
-      "maps_url": "https://maps.google.com/?cid=6924437743991632461",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sakurai+Japanese+Tea+Experience%2C+%E3%82%B9%E3%83%91%E3%82%A4%E3%83%A9%E3%83%AB%E3%83%93%E3%83%AB+5F%2C+5+Chome-6-23+Minamiaoyama%2C+Minato+City%2C+Tokyo+107-0062",
       "cid": "6924437743991632461",
       "google_id": "/g/11bzt0rqy9",
       "maps_place_token": null
@@ -2513,7 +2525,7 @@
       "is_favorite": false,
       "lat": 35.667988699999995,
       "lng": 139.7172424,
-      "maps_url": "https://maps.google.com/?cid=6924439036692077407",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tadenoha%2C+%E3%83%80%E3%82%A4%E3%82%A2%E3%83%B3%E3%82%AF%E3%83%AC%E3%82%B9%E3%83%88%E3%83%93%E3%83%AB+2F%2C+3+Chome-2-3+Minamiaoyama%2C+Minato+City%2C+Tokyo+107-0062",
       "cid": "6924439036692077407",
       "google_id": "/g/11g9jmjr61",
       "maps_place_token": null
@@ -2525,7 +2537,7 @@
       "is_favorite": false,
       "lat": 35.6691013,
       "lng": 139.7166933,
-      "maps_url": "https://maps.google.com/?cid=6924440247350835599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+ACQUA+PAZZA%2C+%E3%80%92107-0062+Tokyo%2C+Minato+City%2C+Minamiaoyama%2C+2+Chome%E2%88%9227%E2%88%9218+AOYAMA+M%E2%80%99s+TOWER%EF%BC%88%E9%9D%92%E5%B1%B1%E3%82%A8%E3%83%A0%E3%82%BA%E3%82%BF%E3%83%AF+%E3%83%91%E3%82%B5%E3%83%BC%E3%82%B8%E3%83%A5%E9%9D%92%E5%B1%B12F",
       "cid": "6924440247350835599",
       "google_id": "/g/1tg9hj_7",
       "maps_place_token": null
@@ -2537,7 +2549,7 @@
       "is_favorite": false,
       "lat": 35.6676766,
       "lng": 139.7164496,
-      "maps_url": "https://maps.google.com/?cid=6924439045958714563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ALDO+%E3%82%A2%E3%83%AB%E3%83%89%2C+3+Chome-3-23+Minamiaoyama%2C+Minato+City%2C+Tokyo+107-0062",
       "cid": "6924439045958714563",
       "google_id": "/g/11cmtryj2w",
       "maps_place_token": null
@@ -2549,7 +2561,7 @@
       "is_favorite": false,
       "lat": 35.6689308,
       "lng": 139.7123818,
-      "maps_url": "https://maps.google.com/?cid=6924439042901299119",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LATTEST%2C+3+Chome-5-2+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001",
       "cid": "6924439042901299119",
       "google_id": "/g/11b6x7c_4v",
       "maps_place_token": null
@@ -2561,7 +2573,7 @@
       "is_favorite": false,
       "lat": 35.6894807,
       "lng": 139.6916863,
-      "maps_url": "https://maps.google.com/?cid=6924439272315041697",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tokyo+Metropolitan+Government+Building",
       "cid": "6924439272315041697",
       "google_id": null,
       "maps_place_token": null
@@ -2573,7 +2585,7 @@
       "is_favorite": false,
       "lat": 35.688813499999995,
       "lng": 139.7083092,
-      "maps_url": "https://maps.google.com/?cid=6924551766975255865",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soba+House+Konjiki-Hototogisu",
       "cid": "6924551766975255865",
       "google_id": null,
       "maps_place_token": null
@@ -2585,7 +2597,7 @@
       "is_favorite": false,
       "lat": 35.6946198,
       "lng": 139.6889158,
-      "maps_url": "https://maps.google.com/?cid=6924551675927926199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Obic%C3%A0+Mozzarella+Bar+Nishi+Shinjuku%2C+%E3%80%92160-0023+Tokyo%2C+Shinjuku+City%2C+Nishishinjuku%2C+6+Chome%E2%88%9224%E2%88%921%2C+Nishi-Shinjuku+Mitsui+Bldg.%2C+1F",
       "cid": "6924551675927926199",
       "google_id": "/g/11frns8ny_",
       "maps_place_token": null
@@ -2597,7 +2609,7 @@
       "is_favorite": false,
       "lat": 35.722621499999995,
       "lng": 139.7009995,
-      "maps_url": "https://maps.google.com/?cid=6924437466611677657",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soba+Osame%2C+3+Chome-21-5+Shimoochiai%2C+Shinjuku+City%2C+Tokyo+161-0033",
       "cid": "6924437466611677657",
       "google_id": "/g/11g__57nb3",
       "maps_place_token": null
@@ -2609,7 +2621,7 @@
       "is_favorite": false,
       "lat": 35.7318144,
       "lng": 139.7145339,
-      "maps_url": "https://maps.google.com/?cid=6924439900590380121",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Morutoya%2C+%E3%80%92170-0013+Tokyo%2C+Toshima+City%2C+Higashiikebukuro%2C+1+Chome%E2%88%928%E2%88%926+%EF%BC%A4%EF%BC%AB%EF%BC%B9%EF%BC%91%EF%BC%92%E3%83%93%E3%83%AB+1F",
       "cid": "6924439900590380121",
       "google_id": "/g/1tfl063n",
       "maps_place_token": null
@@ -2621,7 +2633,7 @@
       "is_favorite": false,
       "lat": 35.7331966,
       "lng": 139.7101404,
-      "maps_url": "https://maps.google.com/?cid=6924439863770882077",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mala+Youhuo%2C+%E3%80%92171-0014+Tokyo%2C+Toshima+City%2C+Ikebukuro%2C+2+Chome%E2%88%9243%E2%88%922+%EF%BC%A6%EF%BC%A9%EF%BC%AE%EF%BC%AF%E3%83%93%E3%83%AB+1F%E3%80%812F",
       "cid": "6924439863770882077",
       "google_id": "/g/1tffzhk9",
       "maps_place_token": null
@@ -2633,7 +2645,7 @@
       "is_favorite": false,
       "lat": 35.7269046,
       "lng": 139.7116557,
-      "maps_url": "https://maps.google.com/?cid=6924439905553152375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mutekiya%2C+%E3%80%92171-0022+Tokyo%2C+Toshima+City%2C+Minamiikebukuro%2C+1+Chome%E2%88%9217%E2%88%921+%E5%B4%8E%E6%9C%AC%E3%83%93%E3%83%AB1F",
       "cid": "6924439905553152375",
       "google_id": "/g/11b72mlbrk",
       "maps_place_token": null
@@ -2645,7 +2657,7 @@
       "is_favorite": false,
       "lat": 35.7012043,
       "lng": 139.7409533,
-      "maps_url": "https://maps.google.com/?cid=6924438747802576643",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lantern+burger%2C+%E3%80%92162-0825+Tokyo%2C+Shinjuku+City%2C+Kagurazaka%2C+3+Chome%E2%88%922%E2%88%924+%E3%82%AF%E3%83%AC%E3%83%BC%E3%83%AB%E7%A5%9E%E6%A5%BD%E5%9D%82+1%E9%9A%8E",
       "cid": "6924438747802576643",
       "google_id": "/g/1tdjw_ks",
       "maps_place_token": null
@@ -2657,7 +2669,7 @@
       "is_favorite": false,
       "lat": 35.7022117,
       "lng": 139.7399354,
-      "maps_url": "https://maps.google.com/?cid=6924438747648072655",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shabuya%2C+%E3%80%92162-0825+Tokyo%2C+Shinjuku+City%2C+Kagurazaka%2C+4+Chome%E2%88%92%EF%BC%94",
       "cid": "6924438747648072655",
       "google_id": "/g/1v4k6hrd",
       "maps_place_token": null
@@ -2669,7 +2681,7 @@
       "is_favorite": false,
       "lat": 35.7018811,
       "lng": 139.73970409999998,
-      "maps_url": "https://maps.google.com/?cid=6924438747581386527",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Bretagne+Creperie%2C+4+Chome-2+Kagurazaka%2C+Shinjuku+City%2C+Tokyo+162-0825",
       "cid": "6924438747581386527",
       "google_id": "/g/11bysjpx01",
       "maps_place_token": null
@@ -2681,7 +2693,7 @@
       "is_favorite": false,
       "lat": 35.701960299999996,
       "lng": 139.7409123,
-      "maps_url": "https://maps.google.com/?cid=6924438748528235661",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kamikura%2C+%E3%80%92162-0825+Tokyo%2C+Shinjuku+City%2C+Kagurazaka%2C+3+Chome%E2%88%92%EF%BC%91",
       "cid": "6924438748528235661",
       "google_id": "/g/1tdr396d",
       "maps_place_token": null
@@ -2693,7 +2705,7 @@
       "is_favorite": false,
       "lat": 35.7016451,
       "lng": 139.73993249999998,
-      "maps_url": "https://maps.google.com/?cid=6924438749352190823",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rakuzan+Kagurazaka%2C+4+Chome-3+Kagurazaka%2C+Shinjuku+City%2C+Tokyo+162-0825",
       "cid": "6924438749352190823",
       "google_id": "/g/1tdmdwkv",
       "maps_place_token": null
@@ -2705,7 +2717,7 @@
       "is_favorite": false,
       "lat": 35.6690312,
       "lng": 139.7066653,
-      "maps_url": "https://maps.google.com/?cid=6924439060939987671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cafe+Luigi%2C+4+Chome-31-1+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001",
       "cid": "6924439060939987671",
       "google_id": "/g/1xgrmy6x",
       "maps_place_token": null
@@ -2717,7 +2729,7 @@
       "is_favorite": false,
       "lat": 35.7108814,
       "lng": 139.7974925,
-      "maps_url": "https://maps.google.com/?cid=6924441379038500533",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kamiya+Bar%2C+1+Chome-1-1+Asakusa%2C+Taito+City%2C+Tokyo+111-0032",
       "cid": "6924441379038500533",
       "google_id": "/g/121s4gqt",
       "maps_place_token": null
@@ -2729,7 +2741,7 @@
       "is_favorite": false,
       "lat": 35.685561899999996,
       "lng": 139.7839933,
-      "maps_url": "https://maps.google.com/?cid=6924435956366086005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9F%B3%E7%87%95%2C+%E3%80%92103-0013+Tokyo%2C+Chuo+City%2C+Nihonbashiningyocho%2C+2+Chome%E2%88%9210%E2%88%9211+7%E9%9A%8E+KYOE+PLAZA",
       "cid": "6924435956366086005",
       "google_id": "/g/11n88k56kw",
       "maps_place_token": null
@@ -2741,7 +2753,7 @@
       "is_favorite": false,
       "lat": 35.6743824,
       "lng": 139.7122384,
-      "maps_url": "https://maps.google.com/?cid=6924439011101415671",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Virtus+wine%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya+City%2C+Jingumae%2C+2+Chome%E2%88%9211%E2%88%9219+%EF%BC%91%EF%BC%91%E2%88%92%EF%BC%91%EF%BC%99+1F",
       "cid": "6924439011101415671",
       "google_id": "/g/11cn69tk56",
       "maps_place_token": null
@@ -2753,7 +2765,7 @@
       "is_favorite": false,
       "lat": 35.6618298,
       "lng": 139.7251878,
-      "maps_url": "https://maps.google.com/?cid=6924437784326732759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Yuu%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+1+Chome%E2%88%924%E2%88%9215+%E5%AF%BF%E5%8F%B8%E5%8B%87",
       "cid": "6924437784326732759",
       "google_id": "/g/1tglyzgy",
       "maps_place_token": null
@@ -2765,7 +2777,7 @@
       "is_favorite": false,
       "lat": 35.662515899999995,
       "lng": 139.7322145,
-      "maps_url": "https://maps.google.com/?cid=6924437935013099361",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sougo+%E5%AE%97%E8%83%A1%2C+%E3%80%92106-0032+Tokyo%2C+Minato+City%2C+Roppongi%2C+6+Chome%E2%88%921%E2%88%928%2C+Roppongi+Green+Building%2C+3F",
       "cid": "6924437935013099361",
       "google_id": "/g/11b77zz79p",
       "maps_place_token": null
@@ -2777,7 +2789,7 @@
       "is_favorite": false,
       "lat": 35.6610051,
       "lng": 139.6970442,
-      "maps_url": "https://maps.google.com/?cid=6924439086453654627",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TASUICHI%2C+33-14+Udagawacho%2C+Shibuya+City%2C+Tokyo+150-0042",
       "cid": "6924439086453654627",
       "google_id": "/g/11bwyxf913",
       "maps_place_token": null
@@ -2789,7 +2801,7 @@
       "is_favorite": false,
       "lat": 35.671048899999995,
       "lng": 139.71362929999998,
-      "maps_url": "https://maps.google.com/?cid=6924440441527530477",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=gnudi%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya+City%2C+Jingumae%2C+3+Chome%E2%88%9241%E2%88%922+%E5%B2%A1%E6%9C%AC%E3%83%93%E3%83%AB+1%E9%9A%8E",
       "cid": "6924440441527530477",
       "google_id": "/g/11t4b6tql0",
       "maps_place_token": null
@@ -2801,7 +2813,7 @@
       "is_favorite": false,
       "lat": 35.6647551,
       "lng": 139.7334715,
-      "maps_url": "https://maps.google.com/?cid=6924437820782657561",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ryuzu%2C+%E3%80%92106-0032+Tokyo%2C+Minato+City%2C+Roppongi%2C+4+Chome%E2%88%922%E2%88%9235+Vort%E5%85%AD%E6%9C%AC%E6%9C%A8Dual%27s+B1F",
       "cid": "6924437820782657561",
       "google_id": "/g/1tcxjrw7",
       "maps_place_token": null
@@ -2813,7 +2825,7 @@
       "is_favorite": false,
       "lat": 35.6615032,
       "lng": 139.7327091,
-      "maps_url": "https://maps.google.com/?cid=6924437935402841973",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Warayakiya+Roppongi%2C+%E3%80%92106-0032+Tokyo%2C+Minato+City%2C+Roppongi%2C+6+Chome%E2%88%928%E2%88%928+%E5%85%AD%E6%9C%AC%E6%9C%A8%E3%82%B4%E3%83%BC%E3%83%87%E3%82%A3%E3%83%93%E3%83%AB+1F",
       "cid": "6924437935402841973",
       "google_id": "/g/1vj5_5q6",
       "maps_place_token": null
@@ -2825,7 +2837,7 @@
       "is_favorite": false,
       "lat": 35.6644262,
       "lng": 139.7298765,
-      "maps_url": "https://maps.google.com/?cid=6924437776054794911",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Sputnik",
       "cid": "6924437776054794911",
       "google_id": null,
       "maps_place_token": null
@@ -2837,7 +2849,7 @@
       "is_favorite": false,
       "lat": 35.661738899999996,
       "lng": 139.73125389999998,
-      "maps_url": "https://maps.google.com/?cid=6924437774200201981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+L%27OSTERIA",
       "cid": "6924437774200201981",
       "google_id": null,
       "maps_place_token": null
@@ -2849,7 +2861,7 @@
       "is_favorite": false,
       "lat": 35.6651532,
       "lng": 139.732619,
-      "maps_url": "https://maps.google.com/?cid=6924437819780169315",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=FREY%27s+Famous+Pizzeria",
       "cid": "6924437819780169315",
       "google_id": null,
       "maps_place_token": null
@@ -2861,7 +2873,7 @@
       "is_favorite": false,
       "lat": 35.6692424,
       "lng": 139.7646328,
-      "maps_url": "https://maps.google.com/?cid=6924438254240310731",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hyoutan+ya+6choume+ten",
       "cid": "6924438254240310731",
       "google_id": null,
       "maps_place_token": null
@@ -2873,7 +2885,7 @@
       "is_favorite": false,
       "lat": 35.658147,
       "lng": 139.7433584,
-      "maps_url": "https://maps.google.com/?cid=6924438071719879597",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nodaiwa+Azabu+Iikura+Honten",
       "cid": "6924438071719879597",
       "google_id": null,
       "maps_place_token": null
@@ -2885,7 +2897,7 @@
       "is_favorite": false,
       "lat": 35.6730209,
       "lng": 139.7678429,
-      "maps_url": "https://maps.google.com/?cid=6924438238444125255",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+Shinohara%2C+2+Chome-8-17+Ginza%2C+%E4%B8%AD%E5%A4%AE%E5%8C%BA+Chuo+City%2C+Tokyo+104-0061%2C+Japan",
       "cid": "6924438238444125255",
       "google_id": "/g/11cs5pgcby",
       "maps_place_token": null
@@ -2897,7 +2909,7 @@
       "is_favorite": false,
       "lat": 35.7032909,
       "lng": 139.7369952,
-      "maps_url": "https://maps.google.com/?cid=6924440102696312783",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hatou%2C+5+Chome-7+Kagurazaka%2C+Shinjuku+City%2C+Tokyo+162-0825",
       "cid": "6924440102696312783",
       "google_id": "/g/11j1_xtlj5",
       "maps_place_token": null
@@ -2909,7 +2921,7 @@
       "is_favorite": false,
       "lat": 35.649799699999996,
       "lng": 139.7100875,
-      "maps_url": "https://maps.google.com/?cid=6924438097092144711",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Wasa%2C+%E3%80%92150-0011+Tokyo%2C+Shibuya+City%2C+Higashi%2C+3+Chome%E2%88%9216%E2%88%921+%E3%83%99%E3%83%AB%E3%82%B6%E6%81%B5%E6%AF%94%E5%AF%BF%E3%83%93%E3%83%AB+1F",
       "cid": "6924438097092144711",
       "google_id": "/g/11mmjl41p6",
       "maps_place_token": null
@@ -2921,7 +2933,7 @@
       "is_favorite": false,
       "lat": 35.7294293,
       "lng": 139.7165137,
-      "maps_url": "https://maps.google.com/?cid=6924439907925943325",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Saffron+Ikebukuro%2C+%E3%80%92170-0013+Tokyo%2C+Toshima+City%2C+Higashiikebukuro%2C+1+Chome%E2%88%9228%E2%88%921+%EF%BC%B4%EF%BC%AF%E3%83%93%E3%83%AB+201+%E3%82%BF%E3%82%AF%E3%83%88",
       "cid": "6924439907925943325",
       "google_id": "/g/1tnqg_16",
       "maps_place_token": null
@@ -2933,7 +2945,7 @@
       "is_favorite": false,
       "lat": 35.6502686,
       "lng": 139.7202833,
-      "maps_url": "https://maps.google.com/?cid=6924437728396354689",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Priya+The+Indian+Restaurant%2C+%E3%80%92150-0012+Tokyo%2C+Shibuya+City%2C+Hiroo%2C+5+Chome%E2%88%922%E2%88%9225+%E6%9C%AC%E5%9B%BD+%E3%83%93%E3%83%AB+3F",
       "cid": "6924437728396354689",
       "google_id": "/g/1tdjw_fy",
       "maps_place_token": null
@@ -2945,7 +2957,7 @@
       "is_favorite": false,
       "lat": 35.695223999999996,
       "lng": 139.7576918,
-      "maps_url": "https://maps.google.com/?cid=6924438433363578117",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mandala%2C+%E3%80%92101-0051+Tokyo%2C+Chiyoda+City%2C+Kanda+Jinbocho%2C+2+Chome%E2%88%9217+%E9%9B%86%E8%8B%B1%E7%A4%BE%E5%85%B1%E5%90%8C%E3%83%93%E3%83%AB+%E5%9C%B0%E4%B8%8B%EF%BC%91%E9%9A%8E",
       "cid": "6924438433363578117",
       "google_id": "/g/1tl_lq8q",
       "maps_place_token": null
@@ -2957,7 +2969,7 @@
       "is_favorite": false,
       "lat": 35.6861406,
       "lng": 139.7369243,
-      "maps_url": "https://maps.google.com/?cid=6924438786175692825",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ajanta%2C+%E3%80%92102-0084+Tokyo%2C+Chiyoda+City%2C+Nibancho%2C+3%E2%88%9211+Vort%E4%BA%8C%E7%95%AA%E7%94%BA",
       "cid": "6924438786175692825",
       "google_id": "/g/121g7pdl",
       "maps_place_token": null
@@ -2969,7 +2981,7 @@
       "is_favorite": false,
       "lat": 35.6647414,
       "lng": 139.72814309999998,
-      "maps_url": "https://maps.google.com/?cid=6924437966635305591",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%95%B7%E8%B0%B7%E5%B7%9D%E6%A0%84%E9%9B%85+%E5%85%AD%E6%9C%AC%E6%9C%A8+-%E6%97%A5%E6%9C%AC%E9%85%92%E4%BD%93%E9%A8%93-%2C+%E3%80%92106-0032+Tokyo%2C+Minato+City%2C+Roppongi%2C+7+Chome%E2%88%926%E2%88%9220+1%E9%9A%8E",
       "cid": "6924437966635305591",
       "google_id": "/g/11gzmj75mb",
       "maps_place_token": null
@@ -2981,7 +2993,7 @@
       "is_favorite": false,
       "lat": 35.6873319,
       "lng": 139.7747314,
-      "maps_url": "https://maps.google.com/?cid=6924435118397936703",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SUIGIAN%2C+%E7%A6%8F%E5%BE%B3%E3%81%AE%E6%A3%AE+%E5%9C%B0%E4%B8%8B%2C+1%E9%9A%8E%2C+2+Chome-5-10+Nihonbashimuromachi%2C+Chuo+City%2C+Tokyo+103-0022",
       "cid": "6924435118397936703",
       "google_id": "/g/11g0gb50tc",
       "maps_place_token": null
@@ -2993,7 +3005,7 @@
       "is_favorite": false,
       "lat": 35.665754899999996,
       "lng": 139.6842729,
-      "maps_url": "https://maps.google.com/?cid=6924551946900521811",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Celaravird%2C+%E3%80%92151-0064+Tokyo%2C+Shibuya+City%2C+Uehara%2C+2+Chome%E2%88%928%E2%88%9211+TWIZA%E4%B8%8A%E5%8E%9F+%EF%BC%91%E9%9A%8E",
       "cid": "6924551946900521811",
       "google_id": "/g/11b76tvnr4",
       "maps_place_token": null
@@ -3005,7 +3017,7 @@
       "is_favorite": false,
       "lat": 35.667974,
       "lng": 139.6817321,
-      "maps_url": "https://maps.google.com/?cid=6924551919895911015",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Soba+Yamato%2C+%E3%80%92151-0064+Tokyo%2C+Shibuya+City%2C+Uehara%2C+3+Chome%E2%88%921%E2%88%9217+ideerooms%E4%B8%8A%E5%8E%9F+101",
       "cid": "6924551919895911015",
       "google_id": "/g/1tglmyhl",
       "maps_place_token": null
@@ -3017,9 +3029,21 @@
       "is_favorite": false,
       "lat": 35.667698,
       "lng": 139.68179999999998,
-      "maps_url": "https://maps.google.com/?cid=6924551920031749739",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hakuryu%2C+2+Chome-48-10+Uehara%2C+Shibuya+City%2C+Tokyo+151-0064",
       "cid": "6924551920031749739",
       "google_id": "/g/1tjg_dfc",
+      "maps_place_token": null
+    },
+    {
+      "name": "Fūreika",
+      "address": "3 Chome-7-5 Higashiazabu, Minato City, Tokyo 106-0044",
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.6562662,
+      "lng": 139.7384753,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=F%C5%ABreika%2C+3+Chome-7-5+Higashiazabu%2C+Minato+City%2C+Tokyo+106-0044",
+      "cid": "6924438071719879597",
+      "google_id": "/g/1hc5c7j2f",
       "maps_place_token": null
     },
     {
@@ -3029,7 +3053,7 @@
       "is_favorite": false,
       "lat": 35.7229178,
       "lng": 139.7903969,
-      "maps_url": "https://maps.google.com/?cid=6924441186877562283",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bon%2C+1+Chome-2-11+Ryusen%2C+Taito+City%2C+Tokyo+110-0012",
       "cid": "6924441186877562283",
       "google_id": "/g/1tmxfk9l",
       "maps_place_token": null
@@ -3041,7 +3065,7 @@
       "is_favorite": false,
       "lat": 35.6635996,
       "lng": 139.6603379,
-      "maps_url": "https://maps.google.com/?cid=6924551666336249461",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bassanova%2C+1+Chome-4-18+Hanegi%2C+Setagaya+City%2C+Tokyo+156-0042",
       "cid": "6924551666336249461",
       "google_id": "/g/1tvyltc4",
       "maps_place_token": null
@@ -3053,7 +3077,7 @@
       "is_favorite": false,
       "lat": 35.6639737,
       "lng": 139.6678886,
-      "maps_url": "https://maps.google.com/?cid=6924552068566003711",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bear+Pond+Espresso%2C+%E3%80%92155-0031+Tokyo%2C+Setagaya+City%2C+Kitazawa%2C+2+Chome%E2%88%9236%E2%88%9212+%E3%83%99%E3%82%A2%E3%83%BC%E3%83%9D%E3%83%B3%E3%83%89",
       "cid": "6924552068566003711",
       "google_id": "/g/1tfh4psn",
       "maps_place_token": null
@@ -3065,7 +3089,7 @@
       "is_favorite": false,
       "lat": 35.6543962,
       "lng": 139.6672999,
-      "maps_url": "https://maps.google.com/?cid=6924552047698217675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Salmon+%26+Trout%2C+4+Chome-42-7+Daizawa%2C+Setagaya+City%2C+Tokyo+155-0032",
       "cid": "6924552047698217675",
       "google_id": "/g/11b7hhwmh2",
       "maps_place_token": null
@@ -3077,7 +3101,7 @@
       "is_favorite": false,
       "lat": 35.6573701,
       "lng": 139.6676226,
-      "maps_url": "https://maps.google.com/?cid=6924552630185780203",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coaster+Craft+Beer+%26+Burgers%2C+%E3%80%92155-0032+Tokyo%2C+Setagaya+City%2C+Daizawa%2C+5+Chome%E2%88%9219%E2%88%9213%2C+Kosei+Haimu%2C+%EF%BC%91F",
       "cid": "6924552630185780203",
       "google_id": "/g/11fjsyv957",
       "maps_place_token": null
@@ -3089,7 +3113,7 @@
       "is_favorite": false,
       "lat": 35.6589118,
       "lng": 139.6676161,
-      "maps_url": "https://maps.google.com/?cid=6924552059607966785",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Good+Heavens%2C+5+Chome-32-5+Daizawa%2C+Setagaya+City%2C+Tokyo+155-0032",
       "cid": "6924552059607966785",
       "google_id": "/g/11b7xwd33_",
       "maps_place_token": null
@@ -3101,7 +3125,7 @@
       "is_favorite": false,
       "lat": 35.663063099999995,
       "lng": 139.6669497,
-      "maps_url": "https://maps.google.com/?cid=6924551648426771721",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dogberry+Shimokitazawa%2C+%E3%80%92155-0031+Tokyo%2C+Setagaya+City%2C+Kitazawa%2C+2+Chome%E2%88%9229%E2%88%9216+%E9%AB%98%E6%9C%A8%E3%83%93%E3%83%AB",
       "cid": "6924551648426771721",
       "google_id": null,
       "maps_place_token": null
@@ -3113,7 +3137,7 @@
       "is_favorite": false,
       "lat": 35.6651374,
       "lng": 139.66558469999998,
-      "maps_url": "https://maps.google.com/?cid=6924552179909073849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TauLa+~Platos+de+Espa%C3%B1a~%2C+%E3%80%92155-0031+Tokyo%2C+Setagaya+City%2C+Kitazawa%2C+3+Chome%E2%88%9234%E2%88%926+%E5%8C%97%E6%B2%A2%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3%E3%83%93%E3%83%AB+%EF%BC%91%EF%BC%A6",
       "cid": "6924552179909073849",
       "google_id": "/g/11j2lsmtpx",
       "maps_place_token": null
@@ -3125,7 +3149,7 @@
       "is_favorite": false,
       "lat": 35.660993999999995,
       "lng": 139.6727914,
-      "maps_url": "https://maps.google.com/?cid=6924551893100527617",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=PepeRosso%2C+%E3%80%92155-0032+Tokyo%2C+Setagaya+City%2C+Daizawa%2C+2+Chome%E2%88%9246%E2%88%927+%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E6%A1%83%E4%BA%95+1F",
       "cid": "6924551893100527617",
       "google_id": "/g/1tmpdzkm",
       "maps_place_token": null
@@ -3137,7 +3161,7 @@
       "is_favorite": false,
       "lat": 35.6633394,
       "lng": 139.6698648,
-      "maps_url": "https://maps.google.com/?cid=6924552633798362179",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ogawa+Coffee+Laboratory+Shimokitazawa%2C+%E3%80%92155-0031+Tokyo%2C+Setagaya+City%2C+Kitazawa%2C+3+Chome%E2%88%9219%E2%88%9220+reload1-1",
       "cid": "6924552633798362179",
       "google_id": "/g/11p4qhxqg0",
       "maps_place_token": null
@@ -3149,7 +3173,7 @@
       "is_favorite": false,
       "lat": 35.6640821,
       "lng": 139.67002449999998,
-      "maps_url": "https://maps.google.com/?cid=6924552066091804541",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tepito%2C+3+Chome-19-9+Kitazawa%2C+Setagaya+City%2C+Tokyo+155-0031",
       "cid": "6924552066091804541",
       "google_id": "/g/11c46hjcjh",
       "maps_place_token": null
@@ -3161,7 +3185,7 @@
       "is_favorite": false,
       "lat": 35.662898,
       "lng": 139.6683782,
-      "maps_url": "https://maps.google.com/?cid=6924552067953053413",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%87%BB%E8%A3%BD+Dining+Bar+U7%2C+%E3%80%92155-0031+Tokyo%2C+Setagaya+City%2C+Kitazawa%2C+2+Chome%E2%88%9231%E2%88%9212+%E3%83%A2%E3%82%B9%E3%83%90%E3%83%BC%E3%82%AC%E3%83%BC%E4%B8%8B%E5%8C%97%E6%B2%A2%E5%8C%97%E5%8F%A3%E5%BA%97+2F",
       "cid": "6924552067953053413",
       "google_id": "/g/11c8083mzg",
       "maps_place_token": null
@@ -3173,7 +3197,7 @@
       "is_favorite": false,
       "lat": 35.6895433,
       "lng": 139.7226511,
-      "maps_url": "https://maps.google.com/?cid=6924439399776212309",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kan+Coffee+Fujifuji%2C+10-14+Arakicho%2C+Shinjuku+City%2C+Tokyo+160-0007",
       "cid": "6924439399776212309",
       "google_id": "/g/11dxqg5kxf",
       "maps_place_token": null
@@ -3185,7 +3209,7 @@
       "is_favorite": false,
       "lat": 35.661014099999996,
       "lng": 139.7218249,
-      "maps_url": "https://maps.google.com/?cid=6924437786729621903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=AZUR+et+MASA+UEKI%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+2+Chome%E2%88%9224%E2%88%927+%E3%82%B5%E3%83%B3%E3%83%8F%E3%82%A4%E3%83%A0%E5%8D%97%E9%9D%92%E5%B1%B1+1%E9%9A%8E",
       "cid": "6924437786729621903",
       "google_id": "/g/11g6p0k0gc",
       "maps_place_token": null
@@ -3197,7 +3221,7 @@
       "is_favorite": false,
       "lat": 35.715484,
       "lng": 139.7066146,
-      "maps_url": "https://maps.google.com/?cid=6924439729652286011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tonta%2C+3+Chome-17-8+Takada%2C+Toshima+City%2C+Tokyo+171-0033%2C+Japan",
       "cid": "6924439729652286011",
       "google_id": "/g/1tkf0zkh",
       "maps_place_token": null
@@ -3209,7 +3233,7 @@
       "is_favorite": false,
       "lat": 35.689063499999996,
       "lng": 139.7774513,
-      "maps_url": "https://maps.google.com/?cid=6924435916920177979",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kitade+Tacos+COMMISSARY%2C+3+Chome-11-5+Nihonbashihoncho%2C+Chuo+City%2C+Tokyo+103-0023%2C+Japan",
       "cid": "6924435916920177979",
       "google_id": "/g/11kzggvmmh",
       "maps_place_token": null
@@ -3221,7 +3245,7 @@
       "is_favorite": false,
       "lat": 35.6984157,
       "lng": 139.77058929999998,
-      "maps_url": "https://maps.google.com/?cid=6924438483734022043",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jiromaru+Akihabara%2C+Japan%2C+%E3%80%92101-0021+Tokyo%2C+Chiyoda+City%2C+Sotokanda%2C+1+Chome%E2%88%922%E2%88%923+%E5%9C%9F%E5%B1%8B%E3%83%93%E3%83%AB+1%E9%9A%8E",
       "cid": "6924438483734022043",
       "google_id": "/g/11bv3mp9gh",
       "maps_place_token": null
@@ -3233,7 +3257,7 @@
       "is_favorite": false,
       "lat": 35.6966988,
       "lng": 139.7601228,
-      "maps_url": "https://maps.google.com/?cid=6924438431054663881",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Udon+Maruka%2C+Japan%2C+%E3%80%92101-0052+Tokyo%2C+Chiyoda+City%2C+Kanda+Ogawamachi%2C+3+Chome%E2%88%92%EF%BC%91%EF%BC%96%E2%88%921+%E3%83%8B%E3%83%A5%E3%83%BC%E9%A7%BF%E6%B2%B3%E5%8F%B0%E3%83%93%E3%83%AB+1F",
       "cid": "6924438431054663881",
       "google_id": "/g/1hc363lyz",
       "maps_place_token": null
@@ -3245,7 +3269,7 @@
       "is_favorite": false,
       "lat": 35.6654128,
       "lng": 139.755674,
-      "maps_url": "https://maps.google.com/?cid=6924437851081985935",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tachiguizushi+Akira+Shinbashi%2C+Japan%2C+%E3%80%92105-0004+Tokyo%2C+Minato+City%2C+Shinbashi%2C+3+Chome%E2%88%928%E2%88%925%2C+Le+Gratteciel%2C+%E5%8F%B7+B1",
       "cid": "6924437851081985935",
       "google_id": "/g/11mb0fnggv",
       "maps_place_token": null
@@ -3257,7 +3281,7 @@
       "is_favorite": false,
       "lat": 35.655555899999996,
       "lng": 139.699272,
-      "maps_url": "https://maps.google.com/?cid=6924437633459336057",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kotaro%2C+28-2+Sakuragaokacho%2C+Shibuya+City%2C+Tokyo+150-0031%2C+Japan",
       "cid": "6924437633459336057",
       "google_id": "/g/12hkr32xb",
       "maps_place_token": null
@@ -3269,7 +3293,7 @@
       "is_favorite": false,
       "lat": 35.665588199999995,
       "lng": 139.72878359999999,
-      "maps_url": "https://maps.google.com/?cid=6924437989071554653",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=S%C3%A9RieUX%3F+%E3%82%BB%E3%83%AA%E3%83%A5%E3%83%BC+%E5%85%AD%E6%9C%AC%E6%9C%A8+%E3%83%A2%E3%83%80%E3%83%B3%E3%83%95%E3%83%AC%E3%83%B3%E3%83%81%2C+7+Chome-4-4+Roppongi%2C+Minato+City%2C+Tokyo+106-0032%2C+Japan",
       "cid": "6924437989071554653",
       "google_id": "/g/11sth4cpjd",
       "maps_place_token": null
@@ -3281,7 +3305,7 @@
       "is_favorite": false,
       "lat": 35.7273926,
       "lng": 139.7722841,
-      "maps_url": "https://maps.google.com/?cid=6924440375065119871",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Burari%2C+5+Chome-52-5+Higashinippori%2C+Arakawa+City%2C+Tokyo+116-0014%2C+Japan",
       "cid": "6924440375065119871",
       "google_id": "/g/1xg5sny_",
       "maps_place_token": null
@@ -3293,7 +3317,7 @@
       "is_favorite": false,
       "lat": 35.6684069,
       "lng": 139.70847,
-      "maps_url": "https://maps.google.com/?cid=6924440274300968155",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=SLICE+of+LIFE+%EF%BC%88%E3%82%B9%E3%83%A9%E3%82%A4%E3%82%B9%E3%82%AA%E3%83%96%E3%83%A9%E3%82%A4%E3%83%95%EF%BC%89%2C+4+Chome-21-13+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001%2C+Japan",
       "cid": "6924440274300968155",
       "google_id": "/g/11t6z39_7p",
       "maps_place_token": null
@@ -3305,9 +3329,21 @@
       "is_favorite": false,
       "lat": 35.6679141,
       "lng": 139.7466215,
-      "maps_url": "https://maps.google.com/?cid=6924438043364206645",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TOKYO+NODE%EF%BD%9C%E6%9D%B1%E4%BA%AC%E3%83%8E%E3%83%BC%E3%83%89%2C+%E3%80%92105-0001+Tokyo%2C+Minato+City%2C+Toranomon%2C+2+Chome%E2%88%926%E2%88%922+%E3%83%92%E3%83%AB%E3%82%BA+%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%BF%E3%83%AF+8%E3%83%BB45%E3%83%BB46%E3%83%BB49F",
       "cid": "6924438043364206645",
       "google_id": "/g/11k9l77cr6",
+      "maps_place_token": null
+    },
+    {
+      "name": "ENEKO Tokyo",
+      "address": "Toki-On Nishiazabu, 3 Chome-16-28 Nishiazabu, Minato City, Tokyo 106-0031",
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.658383199999996,
+      "lng": 139.72572979999998,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ENEKO+Tokyo%2C+Toki-On+Nishiazabu%2C+3+Chome-16-28+Nishiazabu%2C+Minato+City%2C+Tokyo+106-0031",
+      "cid": "6924437743991632461",
+      "google_id": "/g/11dffzdmw0",
       "maps_place_token": null
     },
     {
@@ -3317,7 +3353,7 @@
       "is_favorite": false,
       "lat": 35.668557,
       "lng": 139.7618936,
-      "maps_url": "https://maps.google.com/?cid=6924438258033218651",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Faro%2C+8+Chome-8-3+Ginza%2C+Chuo+City%2C+Tokyo+104-0061",
       "cid": "6924438258033218651",
       "google_id": "/g/11gdkpbwbx",
       "maps_place_token": null
@@ -3329,7 +3365,7 @@
       "is_favorite": false,
       "lat": 35.709004,
       "lng": 139.7746258,
-      "maps_url": "https://maps.google.com/?cid=6924441660189554567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ameyoko+Shopping+District%2C+6+Chome-10+Ueno%2C+Taito+City%2C+Tokyo+110-0005",
       "cid": "6924441660189554567",
       "google_id": null,
       "maps_place_token": null
@@ -3341,7 +3377,7 @@
       "is_favorite": false,
       "lat": 35.7105818,
       "lng": 139.7730884,
-      "maps_url": "https://maps.google.com/?cid=6924441236910338099",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mara+daigaku%2C+%E3%80%92110-0005+Tokyo%2C+Taito+City%2C+Ueno%2C+2+Chome%E2%88%9214%E2%88%9231+%E3%83%AC%E3%82%A4%E3%82%AF%E3%82%B5%E3%82%A4%E3%83%89%E3%83%93%E3%83%AB+7F",
       "cid": "6924441236910338099",
       "google_id": "/g/11g9gkhg_5",
       "maps_place_token": null
@@ -3353,7 +3389,7 @@
       "is_favorite": false,
       "lat": 35.666972799999996,
       "lng": 139.7153352,
-      "maps_url": "https://maps.google.com/?cid=6924437684024675849",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=ap%C3%A9ro.+wine+bar+AOYAMA%2C+Japan%2C+%E3%80%92107-0062+Tokyo%2C+Minato+City%2C+Minamiaoyama%2C+3+Chome%E2%88%924%E2%88%926%2C+Aoyama346%2C+3F",
       "cid": "6924437684024675849",
       "google_id": "/g/11b6c8xbxp",
       "maps_place_token": null
@@ -3365,7 +3401,7 @@
       "is_favorite": false,
       "lat": 35.662889199999995,
       "lng": 139.71263629999999,
-      "maps_url": "https://maps.google.com/?cid=6924437746930170071",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CICADA%2C+5+Chome-7-28+Minamiaoyama%2C+Minato+City%2C+Tokyo+107-0062%2C+Japan",
       "cid": "6924437746930170071",
       "google_id": "/g/1thvy80y",
       "maps_place_token": null
@@ -3377,7 +3413,7 @@
       "is_favorite": false,
       "lat": 35.6659734,
       "lng": 139.7171079,
-      "maps_url": "https://maps.google.com/?cid=6924437680186914907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27AS%2C+Japan%2C+%E3%80%92107-0062+Tokyo%2C+Minato+City%2C+Minamiaoyama%2C+4+Chome%E2%88%9216%E2%88%923+%E3%82%B3%E3%83%88%E3%83%AA%E3%83%93%E3%83%AB+1F",
       "cid": "6924437680186914907",
       "google_id": "/g/11b73r7rjb",
       "maps_place_token": null
@@ -3389,7 +3425,7 @@
       "is_favorite": false,
       "lat": 35.6662642,
       "lng": 139.7069262,
-      "maps_url": "https://maps.google.com/?cid=6924439616326287315",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=RESTAURANT+HY%C3%89NE%2C+5+Chome-13-14+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001%2C+Japan",
       "cid": "6924439616326287315",
       "google_id": "/g/11rxh2mcrj",
       "maps_place_token": null
@@ -3401,7 +3437,7 @@
       "is_favorite": false,
       "lat": 35.667925,
       "lng": 139.7115365,
-      "maps_url": "https://maps.google.com/?cid=6924439654626716011",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tonkatsu+Maisen+Aoyama%2C+4+Chome-8-5+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001%2C+Japan",
       "cid": "6924439654626716011",
       "google_id": "/g/1thcsb95",
       "maps_place_token": null
@@ -3413,7 +3449,7 @@
       "is_favorite": false,
       "lat": 35.6698935,
       "lng": 139.71393079999999,
-      "maps_url": "https://maps.google.com/?cid=6924437533840318985",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=JULIA%2C+3+Chome-1-25+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001%2C+Japan",
       "cid": "6924437533840318985",
       "google_id": "/g/11g6qpwgfm",
       "maps_place_token": null
@@ -3425,7 +3461,7 @@
       "is_favorite": false,
       "lat": 35.6976645,
       "lng": 139.63871799999998,
-      "maps_url": "https://maps.google.com/?cid=6924552123836130233",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tonkatsu+Narikura%2C+4+Chome-33-9+Naritahigashi%2C+Suginami+City%2C+Tokyo+166-0015",
       "cid": "6924552123836130233",
       "google_id": "/g/11j3wlxhq6",
       "maps_place_token": null
@@ -3437,7 +3473,7 @@
       "is_favorite": false,
       "lat": 35.660461399999996,
       "lng": 139.7027761,
-      "maps_url": "https://maps.google.com/?cid=6924437637334763545",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chatei+Hatou%2C+1+Chome-15-19+Shibuya%2C+Shibuya+City%2C+Tokyo+150-0002",
       "cid": "6924437637334763545",
       "google_id": "/g/11b778b46g",
       "maps_place_token": null
@@ -3449,7 +3485,7 @@
       "is_favorite": false,
       "lat": 35.6731762,
       "lng": 139.71272159999998,
-      "maps_url": "https://maps.google.com/?cid=6924439011939849003",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Den",
       "cid": "6924439011939849003",
       "google_id": null,
       "maps_place_token": null
@@ -3461,7 +3497,7 @@
       "is_favorite": false,
       "lat": 35.6593105,
       "lng": 139.69755379999998,
-      "maps_url": "https://maps.google.com/?cid=6924440526871356081",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%8C%BD%E8%82%89%E3%81%A8%E7%B1%B3+%E6%B8%8B%E8%B0%B7%E5%BA%97%2C+%E3%80%92150-0043+Tokyo%2C+Shibuya+City%2C+Dogenzaka%2C+2+Chome%E2%88%9228%E2%88%921+%E6%A4%8E%E6%B4%A5%E3%83%93%E3%83%AB+%EF%BC%93F",
       "cid": "6924440526871356081",
       "google_id": "/g/11nrw_gmv8",
       "maps_place_token": null
@@ -3473,7 +3509,7 @@
       "is_favorite": false,
       "lat": 35.6944997,
       "lng": 139.6984625,
-      "maps_url": "https://maps.google.com/?cid=6924439278740166403",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zoetrope%2C+%E3%80%92160-0023+Tokyo%2C+Shinjuku+City%2C+Nishishinjuku%2C+7+Chome%E2%88%9210%E2%88%9214+%E3%82%AC%E3%82%A4%E3%82%A2%E3%83%93%E3%83%AB%EF%BC%94+3F",
       "cid": "6924439278740166403",
       "google_id": "/g/1tfm6njl",
       "maps_place_token": null
@@ -3485,7 +3521,7 @@
       "is_favorite": false,
       "lat": 35.6715126,
       "lng": 139.7613246,
-      "maps_url": "https://maps.google.com/?cid=6924438286049220981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR+KAGE%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%923%E2%88%926+%E6%A0%84%E3%83%93%E3%83%AB+B1",
       "cid": "6924438286049220981",
       "google_id": "/g/1tgvdmhl",
       "maps_place_token": null
@@ -3497,7 +3533,7 @@
       "is_favorite": false,
       "lat": 35.6954931,
       "lng": 139.7873529,
-      "maps_url": "https://maps.google.com/?cid=6924441327643952605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Daikokuya%2C+1+Chome-2-1+Yanagibashi%2C+Taito+City%2C+Tokyo+111-0052%2C+Japan",
       "cid": "6924441327643952605",
       "google_id": "/g/1tf65gtq",
       "maps_place_token": null
@@ -3509,7 +3545,7 @@
       "is_favorite": false,
       "lat": 35.6564163,
       "lng": 139.7317761,
-      "maps_url": "https://maps.google.com/?cid=6924437364464014205",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%9C%E9%A6%99%E6%B8%AF+Ye+Xiang+Gang%2C+Mansion+Roppongi+Village%2C+3+Chome-12-41+Motoazabu%2C+Minato+City%2C+Tokyo+106-0046%2C+Japan",
       "cid": "6924437364464014205",
       "google_id": "/g/11rql5r3c1",
       "maps_place_token": null
@@ -3521,7 +3557,7 @@
       "is_favorite": false,
       "lat": 35.6711763,
       "lng": 139.7079583,
-      "maps_url": "https://maps.google.com/?cid=6924439059758327167",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=CAFE+REISSUE%2C+3+Chome-25-7+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001",
       "cid": "6924439059758327167",
       "google_id": "/g/11c55bqbws",
       "maps_place_token": null
@@ -3533,7 +3569,7 @@
       "is_favorite": false,
       "lat": 35.6718214,
       "lng": 139.7139354,
-      "maps_url": "https://maps.google.com/?cid=6924439694599485815",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tonkatsu+Nanaido%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya+City%2C+Jingumae%2C+3+Chome%E2%88%9242%E2%88%9211+%E3%83%AD%E3%83%BC%E3%82%B6%E3%83%93%E3%82%A2%E3%83%B3%E3%82%AB+104",
       "cid": "6924439694599485815",
       "google_id": "/g/11h241w0g5",
       "maps_place_token": null
@@ -3545,7 +3581,7 @@
       "is_favorite": false,
       "lat": 35.6099397,
       "lng": 139.66826849999998,
-      "maps_url": "https://maps.google.com/?cid=6924554322405352301",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=OIL%26VINEGAR+RESTAURANT+%E7%91%9E%E7%A9%82%2C+%E3%80%92152-0035+Tokyo%2C+Meguro+City%2C+Jiyugaoka%2C+2+Chome%E2%88%928%E2%88%928+LeCielBleu2F",
       "cid": "6924554322405352301",
       "google_id": "/g/11flr077x2",
       "maps_place_token": null
@@ -3557,7 +3593,7 @@
       "is_favorite": false,
       "lat": 35.665289,
       "lng": 139.726374,
-      "maps_url": "https://maps.google.com/?cid=6924437791620131647",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+National+Art+Center%2C+Tokyo%2C+%E3%80%92106-8558+Tokyo%2C+Minato+City%2C+Roppongi%2C+7+Chome%E2%88%9222%E2%88%922+%E5%9B%BD%E7%AB%8B%E6%96%B0%E7%BE%8E%E8%A1%93%E9%A4%A8",
       "cid": "6924437791620131647",
       "google_id": null,
       "maps_place_token": null
@@ -3569,7 +3605,7 @@
       "is_favorite": false,
       "lat": 35.6674511,
       "lng": 139.74242089999998,
-      "maps_url": "https://maps.google.com/?cid=6924437877658919593",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Matsukawa",
       "cid": "6924437877658919593",
       "google_id": null,
       "maps_place_token": null
@@ -3581,7 +3617,7 @@
       "is_favorite": false,
       "lat": 35.660046,
       "lng": 139.7252912,
-      "maps_url": "https://maps.google.com/?cid=6924438067784485465",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ao+Nishiazabu%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+3+Chome%E2%88%9221%E2%88%923+%E4%BA%8C%E9%9A%8E+%E3%82%AA%E3%83%AA%E3%83%B3%E3%83%94%E3%82%A2%E3%83%BC%E3%83%89%E9%BA%BB%E5%B8%83%E9%9C%9E%E5%9D%82",
       "cid": "6924438067784485465",
       "google_id": "/g/11j7cmw774",
       "maps_place_token": null
@@ -3593,7 +3629,7 @@
       "is_favorite": false,
       "lat": 35.6542211,
       "lng": 139.73793949999998,
-      "maps_url": "https://maps.google.com/?cid=6924438036834413239",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Suetomi%2C+%E3%80%92108-0073+Tokyo%2C+Minato+City%2C+Mita%2C+1+Chome%E2%88%9210%E2%88%9215+%EF%BC%92F",
       "cid": "6924438036834413239",
       "google_id": "/g/11t1jq4hzd",
       "maps_place_token": null
@@ -3605,7 +3641,7 @@
       "is_favorite": false,
       "lat": 35.677242899999996,
       "lng": 139.7360305,
-      "maps_url": "https://maps.google.com/?cid=6924438333418682953",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Makitori+Shink%C5%8Dbe%2C+1+Chome-10-16+Mita%2C+Minato+City%2C+Tokyo+108-0073",
       "cid": "6924438333418682953",
       "google_id": "/g/11ph4l7v_r",
       "maps_place_token": null
@@ -3617,7 +3653,7 @@
       "is_favorite": false,
       "lat": 35.6702023,
       "lng": 139.7064737,
-      "maps_url": "https://maps.google.com/?cid=6924439060393737885",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ryu+No+Ko%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya+City%2C+Jingumae%2C+1+Chome%E2%88%928%E2%88%925+%E3%83%A1%E3%83%8A%E3%83%BC%E7%A5%9E%E5%AE%AE%E5%89%8D+B1%EF%BC%A6",
       "cid": "6924439060393737885",
       "google_id": "/g/1thfffnk",
       "maps_place_token": null
@@ -3629,7 +3665,7 @@
       "is_favorite": false,
       "lat": 35.6426722,
       "lng": 139.6675361,
-      "maps_url": "https://maps.google.com/?cid=6924554318812438211",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%A9%E3%83%96%E3%83%AB%E3%83%80%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0%2C+%E3%80%92154-0024+Tokyo%2C+Setagaya+City%2C+Sangenjaya%2C+2+Chome%E2%88%928%E2%88%9210+%E3%83%AB%E3%83%8A%E3%83%91%E3%83%BC%E3%82%AF%E4%B8%89%E8%BB%92%E8%8C%B6%E5%B1%8B",
       "cid": "6924554318812438211",
       "google_id": "/g/11r10vqfc0",
       "maps_place_token": null
@@ -3641,7 +3677,7 @@
       "is_favorite": false,
       "lat": 35.6612514,
       "lng": 139.6987805,
-      "maps_url": "https://maps.google.com/?cid=6924440063755294411",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TAHONA+Mezcal+%26+Tequila+Cafe+Bar+%7C+%E3%82%BF%E3%82%AA%E3%83%8A+%E3%83%A1%E3%82%B9%E3%82%AB%E3%83%AB%26%E3%83%86%E3%82%AD%E3%83%BC%E3%83%A9+%E3%82%AB%E3%83%95%E3%82%A7+%E3%83%90%E3%83%BC%2C+%E3%80%92150-0042+Tokyo%2C+Shibuya+City%2C+Udagawacho%2C+13%E2%88%924+%E3%82%B3%E3%82%AF%E3%82%B5%E3%82%A4%E3%83%93%E3%83%ABC%E9%A4%A8+%EF%BC%92F",
       "cid": "6924440063755294411",
       "google_id": "/g/11pwswxvmy",
       "maps_place_token": null
@@ -3653,7 +3689,7 @@
       "is_favorite": false,
       "lat": 35.6581195,
       "lng": 139.7230622,
-      "maps_url": "https://maps.google.com/?cid=6924437741319644713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=FERRI%E2%80%99S%EF%BC%88%E3%83%95%E3%82%A7%E3%83%AA%E3%83%BC%E3%82%BA%EF%BC%89%E5%BA%83%E5%B0%BE%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+4+Chome%E2%88%9211%E2%88%9211+%E3%82%B8%E3%83%A5%E3%83%A1%E3%82%A4%E3%83%A9%E3%83%93%E3%83%AB+1F",
       "cid": "6924437741319644713",
       "google_id": "/g/11c5b2gc4q",
       "maps_place_token": null
@@ -3665,7 +3701,7 @@
       "is_favorite": false,
       "lat": 35.6635464,
       "lng": 139.7147207,
-      "maps_url": "https://maps.google.com/?cid=6924440379683373659",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MoDeRiTiOn+PastaLeverreVino%2C+%E3%80%92107-0052+Tokyo%2C+Minato+City%2C+Akasaka%2C+3+Chome%E2%88%9216%E2%88%922+%E6%A6%AE%E6%9E%97%E3%83%93%E3%83%AB+5F",
       "cid": "6924440379683373659",
       "google_id": "/g/11h9234mfm",
       "maps_place_token": null
@@ -3677,7 +3713,7 @@
       "is_favorite": false,
       "lat": 35.644428399999995,
       "lng": 139.7235823,
-      "maps_url": "https://maps.google.com/?cid=6924437694385113601",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=kermistokyo%2C+%E3%80%92108-0072+Tokyo%2C+Minato+City%2C+Shirokane%2C+6+Chome%E2%88%922%E2%88%924+%E3%83%8A%E3%82%B6%E3%83%AC%E3%83%8F%E3%82%A4%E3%83%84%E8%A5%BF%E9%A4%A8+101",
       "cid": "6924437694385113601",
       "google_id": "/g/11rtk_4gwv",
       "maps_place_token": null
@@ -3689,7 +3725,7 @@
       "is_favorite": false,
       "lat": 35.6713126,
       "lng": 139.7210433,
-      "maps_url": "https://maps.google.com/?cid=6924439803415668417",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Ry%C5%ABjir%C5%8D%2C+%E3%80%92107-0062+Tokyo%2C+Minato+City%2C+Minamiaoyama%2C+2+Chome%E2%88%9211%E2%88%9211+ARISTO%E5%8D%97%E9%9D%92%E5%B1%B1+%EF%BC%91%E9%9A%8E",
       "cid": "6924439803415668417",
       "google_id": "/g/11h9gvxfxb",
       "maps_place_token": null
@@ -3701,7 +3737,7 @@
       "is_favorite": false,
       "lat": 35.687734899999995,
       "lng": 139.7433084,
-      "maps_url": "https://maps.google.com/?cid=6924438837992882177",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Mizukami%2C+%E3%80%92102-0082+Tokyo%2C+Chiyoda+City%2C+Ichibancho%2C+%EF%BC%93%E2%88%928",
       "cid": "6924438837992882177",
       "google_id": "/g/11gh058d2k",
       "maps_place_token": null
@@ -3713,7 +3749,7 @@
       "is_favorite": false,
       "lat": 35.6557898,
       "lng": 139.7392156,
-      "maps_url": "https://maps.google.com/?cid=6924437648722632347",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Saikoh%2C+3+Chome-10-5+Higashiazabu%2C+Minato+City%2C+Tokyo+106-0044",
       "cid": "6924437648722632347",
       "google_id": "/g/11pz544yj0",
       "maps_place_token": null
@@ -3725,7 +3761,7 @@
       "is_favorite": false,
       "lat": 35.648934,
       "lng": 139.74664199999998,
-      "maps_url": "https://maps.google.com/?cid=6924438108123210415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Modern+Mexican+CABOS%2C+%E3%80%92108-0014+Tokyo%2C+Minato+City%2C+Shiba%2C+5+Chome%E2%88%929%E2%88%928+Gems%E7%94%B0%E7%94%BA+1F",
       "cid": "6924438108123210415",
       "google_id": "/g/11h7rkwbhg",
       "maps_place_token": null
@@ -3737,7 +3773,7 @@
       "is_favorite": false,
       "lat": 35.6718724,
       "lng": 139.7121937,
-      "maps_url": "https://maps.google.com/?cid=6924439013422131371",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=twiggy.+cafe%2C+3+Chome-35-7+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001+%EC%9D%BC%EB%B3%B8",
       "cid": "6924439013422131371",
       "google_id": "/g/11csqyh1n5",
       "maps_place_token": null
@@ -3749,7 +3785,7 @@
       "is_favorite": false,
       "lat": 35.6669765,
       "lng": 139.7056055,
-      "maps_url": "https://maps.google.com/?cid=6924439063358949623",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mizuho%2C+6+Chome-8-7+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001",
       "cid": "6924439063358949623",
       "google_id": "/g/11cmp59sh1",
       "maps_place_token": null
@@ -3761,7 +3797,7 @@
       "is_favorite": false,
       "lat": 35.6665545,
       "lng": 139.7054272,
-      "maps_url": "https://maps.google.com/?cid=6924439073819328013",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Micasadeco+%26+Cafe+Jingumae%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya+City%2C+Jingumae%2C+6+Chome%E2%88%9213%E2%88%922+%EF%BC%91%EF%BC%A6",
       "cid": "6924439073819328013",
       "google_id": "/g/11cn94pmg7",
       "maps_place_token": null
@@ -3773,7 +3809,7 @@
       "is_favorite": false,
       "lat": 35.661857,
       "lng": 139.72009309999999,
-      "maps_url": "https://maps.google.com/?cid=6924437528580434281",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Goryonsan+Nishiazabu%2C+2+Chome-20-1+Nishiazabu%2C+Minato+City%2C+Tokyo+106-0031",
       "cid": "6924437528580434281",
       "google_id": null,
       "maps_place_token": null
@@ -3785,7 +3821,7 @@
       "is_favorite": false,
       "lat": 35.6618312,
       "lng": 139.7237678,
-      "maps_url": "https://maps.google.com/?cid=6924437787426592363",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+INNOCENT+CARVERY%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+1+Chome%E2%88%924%E2%88%9228+%E3%82%AB%E3%83%AB%E3%83%8F%E8%A5%BF%E9%BA%BB%E5%B8%83+101",
       "cid": "6924437787426592363",
       "google_id": "/g/11clv6pq42",
       "maps_place_token": null
@@ -3797,7 +3833,7 @@
       "is_favorite": false,
       "lat": 35.6485264,
       "lng": 139.7100783,
-      "maps_url": "https://maps.google.com/?cid=6924437794676893589",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Rizaki+Ebisu%2C+%E3%80%92150-0011+Tokyo%2C+Shibuya+City%2C+Higashi%2C+3+Chome%E2%88%9225%E2%88%926+%E6%A5%A0%E3%83%93%E3%83%AB+3F",
       "cid": "6924437794676893589",
       "google_id": "/g/11s0wfpcgp",
       "maps_place_token": null
@@ -3809,7 +3845,7 @@
       "is_favorite": false,
       "lat": 35.6641672,
       "lng": 139.6939261,
-      "maps_url": "https://maps.google.com/?cid=6924440048782195141",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sushi+Rizaki%2C+8-2+Kamiyamacho%2C+Shibuya+City%2C+Tokyo+150-0047",
       "cid": "6924440048782195141",
       "google_id": "/g/11flglgdbf",
       "maps_place_token": null
@@ -3821,7 +3857,7 @@
       "is_favorite": false,
       "lat": 35.6709149,
       "lng": 139.7603869,
-      "maps_url": "https://maps.google.com/?cid=6924438160481470997",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%9B%E3%82%8DCERO%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92104-0061+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%AD%E5%A4%AE%E5%8C%BA%E9%8A%80%E5%BA%A7%EF%BC%97%E4%B8%81%E7%9B%AE%EF%BC%92%E2%88%92%EF%BC%92%EF%BC%90+%E9%87%91%E4%BA%95%E3%83%93%E3%83%AB+2F",
       "cid": "6924438160481470997",
       "google_id": "/g/11gxmckzvr",
       "maps_place_token": null
@@ -3833,7 +3869,7 @@
       "is_favorite": false,
       "lat": 35.6600883,
       "lng": 139.7432341,
-      "maps_url": "https://maps.google.com/?cid=6924437981655129577",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%AA%E3%83%AC%E3%82%AD%E3%82%B9%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92108-0072+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E7%99%BD%E9%87%91%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%93%E2%88%92%EF%BC%93+%E3%82%AB%E3%83%BC%E3%83%A0%E3%82%B3%E3%83%BC%E3%83%88%E7%99%BD%E9%87%91%E9%AB%98%E8%BC%AA1F",
       "cid": "6924437981655129577",
       "google_id": "/g/1thqgr5c",
       "maps_place_token": null
@@ -3845,7 +3881,7 @@
       "is_favorite": false,
       "lat": 35.6652875,
       "lng": 139.7609214,
-      "maps_url": "https://maps.google.com/?cid=6924438095083229067",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fish+Bank+Tokyo%2C+%E3%80%92105-7108+Tokyo%2C+Minato+City%2C+Higashishinbashi%2C+1+Chome%E2%88%925%E2%88%922+%E6%B1%90%E7%95%99%E3%82%B7%E3%83%86%E3%82%A3%E3%82%BB%E3%83%B3%E3%82%BF+%EF%BC%94%EF%BC%91F",
       "cid": "6924438095083229067",
       "google_id": "/g/1tjv3hlh",
       "maps_place_token": null
@@ -3857,7 +3893,7 @@
       "is_favorite": false,
       "lat": 35.6567457,
       "lng": 139.735884,
-      "maps_url": "https://maps.google.com/?cid=6924437924738134773",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yoshikawa+Azabujuban%2C+%E3%80%92106-0045+Tokyo%2C+Minato+City%2C+Azabujuban%2C+1+Chome%E2%88%923%E2%88%928+%E3%82%A8%E3%83%95%E3%83%97%E3%83%A9%E3%82%B6+1%E9%9A%8E",
       "cid": "6924437924738134773",
       "google_id": "/g/11ns9qbpgk",
       "maps_place_token": null
@@ -3869,7 +3905,7 @@
       "is_favorite": false,
       "lat": 35.664602599999995,
       "lng": 139.7325627,
-      "maps_url": "https://maps.google.com/?cid=6924437820096957537",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sanda+Roppongi+Honten%2C+4+Chome-5-9+Roppongi%2C+Minato+City%2C+Tokyo+106-0032",
       "cid": "6924437820096957537",
       "google_id": "/g/1tj45xbm",
       "maps_place_token": null
@@ -3881,7 +3917,7 @@
       "is_favorite": false,
       "lat": 35.6457733,
       "lng": 139.7070697,
-      "maps_url": "https://maps.google.com/?cid=6924437537743652451",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nakameguro+Iguchi+Ebisuten%2C+%E3%80%92150-0022+Tokyo%2C+Shibuya+City%2C+Ebisuminami%2C+2+Chome%E2%88%921%E2%88%925+ES215%E3%83%93%E3%83%AB+5F",
       "cid": "6924437537743652451",
       "google_id": "/g/11bbw_yhy5",
       "maps_place_token": null
@@ -3893,7 +3929,7 @@
       "is_favorite": false,
       "lat": 35.6740067,
       "lng": 139.7664474,
-      "maps_url": "https://maps.google.com/?cid=6924437339828408547",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=MASIA%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+2+Chome%E2%88%924%E2%88%926+%E3%83%99%E3%83%AB%E3%83%93%E3%82%A2%E9%A4%A8+8%E9%9A%8E",
       "cid": "6924437339828408547",
       "google_id": "/g/11s8z7g1n0",
       "maps_place_token": null
@@ -3905,7 +3941,7 @@
       "is_favorite": false,
       "lat": 35.6618498,
       "lng": 139.72405129999999,
-      "maps_url": "https://maps.google.com/?cid=6924438227885219713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sick%EF%BC%81+NISHIAZABU%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92106-0031+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E8%A5%BF%E9%BA%BB%E5%B8%83%EF%BC%91%E4%B8%81%E7%9B%AE%EF%BC%94%E2%88%92%EF%BC%93%EF%BC%93",
       "cid": "6924438227885219713",
       "google_id": "/g/11s7c61f08",
       "maps_place_token": null
@@ -3917,7 +3953,7 @@
       "is_favorite": false,
       "lat": 35.607737799999995,
       "lng": 139.6662781,
-      "maps_url": "https://maps.google.com/?cid=6924553841005131067",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Saido%2C+2+Chome-15-10+Jiyugaoka%2C+Meguro+City%2C+Tokyo+152-0035",
       "cid": "6924553841005131067",
       "google_id": "/g/11gr5y772q",
       "maps_place_token": null
@@ -3929,7 +3965,7 @@
       "is_favorite": false,
       "lat": 35.6560037,
       "lng": 139.6935591,
-      "maps_url": "https://maps.google.com/?cid=6924437626247470991",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sugahara+Bar%2C+25-5+Maruyamacho%2C+Shibuya+City%2C+Tokyo+150-0044",
       "cid": "6924437626247470991",
       "google_id": "/g/1th0ybd1",
       "maps_place_token": null
@@ -3941,7 +3977,7 @@
       "is_favorite": false,
       "lat": 35.6537405,
       "lng": 139.73527579999998,
-      "maps_url": "https://maps.google.com/?cid=6924437953813256067",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Savoy%2C+Domi-LA%2C+%E3%80%92106-0045+Tokyo%2C+Minato+City%2C+Azabujuban%2C+2+Chome%E2%88%9220%E2%88%9212+%E3%82%AA%E3%83%AA%E3%82%A8%E3%83%B3%E3%83%88%E9%BA%BB%E5%B8%83",
       "cid": "6924437953813256067",
       "google_id": "/g/12qhfpyxc",
       "maps_place_token": null
@@ -3953,7 +3989,7 @@
       "is_favorite": false,
       "lat": 35.653251999999995,
       "lng": 139.736379,
-      "maps_url": "https://maps.google.com/?cid=6924437952685285999",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Amanoya%2C+%E3%80%92106-0045+Tokyo%2C+Azabujuban%2C+3+1-9+1F",
       "cid": "6924437952685285999",
       "google_id": "/g/1tkmmk2g",
       "maps_place_token": null
@@ -3965,7 +4001,7 @@
       "is_favorite": false,
       "lat": 35.6618032,
       "lng": 139.7209018,
-      "maps_url": "https://maps.google.com/?cid=6924438099415016961",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Api+Osteria%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+2+Chome%E2%88%928%E2%88%927+Sun+Grata+NishiAzabu+%E2%85%A0+1F+%E2%85%A1",
       "cid": "6924438099415016961",
       "google_id": "/g/11s90mqj9t",
       "maps_place_token": null
@@ -3977,7 +4013,7 @@
       "is_favorite": false,
       "lat": 35.662316499999996,
       "lng": 139.7178219,
-      "maps_url": "https://maps.google.com/?cid=6924437378606521375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AE%A8+m%2C+%E3%82%A2%E3%83%83%E3%83%88%E3%83%9B%E3%83%BC%E3%83%A0%E3%82%B9%E3%82%AF%E3%82%A8%E3%82%A2+2F%2C+4+Chome-24-8+Minamiaoyama%2C+Minato+City%2C+Tokyo+107-0062",
       "cid": "6924437378606521375",
       "google_id": "/g/11h62vl4dp",
       "maps_place_token": null
@@ -3989,7 +4025,7 @@
       "is_favorite": false,
       "lat": 35.6686195,
       "lng": 139.6890123,
-      "maps_url": "https://maps.google.com/?cid=6924551937033853077",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cristiano%27s%2C+1+Chome-51-10+Tomigaya%2C+%E6%B8%8B%E8%B0%B7%E5%8C%BA+Shibuya+City%2C+Tokyo+151-0063",
       "cid": "6924551937033853077",
       "google_id": "/g/1tcy8y7k",
       "maps_place_token": null
@@ -4001,7 +4037,7 @@
       "is_favorite": false,
       "lat": 35.6695874,
       "lng": 139.6821732,
-      "maps_url": "https://maps.google.com/?cid=6924551917999335903",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=sio%2C+1+Chome-35-3+Uehara%2C+Shibuya+City%2C+Tokyo+151-0064",
       "cid": "6924551917999335903",
       "google_id": "/g/12qgg5g8d",
       "maps_place_token": null
@@ -4013,7 +4049,7 @@
       "is_favorite": false,
       "lat": 35.671175399999996,
       "lng": 139.7624179,
-      "maps_url": "https://maps.google.com/?cid=6924438287154173269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Mimi",
       "cid": "6924438287154173269",
       "google_id": null,
       "maps_place_token": null
@@ -4025,7 +4061,7 @@
       "is_favorite": false,
       "lat": 35.728873799999995,
       "lng": 139.7135824,
-      "maps_url": "https://maps.google.com/?cid=6924439906938270887",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%9C%80%E9%AD%9A%E8%A8%98%2C+%E3%80%92171-0022+Tokyo%2C+Toshima+City%2C+Minamiikebukuro%2C+1+Chome%E2%88%9226%E2%88%922+%EF%BC%97%E9%9A%8E",
       "cid": "6924439906938270887",
       "google_id": "/g/11rqtpm5l3",
       "maps_place_token": null
@@ -4037,7 +4073,7 @@
       "is_favorite": false,
       "lat": 35.7017056,
       "lng": 139.6998926,
-      "maps_url": "https://maps.google.com/?cid=6924439876092690583",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%9B%9B%E5%B7%9D%E6%96%99%E7%90%86+%E5%B7%9D%E8%A6%87%E7%8E%8B%2C+%E3%80%92169-0073+Tokyo%2C+Shinjuku+City%2C+Hyakunincho%2C+2+Chome%E2%88%924%E2%88%922+%E3%83%93%E3%83%AB%E3%82%84%E3%81%BE%E3%81%8D+B1F",
       "cid": "6924439876092690583",
       "google_id": "/g/11qnb4fy3_",
       "maps_place_token": null
@@ -4049,7 +4085,7 @@
       "is_favorite": false,
       "lat": 35.6335155,
       "lng": 139.69876779999998,
-      "maps_url": "https://maps.google.com/?cid=6924437948008024293",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ramen+Break+Beats%2C+%E3%80%92153-0063+Tokyo%2C+Meguro+City%2C+Meguro%2C+4+Chome%E2%88%9221%E2%88%9219+%E3%82%A2%E3%82%A4%E3%83%93%E3%83%BC%E3%83%8F%E3%82%A4%E3%83%84+1%E9%9A%8E",
       "cid": "6924437948008024293",
       "google_id": "/g/11p5jd1k_8",
       "maps_place_token": null
@@ -4061,9 +4097,21 @@
       "is_favorite": false,
       "lat": 35.7032909,
       "lng": 139.7369952,
-      "maps_url": "https://maps.google.com/?cid=6924440109068277301",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=NK%28Nanpeidai+Chef%27s+table+featuring+Kakuland%29%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92162-0825+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%96%B0%E5%AE%BF%E5%8C%BA%E7%A5%9E%E6%A5%BD%E5%9D%82%EF%BC%95%E4%B8%81%E7%9B%AE%EF%BC%93%EF%BC%97+%E7%9B%B8%E8%89%AF%E3%83%93%E3%83%AB+1F",
       "cid": "6924440109068277301",
       "google_id": "/g/11jxrw7fwd",
+      "maps_place_token": null
+    },
+    {
+      "name": "Ginza IWA",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.669351899999995,
+      "lng": 139.760362,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ginza+IWA",
+      "cid": "6924438259318218837",
+      "google_id": null,
       "maps_place_token": null
     },
     {
@@ -4073,7 +4121,7 @@
       "is_favorite": false,
       "lat": 35.6475662,
       "lng": 139.7392729,
-      "maps_url": "https://maps.google.com/?cid=6924438012928009203",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hinabe+Chouyou",
       "cid": "6924438012928009203",
       "google_id": null,
       "maps_place_token": null
@@ -4085,7 +4133,7 @@
       "is_favorite": false,
       "lat": 35.6613748,
       "lng": 139.7329948,
-      "maps_url": "https://maps.google.com/?cid=6924437935487333617",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%A7%E3%82%A6%E3%83%A2%E3%83%B3+%E5%85%AD%E6%9C%AC%E6%9C%A8%E5%BA%97%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92106-0032+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E5%85%AD%E6%9C%AC%E6%9C%A8%EF%BC%95%E4%B8%81%E7%9B%AE%EF%BC%99%E2%88%92%EF%BC%91%EF%BC%97+%E8%97%A4%E6%A3%AE%E3%83%93%E3%83%AB",
       "cid": "6924437935487333617",
       "google_id": "/g/1vmr1c9m",
       "maps_place_token": null
@@ -4097,7 +4145,7 @@
       "is_favorite": false,
       "lat": 35.6704988,
       "lng": 139.7624028,
-      "maps_url": "https://maps.google.com/?cid=6924438258454189397",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TSURUTOKAME%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+6+Chome%E2%88%927%E2%88%9215+Iwatsuki+Bldg+II+B1",
       "cid": "6924438258454189397",
       "google_id": null,
       "maps_place_token": null
@@ -4109,7 +4157,7 @@
       "is_favorite": false,
       "lat": 35.679915699999995,
       "lng": 139.7064577,
-      "maps_url": "https://maps.google.com/?cid=6924439598522983361",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Botrus+Italian+Restaurant%2C+%E3%80%92151-0051+Tokyo%2C+Shibuya+City%2C+Sendagaya%2C+4+Chome%E2%88%9210%E2%88%924%2C+Best+Select+Bldg.%2C+%EF%BC%92%E9%9A%8E",
       "cid": "6924439598522983361",
       "google_id": "/g/11g0tl_gmk",
       "maps_place_token": null
@@ -4121,7 +4169,7 @@
       "is_favorite": false,
       "lat": 35.6507383,
       "lng": 139.7219518,
-      "maps_url": "https://maps.google.com/?cid=6924437840897977811",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=OXOMOCO+%28%E3%82%AA%E3%82%B7%E3%83%A7%E3%83%A2%E3%82%B3%29%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92150-0012+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%8B%E8%B0%B7%E5%8C%BA%E5%BA%83%E5%B0%BE%EF%BC%95%E4%B8%81%E7%9B%AE%EF%BC%94%E2%88%92%EF%BC%91%EF%BC%96+THE+RESTAURANT+1F+EAT+PLAY+WORKS",
       "cid": "6924437840897977811",
       "google_id": "/g/11jhsydvhj",
       "maps_place_token": null
@@ -4133,7 +4181,7 @@
       "is_favorite": false,
       "lat": 35.6581781,
       "lng": 139.7236252,
-      "maps_url": "https://maps.google.com/?cid=6924437741391751887",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=twelv.",
       "cid": "6924437741391751887",
       "google_id": null,
       "maps_place_token": null
@@ -4145,7 +4193,7 @@
       "is_favorite": false,
       "lat": 35.6160298,
       "lng": 139.624356,
-      "maps_url": "https://maps.google.com/?cid=6924552782471120135",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%90%82%E9%82%91%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92158-0094+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%96%E7%94%B0%E8%B0%B7%E5%8C%BA%E7%8E%89%E5%B7%9D%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%92%EF%BC%91%E2%88%92%EF%BC%98",
       "cid": "6924552782471120135",
       "google_id": "/g/119w2wd75",
       "maps_place_token": null
@@ -4157,7 +4205,7 @@
       "is_favorite": false,
       "lat": 35.653810299999996,
       "lng": 139.7352952,
-      "maps_url": "https://maps.google.com/?cid=6924438123803708183",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A2%E3%83%AB%E3%83%87%E3%83%90%E3%83%A9%E3%83%B3%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92106-0045+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E9%BA%BB%E5%B8%83%E5%8D%81%E7%95%AA%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%93%E2%88%92%EF%BC%91+%E4%B8%89%E5%96%9C%E3%83%93%E3%83%AB+3%EF%BC%A6",
       "cid": "6924438123803708183",
       "google_id": "/g/11jzgnf04v",
       "maps_place_token": null
@@ -4169,7 +4217,7 @@
       "is_favorite": false,
       "lat": 35.671602899999996,
       "lng": 139.7740198,
-      "maps_url": "https://maps.google.com/?cid=6924435656785389973",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%97%A5%E6%9C%AC%E6%96%99%E7%90%86+%E4%B9%85%E4%B8%B9%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92104-0041+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%AD%E5%A4%AE%E5%8C%BA%E6%96%B0%E5%AF%8C%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%95%E2%88%92%EF%BC%95+%EF%BC%AD%EF%BC%B3%E3%83%93%E3%83%AB+1F",
       "cid": "6924435656785389973",
       "google_id": "/g/11g0gwbg75",
       "maps_place_token": null
@@ -4181,7 +4229,7 @@
       "is_favorite": false,
       "lat": 35.6711035,
       "lng": 139.7401068,
-      "maps_url": "https://maps.google.com/?cid=6924438299493238573",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%AE%A8+%E3%81%93%E3%81%BE%E3%82%8A+%E6%BA%9C%E6%B1%A0%E5%B1%B1%E7%8E%8B%2C+%E3%80%92107-0052+Tokyo%2C+Minato+City%2C+Akasaka%2C+2+Chome%E2%88%9212%E2%88%9225+%EF%BC%91%E9%9A%8E",
       "cid": "6924438299493238573",
       "google_id": "/g/11rv6gqhlw",
       "maps_place_token": null
@@ -4193,7 +4241,7 @@
       "is_favorite": false,
       "lat": 35.657418,
       "lng": 139.7376708,
-      "maps_url": "https://maps.google.com/?cid=6924437631154351065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%BA%BB%E5%B8%83%E3%81%95%E3%81%A8%E3%82%8A%2C+%E3%80%92106-0044+Tokyo%2C+Minato+City%2C+Higashiazabu%2C+3+Chome%E2%88%924%E2%88%926+ASTILE%E9%BA%BB%E5%B8%83%E5%8D%81%E7%95%AA+B1F",
       "cid": "6924437631154351065",
       "google_id": "/g/11q4c_sn92",
       "maps_place_token": null
@@ -4205,7 +4253,7 @@
       "is_favorite": false,
       "lat": 35.669284,
       "lng": 139.7600491,
-      "maps_url": "https://maps.google.com/?cid=6924438260597950695",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gas+Light+EVE",
       "cid": "6924438260597950695",
       "google_id": null,
       "maps_place_token": null
@@ -4217,7 +4265,7 @@
       "is_favorite": false,
       "lat": 35.6983816,
       "lng": 139.7033524,
-      "maps_url": "https://maps.google.com/?cid=6924439628294159491",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tokyo+meat+shabu-shabu+house%2C+%E3%80%92169-0072+Tokyo%2C+Shinjuku+City%2C+Okubo%2C+1+Chome%E2%88%9212%E2%88%923+1F+%E3%82%AB%E3%83%BC%E3%82%B5%E7%AC%AC%E4%BA%8C%E6%96%B0%E5%AE%BF",
       "cid": "6924439628294159491",
       "google_id": "/g/11cs0d5czp",
       "maps_place_token": null
@@ -4229,7 +4277,7 @@
       "is_favorite": false,
       "lat": 35.6622268,
       "lng": 139.69522569999998,
-      "maps_url": "https://maps.google.com/?cid=6924439831138568905",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A.Y.L.I%EF%BD%9E%E3%81%8A%E6%B0%97%E3%81%AB%E3%82%81%E3%81%99%E3%81%BE%E3%81%BE%EF%BD%9E%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92150-0046+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%8B%E8%B0%B7%E5%8C%BA%E6%9D%BE%E6%BF%A4%EF%BC%91%E4%B8%81%E7%9B%AE%EF%BC%94%E2%88%92%EF%BC%98+EAST+1F",
       "cid": "6924439831138568905",
       "google_id": "/g/11splhd8h4",
       "maps_place_token": null
@@ -4241,7 +4289,7 @@
       "is_favorite": false,
       "lat": 35.648923599999996,
       "lng": 139.7059578,
-      "maps_url": "https://maps.google.com/?cid=6924437550969126913",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Recte%2C+%E3%80%92150-0021+Tokyo%2C+Shibuya+City%2C+Ebisunishi%2C+2+Chome%E2%88%9217%E2%88%925+%E3%82%B5%E3%83%B3%E3%83%93%E3%83%AC%E3%83%83%E3%82%B8%E4%BB%A3%E5%AE%98%E5%B1%B1+2F",
       "cid": "6924437550969126913",
       "google_id": "/g/1tjdr9mk",
       "maps_place_token": null
@@ -4253,7 +4301,7 @@
       "is_favorite": false,
       "lat": 35.6553641,
       "lng": 139.7347608,
-      "maps_url": "https://maps.google.com/?cid=6924437945460224223",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jy%C5%ABban+Uky%C5%8D%2C+2+Chome-8-8+Azabujuban%2C+Minato+City%2C+Tokyo+106-0045",
       "cid": "6924437945460224223",
       "google_id": "/g/11bbswwswm",
       "maps_place_token": null
@@ -4265,7 +4313,7 @@
       "is_favorite": false,
       "lat": 35.6683658,
       "lng": 139.7108934,
-      "maps_url": "https://maps.google.com/?cid=6924439060805409287",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KOFFEE+MAMEYA%2C+%E3%80%92150-0001+Tokyo%2C+Shibuya-ku+Jing%C5%ABmae%2C+4+Chome%E2%88%9215-3",
       "cid": "6924439060805409287",
       "google_id": "/g/12vtrmgjh",
       "maps_place_token": null
@@ -4277,7 +4325,7 @@
       "is_favorite": false,
       "lat": 35.6557503,
       "lng": 139.7050267,
-      "maps_url": "https://maps.google.com/?cid=6924438086961638159",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Churrascaria+ALEGRIA+Shibuya%2C+%E3%80%92150-0002+Tokyo%2C+Shibuya+City%2C+Shibuya%2C+3+Chome%E2%88%9227%E2%88%925+%E6%9D%B1%E6%80%A5%E3%82%B9%E3%83%86%E3%82%A4%E6%B8%8B%E8%B0%B7%E6%96%B0%E5%8D%97%E5%8F%A3%E5%88%A5%E9%A4%A8%EF%BC%91F",
       "cid": "6924438086961638159",
       "google_id": "/g/11j8w9xmjb",
       "maps_place_token": null
@@ -4289,7 +4337,7 @@
       "is_favorite": false,
       "lat": 35.6557829,
       "lng": 139.7432984,
-      "maps_url": "https://maps.google.com/?cid=6924437694221610959",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Crony%2C+%E3%80%92106-0044+Tokyo%2C+Minato+City%2C+Higashiazabu%2C+1+Chome%E2%88%9220%E2%88%923+%EF%BC%A6%EF%BC%B5%EF%BC%AE%EF%BC%A7%EF%BC%AF+%EF%BC%A2%EF%BC%B5%EF%BC%AE%EF%BC%A7%EF%BC%A1%EF%BC%AC%EF%BC%AF%EF%BC%A9%EF%BC%A4",
       "cid": "6924437694221610959",
       "google_id": "/g/11css6y0ql",
       "maps_place_token": null
@@ -4301,7 +4349,7 @@
       "is_favorite": false,
       "lat": 35.6695288,
       "lng": 139.7159503,
-      "maps_url": "https://maps.google.com/?cid=6924439824815895669",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=THE+BELCOMO%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92107-0061+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E5%8C%97%E9%9D%92%E5%B1%B1%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%94%E2%88%92%EF%BC%94+%E3%82%B8+%E3%82%A2%E3%83%BC%E3%82%AC%E3%82%A4%E3%83%AB+%E3%82%A2%E3%82%AA%E3%83%A4%E3%83%9E+4F+GRAND+HOTEL",
       "cid": "6924439824815895669",
       "google_id": "/g/11kgntbbmq",
       "maps_place_token": null
@@ -4313,7 +4361,7 @@
       "is_favorite": false,
       "lat": 35.6703191,
       "lng": 139.7137873,
-      "maps_url": "https://maps.google.com/?cid=6924439015205197339",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=WORLD+BREAKFAST+ALLDAY+%E5%A4%96%E8%8B%91%E5%89%8D%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92150-0001+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%8B%E8%B0%B7%E5%8C%BA%E7%A5%9E%E5%AE%AE%E5%89%8D%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%91%E2%88%92%EF%BC%92%EF%BC%93",
       "cid": "6924439015205197339",
       "google_id": "/g/11btx0wvvz",
       "maps_place_token": null
@@ -4325,7 +4373,7 @@
       "is_favorite": false,
       "lat": 35.6500398,
       "lng": 139.7091779,
-      "maps_url": "https://maps.google.com/?cid=6924438072789106877",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BAR+Marble%2C+%E3%80%92150-0011+Tokyo%2C+Shibuya+City%2C+Higashi%2C+3+Chome%E2%88%9220%E2%88%924+Ray+Quon+EBISU4F",
       "cid": "6924438072789106877",
       "google_id": "/g/11s38d3dfz",
       "maps_place_token": null
@@ -4337,7 +4385,7 @@
       "is_favorite": false,
       "lat": 35.7004826,
       "lng": 139.73967539999998,
-      "maps_url": "https://maps.google.com/?cid=6924439641794732085",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%AC%E3%83%86%E3%83%BC%E3%83%AB+L%E2%80%99%C3%89TERRE%2C+%E3%80%92162-0825+Tokyo%2C+Shinjuku+City%2C+Kagurazaka%2C+3+Chome%E2%88%926-53+%EF%BC%AA%EF%BC%AE%EF%BC%A3%E7%A5%9E%E6%A5%BD%E5%9D%82%E5%AF%AE+2F",
       "cid": "6924439641794732085",
       "google_id": "/g/11shdz7j0j",
       "maps_place_token": null
@@ -4349,7 +4397,7 @@
       "is_favorite": false,
       "lat": 35.665638799999996,
       "lng": 139.7098518,
-      "maps_url": "https://maps.google.com/?cid=6924439047180633945",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Brown+Rice+by+Neals%27+Yard+Remedies%2C+5+Chome-1-8+Jingumae%2C+Shibuya+City%2C+Tokyo+150-0001",
       "cid": "6924439047180633945",
       "google_id": "/g/1tfrgrtf",
       "maps_place_token": null
@@ -4361,7 +4409,7 @@
       "is_favorite": false,
       "lat": 35.661349799999996,
       "lng": 139.7540276,
-      "maps_url": "https://maps.google.com/?cid=6924437483044392977",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Arty%27s+Bar+Mojito+Laboratory%2C+%E3%80%92150-0013+Tokyo%2C+Shibuya+City%2C+Ebisu%2C+4+Chome%E2%88%924%E2%88%9215+%E3%83%90%E3%83%AB%E3%83%93%E3%82%BE%E3%83%B3105+8F",
       "cid": "6924437483044392977",
       "google_id": "/g/11jpgv5y80",
       "maps_place_token": null
@@ -4373,7 +4421,7 @@
       "is_favorite": false,
       "lat": 35.6603753,
       "lng": 139.7229208,
-      "maps_url": "https://maps.google.com/?cid=6924437786380050319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Boctok%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+2+Chome%E2%88%9213%E2%88%9215+%E5%85%A5%E3%82%8A%E5%8F%A3%E3%81%AF%E4%B8%80%E6%96%B9%E9%80%9A%E8%A1%8C%E5%81%B4%E3%81%AB%E3%81%82%E3%82%8A%E3%81%BE%E3%81%99%E3%80%82+The+entrance+is+on+the+one-way+side+%E5%A4%A7%E5%B1%B1%E3%83%93%E3%83%AB+B1F",
       "cid": "6924437786380050319",
       "google_id": "/g/11b6_nqcmr",
       "maps_place_token": null
@@ -4385,7 +4433,7 @@
       "is_favorite": false,
       "lat": 35.6245767,
       "lng": 139.72060399999998,
-      "maps_url": "https://maps.google.com/?cid=6924437142647751167",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kuwaharashoten%2C+2+Chome-29-2+Nishigotanda%2C+Shinagawa+City%2C+Tokyo+141-0031",
       "cid": "6924437142647751167",
       "google_id": "/g/11btrs5ks6",
       "maps_place_token": null
@@ -4397,7 +4445,7 @@
       "is_favorite": false,
       "lat": 35.6260183,
       "lng": 139.7205643,
-      "maps_url": "https://maps.google.com/?cid=6924437141658631199",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Agefuku%2C+%E3%80%92141-0031+Tokyo%2C+Shinagawa+City%2C+Nishigotanda%2C+2+Chome%E2%88%9215-13%2C+%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%8F%E3%82%A4%E3%83%84%E8%A5%BF%E4%BA%94%E5%8F%8D%E7%94%B0%EF%BC%91F",
       "cid": "6924437141658631199",
       "google_id": "/g/12m8zsvtz",
       "maps_place_token": null
@@ -4409,7 +4457,7 @@
       "is_favorite": false,
       "lat": 35.6719484,
       "lng": 139.7708312,
-      "maps_url": "https://maps.google.com/?cid=6924437705512608633",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%84%E3%81%A5%E3%81%8F%2C+%E3%80%92104-0061+Tokyo%2C+Chuo+City%2C+Ginza%2C+1+Chome%E2%88%9222%E2%88%9212+%E3%83%9E%E3%83%89%E3%83%AA%E3%82%AC%E3%83%AB%E9%8A%80%E5%BA%A7%E3%83%93%E3%83%AB+%EF%BC%91F",
       "cid": "6924437705512608633",
       "google_id": "/g/11p5_qnr1t",
       "maps_place_token": null
@@ -4421,7 +4469,7 @@
       "is_favorite": false,
       "lat": 35.6634299,
       "lng": 139.7345968,
-      "maps_url": "https://maps.google.com/?cid=6924437932968310241",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%99%8E%E5%B3%B0%28%E3%81%93%E3%81%BB%E3%81%86%29%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92106-0032+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E5%85%AD%E6%9C%AC%E6%9C%A8%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%98%E2%88%92%EF%BC%97",
       "cid": "6924437932968310241",
       "google_id": "/g/11cn9xkm1q",
       "maps_place_token": null
@@ -4433,7 +4481,7 @@
       "is_favorite": false,
       "lat": 35.6822614,
       "lng": 139.6972058,
-      "maps_url": "https://maps.google.com/?cid=6924440471571131657",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Azuki+to+Kouri%2C+%E3%80%92151-0053+Tokyo%2C+Shibuya+City%2C+Yoyogi%2C+1+Chome%E2%88%9246%E2%88%922+%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%87%E3%83%A5%E3%82%AA%E4%BB%A3%E3%80%85%E6%9C%A8+1F",
       "cid": "6924440471571131657",
       "google_id": "/g/11pv1qc3_7",
       "maps_place_token": null
@@ -4445,7 +4493,7 @@
       "is_favorite": false,
       "lat": 35.662116,
       "lng": 139.72118849999998,
-      "maps_url": "https://maps.google.com/?cid=6924438312899688131",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=AC+HOUSE%2C+2+Chome-7-7+Nishiazabu%2C+Minato+City%2C+Tokyo+106-0031",
       "cid": "6924438312899688131",
       "google_id": "/g/11sfq9dqk_",
       "maps_place_token": null
@@ -4457,7 +4505,7 @@
       "is_favorite": false,
       "lat": 35.6453485,
       "lng": 139.6982788,
-      "maps_url": "https://maps.google.com/?cid=6924437597722443775",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kushiwakamaru%2C+1+Chome-19-2+Kamimeguro%2C+Meguro+City%2C+Tokyo+153-0051",
       "cid": "6924437597722443775",
       "google_id": "/g/1tgxtjhc",
       "maps_place_token": null
@@ -4469,7 +4517,7 @@
       "is_favorite": false,
       "lat": 35.6572889,
       "lng": 139.7453639,
-      "maps_url": "https://maps.google.com/?cid=6925840174303039763",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Toufuya+Ukai%2C+4+Chome-4-13+Shibakoen%2C+Minato+City%2C+Tokyo+105-0011",
       "cid": "6925840174303039763",
       "google_id": "/g/1vd3vwk8",
       "maps_place_token": null
@@ -4481,7 +4529,7 @@
       "is_favorite": false,
       "lat": 35.662548799999996,
       "lng": 139.735495,
-      "maps_url": "https://maps.google.com/?cid=6924437933268143089",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%83%AB+%E3%82%AB%E3%83%95%E3%82%A7+%E3%83%A9%E3%83%86%E3%82%A3%E3%83%BC%E3%83%8E%2FEl+Caf%C3%A9+Latino%2C+%E3%82%A6%E3%82%A3%E3%83%B3%E5%85%AD%E6%9C%AC%E6%9C%A8+%E6%B8%AF%E5%8C%BA%E5%85%AD%E6%9C%AC%E6%9C%A8%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%95%E2%88%92%EF%BC%92%EF%BC%94+WIN%E5%85%AD%E6%9C%AC%E6%9C%A81%262%E9%9A%8E%2C+3+Chome-15-24+Roppongi%2C+Minato+City%2C+Tokyo+106-0032",
       "cid": "6924437933268143089",
       "google_id": "/g/1tfv0jhk",
       "maps_place_token": null
@@ -4493,7 +4541,7 @@
       "is_favorite": false,
       "lat": 35.6629219,
       "lng": 139.7025826,
-      "maps_url": "https://maps.google.com/?cid=6924439072569131525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moment+Factory+-+Tokyo%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92150-0002+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%8B%E8%B0%B7%E5%8C%BA%E6%B8%8B%E8%B0%B7%EF%BC%91%E4%B8%81%E7%9B%AE%EF%BC%92%EF%BC%93%E2%88%92%EF%BC%92%EF%BC%91",
       "cid": "6924439072569131525",
       "google_id": "/g/11hbkgk3y7",
       "maps_place_token": null
@@ -4505,7 +4553,7 @@
       "is_favorite": false,
       "lat": 35.6592134,
       "lng": 139.7242871,
-      "maps_url": "https://maps.google.com/?cid=6924437741885501307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Arashi%2C+%E3%80%92106-0031+Tokyo%2C+Minato+City%2C+Nishiazabu%2C+3+Chome%E2%88%9223%E7%95%AA%E5%9C%B014+%E5%86%85%E7%94%B0%E9%82%B8+B1",
       "cid": "6924437741885501307",
       "google_id": "/g/1v5_9f0l",
       "maps_place_token": null
@@ -4517,7 +4565,7 @@
       "is_favorite": false,
       "lat": 35.6937742,
       "lng": 139.7720463,
-      "maps_url": "https://maps.google.com/?cid=6924440274061017317",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%B3%A5%E3%81%AE%E3%81%8B%E3%81%91%E6%A9%8B%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92101-0044+%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA%E9%8D%9B%E5%86%B6%E7%94%BA%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%91%E2%88%92%EF%BC%91%EF%BC%99+%E7%A5%9E%E7%94%B0%E6%97%A5%E6%96%B0%E3%83%93%E3%83%AB1B",
       "cid": "6924440274061017317",
       "google_id": "/g/11h22wx6dg",
       "maps_place_token": null
@@ -4529,7 +4577,7 @@
       "is_favorite": false,
       "lat": 35.682558,
       "lng": 139.7680901,
-      "maps_url": "https://maps.google.com/?cid=6924438330241574425",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%81%A8%E3%82%93%E3%81%8B%E3%81%A4+%E5%AF%BF%E3%80%85%E6%9C%A8%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92100-0005+%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA%E4%B8%B8%E3%81%AE%E5%86%85%EF%BC%91%E4%B8%81%E7%9B%AE%EF%BC%99%E2%88%92%EF%BC%91+%E3%82%B0%E3%83%A9%E3%83%B3%E3%82%B9%E3%82%BF%E5%85%AB%E9%87%8D%E5%8C%97+%EF%BC%91%E9%9A%8E+%E5%85%AB%E9%87%8D%E5%8C%97%E9%A3%9F%E5%A0%82",
       "cid": "6924438330241574425",
       "google_id": "/g/12qgl2r9d",
       "maps_place_token": null
@@ -4541,7 +4589,7 @@
       "is_favorite": false,
       "lat": 35.657517,
       "lng": 139.7327809,
-      "maps_url": "https://maps.google.com/?cid=6924437938825608547",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E3%82%84%E3%81%AA%E3%81%8E%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92106-0045+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E9%BA%BB%E5%B8%83%E5%8D%81%E7%95%AA%EF%BC%91%E4%B8%81%E7%9B%AE%EF%BC%95%E2%88%92%EF%BC%93",
       "cid": "6924437938825608547",
       "google_id": "/g/1vp6_4y5",
       "maps_place_token": null
@@ -4553,7 +4601,7 @@
       "is_favorite": false,
       "lat": 35.6736556,
       "lng": 139.7386556,
-      "maps_url": "https://maps.google.com/?cid=6924437839373957701",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TAKAZAWA%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92107-0052+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E8%B5%A4%E5%9D%82%EF%BC%93%E4%B8%81%E7%9B%AE%EF%BC%95%E2%88%92%EF%BC%92",
       "cid": "6924437839373957701",
       "google_id": "/g/1twyzjml",
       "maps_place_token": null
@@ -4565,7 +4613,7 @@
       "is_favorite": false,
       "lat": 35.649681699999995,
       "lng": 139.7449868,
-      "maps_url": "https://maps.google.com/?cid=6924438017357359189",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E5%9B%BD%E9%A3%AF%E5%BA%97+%E4%B8%89%E7%94%B0%E5%BA%97%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92108-0014+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E8%8A%9D%EF%BC%95%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%93%E2%88%92%EF%BC%91%EF%BC%98",
       "cid": "6924438017357359189",
       "google_id": "/g/1wrgk49m",
       "maps_place_token": null
@@ -4577,7 +4625,7 @@
       "is_favorite": false,
       "lat": 35.6741794,
       "lng": 139.7668857,
-      "maps_url": "https://maps.google.com/?cid=6924438240323615731",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%88%E8%8A%B1+MoonFlower+Sagaya+Ginza%2C+Art+by+teamLab%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92104-0061+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%AD%E5%A4%AE%E5%8C%BA%E9%8A%80%E5%BA%A7%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%95%E2%88%92%EF%BC%91%EF%BC%99+PUZZLE%E9%8A%80%E5%BA%A7+6F",
       "cid": "6924438240323615731",
       "google_id": "/g/11f0_gbq3g",
       "maps_place_token": null
@@ -4589,7 +4637,7 @@
       "is_favorite": false,
       "lat": 35.6595544,
       "lng": 139.6959367,
-      "maps_url": "https://maps.google.com/?cid=6924439512376577261",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=RECORD+BAR+analog%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92150-0043+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%8B%E8%B0%B7%E5%8C%BA%E9%81%93%E7%8E%84%E5%9D%82%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%92%EF%BC%90%E2%88%92%EF%BC%99+%E3%83%AA%E3%82%A2%E3%83%A9%E3%82%A4%E3%82%BA%E3%83%93%E3%83%AB+3%E9%9A%8E",
       "cid": "6924439512376577261",
       "google_id": "/g/11gzqm8_hr",
       "maps_place_token": null
@@ -4601,7 +4649,7 @@
       "is_favorite": false,
       "lat": 35.6610049,
       "lng": 139.6682162,
-      "maps_url": "https://maps.google.com/?cid=6924552064434372609",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A9%E9%A6%AC%E5%B1%8B+%E4%B8%8B%E5%8C%97%E6%B2%A2%E5%BA%97%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92155-0031+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%96%E7%94%B0%E8%B0%B7%E5%8C%BA%E5%8C%97%E6%B2%A2%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%92%E2%88%92%EF%BC%91%EF%BC%92+%E6%A1%91%E7%94%B0%E3%83%93%E3%83%AB",
       "cid": "6924552064434372609",
       "google_id": "/g/11b6zqx9yv",
       "maps_place_token": null
@@ -4613,7 +4661,7 @@
       "is_favorite": false,
       "lat": 35.6601056,
       "lng": 139.66782999999998,
-      "maps_url": "https://maps.google.com/?cid=6924552061504105131",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%BA%83%E5%B3%B6%E7%84%BC%E3%81%8D+HIROKI+%E4%B8%8B%E5%8C%97%E6%B2%A2%E5%BA%97%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92155-0031+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%96%E7%94%B0%E8%B0%B7%E5%8C%BA%E5%8C%97%E6%B2%A2%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%94%E2%88%92%EF%BC%91%EF%BC%94+%E3%83%8F%E3%83%8B%E3%83%BC%E4%B8%8B%E5%8C%97%E6%B2%A2",
       "cid": "6924552061504105131",
       "google_id": "/g/1tdn43md",
       "maps_place_token": null
@@ -4625,7 +4673,7 @@
       "is_favorite": false,
       "lat": 35.6590827,
       "lng": 139.6685784,
-      "maps_url": "https://maps.google.com/?cid=6924552062137656525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%80%E3%83%BB%E3%82%AA%E3%83%83%E3%82%B8%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92155-0032+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%96%E7%94%B0%E8%B0%B7%E5%8C%BA%E4%BB%A3%E6%B2%A2%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%92%EF%BC%99%E2%88%92%EF%BC%92",
       "cid": "6924552062137656525",
       "google_id": "/g/1hf2k3vmr",
       "maps_place_token": null
@@ -4637,7 +4685,7 @@
       "is_favorite": false,
       "lat": 35.6592024,
       "lng": 139.6672891,
-      "maps_url": "https://maps.google.com/?cid=6924552061194312855",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%9E%E3%82%B6%E3%83%BC%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92155-0032+%E6%9D%B1%E4%BA%AC%E9%83%BD%E4%B8%96%E7%94%B0%E8%B0%B7%E5%8C%BA%E4%BB%A3%E6%B2%A2%EF%BC%95%E4%B8%81%E7%9B%AE%EF%BC%93%EF%BC%96%E2%88%92%EF%BC%91%EF%BC%94",
       "cid": "6924552061194312855",
       "google_id": "/g/1tfjw9qv",
       "maps_place_token": null
@@ -4649,7 +4697,7 @@
       "is_favorite": false,
       "lat": 35.645834,
       "lng": 139.7072423,
-      "maps_url": "https://maps.google.com/?cid=6924437537739258141",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%83%BC%E3%83%BB%E3%83%93%E3%83%BC%E3%83%86%E3%83%B3%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92150-0022+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%8B%E8%B0%B7%E5%8C%BA%E6%81%B5%E6%AF%94%E5%AF%BF%E5%8D%97%EF%BC%92%E4%B8%81%E7%9B%AE%EF%BC%91%E2%88%92%EF%BC%92+%E6%96%B0%E5%A0%80%E3%82%AE%E3%82%BF%E3%83%BC%E3%83%93%E3%83%AB",
       "cid": "6924437537739258141",
       "google_id": "/g/11fvxl5v3m",
       "maps_place_token": null
@@ -4661,7 +4709,7 @@
       "is_favorite": false,
       "lat": 35.6644785,
       "lng": 139.7316233,
-      "maps_url": "https://maps.google.com/?cid=6924437328754141665",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%84%9F%E6%83%85%2C+%E6%97%A5%E6%9C%AC%E3%80%81%E3%80%92106-0032+%E6%9D%B1%E4%BA%AC%E9%83%BD%E6%B8%AF%E5%8C%BA%E5%85%AD%E6%9C%AC%E6%9C%A8%EF%BC%94%E4%B8%81%E7%9B%AE%EF%BC%91%EF%BC%92%E2%88%92%EF%BC%95+%E5%85%AD%E6%9C%AC%E6%9C%A8%EF%BC%91%EF%BC%94%EF%BC%94%E3%83%93%E3%83%AB+3f",
       "cid": "6924437328754141665",
       "google_id": "/g/11sy3dcc4w",
       "maps_place_token": null

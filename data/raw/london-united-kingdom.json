@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:22:00.142042+00:00",
-  "refresh_after": "2026-04-29T15:22:00.142042+00:00",
+  "fetched_at": "2026-04-20T16:05:24.066844+00:00",
+  "refresh_after": "2026-05-06T00:38:03.066844+00:00",
   "source_signature": "2d0dd068337179f35a7d9e83217ecfa893c67c81ca43aecb3d79a6975629bb9c",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/4bF3nCUU3BgNZvqRA",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 51.5040748,
       "lng": -0.1919243,
-      "maps_url": "https://maps.google.com/?cid=5221378373244157597",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Candella+Tea+Room",
       "cid": "5221378373244157597",
       "google_id": null,
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 51.5240602,
       "lng": -0.1273637,
-      "maps_url": "https://maps.google.com/?cid=5221390768465583787",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=TASTE+OF+CHONGQING",
       "cid": "5221390768465583787",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 51.4962107,
       "lng": -0.0697328,
-      "maps_url": "https://maps.google.com/?cid=5221364455471584231",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ong+Ong+Buns",
       "cid": "5221364455471584231",
       "google_id": null,
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 51.511400699999996,
       "lng": -0.13605899999999999,
-      "maps_url": "https://maps.google.com/?cid=5221366128423123455",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kiln",
       "cid": "5221366128423123455",
       "google_id": null,
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 51.5106918,
       "lng": -0.2254695,
-      "maps_url": "https://maps.google.com/?cid=5221378234701091563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Electric+Cinema+White+City%2C+2%2C+Television+Centre%2C+101+Wood+Ln%2C+London+W12+7FR%2C+United+Kingdom",
       "cid": "5221378234701091563",
       "google_id": "/g/11f57wdl9c",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 51.520384299999996,
       "lng": -0.136523,
-      "maps_url": "https://maps.google.com/?cid=5221390682513385181",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kitchen+Table%2C+70+Charlotte+St.%2C+London+W1T+4QG%2C+United+Kingdom",
       "cid": "5221390682513385181",
       "google_id": "/g/124stm9v7",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 51.5143834,
       "lng": -0.1268196,
-      "maps_url": "https://maps.google.com/?cid=5221366097296776043",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Monmouth+Coffee+Company%2C+27+Monmouth+St%2C+London+WC2H+9EU%2C+United+Kingdom",
       "cid": "5221366097296776043",
       "google_id": "/g/11b75pw4tt",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 51.513734,
       "lng": -0.1299972,
-      "maps_url": "https://maps.google.com/?cid=5221366121142201625",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Swift+Soho%2C+12+Old+Compton+St%2C+London+W1D+4TQ%2C+United+Kingdom",
       "cid": "5221366121142201625",
       "google_id": "/g/11c2lrwbbv",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 51.5134879,
       "lng": -0.12574559999999999,
-      "maps_url": "https://maps.google.com/?cid=5221366095944902665",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hawksmoor+Seven+Dials%2C+11+Langley+St%2C+London+WC2H+9JG%2C+United+Kingdom",
       "cid": "5221366095944902665",
       "google_id": "/g/1hcbbd81q",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 51.5102188,
       "lng": -0.1206038,
-      "maps_url": "https://maps.google.com/?cid=5221366091607931009",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=American+Bar%2C+The+Savoy%2C+Strand%2C+London+WC2R+0EZ%2C+United+Kingdom",
       "cid": "5221366091607931009",
       "google_id": "/g/1z449srd6",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 51.513412599999995,
       "lng": -0.1220179,
-      "maps_url": "https://maps.google.com/?cid=5221367401556569575",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Side+Hustle%2C+Old+Police+Station+Entrance%2C+28+Bow+St%2C+London+WC2E+7AW%2C+United+Kingdom",
       "cid": "5221367401556569575",
       "google_id": "/g/11ng35ss25",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 51.507943999999995,
       "lng": -0.123314,
-      "maps_url": "https://maps.google.com/?cid=5221366104227605321",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gordon%27s+Wine+Bar%2C+47+Villiers+St%2C+London+WC2N+6NE%2C+United+Kingdom",
       "cid": "5221366104227605321",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 51.5123709,
       "lng": -0.1155466,
-      "maps_url": "https://maps.google.com/?cid=5221366115397143955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ikoyi+Restaurant%2C+180+Strand%2C+Temple%2C+London+WC2R+1EA%2C+United+Kingdom",
       "cid": "5221366115397143955",
       "google_id": "/g/11d_2kddhl",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 51.5159178,
       "lng": -0.1119748,
-      "maps_url": "https://maps.google.com/?cid=5221390828413758783",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chancery+Press%2C+81+Chancery+Ln%2C+London+WC2A+1DD%2C+United+Kingdom",
       "cid": "5221390828413758783",
       "google_id": "/g/11cm3qx_rs",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 51.513413,
       "lng": -0.1026314,
-      "maps_url": "https://maps.google.com/?cid=5221367551258901791",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alchemy+Caf%C3%A9+-+The+City%2C+8+Ludgate+Broadway%2C+London+EC4V+6DX%2C+United+Kingdom",
       "cid": "5221367551258901791",
       "google_id": "/g/12m9j5g5m",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 51.512073799999996,
       "lng": -0.09689239999999999,
-      "maps_url": "https://maps.google.com/?cid=5221365947594538111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Wren+Coffee%2C+114+Queen+Victoria+St%2C+London+EC4V+4BJ%2C+United+Kingdom",
       "cid": "5221365947594538111",
       "google_id": "/g/1pzw2nw4v",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 51.5182092,
       "lng": -0.10891289999999999,
-      "maps_url": "https://maps.google.com/?cid=5221391007521268269",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dartbrooke+Coffee%2C+1+Leather+Ln%2C+London+EC1N+2TD%2C+United+Kingdom",
       "cid": "5221391007521268269",
       "google_id": "/g/11f656yr7l",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 51.523621999999996,
       "lng": -0.11254929999999999,
-      "maps_url": "https://maps.google.com/?cid=5221390604833268741",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mouse+Tail+Coffee%2C+12+Mount+Pleasant%2C+London+WC1X+0BU%2C+United+Kingdom",
       "cid": "5221390604833268741",
       "google_id": "/g/11mr2x0t50",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 51.5167357,
       "lng": -0.10917299999999999,
-      "maps_url": "https://maps.google.com/?cid=5221365985641373559",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=WatchHouse+Fetter+Lane%2C+92+Fetter+Ln%2C+London+EC4A+1EP%2C+United+Kingdom",
       "cid": "5221365985641373559",
       "google_id": "/g/11f102fp8r",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 51.519934899999996,
       "lng": -0.10943009999999999,
-      "maps_url": "https://maps.google.com/?cid=5221390831860895081",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Prufrock+Coffee%2C+23-25+Leather+Ln%2C+London+EC1N+7TE%2C+United+Kingdom",
       "cid": "5221390831860895081",
       "google_id": "/g/1hc6b1tpw",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 51.5264239,
       "lng": -0.10829269999999999,
-      "maps_url": "https://maps.google.com/?cid=5221390803092705479",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Briki%2C+67+Exmouth+Market%2C+London+EC1R+4QL%2C+United+Kingdom",
       "cid": "5221390803092705479",
       "google_id": "/g/11bccgxxjy",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 51.539244,
       "lng": -0.106584,
-      "maps_url": "https://maps.google.com/?cid=5221390954654271035",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Pistachio+%26+Pickle%2C+142+Liverpool+Rd%2C+London+N1+1LA%2C+United+Kingdom",
       "cid": "5221390954654271035",
       "google_id": "/g/1vljftpx",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 51.5346343,
       "lng": -0.11161249999999999,
-      "maps_url": "https://maps.google.com/?cid=5221391323888489099",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Coffee+Berry%2C+3A+Barnsbury+Rd%2C+London+N1+0HG%2C+United+Kingdom",
       "cid": "5221391323888489099",
       "google_id": "/g/11fn519lfp",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 51.5265778,
       "lng": -0.0842585,
-      "maps_url": "https://maps.google.com/?cid=5221392314817156265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bounce+Old+Street%2C+241+Old+St%2C+London+EC1V+9EY%2C+United+Kingdom",
       "cid": "5221392314817156265",
       "google_id": "/g/11bv1bk7bv",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 51.534241099999996,
       "lng": -0.1044919,
-      "maps_url": "https://maps.google.com/?cid=5221390905262805311",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Katsute+100%2C+100+Islington+High+St%2C+London+N1+8EG%2C+United+Kingdom",
       "cid": "5221390905262805311",
       "google_id": "/g/11ddwn6v6s",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 51.526524599999995,
       "lng": -0.0877366,
-      "maps_url": "https://maps.google.com/?cid=5221392316757742395",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Nightjar+Shoreditch%2C+129+City+Rd%2C+London+EC1V+1JB%2C+United+Kingdom",
       "cid": "5221392316757742395",
       "google_id": "/g/1tfkvt0q",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 51.4810058,
       "lng": -0.005226199999999999,
-      "maps_url": "https://maps.google.com/?cid=5218289090375908531",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=National+Maritime+Museum%2C+Romney+Rd%2C+London+SE10+9NF%2C+United+Kingdom",
       "cid": "5218289090375908531",
       "google_id": null,
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 51.5367976,
       "lng": -0.0386354,
-      "maps_url": "https://maps.google.com/?cid=5221392810544153373",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Victoria+Park%2C+Grove+Rd.%2C+London+E3+5TB%2C+United+Kingdom",
       "cid": "5221392810544153373",
       "google_id": null,
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 51.543952,
       "lng": -0.0758636,
-      "maps_url": "https://maps.google.com/?cid=5221392239212049877",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Three+Sheets%2C+510b+Kingsland+Rd%2C+London+E8+4AB%2C+United+Kingdom",
       "cid": "5221392239212049877",
       "google_id": "/g/11c4bp6dtt",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 51.5396283,
       "lng": -0.0854505,
-      "maps_url": "https://maps.google.com/?cid=5221392264736132243",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=52A+Coffee+House%2C+52A+Southgate+Rd%2C+London+N1+3JF%2C+United+Kingdom",
       "cid": "5221392264736132243",
       "google_id": "/g/124sqhrl3",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 51.5294983,
       "lng": -0.056166799999999996,
-      "maps_url": "https://maps.google.com/?cid=5221392546862977407",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Satan%27s+Whiskers%2C+Satan%27s+Whiskers%2C+343+Cambridge+Heath+Rd%2C+London+E2+9RA%2C+United+Kingdom",
       "cid": "5221392546862977407",
       "google_id": "/g/1yhbjsxcf",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 51.530433599999995,
       "lng": -0.055982399999999995,
-      "maps_url": "https://maps.google.com/?cid=5221393480876682399",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Da+Terra+Restaurant%2C+8+Patriot+Square%2C+London+E2+9NF%2C+United+Kingdom",
       "cid": "5221393480876682399",
       "google_id": "/g/11fjzkdm3t",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 51.535673499999994,
       "lng": -0.0767291,
-      "maps_url": "https://maps.google.com/?cid=5221393128807079599",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A+Bar+with+Shapes+for+a+Name%2C+232+Kingsland+Rd%2C+Whitmore+Estate%2C+London+E2+8AX%2C+United+Kingdom",
       "cid": "5221393128807079599",
       "google_id": "/g/11qzcjmfgb",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 51.5374701,
       "lng": -0.0613386,
-      "maps_url": "https://maps.google.com/?cid=5221392603393466055",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Climpson+%26+Sons+Caf%C3%A9%2C+67+Broadway+Market%2C+London+E8+4PH%2C+United+Kingdom",
       "cid": "5221392603393466055",
       "google_id": "/g/1w0j3plr",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 51.5301085,
       "lng": -0.074373,
-      "maps_url": "https://maps.google.com/?cid=5221392394207248759",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alcotraz+London%3A+Cell+Block+Two-One-Two%2C+Unit+3B%2C+127+Hackney+Rd%2C+London+E2+8GY%2C+United+Kingdom",
       "cid": "5221392394207248759",
       "google_id": "/g/11g9s_9swd",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 51.5262367,
       "lng": -0.0768639,
-      "maps_url": "https://maps.google.com/?cid=5221392403626555821",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Paper+and+Cup+x+SCT%2C+18+Calvert+Ave%2C+London+E2+7JP%2C+United+Kingdom",
       "cid": "5221392403626555821",
       "google_id": "/g/1hf03c7_q",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 51.527145499999996,
       "lng": -0.07933649999999999,
-      "maps_url": "https://maps.google.com/?cid=5221392404777054609",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Clove+Club%2C+Shoreditch+Town+Hall%2C+380+Old+St%2C+London+EC1V+9LT%2C+United+Kingdom",
       "cid": "5221392404777054609",
       "google_id": "/g/124ycpn_j",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 51.5245002,
       "lng": -0.0765998,
-      "maps_url": "https://maps.google.com/?cid=5221392403209227205",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dishoom+Shoreditch%2C+7+Boundary+St%2C+London+E2+7JE%2C+United+Kingdom",
       "cid": "5221392403209227205",
       "google_id": "/g/1hf08nz33",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 51.5256851,
       "lng": -0.0804477,
-      "maps_url": "https://maps.google.com/?cid=5221392405853089847",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ballie+Ballerson+London%2C+97-113+Curtain+Rd%2C+London+EC2A+3BS%2C+United+Kingdom",
       "cid": "5221392405853089847",
       "google_id": "/g/11f0w_nzhs",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 51.5242042,
       "lng": -0.0767031,
-      "maps_url": "https://maps.google.com/?cid=5221392363282593261",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BRAT+Restaurant%2C+4+Redchurch+St%2C+London+E1+6JL%2C+United+Kingdom",
       "cid": "5221392363282593261",
       "google_id": "/g/11gg9bm8ry",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 51.5202245,
       "lng": -0.07196659999999999,
-      "maps_url": "https://maps.google.com/?cid=5221392811108358291",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bubble+%26+Scoop%2C+79+Brick+Ln%2C+London+E1+6QL%2C+United+Kingdom",
       "cid": "5221392811108358291",
       "google_id": "/g/11nn09j86f",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 51.5237542,
       "lng": -0.0764767,
-      "maps_url": "https://maps.google.com/?cid=5221392363660000461",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lyle%27s%2C+Tea+Building%2C+56+Shoreditch+High+St%2C+London+E1+6GY%2C+United+Kingdom",
       "cid": "5221392363660000461",
       "google_id": "/g/1q5btm6v_",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 51.515555,
       "lng": -0.0718688,
-      "maps_url": "https://maps.google.com/?cid=5221393177205900401",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yi+Cha+Bubble+Tea%2C+2+Commercial+St%2C+London+E1+6LP%2C+United+Kingdom",
       "cid": "5221393177205900401",
       "google_id": "/g/11pcm5vz2g",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 51.5181264,
       "lng": -0.077752,
-      "maps_url": "https://maps.google.com/?cid=5221393286123026247",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Jen+Tea+London+-+%E8%8C%B6%E7%8F%8D%E5%9C%93%2C+16+Artillery+Psge%2C+London+E1+7LJ%2C+United+Kingdom",
       "cid": "5221393286123026247",
       "google_id": "/g/11j4ds_7k6",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 51.516119499999995,
       "lng": -0.0772458,
-      "maps_url": "https://maps.google.com/?cid=5221392379596978803",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fazenda+UK%2C+9+Harrow+Pl%2C+London+E1+7DB%2C+United+Kingdom",
       "cid": "5221392379596978803",
       "google_id": "/g/1vknnw94",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 51.5147826,
       "lng": -0.0780363,
-      "maps_url": "https://maps.google.com/?cid=5221367215816584395",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moonshine+Saloon%2C+28-30+Houndsditch%2C+London+EC3A+7DB%2C+United+Kingdom",
       "cid": "5221367215816584395",
       "google_id": "/g/11gh9q8qpp",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 51.516495799999994,
       "lng": -0.08056289999999999,
-      "maps_url": "https://maps.google.com/?cid=5221392371283975409",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Afternoon+Tea+at+The+Orchid+Lounge+-+Pan+Pacific+London%2C+80+Houndsditch%2C+London+EC3A+7AB%2C+United+Kingdom",
       "cid": "5221392371283975409",
       "google_id": "/g/11q8v9q18g",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 51.5176899,
       "lng": -0.0890369,
-      "maps_url": "https://maps.google.com/?cid=5221393316093424853",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rosslyn+Coffee+London+Wall%2C+118+London+Wall%2C+London+EC2Y+5JA%2C+United+Kingdom",
       "cid": "5221393316093424853",
       "google_id": "/g/11p677y3c9",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 51.516978099999996,
       "lng": -0.0881,
-      "maps_url": "https://maps.google.com/?cid=5221390725891629041",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Forbes+and+Hamilton+Coffee+House%2C+47+London+Wall%2C+London+EC2M+5TE%2C+United+Kingdom",
       "cid": "5221390725891629041",
       "google_id": "/g/1v75rd1h",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 51.5125801,
       "lng": -0.09350349999999999,
-      "maps_url": "https://maps.google.com/?cid=5221364483717321673",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Rosslyn+Coffee+Queen+Victoria+Street%2C+78+Queen+Victoria+St%2C+London+EC4N+4SJ%2C+United+Kingdom",
       "cid": "5221364483717321673",
       "google_id": "/g/11f3tv21w6",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 51.5146549,
       "lng": -0.09373419999999999,
-      "maps_url": "https://maps.google.com/?cid=5221364483001233349",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=v69+coffee%2C+30+Gresham+St%2C+London+EC2V+7PG%2C+United+Kingdom",
       "cid": "5221364483001233349",
       "google_id": "/g/11gfn965zj",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 51.510117799999996,
       "lng": -0.07797459999999999,
-      "maps_url": "https://maps.google.com/?cid=5221364443535881169",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Dame+de+Pic+London%2C+Four+Seasons+Hotel+at+Ten%2C+10+Trinity+Square%2C+London+EC3N+4AJ%2C+United+Kingdom",
       "cid": "5221364443535881169",
       "google_id": "/g/11c6crp33l",
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 51.502846399999996,
       "lng": -0.0777649,
-      "maps_url": "https://maps.google.com/?cid=5221364415980879473",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Story%2C+199+Tooley+St%2C+London+SE1+2JX%2C+United+Kingdom",
       "cid": "5221364415980879473",
       "google_id": "/g/124sz4q1g",
       "maps_place_token": null
@@ -653,7 +653,7 @@
       "is_favorite": false,
       "lat": 51.508393899999994,
       "lng": -0.10666389999999999,
-      "maps_url": "https://maps.google.com/?cid=5221365979519607525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lyaness%2C+20+Upper+Ground%2C+London+SE1+9PD%2C+United+Kingdom",
       "cid": "5221365979519607525",
       "google_id": "/g/11b6j3l0g4",
       "maps_place_token": null
@@ -665,7 +665,7 @@
       "is_favorite": false,
       "lat": 51.5075953,
       "lng": -0.0993564,
-      "maps_url": "https://maps.google.com/?cid=5221365942708476309",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tate+Modern%2C+Bankside%2C+London+SE1+9TG%2C+United+Kingdom",
       "cid": "5221365942708476309",
       "google_id": null,
       "maps_place_token": null
@@ -677,7 +677,7 @@
       "is_favorite": false,
       "lat": 51.504962,
       "lng": -0.092942,
-      "maps_url": "https://maps.google.com/?cid=5221364494237635313",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mango+Indian%2C+Cromwell+Building%2C+6+Redcross+Way%2C+London+SE1+9HR%2C+United+Kingdom",
       "cid": "5221364494237635313",
       "google_id": "/g/1tr7hw0d",
       "maps_place_token": null
@@ -689,7 +689,7 @@
       "is_favorite": false,
       "lat": 51.511786199999996,
       "lng": -0.13144999999999998,
-      "maps_url": "https://maps.google.com/?cid=5221366119495743341",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Opium+Cocktail+Bar+%26+Dim+Sum+Parlour%2C+15-16+Gerrard+St%2C+London+W1D+6JE%2C+United+Kingdom",
       "cid": "5221366119495743341",
       "google_id": "/g/11xc65k4_",
       "maps_place_token": null
@@ -701,7 +701,7 @@
       "is_favorite": false,
       "lat": 51.4979102,
       "lng": -0.1354426,
-      "maps_url": "https://maps.google.com/?cid=5221366705063357351",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Formative+Coffee%2C+4+Butler+Pl%2C+London+SW1H+0RH%2C+United+Kingdom",
       "cid": "5221366705063357351",
       "google_id": "/g/11h0b6jgrs",
       "maps_place_token": null
@@ -713,7 +713,7 @@
       "is_favorite": false,
       "lat": 51.512541,
       "lng": -0.13890429999999998,
-      "maps_url": "https://maps.google.com/?cid=5221366131115741305",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Darjeeling+Express%2C+2.4+Kingly+Ct%2C+Carnaby%2C+London+W1B+5PW%2C+United+Kingdom",
       "cid": "5221366131115741305",
       "google_id": "/g/11dfr76v4z",
       "maps_place_token": null
@@ -725,7 +725,7 @@
       "is_favorite": false,
       "lat": 51.509205599999994,
       "lng": -0.1461933,
-      "maps_url": "https://maps.google.com/?cid=5221366516022644307",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Annabel%27s%2C+46+Berkeley+Square%2C+London+W1J+5AT%2C+United+Kingdom",
       "cid": "5221366516022644307",
       "google_id": null,
       "maps_place_token": null
@@ -737,7 +737,7 @@
       "is_favorite": false,
       "lat": 51.516583999999995,
       "lng": -0.1348038,
-      "maps_url": "https://maps.google.com/?cid=5221390804734008887",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Omotesando+Koffee%2C+8+Newman+St%2C+London+W1T+1FB%2C+United+Kingdom",
       "cid": "5221390804734008887",
       "google_id": "/g/11hdgl_291",
       "maps_place_token": null
@@ -749,7 +749,7 @@
       "is_favorite": false,
       "lat": 51.511337499999996,
       "lng": -0.1352386,
-      "maps_url": "https://maps.google.com/?cid=5221366851480607553",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hideaway+Coffee%2C+7+Farrier%27s+Psge%2C+London+W1D+7DP%2C+United+Kingdom",
       "cid": "5221366851480607553",
       "google_id": "/g/11g4lm05yc",
       "maps_place_token": null
@@ -761,7 +761,7 @@
       "is_favorite": false,
       "lat": 51.512693,
       "lng": -0.141529,
-      "maps_url": "https://maps.google.com/?cid=5221366498344142443",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=sketch%2C+9+Conduit+St%2C+London+W1S+2XG%2C+United+Kingdom",
       "cid": "5221366498344142443",
       "google_id": null,
       "maps_place_token": null
@@ -773,7 +773,7 @@
       "is_favorite": false,
       "lat": 51.511291299999996,
       "lng": -0.140763,
-      "maps_url": "https://maps.google.com/?cid=5221366133199344585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Savile+Row%2C+London%2C+UK",
       "cid": "5221366133199344585",
       "google_id": null,
       "maps_place_token": null
@@ -785,7 +785,7 @@
       "is_favorite": false,
       "lat": 51.518888999999994,
       "lng": -0.1405294,
-      "maps_url": "https://maps.google.com/?cid=5221390685397492837",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Meraki+Greek+Restaurant+%26+Bar+Fitzrovia%2C+80-82+Great+Titchfield+St.%2C+London+W1W+7QT%2C+United+Kingdom",
       "cid": "5221390685397492837",
       "google_id": "/g/11d_8gn4rf",
       "maps_place_token": null
@@ -797,7 +797,7 @@
       "is_favorite": false,
       "lat": 51.5192293,
       "lng": -0.140675,
-      "maps_url": "https://maps.google.com/?cid=5221390685343349071",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Attendant+Coffee+Roasters%2C+27A+Foley+St%2C+London+W1W+6DY%2C+United+Kingdom",
       "cid": "5221390685343349071",
       "google_id": "/g/1hhw4vrfm",
       "maps_place_token": null
@@ -809,7 +809,7 @@
       "is_favorite": false,
       "lat": 51.5174192,
       "lng": -0.1372793,
-      "maps_url": "https://maps.google.com/?cid=5221391484005552445",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sanderson+Hotel%2C+50+Berners+St%2C+London+W1T+3NG%2C+United+Kingdom",
       "cid": "5221391484005552445",
       "google_id": null,
       "maps_place_token": null
@@ -821,7 +821,7 @@
       "is_favorite": false,
       "lat": 51.5168611,
       "lng": -0.1371645,
-      "maps_url": "https://maps.google.com/?cid=5221390691366001385",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kaffeine%2C+15+Eastcastle+St%2C+London+W1T+3AY%2C+United+Kingdom",
       "cid": "5221390691366001385",
       "google_id": "/g/11b6_vx_mk",
       "maps_place_token": null
@@ -833,7 +833,7 @@
       "is_favorite": false,
       "lat": 51.5147907,
       "lng": -0.157544,
-      "maps_url": "https://maps.google.com/?cid=5221390526452791741",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=KOL+Restaurant%2C+9+Seymour+St%2C+London+W1H+7BA%2C+United+Kingdom",
       "cid": "5221390526452791741",
       "google_id": "/g/11h_sy3fzv",
       "maps_place_token": null
@@ -845,7 +845,7 @@
       "is_favorite": false,
       "lat": 51.517589099999995,
       "lng": -0.1438754,
-      "maps_url": "https://maps.google.com/?cid=5221390322983313171",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Artesian%2C+1C+Portland+Pl%2C+London+W1B+1JA%2C+United+Kingdom",
       "cid": "5221390322983313171",
       "google_id": "/g/1tfpp5bs",
       "maps_place_token": null
@@ -857,7 +857,7 @@
       "is_favorite": false,
       "lat": 51.507411999999995,
       "lng": -0.1523328,
-      "maps_url": "https://maps.google.com/?cid=5221366513846887181",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Alain+Ducasse+at+The+Dorchester%2C+53+Park+Ln%2C+London+W1K+1QA%2C+United+Kingdom",
       "cid": "5221366513846887181",
       "google_id": null,
       "maps_place_token": null
@@ -869,7 +869,7 @@
       "is_favorite": false,
       "lat": 51.5112956,
       "lng": -0.1551716,
-      "maps_url": "https://maps.google.com/?cid=5221365580559808749",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Gavroche%2C+43+Upper+Brook+St%2C+London+W1K+7QR%2C+United+Kingdom",
       "cid": "5221365580559808749",
       "google_id": null,
       "maps_place_token": null
@@ -881,7 +881,7 @@
       "is_favorite": false,
       "lat": 51.5101843,
       "lng": -0.1497608,
-      "maps_url": "https://maps.google.com/?cid=5221366505285539381",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=H%C3%A9l%C3%A8ne+Darroze+at+The+Connaught%2C+Carlos+Pl%2C+London+W1K+2AL%2C+United+Kingdom",
       "cid": "5221366505285539381",
       "google_id": null,
       "maps_place_token": null
@@ -893,7 +893,7 @@
       "is_favorite": false,
       "lat": 51.510205,
       "lng": -0.1495582,
-      "maps_url": "https://maps.google.com/?cid=5221366505268292305",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Connaught+Bar%2C+The+Connaught%2C+Connaught%2C+16+Carlos+Pl%2C+London+W1K+2AL%2C+United+Kingdom",
       "cid": "5221366505268292305",
       "google_id": "/g/11btvg99n3",
       "maps_place_token": null
@@ -905,7 +905,7 @@
       "is_favorite": false,
       "lat": 51.5026581,
       "lng": -0.1527627,
-      "maps_url": "https://maps.google.com/?cid=5221366475282465649",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Library+Bar%2C+Hyde+Park+Corner%2C+London+SW1X+7TA%2C+United+Kingdom",
       "cid": "5221366475282465649",
       "google_id": "/g/1wzt1vrh",
       "maps_place_token": null
@@ -917,7 +917,7 @@
       "is_favorite": false,
       "lat": 51.5070726,
       "lng": -0.1522442,
-      "maps_url": "https://maps.google.com/?cid=5221366142763744393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Dorchester%2C+53+Park+Ln%2C+London+W1K+1QA%2C+United+Kingdom",
       "cid": "5221366142763744393",
       "google_id": null,
       "maps_place_token": null
@@ -929,7 +929,7 @@
       "is_favorite": false,
       "lat": 51.5073638,
       "lng": -0.1641135,
-      "maps_url": "https://maps.google.com/?cid=5221366629762865797",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hyde+Park%2C+London%2C+United+Kingdom",
       "cid": "5221366629762865797",
       "google_id": null,
       "maps_place_token": null
@@ -941,7 +941,7 @@
       "is_favorite": false,
       "lat": 51.502161,
       "lng": -0.159964,
-      "maps_url": "https://maps.google.com/?cid=5221366562920084807",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dinner+by+Heston+Blumenthal%2C+66+Knightsbridge%2C+London+SW1X+7LA%2C+United+Kingdom",
       "cid": "5221366562920084807",
       "google_id": "/g/155q_gh3",
       "maps_place_token": null
@@ -953,7 +953,7 @@
       "is_favorite": false,
       "lat": 51.514804,
       "lng": -0.1963739,
-      "maps_url": "https://maps.google.com/?cid=5221377663873600043",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sumi+Restaurant%2C+157+Westbourne+Grove%2C+London+W11+2RS%2C+United+Kingdom",
       "cid": "5221377663873600043",
       "google_id": "/g/11lg39l925",
       "maps_place_token": null
@@ -965,7 +965,7 @@
       "is_favorite": false,
       "lat": 51.5166974,
       "lng": -0.2053682,
-      "maps_url": "https://maps.google.com/?cid=5221378538382799291",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fabrique%2C+212+Portobello+Rd%2C+London+W11+1LA%2C+United+Kingdom",
       "cid": "5221378538382799291",
       "google_id": "/g/11ckkx9bvm",
       "maps_place_token": null
@@ -977,7 +977,7 @@
       "is_favorite": false,
       "lat": 51.515436,
       "lng": -0.1927123,
-      "maps_url": "https://maps.google.com/?cid=5221378418320283735",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Farmacy%2C+74-76+Westbourne+Grove%2C+London+W2+5SH%2C+United+Kingdom",
       "cid": "5221378418320283735",
       "google_id": "/g/11cn0kf5cf",
       "maps_place_token": null
@@ -989,7 +989,7 @@
       "is_favorite": false,
       "lat": 51.5160552,
       "lng": -0.20486769999999999,
-      "maps_url": "https://maps.google.com/?cid=5221378538619746723",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Distillery%2C+186+Portobello+Rd%2C+London+W11+1LA%2C+United+Kingdom",
       "cid": "5221378538619746723",
       "google_id": "/g/11bzzygfgt",
       "maps_place_token": null
@@ -1001,7 +1001,7 @@
       "is_favorite": false,
       "lat": 51.5155702,
       "lng": -0.20496419999999999,
-      "maps_url": "https://maps.google.com/?cid=5221378538751424161",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Electric+Diner%2C+191+Portobello+Rd%2C+London+W11+2ED%2C+United+Kingdom",
       "cid": "5221378538751424161",
       "google_id": "/g/11cfj6r4y",
       "maps_place_token": null
@@ -1013,7 +1013,7 @@
       "is_favorite": false,
       "lat": 51.514989299999996,
       "lng": -0.20458859999999998,
-      "maps_url": "https://maps.google.com/?cid=5221378538621761051",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trailer+Happiness%2C+177+Portobello+Rd%2C+London+W11+2DY%2C+United+Kingdom",
       "cid": "5221378538621761051",
       "google_id": "/g/1td52xyd",
       "maps_place_token": null
@@ -1025,7 +1025,7 @@
       "is_favorite": false,
       "lat": 51.5127727,
       "lng": -0.2031335,
-      "maps_url": "https://maps.google.com/?cid=5221378282783266133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Core+by+Clare+Smyth%2C+92+Kensington+Park+Rd%2C+London+W11+2PN%2C+United+Kingdom",
       "cid": "5221378282783266133",
       "google_id": "/g/11dfh5hpg5",
       "maps_place_token": null
@@ -1037,7 +1037,7 @@
       "is_favorite": false,
       "lat": 51.5090928,
       "lng": -0.20290139999999998,
-      "maps_url": "https://maps.google.com/?cid=5221378292007819015",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Ladbroke+Arms%2C+54+Ladbroke+Rd%2C+London+W11+3NW%2C+United+Kingdom",
       "cid": "5221378292007819015",
       "google_id": "/g/1tfcsq3l",
       "maps_place_token": null
@@ -1049,7 +1049,7 @@
       "is_favorite": false,
       "lat": 51.506911699999996,
       "lng": -0.194801,
-      "maps_url": "https://maps.google.com/?cid=5221378385234964505",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Churchill+Arms%2C+Kensington%2C+119+Kensington+Church+St%2C+London+W8+7LN%2C+United+Kingdom",
       "cid": "5221378385234964505",
       "google_id": "/g/11d_wtfd5b",
       "maps_place_token": null
@@ -1061,7 +1061,7 @@
       "is_favorite": false,
       "lat": 51.5012647,
       "lng": -0.191139,
-      "maps_url": "https://maps.google.com/?cid=5221378371374087103",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Dishoom+Kensington%2C+4+Derry+St%2C+London+W8+5SE%2C+United+Kingdom",
       "cid": "5221378371374087103",
       "google_id": "/g/11f1568cfg",
       "maps_place_token": null
@@ -1073,7 +1073,7 @@
       "is_favorite": false,
       "lat": 51.5088807,
       "lng": -0.1966195,
-      "maps_url": "https://maps.google.com/?cid=5221378111139783415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Notting+Hill+Coffee+Project%2C+63+Notting+Hill+Gate%2C+London+W11+3JS%2C+United+Kingdom",
       "cid": "5221378111139783415",
       "google_id": "/g/11j1t0hq5n",
       "maps_place_token": null
@@ -1085,7 +1085,7 @@
       "is_favorite": false,
       "lat": 51.496714999999995,
       "lng": -0.1763672,
-      "maps_url": "https://maps.google.com/?cid=5221366602868993855",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Natural+History+Museum%2C+Cromwell+Rd%2C+South+Kensington%2C+London+SW7+5BD%2C+United+Kingdom",
       "cid": "5221366602868993855",
       "google_id": null,
       "maps_place_token": null
@@ -1097,7 +1097,7 @@
       "is_favorite": false,
       "lat": 51.497221599999996,
       "lng": -0.1767283,
-      "maps_url": "https://maps.google.com/?cid=5221366603622439487",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Science+Museum%2C+Exhibition+Rd%2C+South+Kensington%2C+London+SW7+2DD%2C+United+Kingdom",
       "cid": "5221366603622439487",
       "google_id": null,
       "maps_place_token": null
@@ -1109,7 +1109,7 @@
       "is_favorite": false,
       "lat": 51.493331,
       "lng": -0.16893,
-      "maps_url": "https://maps.google.com/?cid=5221366771025798063",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Claude+Bosi+at+Bibendum%2C+Michelin+House%2C+81+Fulham+Rd.%2C+London+SW3+6RD%2C+United+Kingdom",
       "cid": "5221366771025798063",
       "google_id": "/g/11c70h1h54",
       "maps_place_token": null
@@ -1121,7 +1121,7 @@
       "is_favorite": false,
       "lat": 51.493006,
       "lng": -0.1405639,
-      "maps_url": "https://maps.google.com/?cid=5221366178593245329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A.+Wong%2C+70+Wilton+Rd%2C+Pimlico%2C+London+SW1V+1DE%2C+United+Kingdom",
       "cid": "5221366178593245329",
       "google_id": "/g/1hc2ng28k",
       "maps_place_token": null
@@ -1133,7 +1133,7 @@
       "is_favorite": false,
       "lat": 51.485958399999994,
       "lng": -0.1614697,
-      "maps_url": "https://maps.google.com/?cid=5221366397142497381",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Gordon+Ramsay+Bar+%26+Grill+-+Chelsea%2C+79+Royal+Hospital+Rd%2C+London+SW3+4AN%2C+United+Kingdom",
       "cid": "5221366397142497381",
       "google_id": "/g/1tdxkbj9",
       "maps_place_token": null
@@ -1145,7 +1145,7 @@
       "is_favorite": false,
       "lat": 51.5027523,
       "lng": -0.1878415,
-      "maps_url": "https://maps.google.com/?cid=5221378375267343563",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Min+Jiang",
       "cid": "5221378375267343563",
       "google_id": null,
       "maps_place_token": null

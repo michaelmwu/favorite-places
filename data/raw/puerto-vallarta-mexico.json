@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:16:44.104109+00:00",
-  "refresh_after": "2026-04-29T15:16:44.104109+00:00",
+  "fetched_at": "2026-04-20T16:02:40.909005+00:00",
+  "refresh_after": "2026-05-07T09:26:13.909005+00:00",
   "source_signature": "daa6ffac0955fa5741f9d45155f7cdb2147c1332f5d13dc7cc290452de2428ba",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/2r13HLtmoWaXwZi1A",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 20.710492,
       "lng": -105.2767008,
-      "maps_url": "https://maps.google.com/?cid=7188113891532446230",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=LOMA+42+BAHIA%2C+Blvd.+Nuevo+Vallarta+4-Int.+2%2C+Plaza+San+Carlos%2C+63732+Nuevo+Vallarta%2C+Nay.%2C+Mexico",
       "cid": "7188113891532446230",
       "google_id": "/g/11hy_l91wc",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 20.7149531,
       "lng": -105.2746801,
-      "maps_url": "https://maps.google.com/?cid=8721615037114564679",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Hamburguesas+de+camar%C3%B3n+Robin%2C+Valle+de+Santiago+102%2C+Valle+Dorado%2C+63735+Mezcales%2C+Nay.%2C+Mexico",
       "cid": "8721615037114564679",
       "google_id": "/g/11b7kk987s",
       "maps_place_token": null
@@ -41,8 +41,8 @@
       "is_favorite": false,
       "lat": 20.7087932,
       "lng": -105.29354909999999,
-      "maps_url": "https://maps.google.com/?q=20.7087932,-105.2935491",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mr.+Cream+Pancakes+and+Waffles%2C+Nvo.Vallarta%2C+Plaza+3.14+Av.+Paseo+de+las+Palmas+3+Unit+29%2C+63735+Nuevo+Vallarta%2C+Nay.%2C+Mexico",
+      "cid": "11970764973883381499",
       "google_id": "/g/11y8bzhqv",
       "maps_place_token": null
     },
@@ -53,8 +53,8 @@
       "is_favorite": false,
       "lat": 20.7348416,
       "lng": -105.2701847,
-      "maps_url": "https://maps.google.com/?q=20.7348416,-105.2701847",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cenadur%C3%ADa+Coyoacan%2C+C.+Valle+de+Zirahuen+275%2C+Los+Encantos%2C+Valle+Dorado%2C+63735+Mezcales%2C+Nay.%2C+Mexico",
+      "cid": "18330142520614515195",
       "google_id": null,
       "maps_place_token": null
     },
@@ -65,8 +65,8 @@
       "is_favorite": false,
       "lat": 20.6943306,
       "lng": -105.2796994,
-      "maps_url": "https://maps.google.com/?q=20.6943306,-105.2796994",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tino%27s+La+Laguna%2C+Blvrd+de+Nayarit+%23393%2C+63735+Nuevo+Vallarta%2C+Nay.%2C+Mexico",
+      "cid": "12070497202039111753",
       "google_id": null,
       "maps_place_token": null
     },
@@ -77,8 +77,8 @@
       "is_favorite": false,
       "lat": 20.6372283,
       "lng": -105.2291922,
-      "maps_url": "https://maps.google.com/?q=20.6372283,-105.2291922",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Tienda+Grande%2C+Entre+Calle+Hidalgo+y+calle+Juarez%2C+int+172+A+Ixtapa%2C+48280+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "16248846403748081476",
       "google_id": "/g/11jpd58gh1",
       "maps_place_token": null
     },
@@ -89,8 +89,8 @@
       "is_favorite": false,
       "lat": 20.693726899999998,
       "lng": -105.28019289999999,
-      "maps_url": "https://maps.google.com/?q=20.6937269,-105.2801929",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Blue+Shrimp+Nuevo+Vallarta%2C+Blvrd.+Nayarit+208+Jarretaderas+Jarretaderas%2C+63735+Nuevo+Vallarta%2C+Nay.%2C+Mexico",
+      "cid": "13308902856294785414",
       "google_id": null,
       "maps_place_token": null
     },
@@ -101,8 +101,8 @@
       "is_favorite": false,
       "lat": 20.666434799999998,
       "lng": -105.2504285,
-      "maps_url": "https://maps.google.com/?q=20.6664348,-105.2504285",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mr.+Cream+Pancakes+%26+Waffles%2C+Condominios+Marina+Sol+Int.+3y4%2C+Marina+Vallarta%2C+48354+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "11828500159763000874",
       "google_id": "/g/1tfctjpk",
       "maps_place_token": null
     },
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 20.6663519,
       "lng": -105.2503289,
-      "maps_url": "https://maps.google.com/?cid=84726230949521230",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Porto+Bello%2C+C.+Popa+s%2Fn%2C+Marina+Vallarta%2C+48335+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "84726230949521230",
       "google_id": "/g/1tg6qf9z",
       "maps_place_token": null
@@ -125,8 +125,8 @@
       "is_favorite": false,
       "lat": 20.6651784,
       "lng": -105.2513815,
-      "maps_url": "https://maps.google.com/?q=20.6651784,-105.2513815",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Victor%27s+Place+Cafe+Tacuba%2C+Condominio+Royal+Pacific+Yacht+Club+Uno%2C+Av+Paseo+de+la+Marina+Local+%23128%2C+Marina+Vallarta%2C+48335+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "11600636559256911878",
       "google_id": "/g/11clzkjm60",
       "maps_place_token": null
     },
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 20.6035911,
       "lng": -105.2316345,
-      "maps_url": "https://maps.google.com/?cid=5588413665634210210",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tacos+De+Mariscos+Garlapago+Tacolini%2C+C.+Jacarandas+325%2C+Zona+Rom%C3%A1ntica%2C+Emiliano+Zapata%2C+48380+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "5588413665634210210",
       "google_id": "/g/11bxfs_89t",
       "maps_place_token": null
@@ -149,8 +149,8 @@
       "is_favorite": false,
       "lat": 20.6045138,
       "lng": -105.2295005,
-      "maps_url": "https://maps.google.com/?q=20.6045138,-105.2295005",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Farmer%E2%80%99s+Market+Emiliano+Zapata%2C+Mercado+Emiliano+Zapata+local+31%2C+48380+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "16733783373534611484",
       "google_id": "/g/11b86xc__m",
       "maps_place_token": null
     },
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 20.604067099999998,
       "lng": -105.23593819999999,
-      "maps_url": "https://maps.google.com/?cid=8215741606279322300",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Martini+en+Fuego+Grill+Restaurant%2C+C.+Fco.+I.+Madero+260-Int.+A%2C+Zona+Rom%C3%A1ntica%2C+Emiliano+Zapata%2C+48380+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "8215741606279322300",
       "google_id": "/g/11c42rcp7p",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 20.6026098,
       "lng": -105.2383931,
-      "maps_url": "https://maps.google.com/?cid=1511811100960729116",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Blue+Shrimp+Puerto+Vallarta%2C+Olas+Altas+336%2C+Zona+Rom%C3%A1ntica%2C+Emiliano+Zapata%2C+48328+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "1511811100960729116",
       "google_id": "/g/1tdrxmn1",
       "maps_place_token": null
@@ -185,8 +185,8 @@
       "is_favorite": false,
       "lat": 20.6659743,
       "lng": -105.2487902,
-      "maps_url": "https://maps.google.com/?q=20.6659743,-105.2487902",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mariscos+8+Tostadas%2C+Quilla+s%2Fn-Local+28-29%2C+Marina+Vallarta%2C+48335+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "10209751943071313325",
       "google_id": "/g/1tnblg23",
       "maps_place_token": null
     },
@@ -197,8 +197,8 @@
       "is_favorite": false,
       "lat": 20.683420899999998,
       "lng": -105.28612779999999,
-      "maps_url": "https://maps.google.com/?q=20.6834209,-105.2861278",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Cantina%2C+Blvrd+Riviera+Nayarit+254%2C+63735+Nuevo+Vallarta%2C+Nay.%2C+Mexico",
+      "cid": "16779978420154707015",
       "google_id": "/g/11c4kt8jyy",
       "maps_place_token": null
     },
@@ -209,8 +209,8 @@
       "is_favorite": false,
       "lat": 20.624246799999998,
       "lng": -105.2236878,
-      "maps_url": "https://maps.google.com/?q=20.6242468,-105.2236878",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Happy+Lobster%2C+Rep.+Dominicana+120%2C+L%C3%A1zaro+C%C3%A1rdenas%2C+48330+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "16543580819302548003",
       "google_id": "/g/1hd_9686l",
       "maps_place_token": null
     },
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 20.5994782,
       "lng": -105.2387256,
-      "maps_url": "https://maps.google.com/?cid=720679494150878827",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Palapa+Restaurant%2C+P%C3%BAlpito+105-3%2C+Zona+Rom%C3%A1ntica%2C+Emiliano+Zapata%2C+48380+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "720679494150878827",
       "google_id": "/g/1hc6zjgkk",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 20.6375861,
       "lng": -105.2259339,
-      "maps_url": "https://maps.google.com/?cid=4061697953411668734",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cha%27%2C+Hamburgo+148a%2C+Versalles%2C+48310+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "4061697953411668734",
       "google_id": "/g/11h7z80dw_",
       "maps_place_token": null
@@ -245,8 +245,8 @@
       "is_favorite": false,
       "lat": 20.599204,
       "lng": -105.2389089,
-      "maps_url": "https://maps.google.com/?q=20.5992040,-105.2389089",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Dorado+Restaurant%2C+P%C3%BAlpito+102%2C+Zona+Rom%C3%A1ntica%2C+Emiliano+Zapata%2C+48380+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "10292401142334793719",
       "google_id": "/g/1tg5cf2k",
       "maps_place_token": null
     },
@@ -257,8 +257,8 @@
       "is_favorite": false,
       "lat": 20.610903099999998,
       "lng": -105.23415969999999,
-      "maps_url": "https://maps.google.com/?q=20.6109031,-105.2341597",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Colibr%C3%AD+Cocktail+Bar%2C+Morelos+582%2C+Centro%2C+48300+Puerto+Vallarta%2C+Jal.%2C+Mexico",
+      "cid": "18353050667187739342",
       "google_id": "/g/11fjx8nrlm",
       "maps_place_token": null
     },
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 20.6634065,
       "lng": -105.2604818,
-      "maps_url": "https://maps.google.com/?cid=826828197470204549",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Ribera+Restaurant%2C+Av+Paseo+de+la+Marina+Nte+585%2C+Marina+Vallarta%2C+48354+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "826828197470204549",
       "google_id": "/g/11cfgss5s",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 20.6654731,
       "lng": -105.2492388,
-      "maps_url": "https://maps.google.com/?cid=6529151441030601450",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=El+Coleguita+Mariscos+Marina+Vallarta%2C+Condominios+Marina+del+Rey%2C+C.+Popa+s%2Fn-Local+16+y+17%2C+Marina+Vallarta%2C+48335+Puerto+Vallarta%2C+Jal.%2C+Mexico",
       "cid": "6529151441030601450",
       "google_id": "/g/1tfd2qh4",
       "maps_place_token": null
@@ -293,8 +293,8 @@
       "is_favorite": false,
       "lat": 20.5187342,
       "lng": -105.31910409999999,
-      "maps_url": "https://maps.google.com/?q=20.5187342,-105.3191041",
-      "cid": null,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Kliff%2C+Road+to+Barra+de+Navidad+KM+17.5%2C+Between%2C+Mismaloya%2C+Boca+de+Tomatl%C3%A1n%2C+Mexico",
+      "cid": "16604441610147157327",
       "google_id": "/g/1vxz9ynw",
       "maps_place_token": null
     }

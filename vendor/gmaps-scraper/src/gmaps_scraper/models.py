@@ -2,7 +2,25 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+@dataclass(slots=True)
+class ListOwner:
+    """Owner or collaborator metadata attached to a saved list."""
+
+    name: str
+    photo_url: str | None = None
+    profile_id: str | None = None
+
+    def to_dict(self, *, include_photo_url: bool = True) -> dict[str, object]:
+        """Convert owner metadata into a JSON-serializable dictionary."""
+        result: dict[str, object] = {"name": self.name}
+        if include_photo_url and self.photo_url is not None:
+            result["photo_url"] = self.photo_url
+        if self.profile_id is not None:
+            result["profile_id"] = self.profile_id
+        return result
 
 
 @dataclass(slots=True)
@@ -18,6 +36,7 @@ class Place:
     cid: str | None = None
     google_id: str | None = None
     is_favorite: bool = False
+    added_by: ListOwner | None = None
 
     def to_dict(self) -> dict[str, object]:
         """Convert a place into a JSON-serializable dictionary."""
@@ -36,6 +55,8 @@ class Place:
             result["cid"] = self.cid
         if self.google_id is not None:
             result["google_id"] = self.google_id
+        if self.added_by is not None:
+            result["added_by"] = self.added_by.to_dict(include_photo_url=False)
         return result
 
 
@@ -49,6 +70,8 @@ class SavedList:
     title: str | None
     description: str | None
     places: list[Place]
+    owner: ListOwner | None = None
+    collaborators: list[ListOwner] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, object]:
         """Convert a saved list into a JSON-serializable dictionary."""
@@ -58,6 +81,10 @@ class SavedList:
             "list_id": self.list_id,
             "title": self.title,
             "description": self.description,
+            "owner": self.owner.to_dict() if self.owner is not None else None,
+            "collaborators": [
+                collaborator.to_dict() for collaborator in self.collaborators
+            ],
             "places": [place.to_dict() for place in self.places],
         }
 
@@ -83,6 +110,8 @@ class PlaceDetails:
     lat: float | None = None
     lng: float | None = None
     limited_view: bool = False
+    main_photo_url: str | None = None
+    photo_url: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         """Convert place details into a JSON-serializable dictionary."""
@@ -100,6 +129,8 @@ class PlaceDetails:
             "phone": self.phone,
             "plus_code": self.plus_code,
             "description": self.description,
+            "main_photo_url": self.main_photo_url,
+            "photo_url": self.photo_url,
             "secondary_name": self.secondary_name,
             "lat": self.lat,
             "lng": self.lng,

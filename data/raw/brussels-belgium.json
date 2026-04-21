@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:17:19.577562+00:00",
-  "refresh_after": "2026-04-29T15:17:19.577562+00:00",
+  "fetched_at": "2026-04-20T16:03:05.490498+00:00",
+  "refresh_after": "2026-05-04T06:42:09.490498+00:00",
   "source_signature": "63f2719df05e64fffe0ffc546fab2dd4addaebc96b9dd854d20062c76ebb7c3a",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/Z3f16vN2nFNVy7349",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 50.847892599999994,
       "lng": 4.3546542,
-      "maps_url": "https://maps.google.com/?cid=5171192848992220649",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Lobster+House%2C+Rue+des+Bouchers+34%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192848992220649",
       "google_id": "/g/11c2kdpn__",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 50.8234091,
       "lng": 4.3428511,
-      "maps_url": "https://maps.google.com/?cid=5171192699649010101",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Caf%C3%A9+des+Spores%2C+Chau.+d%27Alsemberg+103%2C+1060+Saint-Gilles%2C+Belgium",
       "cid": "5171192699649010101",
       "google_id": "/g/1tdw2msz",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 50.822948999999994,
       "lng": 4.3689954,
-      "maps_url": "https://maps.google.com/?cid=5171193300285892407",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Etiquette+Wines%2C+Av.+Louise+326%2C+1050+Bruxelles%2C+Belgium",
       "cid": "5171193300285892407",
       "google_id": "/g/119t7c1kk",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 50.799467,
       "lng": 4.3786097999999996,
-      "maps_url": "https://maps.google.com/?cid=5171192834006450177",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Villa+Lorraine%2C+Av.+du+Vivier+d%27Oie+75%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192834006450177",
       "google_id": "/g/11bw8f17vc",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 50.8948787,
       "lng": 4.3415547,
-      "maps_url": "https://maps.google.com/?cid=5171191940653252609",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Atomium%2C+Pl.+de+l%27Atomium+1%2C+1020+Bruxelles%2C+Belgium",
       "cid": "5171191940653252609",
       "google_id": null,
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 50.852757,
       "lng": 4.341909,
-      "maps_url": "https://maps.google.com/?cid=5171191791509753735",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BBP+Dansaert%2C+Rue+Antoine+Dansaert+188%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171191791509753735",
       "google_id": "/g/11ckqjf3xc",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 50.874354,
       "lng": 4.2957387,
-      "maps_url": "https://maps.google.com/?cid=5171192827012502859",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=En+Stoemelings%2C+Rue+Dieudonn%C3%A9+Lef%C3%A8vre+37%2C+1020+Bruxelles%2C+Belgium",
       "cid": "5171192827012502859",
       "google_id": "/g/11bt_91vnf",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 50.845999,
       "lng": 4.3569924,
-      "maps_url": "https://maps.google.com/?cid=5171192850224785107",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=BrewDog+Brussels%2C+Putterie+20%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192850224785107",
       "google_id": "/g/11bw4v5yzb",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 50.840774599999996,
       "lng": 4.3372132,
-      "maps_url": "https://maps.google.com/?cid=5171192798751521155",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Brasserie+de+l%27Ermitage%2C+Rue+Lambert+Crickx+26%2C+1070+Anderlecht%2C+1070+Brussel%2C+Belgium",
       "cid": "5171192798751521155",
       "google_id": "/g/11c67sd7g2",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 50.8451368,
       "lng": 4.3469668,
-      "maps_url": "https://maps.google.com/?cid=5171192824494958685",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Moeder+Lambic+Fontainas%2C+Pl.+Fontainas+8%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192824494958685",
       "google_id": "/g/1tgprsj_",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 50.8437078,
       "lng": 4.32829,
-      "maps_url": "https://maps.google.com/?cid=5171192352788526487",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Paix%2C+Rue+Ropsy+Chaudron+49%2C+1070+Anderlecht%2C+Belgium",
       "cid": "5171192352788526487",
       "google_id": "/g/1hf_wf5my",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 50.8335134,
       "lng": 4.345295699999999,
-      "maps_url": "https://maps.google.com/?cid=5171192739140655981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Bistro+-+Porte+de+Hal%2C+Bd+de+Waterloo+138%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192739140655981",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 50.8414982,
       "lng": 4.335621,
-      "maps_url": "https://maps.google.com/?cid=5171192795601631785",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mus%C3%A9e+bruxellois+de+la+gueuze%2C+Rue+Gheude+56%2C+1070+Anderlecht%2C+Belgium",
       "cid": "5171192795601631785",
       "google_id": "/g/11dykmr5r",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 50.8393842,
       "lng": 4.3550999,
-      "maps_url": "https://maps.google.com/?cid=5171192838538232761",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Les+Petits+Oignons%2C+Rue+de+la+R%C3%A9gence+25%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192838538232761",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 50.8485002,
       "lng": 4.3538834,
-      "maps_url": "https://maps.google.com/?cid=2801788919440003730",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=D%C3%A9lirium+Caf%C3%A9%2C+Impasse+de+la+Fid%C3%A9lit%C3%A9+4%2C+1000+Bruxelles%2C+Belgium",
       "cid": "2801788919440003730",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 50.8449907,
       "lng": 4.3499887,
-      "maps_url": "https://maps.google.com/?cid=5171192821547154897",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Manneken+Pis%2C+1000+Brussels%2C+Belgium",
       "cid": "5171192821547154897",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 50.846810999999995,
       "lng": 4.3530869999999995,
-      "maps_url": "https://maps.google.com/?cid=5171192848964341567",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Neuhaus+Chocolates%2C+Grand+Place+27%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171192848964341567",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 50.8470399,
       "lng": 4.3545411,
-      "maps_url": "https://maps.google.com/?cid=5171192848767564699",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Corn%C3%A9+Port-Royal%2C+Galerie+de+la+Reine+5%2C+1000+Brussel%2C+Belgium",
       "cid": "5171192848767564699",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 50.848298299999996,
       "lng": 4.3542814,
-      "maps_url": "https://maps.google.com/?cid=5171218223693421207",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+Vincent%2C+Rue+des+Dominicains+8%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171218223693421207",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 50.8502928,
       "lng": 4.347658399999999,
-      "maps_url": "https://maps.google.com/?cid=5171191785115441339",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Noordzee%2C+Rue+Sainte-Catherine+45%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171191785115441339",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 50.8490508,
       "lng": 4.3475526,
-      "maps_url": "https://maps.google.com/?cid=5171191785699590393",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27Archiduc%2C+Rue+Antoine+Dansaert+6%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171191785699590393",
       "google_id": "/g/1ttq182j",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 50.8508838,
       "lng": 4.3468124,
-      "maps_url": "https://maps.google.com/?cid=5171191778164069493",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Pr%C3%A9+Sal%C3%A9%2C+Rue+de+Flandre+20%2C+1000+Bruxelles%2C+Belgium",
       "cid": "5171191778164069493",
       "google_id": "/g/1w2yymd1",
       "maps_place_token": null

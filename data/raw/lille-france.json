@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T23:43:27.255751+00:00",
-  "refresh_after": "2026-04-29T23:43:27.255751+00:00",
+  "fetched_at": "2026-04-20T16:03:32.176805+00:00",
+  "refresh_after": "2026-05-01T18:18:08.176805+00:00",
   "source_signature": "15dffa28cd191034c98a0829817b030d7f32e68931121f2f927bcce4a1a03ca0",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/uQmbz92Fgi2zFWxC9",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 50.636839599999995,
       "lng": 3.0635006,
-      "maps_url": "https://maps.google.com/?cid=5170930104352051845",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grand+Place%2C+Pl.+du+G%C3%A9n%C3%A9ral+de+Gaulle%2C+59800+Lille%2C+France",
       "cid": "5170930104352051845",
       "google_id": "/g/11c2jt9tlp",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 50.6376078,
       "lng": 3.0655273,
-      "maps_url": "https://maps.google.com/?cid=5170930103229852005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lille+Opera%2C+Pl.+du+Th%C3%A9%C3%A2tre%2C+59000+Lille%2C+France",
       "cid": "5170930103229852005",
       "google_id": null,
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 50.642399999999995,
       "lng": 3.0662059999999998,
-      "maps_url": "https://maps.google.com/?cid=5171023488198954233",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Estaminet+Les+Ptiots%2C+35+Rue+de+Gand%2C+59800+Lille%2C+France",
       "cid": "5171023488198954233",
       "google_id": "/g/11c1v2qb44",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 50.6446907,
       "lng": 3.0576830999999998,
-      "maps_url": "https://maps.google.com/?cid=5171023509219210489",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Scoop+-+Restaurant+Vieux+Lille%2C+64+Rue+Saint-Andr%C3%A9%2C+59800+Lille%2C+France",
       "cid": "5171023509219210489",
       "google_id": "/g/1vpfhp_2",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 50.6363686,
       "lng": 3.0599092,
-      "maps_url": "https://maps.google.com/?cid=5170930095120431761",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Fossile+Lille%2C+60+Rue+Saint-Etienne%2C+59000+Lille%2C+France",
       "cid": "5170930095120431761",
       "google_id": "/g/1tcvh72c",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 50.6375059,
       "lng": 3.0611845,
-      "maps_url": "https://maps.google.com/?cid=5170929693307422195",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Club+Marot%2C+16+Rue+de+Pas%2C+59800+Lille%2C+France",
       "cid": "5170929693307422195",
       "google_id": "/g/1tdkqz1b",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 50.6386654,
       "lng": 3.0625101,
-      "maps_url": "https://maps.google.com/?cid=5170930527193588147",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Brasserie+Campion%2C+32+Rue+Lepelletier%2C+59800+Lille%2C+France",
       "cid": "5170930527193588147",
       "google_id": "/g/11kh_dpr2_",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 50.6427865,
       "lng": 3.066929,
-      "maps_url": "https://maps.google.com/?cid=5171023487220599907",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A+Taaable%2C+62+Rue+de+Gand%2C+59000+Lille%2C+France",
       "cid": "5171023487220599907",
       "google_id": "/g/1tfycqxt",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 50.6383699,
       "lng": 3.062424,
-      "maps_url": "https://maps.google.com/?cid=5170930101827189065",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Petite+Cour%2C+17+Rue+du+Cure+Saint-Etienne%2C+59800+Lille%2C+France",
       "cid": "5170930101827189065",
       "google_id": "/g/1vgqc78v",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 50.6382246,
       "lng": 3.0651493999999997,
-      "maps_url": "https://maps.google.com/?cid=5170930042022432349",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Caf%C3%A9+de+Paris+-+Chez+Boubier+1930%2C+7+Bd+Carnot%2C+59800+Lille%2C+France",
       "cid": "5170930042022432349",
       "google_id": "/g/11sj2b4v8n",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 50.6309458,
       "lng": 3.0550883,
-      "maps_url": "https://maps.google.com/?cid=5170930082644758439",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chez+Max+Bistrot+Lillois%2C+164+Rue+Solf%C3%A9rino%2C+59800+Lille%2C+France",
       "cid": "5170930082644758439",
       "google_id": "/g/1tgx5rsp",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 50.6288719,
       "lng": 3.0589833,
-      "maps_url": "https://maps.google.com/?cid=5170930088662811861",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Restaurant+S%C3%A9bastopol%2C+1+Pl.+S%C3%A9bastopol%2C+59000+Lille%2C+France",
       "cid": "5170930088662811861",
       "google_id": "/g/1thvrvqr",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 50.6304812,
       "lng": 3.0627928,
-      "maps_url": "https://maps.google.com/?cid=5170930134641341929",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Palais+des+Beaux+Arts",
       "cid": "5170930134641341929",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 50.6357084,
       "lng": 3.0669963,
-      "maps_url": "https://maps.google.com/?cid=5170930108551304023",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%C3%89glise+Saint-Maurice+de+Lille%2C+Parv.+Saint-Maurice%2C+59800+Lille%2C+France",
       "cid": "5170930108551304023",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 50.640187,
       "lng": 3.062681,
-      "maps_url": "https://maps.google.com/?cid=5171023492315167349",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Notre-Dame-de-la-Treille+Cathedral%2C+Pl.+Gilleson%2C+59800+Lille%2C+France",
       "cid": "5171023492315167349",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 50.6369341,
       "lng": 3.0634202999999998,
-      "maps_url": "https://maps.google.com/?cid=5170930104347881467",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Colonne+de+la+D%C3%A9esse%2C+colonne+de+la+D%C3%A9esse%2C+Pl.+du+G%C3%A9n%C3%A9ral+de+Gaulle%2C+59800+Lille%2C+France",
       "cid": "5170930104347881467",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 50.6404898,
       "lng": 3.0642191999999997,
-      "maps_url": "https://maps.google.com/?cid=5170930103907964921",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Le+Vieux+Lille%2C+Pl.+Louise+de+Bettignies%2C+59800+Lille%2C+France",
       "cid": "5170930103907964921",
       "google_id": "/g/11cnb79ym5",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 50.635423499999995,
       "lng": 3.0619151,
-      "maps_url": "https://maps.google.com/?cid=5170930202181053465",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Palais+Rihour%2C+42+Pl.+Rihour%2C+59800+Lille%2C+France",
       "cid": "5170930202181053465",
       "google_id": "/g/121c9zc_",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 50.6370175,
       "lng": 3.0642923,
-      "maps_url": "https://maps.google.com/?cid=5170930104358544905",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=La+Vieille+Bourse%2C+Pl.+du+G%C3%A9n%C3%A9ral+de+Gaulle%2C+59000+Lille%2C+France",
       "cid": "5170930104358544905",
       "google_id": "/g/1235qkgj",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 50.6306679,
       "lng": 3.0697666999999997,
-      "maps_url": "https://maps.google.com/?cid=5170930126846498875",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Beffroi+de+Lille%2C+Pl.+Augustin+Laurent%2C+59000+Lille%2C+France",
       "cid": "5170930126846498875",
       "google_id": "/g/1234zrbd",
       "maps_place_token": null

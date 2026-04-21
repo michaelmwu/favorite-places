@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:28:41.121226+00:00",
-  "refresh_after": "2026-04-29T15:28:41.121226+00:00",
+  "fetched_at": "2026-04-20T16:08:28.772214+00:00",
+  "refresh_after": "2026-05-05T10:17:01.772214+00:00",
   "source_signature": "a03122343b8656b4f6452ef30c21b8502df36fed6f201b54b9aca9702d2fd588",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/Bd441Xw8WoAhXSfH9",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 22.3328833,
       "lng": 120.37165499999999,
-      "maps_url": "https://maps.google.com/?cid=3779064861164980859",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=After+Journey+%23%E7%8E%A9%E7%8E%A9%E4%B9%8B%E5%BE%8C+%281.2%E6%9C%88%E5%87%BA%E5%B3%B6%E7%8E%A9%E7%8E%A9%EF%BC%8C228%E9%80%A3%E5%81%87%E8%A6%8B%29%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E9%A4%90%E9%85%92%E9%A4%A8%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E9%85%92%E5%90%A7+%0ABAR%EF%BD%9C%E8%80%81%E5%B1%8B%E6%94%B9%E5%BB%BA%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E7%BE%8E%E9%A3%9F%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E8%A1%8C%E7%A8%8B%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E6%97%85%E9%81%8A%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E5%AE%B5%E5%A4%9C%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E5%92%8C%E5%B9%B3%E8%B7%AF%E4%B8%80%E5%B7%B721%E8%99%9F",
       "cid": "3779064861164980859",
       "google_id": "/g/11t5zvszqb",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 22.3427003,
       "lng": 120.3636229,
-      "maps_url": "https://maps.google.com/?cid=3779053538501530983",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sea+Daze+Liuqiu%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E8%82%9A%E4%BB%94%E5%9D%AA%E8%B7%AF13%E8%99%9F",
       "cid": "3779053538501530983",
       "google_id": "/g/11st7gvr2p",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 22.345668699999997,
       "lng": 120.3658421,
-      "maps_url": "https://maps.google.com/?cid=3779064764246889099",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9D%89%E5%90%89%E5%95%86%E8%A1%8C%EF%BC%88%E4%BC%91%E6%81%AF%E6%97%A5%E4%BB%A5IG.FB%E5%85%AC%E5%91%8A%E7%82%BA%E4%B8%BB%EF%BC%89%2C+No.+182%E8%99%9F%2C+Shangshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779064764246889099",
       "google_id": "/g/11hzvy3n6m",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 22.3506568,
       "lng": 120.3803329,
-      "maps_url": "https://maps.google.com/?cid=3779053878697513569",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%B2%A5%E5%A4%AA%E5%A4%AA%E9%A4%8A%E7%94%9F%E8%94%AC%E9%A3%9F%E5%BB%A3%E6%9D%B1%E7%B2%A5%EF%BC%88%E4%B8%8D%E6%8F%90%E4%BE%9B%E5%A1%91%E8%86%A0%E8%A2%8B%EF%BC%89%2C+No.+74%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053878697513569",
       "google_id": "/g/11c67vxswh",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 22.3497158,
       "lng": 120.38334329999999,
-      "maps_url": "https://maps.google.com/?cid=3779053383073977535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E5%B3%B6%E6%BC%A2%E5%A0%A1+%7C+Island+Burger%2C+No.+92%E4%B9%8B2%2C+Benyu+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053383073977535",
       "google_id": "/g/11pgslc8vs",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 22.3509751,
       "lng": 120.38054059999999,
-      "maps_url": "https://maps.google.com/?cid=3779053777133179017",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%94%A1%E5%AA%BD%E5%AA%BD%E8%80%81%E8%A1%97%E7%BE%8E%E9%A3%9F%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E4%B8%AD%E5%B1%B1%E8%B7%AF1%E5%B7%B758-1%E8%99%9F",
       "cid": "3779053777133179017",
       "google_id": "/g/11yr75nx6",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 22.347137999999998,
       "lng": 120.37139769999999,
-      "maps_url": "https://maps.google.com/?cid=3779053788632969343",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%A5%8A%E8%A8%98%E5%B7%9D%E9%BA%B5%2C+No.+92%E4%B9%8B2%E8%99%9F%2C+Xiangbu+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053788632969343",
       "google_id": "/g/11pc0q7_xr",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 22.3420442,
       "lng": 120.36842159999999,
-      "maps_url": "https://maps.google.com/?cid=3779064787934023073",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83%E5%B7%B7%E5%AD%90%E5%BA%95Simple+Eats%2C+No.+8%E8%99%9F%2C+Lane+31%2C+Shangshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779064787934023073",
       "google_id": "/g/11hhs3thf1",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 22.3463875,
       "lng": 120.3700662,
-      "maps_url": "https://maps.google.com/?cid=3779053885119976553",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%BA%80%E4%BA%80%E7%84%BC%E7%83%A4%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+Fuxing+Rd%2C+%E5%85%A8%E5%BE%B7%E5%9C%8B%E5%B0%8F%E6%A0%A1%E9%96%80%E5%8F%A3%E5%B0%8D%E9%9D%A2",
       "cid": "3779053885119976553",
       "google_id": "/g/11mv4zdfdb",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 22.347641199999998,
       "lng": 120.36900589999999,
-      "maps_url": "https://maps.google.com/?cid=3779053767025057525",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%BD%E9%A6%99%E9%A6%99%E7%A2%B3%E7%83%A4%2C+No.+101%E8%99%9F%2C+Fuxing+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053767025057525",
       "google_id": "/g/11dzt36rmt",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 22.3423381,
       "lng": 120.3848058,
-      "maps_url": "https://maps.google.com/?cid=3779053895233963989",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%A5%B5%E9%A6%99%E7%A2%B3%E7%83%A4%2C+No.+63%E8%99%9F%2C+Benyu+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053895233963989",
       "google_id": "/g/11csq5p378",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 22.348749299999998,
       "lng": 120.3662451,
-      "maps_url": "https://maps.google.com/?cid=3779053574866658715",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Black+out%E6%97%A5%E5%BC%8F%E4%B8%B2%E7%84%BC%E5%B1%85%E9%85%92%E5%B1%8B%E5%B0%8F%E7%90%89%E7%90%83%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E8%82%9A%E4%BB%94%E5%9D%AA%E8%B7%AF60-1%E8%99%9F",
       "cid": "3779053574866658715",
       "google_id": "/g/11nnrqq00k",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 22.3422667,
       "lng": 120.3726533,
-      "maps_url": "https://maps.google.com/?cid=3779065323926574913",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%A2%A8%E5%B0%8F%E7%AF%AD%2C+No.+5%E4%B9%8B20%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779065323926574913",
       "google_id": "/g/11pvg8m37b",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 22.338691,
       "lng": 120.36989,
-      "maps_url": "https://maps.google.com/?cid=3779064948948152483",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=e-moving%2C+No.+303%E4%B9%8B1%E8%99%9F%2C+Zhongzheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779064948948152483",
       "google_id": "/g/11gj45m9hh",
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 22.3512424,
       "lng": 120.3777624,
-      "maps_url": "https://maps.google.com/?cid=3779053746335420557",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83%E5%96%94%E5%90%BCBar%2C+No.+75%E8%99%9F%2C+Minzu+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053746335420557",
       "google_id": "/g/11j94l9x_b",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 22.353018799999997,
       "lng": 120.3827362,
-      "maps_url": "https://maps.google.com/?cid=3779053819977922715",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%95%99%E9%8A%B6%E8%B6%B3%E4%BD%93%E9%A4%8A%E8%BA%AB%E9%A4%A8%2C+No.+318%E8%99%9F%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+92943",
       "cid": "3779053819977922715",
       "google_id": "/g/11t1jz8bf7",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 22.353057099999997,
       "lng": 120.38210199999999,
-      "maps_url": "https://maps.google.com/?cid=3779054311958557765",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%A4%8D%E8%9C%9CBAR%28planta+In+Mi%29%2C+No.+65-1%E8%99%9F%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779054311958557765",
       "google_id": "/g/11rqx2hnr_",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 22.3526655,
       "lng": 120.3825658,
-      "maps_url": "https://maps.google.com/?cid=3779053834338651329",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83Wave+Bar+%E6%B0%B7%E9%83%8E%E9%85%92%E5%90%A7%2C+No.+308%E8%99%9F%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053834338651329",
       "google_id": "/g/11cmygv9c8",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 22.353086599999997,
       "lng": 120.38153009999999,
-      "maps_url": "https://maps.google.com/?cid=3779053876751963395",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E4%BC%81%E9%B5%9D%E7%82%B8%E9%B6%8F%2C+No.+64%E8%99%9F%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053876751963395",
       "google_id": "/g/1tlk93vx",
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 22.3489208,
       "lng": 120.3791797,
-      "maps_url": "https://maps.google.com/?cid=3779053942506469319",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%8F%E6%B3%B0%E7%89%9B%E8%82%89%E9%9D%A2%2C+No.+30-1%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053942506469319",
       "google_id": "/g/11j37x8kvl",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 22.3527251,
       "lng": 120.3822211,
-      "maps_url": "https://maps.google.com/?cid=3779054067168842241",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=carpe+diem%E5%92%AC%E4%B8%8D%E5%81%9C%2C+No.+215%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929001",
       "cid": "3779054067168842241",
       "google_id": "/g/11r9p870mv",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 22.3441349,
       "lng": 120.37475789999999,
-      "maps_url": "https://maps.google.com/?cid=3779053777110881297",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A5%BD%E7%B7%A3%E6%97%A5%E5%BC%8F%E6%8B%89%E9%BA%B5%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053777110881297",
       "google_id": "/g/11b69fbbhv",
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 22.3502796,
       "lng": 120.3796926,
-      "maps_url": "https://maps.google.com/?cid=3779054139791769431",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ros%E7%BE%85%E5%AE%A4+%EF%BC%88%E5%AE%B5%E5%A4%9C%2F%E7%82%B9%E5%BF%83%2F%E7%82%B8%E7%89%A9%2F%E8%9B%8B%E9%A4%85%2F%E8%BB%BD%E9%A3%9F%2F%E5%BF%85%E5%90%83%E7%BE%8E%E9%A3%9F%EF%BC%89%2C+No.+81%E4%B9%8B4%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779054139791769431",
       "google_id": "/g/11p5lvtfk8",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 22.348856599999998,
       "lng": 120.378864,
-      "maps_url": "https://maps.google.com/?cid=3779053879958376225",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83%E7%BE%8E%E9%A3%9F%EF%BD%9C%E8%93%8B%E5%B2%A1%E5%A4%AB%2F%E5%8A%9F%E5%A4%AB%E6%B5%B7%E9%AE%AE%E7%B2%A5%E8%88%97+Gai+Kung+Fu+%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E6%B5%B7%E9%AE%AE%EF%BD%9C%E5%B0%8F%E7%90%89%E7%90%83%E9%A4%90%E5%BA%81%2C+No.+59-2%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053879958376225",
       "google_id": "/g/11smqkcmk2",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 22.3504789,
       "lng": 120.3815461,
-      "maps_url": "https://maps.google.com/?cid=3779053833687771277",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%8F%E5%91%B3%E9%AE%AE%E6%B5%B7%E9%AE%AE%2C+No.+35%E8%99%9F%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053833687771277",
       "google_id": "/g/11ddzqjpdv",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 22.3479468,
       "lng": 120.378339,
-      "maps_url": "https://maps.google.com/?cid=3779053869483293459",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%8E%96%E5%9B%9B%E9%B4%A8%E8%A6%87%2F%E5%B0%8F%E7%90%89%E7%90%83%E7%BE%8E%E9%A3%9F%2F%E5%B0%8F%E7%90%89%E7%90%83%E9%A4%90%E5%BA%81%2F%E5%B0%8F%E7%90%89%E7%90%83%E7%86%B1%E7%82%92%2F%E5%B0%8F%E7%90%89%E7%90%83%E5%B0%8F%E5%90%83%2F%E5%B0%8F%E7%90%89%E7%90%83%E6%99%A9%E9%A4%90%2F%E5%B0%8F%E7%90%89%E7%90%83%E5%8D%88%E9%A4%90%2C+No.+22-6%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053869483293459",
       "google_id": "/g/11pzy8pdj2",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 22.350863399999998,
       "lng": 120.38032659999999,
-      "maps_url": "https://maps.google.com/?cid=3779053805545628675",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83%E6%B5%B7%E6%B4%8B%E7%94%9C%E5%BF%83%2C+No.+99%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053805545628675",
       "google_id": "/g/11f6nkzhsh",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 22.3530603,
       "lng": 120.38141279999999,
-      "maps_url": "https://maps.google.com/?cid=3779053833785077207",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%9D%9E%E5%90%83%E4%B8%8D%E5%8F%AF-%E5%89%B5%E6%84%8F%E6%BB%B7%E5%91%B3%2C+No.+60%E8%99%9F+58%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053833785077207",
       "google_id": "/g/11cnctfj1v",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 22.3505926,
       "lng": 120.3848592,
-      "maps_url": "https://maps.google.com/?cid=3779053869444268757",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%97%BA%E6%9D%A5%E5%9C%A8%E5%9C%B0%E9%A3%9F%E5%A0%82%2C+No.+191%E8%99%9F%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053869444268757",
       "google_id": "/g/11ddwhvrvf",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 22.3519176,
       "lng": 120.38018299999999,
-      "maps_url": "https://maps.google.com/?cid=3779053527497947543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9F%94%E6%84%8F%E6%B3%B0%E6%B3%B0%E9%A4%90%E5%BA%81+Zoy+Thai+Thai%2C+No.+17%E4%B9%8B6%E8%99%9F%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053527497947543",
       "google_id": "/g/11s542x0xl",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 22.3517179,
       "lng": 120.3808303,
-      "maps_url": "https://maps.google.com/?cid=3779053876796086371",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%93%81%E8%BB%92%E5%9C%A8%E5%9C%B0%E9%A2%A8%E5%91%B3%E5%B0%8F%E9%A4%A8%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E5%B7%B7%E4%B8%83%E8%99%9F",
       "cid": "3779053876796086371",
       "google_id": "/g/11hbmvm71v",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 22.3511258,
       "lng": 120.3809143,
-      "maps_url": "https://maps.google.com/?cid=3779053777133178971",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83%E7%8F%8D%E7%8F%A0%E5%B0%8F%E7%B2%89%E5%86%86%2C+No.+100%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053777133178971",
       "google_id": "/g/1tfv2wq3",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 22.351872399999998,
       "lng": 120.38036749999999,
-      "maps_url": "https://maps.google.com/?cid=3779053833691704447",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B2%A9%E7%9F%B3%E7%BE%8E%E5%BC%8F%E9%A4%90%E5%BA%81%2C+No.+26-1%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053833691704447",
       "google_id": "/g/11b6skdckg",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 22.346727299999998,
       "lng": 120.37181389999999,
-      "maps_url": "https://maps.google.com/?cid=3779053873804489265",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yezhuoxiao+Station%2C+No.+77%E4%B9%8B7%2C+Xiangbu+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053873804489265",
       "google_id": "/g/11f3p7hmhj",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 22.3530609,
       "lng": 120.38141519999999,
-      "maps_url": "https://maps.google.com/?cid=3779053834143640197",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E9%A2%A8%E5%85%89%E9%BA%BB%E8%8A%B1%E6%8D%B2%2C+No.+60%E8%99%9F%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053834143640197",
       "google_id": "/g/11c1n1gqnx",
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 22.3500795,
       "lng": 120.3841922,
-      "maps_url": "https://maps.google.com/?cid=3779054258079263901",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E4%BD%99%E9%9C%9C+Ice+Cream+For+Life%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E8%A7%80%E5%85%89%E6%B8%AF%E8%B7%AF22-3%E8%99%9F",
       "cid": "3779054258079263901",
       "google_id": "/g/11qr4zcgfx",
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 22.3355273,
       "lng": 120.37123539999999,
-      "maps_url": "https://maps.google.com/?cid=3779054225093763995",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%98%A5%E5%AD%90%E9%9D%A2%E9%A3%9F%E9%A3%AF%E9%A4%A8%2C+No.+124-1%E8%99%9F%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779054225093763995",
       "google_id": "/g/11h227ty0g",
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 22.3524873,
       "lng": 120.3826122,
-      "maps_url": "https://maps.google.com/?cid=3779054438112601981",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B1%85%E7%90%89%E6%BD%9C%E6%B0%B4%E8%83%8C%E5%8C%85%E5%AE%A2%E6%A1%9F%E4%BA%8C%E9%A4%A8+Stay+Liuqiu+Diving+Hostel+2%2C+No.+283%E8%99%9F%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779054438112601981",
       "google_id": "/g/11glxt73m3",
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 22.3526493,
       "lng": 120.37126239999999,
-      "maps_url": "https://maps.google.com/?cid=3779053790301539841",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Beauty+Beach%2C+No.+3%2C+Meiren+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053790301539841",
       "google_id": "/g/11fy_pk6sj",
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 22.3556469,
       "lng": 120.3807532,
-      "maps_url": "https://maps.google.com/?cid=3779053832479391703",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vase+Rock%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053832479391703",
       "google_id": "/g/1tht9wwv",
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 22.335780999999997,
       "lng": 120.361701,
-      "maps_url": "https://maps.google.com/?cid=3779065385265408687",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E8%9B%A4%E6%9D%BF%E6%B9%BE%2C+929+%E5%B1%8F%E6%9D%B1+%E7%90%89%E7%90%83%E9%83%B7",
       "cid": "3779065385265408687",
       "google_id": "/g/11dfj1dwp9",
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 22.3535565,
       "lng": 120.3732105,
-      "maps_url": "https://maps.google.com/?cid=3779053788084549585",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Beauty+Cave%2C+Huandao+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053788084549585",
       "google_id": "/g/11g724y45g",
       "maps_place_token": null
@@ -521,7 +521,7 @@
       "is_favorite": false,
       "lat": 22.340621799999997,
       "lng": 120.3625096,
-      "maps_url": "https://maps.google.com/?cid=3779065395565786005",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E6%9D%89%E7%A6%8F%E6%BC%81%E6%B8%AF",
       "cid": "3779065395565786005",
       "google_id": "/g/1q5bmr1ss",
       "maps_place_token": null
@@ -533,7 +533,7 @@
       "is_favorite": false,
       "lat": 22.349653999999997,
       "lng": 120.3736941,
-      "maps_url": "https://maps.google.com/?cid=3779054344702855533",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83%E6%BD%9C%E6%B0%B4%E6%BD%9C%E9%9B%AA%E8%83%8C%E5%8C%85%E5%AE%A2%E6%A1%9FSnowDiving%2C+No.+224%E4%B9%8B1%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779054344702855533",
       "google_id": "/g/11jff6hzf8",
       "maps_place_token": null
@@ -545,7 +545,7 @@
       "is_favorite": false,
       "lat": 22.3525876,
       "lng": 120.38323799999999,
-      "maps_url": "https://maps.google.com/?cid=3779053834339571615",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%B1%E5%9C%A8%E6%B5%B7%E9%82%8AMarbordo%2C+No.+276%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053834339571615",
       "google_id": "/g/11r6d_wm_j",
       "maps_place_token": null
@@ -557,7 +557,7 @@
       "is_favorite": false,
       "lat": 22.3511193,
       "lng": 120.3869769,
-      "maps_url": "https://maps.google.com/?cid=3779054077035908469",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Zhongao+Beach%2C+No.+124%E8%99%9F%2C+Sanmin+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779054077035908469",
       "google_id": "/g/11s4kgd9kn",
       "maps_place_token": null
@@ -569,7 +569,7 @@
       "is_favorite": false,
       "lat": 22.3503354,
       "lng": 120.38270569999999,
-      "maps_url": "https://maps.google.com/?cid=3779053435088574951",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A7%E5%A5%BD%E5%90%83%E8%91%B1%E8%82%89%E9%A4%85%2F%E5%B0%8F%E7%90%89%E7%90%83%E7%BE%8E%E9%A3%9F%2F%E5%B0%8F%E7%90%89%E7%90%83%E5%BF%85%E5%90%83%2Frestaurants%2F%E9%99%84%E8%BF%91%E7%BE%8E%E9%A3%9F%2F%E5%B0%8F%E7%90%89%E7%90%83%E5%B0%8F%E5%90%83%2F%E5%B0%8F%E7%90%89%E7%90%83%E6%8E%A8%E8%96%A6%E9%A4%90%E5%BA%81%2C+No.+11%E4%B9%8B2%E8%99%9F%2C+Minsheng+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053435088574951",
       "google_id": "/g/11p711kthq",
       "maps_place_token": null
@@ -581,7 +581,7 @@
       "is_favorite": false,
       "lat": 22.3521252,
       "lng": 120.38035819999999,
-      "maps_url": "https://maps.google.com/?cid=3779054302952910681",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%83~%E9%A0%91%E7%9A%AE%E8%B1%B9%E9%8D%8B%E7%84%BC%E9%9D%A2%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+Minsheng+Rd%2C+19%E8%99%9F929",
       "cid": "3779054302952910681",
       "google_id": "/g/11j4n9prl9",
       "maps_place_token": null
@@ -593,7 +593,7 @@
       "is_favorite": false,
       "lat": 22.351651,
       "lng": 120.3815545,
-      "maps_url": "https://maps.google.com/?cid=3779053822244660953",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A%26Z+KITCHEN%2C+No.+146%E8%99%9F%2C+Zhongshan+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779053822244660953",
       "google_id": "/g/11mhnwb49r",
       "maps_place_token": null
@@ -605,7 +605,7 @@
       "is_favorite": false,
       "lat": 22.3421421,
       "lng": 120.3845825,
-      "maps_url": "https://maps.google.com/?cid=3779053496166923725",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%90%89%E7%90%8398Bar%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+Sanmin+Rd%2C+1-100%E8%99%9F2%E6%A8%93",
       "cid": "3779053496166923725",
       "google_id": "/g/11rcwj1f_t",
       "maps_place_token": null
@@ -617,7 +617,7 @@
       "is_favorite": false,
       "lat": 22.3301564,
       "lng": 120.35580039999999,
-      "maps_url": "https://maps.google.com/?cid=3777991704105447713",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E7%83%8F%E9%AC%BC%E6%B4%9E%E9%A2%A8%E6%99%AF%E5%8C%BA%E7%AC%AC%E4%B8%80%E5%94%AE%E7%A5%A8%E4%BA%AD%2C+929%2C+Pingtung+County%2C+Liuqiu+Township%2C+%E5%A4%A9%E5%8F%B0%E6%AE%B5707%E4%B9%8B2%E8%99%9F",
       "cid": "3777991704105447713",
       "google_id": "/g/11b67r7xzb",
       "maps_place_token": null
@@ -629,7 +629,7 @@
       "is_favorite": false,
       "lat": 22.3387518,
       "lng": 120.3629189,
-      "maps_url": "https://maps.google.com/?cid=3779064957668536415",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E5%B1%B1%E8%B1%AC%E6%BA%9D%2C+No.+60%2C+Huandao+Rd%2C+Liuqiu+Township%2C+Pingtung+County%2C+929",
       "cid": "3779064957668536415",
       "google_id": "/g/1tf006mp",
       "maps_place_token": null
@@ -641,7 +641,7 @@
       "is_favorite": false,
       "lat": 22.3256803,
       "lng": 120.3660398,
-      "maps_url": "https://maps.google.com/?cid=3779065354705633787",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Secret+Beach%2C+929%2C+Pingtung+County%2C+Liuqiu+Township",
       "cid": "3779065354705633787",
       "google_id": "/g/1tg9kwjl",
       "maps_place_token": null

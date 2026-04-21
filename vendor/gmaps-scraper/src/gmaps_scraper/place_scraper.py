@@ -37,6 +37,14 @@ _DESCRIPTION_STOP_MARKERS = {
     "limited view of google maps",
     "get the most out of google maps",
 }
+_SEARCH_RESULTS_LABELS = {
+    "result",
+    "results",
+    "search result",
+    "search results",
+    "共有",
+    "結果",
+}
 _CATEGORY_SUFFIX_PATTERN = re.compile(
     r"\b("
     r"restaurant|cafe|coffee shop|bar|bakery|hotel|lodging|museum|park|station|"
@@ -51,6 +59,16 @@ _PLUS_CODE_PATTERN = re.compile(
     r"(?:\s+[^\n]+)?\b"
 )
 _PHONE_PATTERN = re.compile(r"^\+?[0-9][0-9()\-\s]{7,}$")
+_STATUS_LINE_PATTERN = re.compile(
+    r"^(?:"
+    r"(?:temporarily|permanently)\s+closed\b"
+    r"|(?:opens|closes)\b"
+    r"|(?:open|closed)\s+now(?:\s*$|\s*(?:[·⋅]|[-–—])\s*(?:opens?|closes?)\b)"
+    r"|(?:open|closed)\s+24\s*hours\b"
+    r"|(?:open|closed)\s*(?:[·⋅]|[-–—])\s*(?:opens?|closes?)\b"
+    r")",
+    re.IGNORECASE,
+)
 _POSTAL_CODE_PATTERN = re.compile(
     r"\b(?:\d{5}(?:-\d{4})?|[A-Z]\d[A-Z]\s?\d[A-Z]\d|[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})\b",
     re.IGNORECASE,
@@ -101,6 +119,34 @@ _PLACE_JS_EXTRACTOR = r"""
       const value = element?.getAttribute(attr)?.trim();
       if (value) {
         return value;
+      }
+    }
+    return null;
+  };
+
+  const firstImageUrl = (selectors, root = panel) => {
+    for (const selector of selectors) {
+      const element = root.querySelector(selector);
+      const value = element?.currentSrc
+        || element?.getAttribute("src")?.trim()
+        || element?.getAttribute("data-src")?.trim();
+      if (value) {
+        return value;
+      }
+    }
+    return null;
+  };
+
+  const firstBackgroundImageUrl = (selectors, root = panel) => {
+    for (const selector of selectors) {
+      const element = root.querySelector(selector);
+      if (!element) {
+        continue;
+      }
+      const style = getComputedStyle(element).backgroundImage || "";
+      const match = style.match(/url\((['"]?)(.*?)\1\)/);
+      if (match?.[2]) {
+        return match[2].trim();
       }
     }
     return null;
@@ -194,6 +240,30 @@ _PLACE_JS_EXTRACTOR = r"""
     }
   }
 
+  const mainPhotoUrl = firstImageUrl([
+    "button[jsaction*='heroHeaderImage'] img",
+    "button[aria-label^='Photo of'] img",
+    "button[aria-label^='写真'] img",
+    "button[jsaction*='image'] img",
+    "button[jsaction*='photo'] img",
+    "[data-photo-index] img",
+    "img[src*='googleusercontent.com']",
+    "img[src*='ggpht.com']",
+    "img[data-src*='googleusercontent.com']",
+    "img[data-src*='ggpht.com']",
+  ], document)
+    || firstBackgroundImageUrl([
+      "button[jsaction*='image']",
+      "button[jsaction*='photo']",
+      "[data-photo-index]",
+      "[aria-label*='Photo']",
+      "[aria-label*='photo']",
+      "[aria-label*='写真']",
+      "[aria-label*='画像']",
+    ], document);
+  const photoUrl = mainPhotoUrl
+    || firstAttr(["meta[property='og:image']", "meta[itemprop='image']"], "content", document);
+
   return {
     name: firstText(titleSelectors),
     secondary_name: firstText(["h2.bwoZTb span", "h2.bwoZTb"]),
@@ -218,6 +288,8 @@ _PLACE_JS_EXTRACTOR = r"""
       "button[data-item-id^='phone:']",
     ]),
     plus_code: itemValue("oloc"),
+    main_photo_url: mainPhotoUrl,
+    photo_url: photoUrl,
     panel_text: panel?.innerText || "",
     body_text: document.body?.innerText || "",
     limited_view: (document.body?.innerText || "")
@@ -396,8 +468,10 @@ def _build_place_details(
     body_lines = _body_lines(snapshot.get("body_text"))
     search_lines = panel_lines or body_lines
     combined_lines = _dedupe_lines([*panel_lines, *body_lines])
-    name = _clean_text(snapshot.get("name")) or _first_nonempty(search_lines)
-    category = _clean_text(snapshot.get("category")) or _extract_category_from_lines(search_lines)
+    name = _clean_name_text(snapshot.get("name")) or _first_meaningful_name(search_lines)
+    category = _clean_category_text(snapshot.get("category")) or _extract_category_from_lines(
+        search_lines
+    )
     lat = _parse_float(snapshot.get("lat"))
     if lat is None:
         lat = _extract_coordinate_from_url(resolved_url or source_url, index=0)
@@ -408,7 +482,7 @@ def _build_place_details(
         source_url=source_url,
         resolved_url=resolved_url,
         name=name,
-        secondary_name=_clean_text(snapshot.get("secondary_name"))
+        secondary_name=_clean_name_text(snapshot.get("secondary_name"))
         or _extract_secondary_name(combined_lines, name=name),
         category=category,
         rating=_parse_rating(snapshot.get("rating")),
@@ -417,10 +491,13 @@ def _build_place_details(
         located_in=_clean_text(snapshot.get("located_in")),
         status=_clean_text(snapshot.get("status")) or _extract_status_from_lines(combined_lines),
         website=_normalize_website(snapshot.get("website")),
-        phone=_clean_text(snapshot.get("phone")) or _extract_phone_from_lines(combined_lines),
+        phone=_normalize_phone_candidate(snapshot.get("phone"))
+        or _extract_phone_from_lines(combined_lines),
         plus_code=_clean_text(snapshot.get("plus_code"))
         or _extract_plus_code_from_lines(combined_lines),
         description=_extract_description(snapshot, combined_lines),
+        main_photo_url=_normalize_photo_url(snapshot.get("main_photo_url")),
+        photo_url=_normalize_photo_url(snapshot.get("photo_url")),
         lat=lat,
         lng=lng,
         limited_view=_to_bool(snapshot.get("limited_view"))
@@ -579,10 +656,41 @@ def _clean_text(value: object) -> str | None:
     return normalized
 
 
-def _first_nonempty(lines: list[str]) -> str | None:
+def _clean_name_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    if _looks_like_status_text(normalized):
+        return None
+    if _looks_like_search_results_label(normalized):
+        return None
+    if _looks_like_rating_text(normalized):
+        return None
+    if "·" in normalized and any(character.isdigit() for character in normalized):
+        return None
+    if any(character.isalnum() for character in normalized):
+        return normalized
+    return None
+
+
+def _clean_category_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    if _looks_like_status_text(normalized):
+        return None
+    if _looks_like_search_results_label(normalized) or normalized.casefold() == "share":
+        return None
+    if not any(character.isalpha() for character in normalized):
+        return None
+    return normalized
+
+
+def _first_meaningful_name(lines: list[str]) -> str | None:
     for line in lines:
-        if line:
-            return line
+        normalized = _clean_name_text(line)
+        if normalized is not None:
+            return normalized
     return None
 
 
@@ -611,13 +719,14 @@ def _extract_secondary_name(lines: list[str], *, name: str | None) -> str | None
     except ValueError:
         return None
     for line in lines[start + 1 : start + 4]:
-        if line == name:
-            continue
         if _parse_rating(line) is not None:
             return None
-        if _extract_category_from_lines([line]) is not None:
+        normalized = _clean_name_text(line)
+        if normalized is None or normalized == name:
+            continue
+        if _extract_category_from_lines([normalized]) is not None:
             return None
-        return line
+        return normalized
     return None
 
 
@@ -625,7 +734,7 @@ def _extract_category_from_lines(lines: list[str]) -> str | None:
     for line in lines:
         if "·" not in line:
             continue
-        category = line.split("·", 1)[0].strip()
+        category = _clean_category_text(line.split("·", 1)[0].strip())
         if category:
             return category
     return None
@@ -642,7 +751,7 @@ def _looks_like_address_line(line: str) -> bool:
     lowered = line.lower()
     if lowered.startswith(("http://", "https://", "www.")):
         return False
-    if lowered.startswith(("closed", "open")) or "opens " in lowered:
+    if _looks_like_status_text(line):
         return False
     if _PHONE_PATTERN.match(line):
         return False
@@ -664,17 +773,16 @@ def _looks_like_address_line(line: str) -> bool:
 
 def _extract_status_from_lines(lines: list[str]) -> str | None:
     for line in lines:
-        lowered = line.lower()
-        if lowered.startswith("closed") or lowered.startswith("open") or "opens " in lowered:
+        if _looks_like_status_text(line):
             return line
     return None
 
 
 def _extract_phone_from_lines(lines: list[str]) -> str | None:
-    phone_pattern = re.compile(r"^\+?[0-9][0-9()\-\s]{7,}$")
     for line in lines:
-        if phone_pattern.match(line):
-            return line
+        normalized = _normalize_phone_candidate(line)
+        if normalized is not None:
+            return normalized
     return None
 
 
@@ -687,17 +795,37 @@ def _extract_plus_code_from_lines(lines: list[str]) -> str | None:
 
 
 def _extract_description(snapshot: Mapping[str, object], lines: list[str]) -> str | None:
-    direct = _clean_text(snapshot.get("description"))
+    direct = _clean_description_text(snapshot.get("description"))
     if direct is not None:
         return direct
     for index, line in enumerate(lines):
         if line.startswith("Seasonal ") or line.startswith("Modern setting "):
             return line
         if line == "Share" and index + 1 < len(lines):
-            candidate = lines[index + 1]
-            if candidate.lower() not in _DESCRIPTION_STOP_MARKERS:
+            candidate = _clean_description_text(lines[index + 1])
+            if candidate is not None and candidate.lower() not in _DESCRIPTION_STOP_MARKERS:
                 return candidate
     return None
+
+
+def _clean_description_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    if normalized.lower() in _DESCRIPTION_STOP_MARKERS:
+        return None
+    if _looks_like_status_text(normalized):
+        return None
+    if _looks_like_search_results_label(normalized) or normalized.casefold() == "share":
+        return None
+    if _normalize_phone_candidate(normalized) is not None:
+        return None
+    if (
+        _parse_rating(normalized) is not None
+        and not any(character.isalpha() for character in normalized)
+    ):
+        return None
+    return normalized
 
 
 def _extract_preview_website(strings: list[str]) -> str | None:
@@ -721,15 +849,39 @@ def _normalize_preview_website(value: str) -> str | None:
         return _normalize_preview_website(unquote(target))
     if "googleusercontent.com" in parsed.netloc:
         return None
+    if "streetviewpixels-pa.googleapis.com" in parsed.netloc:
+        return None
+    if parsed.netloc.endswith("inline.app"):
+        return None
     return value
+
+
+def _normalize_photo_url(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    parsed = urlparse(normalized)
+    if parsed.scheme not in {"http", "https"}:
+        return None
+    host = parsed.netloc.lower()
+    path = parsed.path.lower()
+    if host.endswith("gstatic.com") and (
+        "result-no-thumbnail" in path
+        or "default_geocode" in path
+        or "mapslogo" in path
+    ):
+        return None
+    if "streetviewpixels-pa.googleapis.com" in host:
+        return None
+    return normalized
 
 
 def _extract_preview_phone(strings: list[str]) -> str | None:
     best_local: str | None = None
     for value in strings:
-        if not _PHONE_PATTERN.match(value.strip()):
+        normalized = _normalize_phone_candidate(value)
+        if normalized is None:
             continue
-        normalized = value.strip()
         if normalized.startswith("+"):
             return normalized
         if best_local is None:
@@ -775,14 +927,14 @@ def _extract_preview_category(root: list[object], strings: list[str]) -> str | N
             1 <= len(text_items) <= 4
             and all(_looks_like_category_text(item) for item in text_items)
         ):
-            return text_items[0]
+            return _clean_category_text(text_items[0])
 
     for value in strings:
         if not value.startswith("SearchResult.TYPE_"):
             continue
         category = value.removeprefix("SearchResult.TYPE_").replace("_", " ").strip().lower()
         if category:
-            return category.capitalize()
+            return _clean_category_text(category.capitalize())
     return None
 
 
@@ -809,10 +961,37 @@ def _extract_preview_description(strings: list[str]) -> str | None:
         and "〒" not in value
         and not value.startswith("Japan, ")
         and value.count(",") < 2
+        and not _looks_like_status_text(value)
     ]
     if not candidates:
         return None
     return max(candidates, key=len)
+
+
+def _normalize_phone_candidate(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None or not _PHONE_PATTERN.match(normalized):
+        return None
+    digit_count = sum(character.isdigit() for character in normalized)
+    if digit_count < 8 or digit_count > 15:
+        return None
+    return normalized
+
+
+def _looks_like_status_text(value: str) -> bool:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return False
+    if _STATUS_LINE_PATTERN.match(normalized):
+        return True
+    return any(marker in normalized for marker in ("営業時間", "営業開始", "営業終了"))
+
+
+def _looks_like_search_results_label(value: str) -> bool:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return False
+    return normalized.casefold() in _SEARCH_RESULTS_LABELS
 
 
 def _extract_preview_coordinates(root: list[object]) -> tuple[float, float] | None:
@@ -890,6 +1069,14 @@ def _parse_rating(value: object) -> float | None:
         return float(match.group(1).replace(",", "."))
     except ValueError:
         return None
+
+
+def _looks_like_rating_text(value: str) -> bool:
+    stripped = value.strip()
+    if re.fullmatch(r"[0-9]+(?:[.,][0-9]+)?", stripped):
+        rating = _parse_rating(stripped)
+        return rating is not None and 0 <= rating <= 5
+    return re.fullmatch(r"[0-9]+(?:[.,][0-9]+)?\s*\([0-9,]+\)", stripped) is not None
 
 
 def _parse_review_count(value: object) -> int | None:

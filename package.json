@@ -22,7 +22,13 @@
     "refresh:data:force": "bun run sync:sources:force",
     "refresh:data:list": "bun run sync:source --",
     "enrich:data": "uv run python3 scripts/build_data.py --enrich",
-    "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment"
+    "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment",
+    "refresh:photos": "uv run python3 scripts/build_data.py --refresh-photos",
+    "refresh:all": "uv run python3 scripts/build_data.py --refresh --refresh-enrichment",
+    "refresh:all:force": "uv run python3 scripts/build_data.py --refresh --refresh-force --refresh-enrichment",
+    "refresh:all:with-photos": "uv run python3 scripts/build_data.py --refresh --refresh-enrichment --refresh-photos",
+    "refresh:all:force:with-photos": "uv run python3 scripts/build_data.py --refresh --refresh-force --refresh-enrichment --refresh-photos",
+    "export:cache:json": "uv run python3 scripts/build_data.py --export-cache-json"
   },
   "dependencies": {
     "astro": "^6.1.6",

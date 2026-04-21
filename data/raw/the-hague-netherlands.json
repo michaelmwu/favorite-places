@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:44:15.150807+00:00",
-  "refresh_after": "2026-04-29T15:44:15.150807+00:00",
+  "fetched_at": "2026-04-20T16:04:45.713946+00:00",
+  "refresh_after": "2026-05-04T06:33:25.713946+00:00",
   "source_signature": "633568b13a903a0d377a1874c2e3e2ec7a0b24ae2c42682dc02a32d7d14f2041",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/8JFBMxey3jwUnCEu7",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 52.0757438,
       "lng": 4.3143171,
-      "maps_url": "https://maps.google.com/?cid=5171741112055319425",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Little+V+Den+Haag%2C+Rabbijn+Maarsenplein+21%2C+2512+HJ+Den+Haag%2C+Netherlands",
       "cid": "5171741112055319425",
       "google_id": "/g/11b6dhyl9p",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 52.0760116,
       "lng": 4.3098418999999994,
-      "maps_url": "https://maps.google.com/?cid=5171741252945472485",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bonobo%2C+Raamstraat+15%2C+2512+BX+Den+Haag%2C+Netherlands",
       "cid": "5171741252945472485",
       "google_id": "/g/11rg8ywy95",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 52.0770043,
       "lng": 4.307619799999999,
-      "maps_url": "https://maps.google.com/?cid=5171741118966343215",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Fiddler%2C+Riviervismarkt+1%2C+2513+AM+Den+Haag%2C+Netherlands",
       "cid": "5171741118966343215",
       "google_id": "/g/1tgh6rhr",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 52.075903499999995,
       "lng": 4.309156,
-      "maps_url": "https://maps.google.com/?cid=5171741120345305775",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Caf%C3%A9+Restaurant+De+Zwarte+Ruiter%2C+Grote+Markt+27%2C+2511+BG+Den+Haag%2C+Netherlands",
       "cid": "5171741120345305775",
       "google_id": "/g/1tc_38d9",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 52.1023625,
       "lng": 4.2675428,
-      "maps_url": "https://maps.google.com/?cid=5171733911485709755",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Herring+House+B.V.%2C+Vissershavenweg+66%2C+2583+DL+Den+Haag%2C+Netherlands",
       "cid": "5171733911485709755",
       "google_id": "/g/1v93_7ch",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 52.079373999999994,
       "lng": 4.3115103,
-      "maps_url": "https://maps.google.com/?cid=5171741116192135639",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Buitenhof+Herring+Stall%2C+Buitenhof+30%2C+2513+AG+Den+Haag%2C+Netherlands",
       "cid": "5171741116192135639",
       "google_id": "/g/1tvm1yrj",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 52.0764419,
       "lng": 4.3146157,
-      "maps_url": "https://maps.google.com/?cid=5171741112144407015",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Simonis+in+de+Stad",
       "cid": "5171741112144407015",
       "google_id": null,
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 52.077034499999996,
       "lng": 4.310171599999999,
-      "maps_url": "https://maps.google.com/?cid=5171741434720702465",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Van+Schaik+Stroopwafels+-+Den+Haag",
       "cid": "5171741434720702465",
       "google_id": null,
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 52.0767939,
       "lng": 4.3094323999999995,
-      "maps_url": "https://maps.google.com/?cid=5171741942463760663",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Foodhallen+Den+Haag",
       "cid": "5171741942463760663",
       "google_id": null,
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 52.128681699999994,
       "lng": 4.3331437,
-      "maps_url": "https://maps.google.com/?cid=5171743999033589543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Meijendel",
       "cid": "5171743999033589543",
       "google_id": null,
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 52.0796387,
       "lng": 4.309874199999999,
-      "maps_url": "https://maps.google.com/?cid=5171741117656883433",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Palmette",
       "cid": "5171741117656883433",
       "google_id": null,
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 52.086092699999995,
       "lng": 4.3118491,
-      "maps_url": "https://maps.google.com/?cid=4712265429064903171",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Walter+Benedict",
       "cid": "4712265429064903171",
       "google_id": null,
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 52.0774294,
       "lng": 4.3071435,
-      "maps_url": "https://maps.google.com/?cid=5171741161316455605",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grote+Kerk",
       "cid": "5171741161316455605",
       "google_id": null,
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 52.0869417,
       "lng": 4.2954650999999995,
-      "maps_url": "https://maps.google.com/?cid=5171734134482849137",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Peace+Palace",
       "cid": "5171734134482849137",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 52.0808724,
       "lng": 4.3088011999999996,
-      "maps_url": "https://maps.google.com/?cid=5171741209839708533",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=De+Poentjak",
       "cid": "5171741209839708533",
       "google_id": null,
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 52.0784612,
       "lng": 4.3050109,
-      "maps_url": "https://maps.google.com/?cid=5171741624512041087",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kompaan+Binnenhaven",
       "cid": "5171741624512041087",
       "google_id": null,
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 52.100407499999996,
       "lng": 4.3335962,
-      "maps_url": "https://maps.google.com/?cid=5171741436481431615",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Japanese+Garden",
       "cid": "5171741436481431615",
       "google_id": null,
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 52.099076,
       "lng": 4.2990392,
-      "maps_url": "https://maps.google.com/?cid=5171741288915915463",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Madurodam",
       "cid": "5171741288915915463",
       "google_id": null,
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 52.0688788,
       "lng": 4.2900351,
-      "maps_url": "https://maps.google.com/?cid=5171734545202115643",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tropisch+Huis+Abdoel",
       "cid": "5171734545202115643",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 52.0748688,
       "lng": 4.3087165,
-      "maps_url": "https://maps.google.com/?cid=5171741122866403795",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=New+Meyva",
       "cid": "5171741122866403795",
       "google_id": null,
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 52.0751178,
       "lng": 4.308830599999999,
-      "maps_url": "https://maps.google.com/?cid=5171741122896398841",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bleyenberg",
       "cid": "5171741122896398841",
       "google_id": null,
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 52.0756527,
       "lng": 4.3086867,
-      "maps_url": "https://maps.google.com/?cid=5171741120420195371",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=de+Boterwaag",
       "cid": "5171741120420195371",
       "google_id": null,
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 52.079938,
       "lng": 4.3157966,
-      "maps_url": "https://maps.google.com/?cid=5171741688933835975",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Het+Plein",
       "cid": "5171741688933835975",
       "google_id": null,
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 52.0968685,
       "lng": 4.332605099999999,
-      "maps_url": "https://maps.google.com/?cid=5171741672932212543",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Clingendael",
       "cid": "5171741672932212543",
       "google_id": null,
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 52.0735288,
       "lng": 4.3155741999999995,
-      "maps_url": "https://maps.google.com/?cid=5171741099763390231",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bierspeciaal+Caf%C3%A9+De+Paas",
       "cid": "5171741099763390231",
       "google_id": null,
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 52.074554899999995,
       "lng": 4.3159019999999995,
-      "maps_url": "https://maps.google.com/?cid=5171741112304647835",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Chinatown%2C+The+Hague%2C+Netherlands",
       "cid": "5171741112304647835",
       "google_id": null,
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 52.0821708,
       "lng": 4.3132734,
-      "maps_url": "https://maps.google.com/?cid=5171741212940838939",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bodega+De+Posthoorn",
       "cid": "5171741212940838939",
       "google_id": null,
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 52.079598499999996,
       "lng": 4.313273,
-      "maps_url": "https://maps.google.com/?cid=5171741115526276413",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Binnenhof",
       "cid": "5171741115526276413",
       "google_id": null,
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 52.094871399999995,
       "lng": 4.2953499,
-      "maps_url": "https://maps.google.com/?cid=5171734034434372985",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Scheveningse+Bosjes%2C+2585+JB+The+Hague%2C+Netherlands",
       "cid": "5171734034434372985",
       "google_id": "/g/122zqb6s",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 52.1191293,
       "lng": 4.3472969,
-      "maps_url": "https://maps.google.com/?cid=5171744056421176593",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Museum+Voorlinden%2C+Buurtweg+90%2C+2244+AG+Wassenaar%2C+Netherlands",
       "cid": "5171744056421176593",
       "google_id": "/g/1q54w18dl",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 52.091408799999996,
       "lng": 4.270658,
-      "maps_url": "https://maps.google.com/?cid=5171734087277381295",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Poetri+Ajoe%2C+Van+Boetzelaerlaan+134%2C+2581+AX+Den+Haag%2C+Netherlands",
       "cid": "5171734087277381295",
       "google_id": "/g/1tkc18tl",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 52.080155999999995,
       "lng": 4.317633,
-      "maps_url": "https://maps.google.com/?cid=5171741107352470691",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Amier+Restaurant%2C+Korte+Poten+28-A%2C+2511+EE+Den+Haag%2C+Netherlands",
       "cid": "5171741107352470691",
       "google_id": "/g/1tds5wwv",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 52.0815134,
       "lng": 4.3066759999999995,
-      "maps_url": "https://maps.google.com/?cid=5171741164920790499",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Noordeinde%2C+Noordeinde%2C+Den+Haag%2C+Netherlands",
       "cid": "5171741164920790499",
       "google_id": "/g/121s922t",
       "maps_place_token": null
@@ -413,7 +413,7 @@
       "is_favorite": false,
       "lat": 52.0755985,
       "lng": 4.308898999999999,
-      "maps_url": "https://maps.google.com/?cid=5171741120381157869",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Grote+Markt%2C+Grote+Markt%2C+Den+Haag%2C+Netherlands",
       "cid": "5171741120381157869",
       "google_id": "/g/1th22zyj",
       "maps_place_token": null
@@ -425,7 +425,7 @@
       "is_favorite": false,
       "lat": 52.0997293,
       "lng": 4.3506691,
-      "maps_url": "https://maps.google.com/?cid=5171741472794568971",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Louwman+Museum",
       "cid": "5171741472794568971",
       "google_id": null,
       "maps_place_token": null
@@ -437,7 +437,7 @@
       "is_favorite": false,
       "lat": 52.078085099999996,
       "lng": 4.3114304,
-      "maps_url": "https://maps.google.com/?cid=5171741116633244121",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=The+Passage",
       "cid": "5171741116633244121",
       "google_id": null,
       "maps_place_token": null
@@ -449,7 +449,7 @@
       "is_favorite": false,
       "lat": 52.1108803,
       "lng": 4.2785091,
-      "maps_url": "https://maps.google.com/?cid=5171733953169489287",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=museum+Beelden+aan+Zee",
       "cid": "5171733953169489287",
       "google_id": null,
       "maps_place_token": null
@@ -461,7 +461,7 @@
       "is_favorite": false,
       "lat": 52.115776999999994,
       "lng": 4.282714299999999,
-      "maps_url": "https://maps.google.com/?cid=5171744296941189463",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=De+Pier",
       "cid": "5171744296941189463",
       "google_id": null,
       "maps_place_token": null
@@ -473,7 +473,7 @@
       "is_favorite": false,
       "lat": 52.0846659,
       "lng": 4.3034284,
-      "maps_url": "https://maps.google.com/?cid=5171741169994009943",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Panorama+Mesdag",
       "cid": "5171741169994009943",
       "google_id": null,
       "maps_place_token": null
@@ -485,7 +485,7 @@
       "is_favorite": false,
       "lat": 52.089945099999994,
       "lng": 4.2806689,
-      "maps_url": "https://maps.google.com/?cid=5171734115716786369",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Kunstmuseum+The+Hague",
       "cid": "5171734115716786369",
       "google_id": null,
       "maps_place_token": null
@@ -497,7 +497,7 @@
       "is_favorite": false,
       "lat": 52.0834729,
       "lng": 4.3143047,
-      "maps_url": "https://maps.google.com/?cid=5171741213331702131",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Escher+in+the+Palace",
       "cid": "5171741213331702131",
       "google_id": null,
       "maps_place_token": null
@@ -509,7 +509,7 @@
       "is_favorite": false,
       "lat": 52.0804322,
       "lng": 4.3143148,
-      "maps_url": "https://maps.google.com/?cid=5171741109490265873",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Mauritshuis",
       "cid": "5171741109490265873",
       "google_id": null,
       "maps_place_token": null

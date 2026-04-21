@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-04-15T15:20:04.872244+00:00",
-  "refresh_after": "2026-04-29T15:20:04.872244+00:00",
+  "fetched_at": "2026-04-20T16:04:40.688010+00:00",
+  "refresh_after": "2026-05-06T13:35:40.688010+00:00",
   "source_signature": "9556917a7f5a659028e5d56d132d83ac51cae640a41f8fe5d012248a5278fc10",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/UhstMwsyDtTLtgMH9",
@@ -17,7 +17,7 @@
       "is_favorite": false,
       "lat": 40.6264153,
       "lng": 14.3777007,
-      "maps_url": "https://maps.google.com/?cid=1385875777237524955",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bar+Rita%2C+Corso+Italia%2C+219%2C+80067+Sorrento+NA%2C+Italy",
       "cid": "1385875777237524955",
       "google_id": "/g/1v1ks083",
       "maps_place_token": null
@@ -29,7 +29,7 @@
       "is_favorite": false,
       "lat": 40.6267481,
       "lng": 14.373062899999999,
-      "maps_url": "https://maps.google.com/?cid=1385875782564346501",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=L%27Antica+Trattoria%2C+Via+Padre+Reginaldo+Giuliani%2C+33%2C+80067+Sorrento+NA%2C+Italy",
       "cid": "1385875782564346501",
       "google_id": "/g/1tcxlybn",
       "maps_place_token": null
@@ -41,7 +41,7 @@
       "is_favorite": false,
       "lat": 40.6266065,
       "lng": 14.3719541,
-      "maps_url": "https://maps.google.com/?cid=1385877041992151763",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Semola%2C+Via+Torquato+Tasso%2C+53%2F55%2C+80067+Sorrento+NA%2C+Italy",
       "cid": "1385877041992151763",
       "google_id": "/g/11g0l4w7yg",
       "maps_place_token": null
@@ -53,7 +53,7 @@
       "is_favorite": false,
       "lat": 40.6256221,
       "lng": 14.3713155,
-      "maps_url": "https://maps.google.com/?cid=1385875784362043061",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Fuoro%2C+Via+Fuoro%2C+23%2C+80067+Sorrento+NA%2C+Italy",
       "cid": "1385875784362043061",
       "google_id": "/g/1ptwkc6gq",
       "maps_place_token": null
@@ -65,7 +65,7 @@
       "is_favorite": false,
       "lat": 40.623918499999995,
       "lng": 14.3676243,
-      "maps_url": "https://maps.google.com/?cid=1385875746628740163",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taverna+Sorrentina%2C+Via+Capo%2C+10%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875746628740163",
       "google_id": "/g/1tmv0c98",
       "maps_place_token": null
@@ -77,7 +77,7 @@
       "is_favorite": false,
       "lat": 40.6259259,
       "lng": 14.3721412,
-      "maps_url": "https://maps.google.com/?cid=1385877120108797901",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=A%27Marenna+-+Sorrento+Bakery+%26+Bistrot%2C+Via+Torquato+Tasso%2C+23%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385877120108797901",
       "google_id": "/g/11gy63jtv8",
       "maps_place_token": null
@@ -89,7 +89,7 @@
       "is_favorite": false,
       "lat": 40.6193153,
       "lng": 14.408430899999999,
-      "maps_url": "https://maps.google.com/?cid=1385875784309878251",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Trattoria+dei+Mori%2C+Via+S.+Nicola%2C+20%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875784309878251",
       "google_id": "/g/11fz30hy61",
       "maps_place_token": null
@@ -101,7 +101,7 @@
       "is_favorite": false,
       "lat": 40.6278763,
       "lng": 14.3745994,
-      "maps_url": "https://maps.google.com/?cid=1385875780127878041",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Foreigner%27s+Club%2C+Via+Luigi+de+Maio%2C+35%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875780127878041",
       "google_id": "/g/1tfv7l98",
       "maps_place_token": null
@@ -113,7 +113,7 @@
       "is_favorite": false,
       "lat": 40.626716599999995,
       "lng": 14.374360999999999,
-      "maps_url": "https://maps.google.com/?cid=1385875779720174255",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Ristorante+Pizzeria+S.+Antonino%2C+Via+Santa+Maria+delle+Grazie%2C+6%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875779720174255",
       "google_id": "/g/1tg2gn70",
       "maps_place_token": null
@@ -125,7 +125,7 @@
       "is_favorite": false,
       "lat": 40.627544199999996,
       "lng": 14.3667354,
-      "maps_url": "https://maps.google.com/?cid=1385875787755025465",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=O%27+Puledrone%2C+Ristorante%2C+Via+Marina+Grande%2C+74%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875787755025465",
       "google_id": "/g/11b5wnvnlm",
       "maps_place_token": null
@@ -137,7 +137,7 @@
       "is_favorite": false,
       "lat": 40.627285799999996,
       "lng": 14.375204,
-      "maps_url": "https://maps.google.com/?cid=1385875778728880003",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Il+Buco%2C+2%C2%AA+Rampa+Marina+Piccola%2C+Piazza+Sant%27Antonino%2C+5%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875778728880003",
       "google_id": "/g/11bxg645yq",
       "maps_place_token": null
@@ -149,7 +149,7 @@
       "is_favorite": false,
       "lat": 40.6258483,
       "lng": 14.378549099999999,
-      "maps_url": "https://maps.google.com/?cid=1385869892657189375",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Il+Leone+Rosso%2C+Via+Marziale%2C+25%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385869892657189375",
       "google_id": "/g/1tf8w7kq",
       "maps_place_token": null
@@ -161,7 +161,7 @@
       "is_favorite": false,
       "lat": 40.6275605,
       "lng": 14.3668795,
-      "maps_url": "https://maps.google.com/?cid=1385875787341298709",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Porta+Marina+Seafood%2C+Via+Marina+Grande%2C+64%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875787341298709",
       "google_id": "/g/11bwqftpzy",
       "maps_place_token": null
@@ -173,7 +173,7 @@
       "is_favorite": false,
       "lat": 40.5504744,
       "lng": 14.257089599999999,
-      "maps_url": "https://maps.google.com/?cid=1385833406781952935",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Natural+Arch%2C+plattl%2C+7c%2C+39054+Renon+Alto+Adige%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385833406781952935",
       "google_id": null,
       "maps_place_token": null
@@ -185,7 +185,7 @@
       "is_favorite": false,
       "lat": 40.608948999999996,
       "lng": 14.341601899999999,
-      "maps_url": "https://maps.google.com/?cid=1385873334961919463",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marine+Protected+Area+Punta+Campanella%2C+Via+Roma%2C+29%2C+80061+Massa+Lubrense+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385873334961919463",
       "google_id": "/g/1yy3vjkgs",
       "maps_place_token": null
@@ -197,7 +197,7 @@
       "is_favorite": false,
       "lat": 40.6245548,
       "lng": 14.370985699999999,
-      "maps_url": "https://maps.google.com/?cid=1385875784014234833",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%B4%E3%82%A3%E3%83%83%E3%83%A9%E3%83%BB%E3%83%95%E3%82%A3%E3%82%AA%E3%83%AC%E3%83%B3%E3%83%86%E3%82%A3%E3%83%BC%E3%83%8E%E5%85%AC%E5%9C%92%2C+Corso+Italia%2C+53%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875784014234833",
       "google_id": "/g/1yh5tr4xx",
       "maps_place_token": null
@@ -209,7 +209,7 @@
       "is_favorite": false,
       "lat": 40.627916899999995,
       "lng": 14.3731584,
-      "maps_url": "https://maps.google.com/?cid=1385875780681692399",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B5%E3%83%B3%E3%83%BB%E3%83%95%E3%83%A9%E3%83%B3%E3%83%81%E3%82%A7%E3%82%B9%E3%82%B3%E3%81%AE%E5%9B%9E%E5%BB%8A%2C+Via+S.+Francesco%2C+12%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875780681692399",
       "google_id": "/g/11r8c1_5l",
       "maps_place_token": null
@@ -221,7 +221,7 @@
       "is_favorite": false,
       "lat": 40.633806,
       "lng": 14.3518654,
-      "maps_url": "https://maps.google.com/?cid=1385875681189669927",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Bagni+Regina+Giovanna%2C+Traversa+Punta+Capo%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875681189669927",
       "google_id": "/g/1ptyvs4j6",
       "maps_place_token": null
@@ -233,7 +233,7 @@
       "is_favorite": false,
       "lat": 40.6252455,
       "lng": 14.3729607,
-      "maps_url": "https://maps.google.com/?cid=1385869891171804779",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Cathedral+of+Saints+Philip+and+James%2C+Via+Santa+Maria+della+Piet%C3%A0%2C+44%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385869891171804779",
       "google_id": null,
       "maps_place_token": null
@@ -245,7 +245,7 @@
       "is_favorite": false,
       "lat": 40.649585099999996,
       "lng": 14.410610799999999,
-      "maps_url": "https://maps.google.com/?cid=1385869657581630897",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Belvedere+Sorrento%2C+80062+Meta%2C+Metropolitan+City+of+Naples%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385869657581630897",
       "google_id": "/g/11c4kqmlq9",
       "maps_place_token": null
@@ -257,7 +257,7 @@
       "is_favorite": false,
       "lat": 40.627917599999996,
       "lng": 14.3725463,
-      "maps_url": "https://maps.google.com/?cid=1385875779938790121",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Lift+to+Sorrento+Marina%2C+Via+S.+Francesco%2C+1%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875779938790121",
       "google_id": "/g/1td80vbw",
       "maps_place_token": null
@@ -269,7 +269,7 @@
       "is_favorite": false,
       "lat": 40.628841699999995,
       "lng": 14.381052799999999,
-      "maps_url": "https://maps.google.com/?cid=1385869868118783975",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Museo+Correale+di+Terranova%2C+Via+Correale%2C+50%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385869868118783975",
       "google_id": null,
       "maps_place_token": null
@@ -281,7 +281,7 @@
       "is_favorite": false,
       "lat": 40.6262974,
       "lng": 14.375268199999999,
-      "maps_url": "https://maps.google.com/?cid=1385875779208583037",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Sedile+di+Porta%2C+Via+S.+Cesareo%2C+122%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875779208583037",
       "google_id": "/g/11c1v3z98w",
       "maps_place_token": null
@@ -293,7 +293,7 @@
       "is_favorite": false,
       "lat": 40.6251943,
       "lng": 14.3763714,
-      "maps_url": "https://maps.google.com/?cid=1385875773670429325",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Vallone+dei+Mulini%2C+80067+Sorrento%2C+Metropolitan+City+of+Naples%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875773670429325",
       "google_id": "/g/1yglpwbzp",
       "maps_place_token": null
@@ -305,7 +305,7 @@
       "is_favorite": false,
       "lat": 40.626231,
       "lng": 14.374509199999999,
-      "maps_url": "https://maps.google.com/?cid=1385876159737148701",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Amorino%2C+Corso+Italia%2C+177%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385876159737148701",
       "google_id": "/g/11jp02r3xk",
       "maps_place_token": null
@@ -317,7 +317,7 @@
       "is_favorite": false,
       "lat": 40.618151399999995,
       "lng": 14.4038208,
-      "maps_url": "https://maps.google.com/?cid=1385869950318279535",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Frantoio+Gargiulo%2C+Via+Nastro+D%27Argento%2C+9%2C+80065+Sant%27Agnello+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385869950318279535",
       "google_id": "/g/11by_nprn4",
       "maps_place_token": null
@@ -329,7 +329,7 @@
       "is_favorite": false,
       "lat": 40.6270722,
       "lng": 14.366450599999999,
-      "maps_url": "https://maps.google.com/?cid=1385875742097818111",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Marina+Grande%2C+Via+del+Mare%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875742097818111",
       "google_id": "/g/1q6h_qx8r",
       "maps_place_token": null
@@ -341,7 +341,7 @@
       "is_favorite": false,
       "lat": 40.6279387,
       "lng": 14.3727243,
-      "maps_url": "https://maps.google.com/?cid=1385875780663278773",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Villa+Comunale+di+Sorrento%2C+Via+S.+Francesco%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875780663278773",
       "google_id": "/g/1pp2x7gh_",
       "maps_place_token": null
@@ -353,7 +353,7 @@
       "is_favorite": false,
       "lat": 40.6274924,
       "lng": 14.3709071,
-      "maps_url": "https://maps.google.com/?cid=1385875781638216557",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%83%99%E3%83%AB%E3%83%B4%E3%83%A5%E3%83%BC+%E3%82%B7%E3%83%AC%E3%83%BC%E3%83%8D%2C+Piazza+della+Vittoria%2C+5%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875781638216557",
       "google_id": "/g/11h0twgv9",
       "maps_place_token": null
@@ -365,7 +365,7 @@
       "is_favorite": false,
       "lat": 40.627121599999995,
       "lng": 14.374985599999999,
-      "maps_url": "https://maps.google.com/?cid=1385875779720171487",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=%E3%82%B5%E3%83%B3%E3%83%BB%E3%82%A2%E3%83%B3%E3%83%88%E3%83%8B%E3%82%AA%E8%81%96%E5%A0%82%2C+Piazza+Sant%27Antonino%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875779720171487",
       "google_id": "/g/1hl3h2p1g",
       "maps_place_token": null
@@ -377,7 +377,7 @@
       "is_favorite": false,
       "lat": 40.624994799999996,
       "lng": 14.3717481,
-      "maps_url": "https://maps.google.com/?cid=1385875783756303429",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=O%27Parrucchiano+La+Favorita%2C+Corso+Italia%2C+71%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875783756303429",
       "google_id": "/g/1tg2gn71",
       "maps_place_token": null
@@ -389,7 +389,7 @@
       "is_favorite": false,
       "lat": 40.626191,
       "lng": 14.374305099999999,
-      "maps_url": "https://maps.google.com/?cid=1385875772649932133",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Limonoro+Fabbrica+Liquori+Di+D%27Esposito+Ciro%2C+Via+San+cesareo+n%2A49%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875772649932133",
       "google_id": "/g/1vf_2w48",
       "maps_place_token": null
@@ -401,7 +401,7 @@
       "is_favorite": false,
       "lat": 40.6262287,
       "lng": 14.3756451,
-      "maps_url": "https://maps.google.com/?cid=1385875779101072359",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Piazza+Tasso%2C+Piazza+Tasso%2C+80067+Sorrento+NA%2C+%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2",
       "cid": "1385875779101072359",
       "google_id": null,
       "maps_place_token": null
