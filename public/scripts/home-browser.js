@@ -553,7 +553,8 @@ if (root) {
 
   countryButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      selectCountry(button.dataset.country || "");
+      const country = button.dataset.country || "";
+      selectCountry(country === activeCountry ? "" : country);
     });
   });
 
