@@ -14,15 +14,84 @@ describe("guide map interactions", () => {
 
     expect(cssBlocks(css, ".controls-panel").join("\n")).not.toContain("position: sticky");
     expect(cssBlocks(css, ".country-browser").join("\n")).toContain("position: sticky");
-    expect(cssBlocks(css, ".map-panel").join("\n")).toContain("position: sticky");
+    expect(css).toContain(".browse-layout > .map-panel {\n    order: 0;\n    position: sticky;");
+  });
+
+  it("uses an in-flow mobile map toolbar instead of overlaying the controls", () => {
+    const guideMap = readSource("src/components/GuideMap.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(guideMap).toContain('<div class="map-toolbar">');
+    expect(guideMap).toContain('<span class="map-toggle-label">Hide map</span>');
+    expect(css).toContain(".map-toolbar");
+    expect(cssBlocks(css, ".map-panel").join("\n")).toContain("position: relative");
+    expect(cssBlocks(css, ".map-actions").join("\n")).toContain("margin-left: auto");
+    expect(css).toContain("@media (max-width: 979px)");
+    expect(css).toContain(".map-actions {\n    justify-content: flex-start;");
+    expect(css).toContain(".guide-map {\n  width: 100%;\n  min-height: 16rem;");
+    expect(css).toContain(".map-panel {\n    order: 0;\n    position: sticky;\n    top: 0.5rem;");
+  });
+
+  it("tightens the mobile guide chrome to save vertical space", () => {
+    const css = readSource("src/styles/global.css");
+
+    expect(css).toContain(".hero p,\n.lede {\n  margin: 0;");
+    expect(css).toContain("@media (max-width: 719px) {\n  .page-shell {\n    width: min(calc(100% - 0.5rem), var(--page-width));");
+    expect(css).toContain(".site-header {\n    padding: 0.35rem 0 0.2rem;");
+    expect(css).toContain(".site-title img {\n    width: min(84px, 22vw);");
+    expect(css).toContain(".hero {\n    padding-bottom: 1.4rem;");
+    expect(css).toContain(".hero-grid,\n  .section-stack {\n    gap: 0.55rem;");
+    expect(css).toContain(".stat-pill,\n  .action-pill,\n  .tag-pill {\n    min-height: 2rem;");
+    expect(css).toContain(".section {\n    margin-top: 1.5rem;");
+    expect(css).toContain(".social-card {\n    padding: 0.6rem;");
+    expect(css).toContain(".social-card-copy {\n    font-size: 0.88rem;");
+    expect(css).toContain(".social-card-link {\n    padding: 0.42rem 0.45rem;");
+    expect(css).toContain(".social-card-icon {\n    width: 1.5rem;");
+  });
+
+  it("renders the Google Maps action as a compact icon beside the place name", () => {
+    const placeCard = readSource("src/components/PlaceCard.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(placeCard).toContain('import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";');
+    expect(placeCard).toContain('class="place-card-name-row"');
+    expect(placeCard).toContain('class="place-card-marker"');
+    expect(placeCard).toContain('class="place-card-map-link"');
+    expect(placeCard).toContain('aria-label={`Open ${place.name} in Google Maps`}');
+    expect(placeCard).not.toContain(">Open in Google Maps<");
+    expect(placeCard).toContain('set:html={markerSvg}');
+    expect(css).toContain(".place-card-map-link");
+    expect(css).toContain(".place-card-marker");
+    expect(css).toContain(".place-card-name-row");
+    expect(css).toContain("width: 1.8rem;");
+    expect(css).toContain("width: 2.3rem;");
+    expect(css).toContain("background: color-mix(in srgb, var(--accent) 88%, white);");
+    expect(css).toContain("border-radius: 999px;");
+  });
+
+  it("reflows place stats by card width instead of branching on photo presence", () => {
+    const placeCard = readSource("src/components/PlaceCard.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(placeCard).toContain('const hasStats = ratingValue !== null || reviewCount !== null;');
+    expect(placeCard).toContain('class="place-card-meta-row"');
+    expect(placeCard).toContain('class="stats-row place-card-stats place-card-meta-stats"');
+    expect(placeCard).not.toContain("{hasPhoto && hasStats && (");
+    expect(placeCard).not.toContain("{!hasPhoto && hasStats && (");
+    expect(css).toContain(".place-card-meta-row");
+    expect(css).toContain(".place-card-meta-stats");
+    expect(css).toContain("container-type: inline-size;");
+    expect(css).toContain("@container (min-width: 26rem)");
   });
 
   it("lets the collapsed map panel release width back to the places list", () => {
     const guidePage = readSource("src/pages/guides/[slug].astro");
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
     const guideMap = readSource("src/components/GuideMap.astro");
     const css = readSource("src/styles/global.css");
 
     expect(guidePage).toContain('class="browse-layout" data-browse-layout');
+    expect(homeMap).toContain('class="map-panel home-map-panel"');
     expect(guidePage).toContain('class="browse-main" data-browse-main');
     expect(guidePage.indexOf('<div class="browse-main" data-browse-main>')).toBeLessThan(
       guidePage.indexOf("<GuideMap places={visiblePlaces} />"),
@@ -36,6 +105,11 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("layout.dataset.mapCollapsed");
     expect(css).toContain('.browse-layout[data-map-collapsed="true"]');
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) 2.75rem");
+    expect(css).toContain(".browse-layout > .map-panel {\n    order: 0;\n    position: sticky;");
+    expect(css).toContain(".home-map-panel {\n  position: relative;\n  top: auto;");
+    expect(css).toContain('.browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"]');
+    expect(css).toContain("grid-template-columns: repeat(auto-fit, minmax(23rem, 28rem))");
+    expect(css).toContain("justify-content: start;");
     expect(cssBlocks(css, ".map-panel").join("\n")).toContain("order: 0;");
     expect(css).toContain('.map-panel[data-collapsed="true"] .map-toggle');
     expect(css).toContain("border-color: transparent");

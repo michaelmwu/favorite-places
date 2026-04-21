@@ -1,5 +1,6 @@
 ---
 import type { Place } from "../lib/types";
+import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";
 import { getDisplayGuideTags, getDisplayPlaceTags, getTagComparisonValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 
@@ -10,11 +11,6 @@ interface Props {
     countryName?: string | null;
   };
   place: Place;
-}
-
-interface MetaPart {
-  label: string;
-  title?: string;
 }
 
 const { guideContext = {}, place } = Astro.props;
@@ -39,19 +35,16 @@ const compactReviewCountFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 });
 const reviewCountFormatter = new Intl.NumberFormat("en-US");
-const noPhotoMetaParts: MetaPart[] = [
-  ratingValue !== null
-    ? {
-        label: `${ratingFormatter.format(ratingValue)} ★`,
-      }
-    : null,
-  reviewCount !== null
-    ? {
-        label: `${compactReviewCountFormatter.format(reviewCount)} reviews`,
-        title: `${reviewCountFormatter.format(reviewCount)} Google Maps reviews`,
-      }
-    : null,
-].filter((part): part is MetaPart => Boolean(part));
+const placeholderMeta =
+  place.neighborhood ??
+  guideContext.cityName ??
+  guideContext.countryName ??
+  "Saved favorite";
+const hasStats = ratingValue !== null || reviewCount !== null;
+const markerSvg = buildMapMarkerSvg(
+  place.marker_icon,
+  getMapMarkerColors(place.marker_icon, { topPick: place.top_pick }),
+);
 ---
 
 <article
@@ -80,48 +73,81 @@ const noPhotoMetaParts: MetaPart[] = [
     placeVibeTags.join(" "),
   ].join(" ").toLowerCase()}
 >
-  {hasPhoto && (
-    <div class="place-card-photo">
+  <div class="place-card-photo" aria-hidden={hasPhoto ? undefined : "true"}>
+    {hasPhoto ? (
       <img src={place.main_photo_path} alt={`Photo of ${place.name}`} loading="lazy" />
-    </div>
-  )}
+    ) : (
+      <div class="place-card-photo-placeholder">
+        <div class="place-card-photo-placeholder-copy">
+          <span class="place-card-photo-placeholder-kicker">{place.primary_category ?? "Saved place"}</span>
+          <strong class="place-card-photo-placeholder-title">{placeholderMeta}</strong>
+        </div>
+        <span class="place-card-photo-placeholder-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path
+              fill="currentColor"
+              d="M12 2.8a6.2 6.2 0 0 1 6.2 6.2c0 4.4-4.8 9.6-5 9.8a1 1 0 0 1-1.4 0c-.2-.2-5-5.4-5-9.8A6.2 6.2 0 0 1 12 2.8Zm0 8.8A2.6 2.6 0 1 0 12 6.4a2.6 2.6 0 0 0 0 5.2Z"
+            ></path>
+          </svg>
+        </span>
+      </div>
+    )}
+  </div>
 
   <div class="place-card-title">
-    <div class="section-stack">
-      <h3>{place.name}</h3>
-      <p class="meta-copy">
-        {place.primary_category ?? "Saved place"}
-        {place.neighborhood && ` · ${place.neighborhood}`}
-        {!hasPhoto &&
-          noPhotoMetaParts.map((part) => (
-            <>
-              {" · "}
-              {"title" in part ? (
-                <span title={part.title}>{part.label}</span>
-              ) : (
-                part.label
-              )}
-            </>
-          ))}
-      </p>
+    <div class="section-stack place-card-heading">
+      <div class="place-card-name-row">
+        <h3>{place.name}</h3>
+        <a
+          class="place-card-map-link"
+          href={place.maps_url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Open ${place.name} in Google Maps`}
+          title="Open in Google Maps"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16">
+            <path
+              fill="currentColor"
+              d="M12 2.75a5.75 5.75 0 0 1 5.75 5.75c0 4.08-4.29 8.89-5.12 9.78a.86.86 0 0 1-1.26 0c-.83-.89-5.12-5.7-5.12-9.78A5.75 5.75 0 0 1 12 2.75Zm0 8a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"
+            ></path>
+            <path
+              fill="currentColor"
+              d="M14.75 13.25h5.5v1.5h-5.5v5.5h-1.5v-5.5h-5.5v-1.5h5.5v-5.5h1.5z"
+            ></path>
+          </svg>
+        </a>
+      </div>
+      <div class="place-card-meta-row">
+        <span
+          class="place-card-marker"
+          aria-hidden="true"
+          title={place.primary_category ?? "Saved place"}
+          set:html={markerSvg}
+        />
+        <p class="meta-copy">
+          {place.primary_category ?? "Saved place"}
+          {place.neighborhood && ` · ${place.neighborhood}`}
+        </p>
+        {hasStats && (
+          <div class="stats-row place-card-stats place-card-meta-stats">
+            {ratingValue !== null && <span class="stat-pill">{ratingFormatter.format(ratingValue)} ★</span>}
+            {reviewCount !== null && (
+              <span class="stat-pill" title={`${reviewCountFormatter.format(reviewCount)} Google Maps reviews`}>
+                {compactReviewCountFormatter.format(reviewCount)} reviews
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
     {place.top_pick && <span class="badge">Top pick</span>}
   </div>
 
   {whyRecommendedHtml && <p class="rich-copy" set:html={whyRecommendedHtml} />}
   {noteHtml && <p class="small-copy rich-copy" set:html={noteHtml} />}
-  {hasPhoto && (ratingValue !== null || reviewCount !== null) && (
-    <div class="stats-row place-card-stats">
-      {ratingValue !== null && <span class="stat-pill">{ratingFormatter.format(ratingValue)} ★</span>}
-      {reviewCount !== null && (
-        <span class="stat-pill" title={`${reviewCountFormatter.format(reviewCount)} Google Maps reviews`}>
-          {compactReviewCountFormatter.format(reviewCount)} reviews
-        </span>
-      )}
-    </div>
-  )}
   {place.address && <p class="small-copy">{place.address}</p>}
-  {displayTags.length > 0 && hasPhoto && (
+  {displayTags.length > 0 && (
     <div class="tag-row">
       {displayTags.map((tag) => (
         <span class="tag-pill">#{tag}</span>
@@ -129,10 +155,9 @@ const noPhotoMetaParts: MetaPart[] = [
     </div>
   )}
 
-  <div class="place-card-footer">
-    <a class="action-pill" href={place.maps_url} target="_blank" rel="noreferrer">
-      Open in Google Maps
-    </a>
-    {place.status !== "active" && <span class="stat-pill">{place.status}</span>}
-  </div>
+  {place.status !== "active" && (
+    <div class="place-card-footer">
+      <span class="stat-pill">{place.status}</span>
+    </div>
+  )}
 </article>
