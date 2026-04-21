@@ -30,7 +30,8 @@ const mapPlaces = places
 {
   mapPlaces.length > 0 && (
     <aside class="map-panel" data-map-panel data-collapsed="false" aria-label="Places map">
-      <button class="map-toggle" type="button" data-map-toggle aria-label="Collapse map" title="Collapse map">
+      <button class="map-toggle" type="button" data-map-toggle aria-expanded="true" aria-label="Hide map" title="Hide map">
+        <span class="map-toggle-label visually-hidden">Hide map</span>
         <span class="map-toggle-icon" aria-hidden="true" />
       </button>
 
@@ -186,6 +187,7 @@ const mapPlaces = places
   }
 
   const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
+  const DESKTOP_MAP_MEDIA_QUERY = "(min-width: 980px)";
 
   const LOCATION_PROXIMITY_BUFFER_KM = 25;
   const LOCATION_PROXIMITY_MULTIPLIER = 1.8;
@@ -422,9 +424,14 @@ const mapPlaces = places
     }
 
     if (button) {
+      const buttonLabel = button.querySelector<HTMLElement>(".map-toggle-label");
+      const buttonText = collapsed ? "Show map" : "Hide map";
       button.setAttribute("aria-expanded", collapsed ? "false" : "true");
-      button.setAttribute("aria-label", collapsed ? "Expand map" : "Collapse map");
-      button.title = collapsed ? "Expand map" : "Collapse map";
+      button.setAttribute("aria-label", buttonText);
+      button.title = buttonText;
+      if (buttonLabel) {
+        buttonLabel.textContent = buttonText;
+      }
     }
 
     if (persist) {
@@ -436,19 +443,38 @@ const mapPlaces = places
     }
   };
 
+  const syncPanelOrder = (panel: HTMLElement) => {
+    const layout = panel.closest<HTMLElement>("[data-browse-layout]");
+    const browseMain = layout?.querySelector<HTMLElement>("[data-browse-main]");
+    if (!layout || !browseMain) return;
+
+    if (window.matchMedia(DESKTOP_MAP_MEDIA_QUERY).matches) {
+      if (browseMain.nextElementSibling !== panel) {
+        browseMain.after(panel);
+      }
+      return;
+    }
+
+    if (layout.firstElementChild !== panel) {
+      layout.prepend(panel);
+    }
+  };
+
   const initPanels = () => {
     const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY);
-    const defaultCollapsed =
-      storedCollapsed === null ? window.matchMedia("(max-width: 979px)").matches : storedCollapsed === "true";
+    const desktopMediaQuery = window.matchMedia(DESKTOP_MAP_MEDIA_QUERY);
+    const defaultCollapsed = storedCollapsed === null ? !desktopMediaQuery.matches : storedCollapsed === "true";
 
     document.querySelectorAll<HTMLElement>("[data-map-panel]").forEach((panel) => {
       if (panel.dataset.panelInitialized === "true") return;
       panel.dataset.panelInitialized = "true";
 
+      syncPanelOrder(panel);
       setPanelCollapsed(panel, defaultCollapsed, false);
       panel.querySelector("[data-map-toggle]")?.addEventListener("click", () => {
         setPanelCollapsed(panel, panel.dataset.collapsed !== "true");
       });
+      desktopMediaQuery.addEventListener("change", () => syncPanelOrder(panel));
     });
   };
 

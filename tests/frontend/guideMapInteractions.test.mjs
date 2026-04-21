@@ -23,10 +23,20 @@ describe("guide map interactions", () => {
     const css = readSource("src/styles/global.css");
 
     expect(guidePage).toContain('class="browse-layout" data-browse-layout');
+    expect(guidePage).toContain('class="browse-main" data-browse-main');
+    expect(guidePage.indexOf('<div class="browse-main" data-browse-main>')).toBeLessThan(
+      guidePage.indexOf("<GuideMap places={visiblePlaces} />"),
+    );
+    expect(guideMap).toContain('const DESKTOP_MAP_MEDIA_QUERY = "(min-width: 980px)"');
+    expect(guideMap).toContain('const syncPanelOrder = (panel: HTMLElement) => {');
+    expect(guideMap).toContain('const browseMain = layout?.querySelector<HTMLElement>("[data-browse-main]")');
+    expect(guideMap).toContain("browseMain.after(panel);");
+    expect(guideMap).toContain("layout.prepend(panel);");
     expect(guideMap).toContain('panel.closest<HTMLElement>("[data-browse-layout]")');
     expect(guideMap).toContain("layout.dataset.mapCollapsed");
     expect(css).toContain('.browse-layout[data-map-collapsed="true"]');
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) 2.75rem");
+    expect(cssBlocks(css, ".map-panel").join("\n")).toContain("order: 0;");
     expect(css).toContain('.map-panel[data-collapsed="true"] .map-toggle');
     expect(css).toContain("border-color: transparent");
     expect(css).toContain("background: transparent");
