@@ -437,13 +437,15 @@ const mapPlaces = places
   };
 
   const initPanels = () => {
-    const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY) === "true";
+    const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY);
+    const defaultCollapsed =
+      storedCollapsed === null ? window.matchMedia("(max-width: 979px)").matches : storedCollapsed === "true";
 
     document.querySelectorAll<HTMLElement>("[data-map-panel]").forEach((panel) => {
       if (panel.dataset.panelInitialized === "true") return;
       panel.dataset.panelInitialized = "true";
 
-      setPanelCollapsed(panel, storedCollapsed, false);
+      setPanelCollapsed(panel, defaultCollapsed, false);
       panel.querySelector("[data-map-toggle]")?.addEventListener("click", () => {
         setPanelCollapsed(panel, panel.dataset.collapsed !== "true");
       });

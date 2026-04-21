@@ -18,6 +18,7 @@ export interface SiteConfig {
   };
   guide: {
     fallbackDescription: string;
+    sidebarContent: string[];
   };
 }
 
@@ -38,12 +39,13 @@ export const siteConfig: SiteConfig = {
     intro: "Michael's saved restaurants, cafes, bars, shops, and sights by city.",
     highlightsHeading: "Also on DEM Flyers",
     highlights: [
-      "Posts, trip reports, and travel notes live on the main site.",
-      "Google Maps and Wanderlog lists are linked where available.",
-      "Country sections below mirror the trip suggestions index.",
+      "See [beacons.ai/demflyers](https://beacons.ai/demflyers) for more, or follow on [Instagram](https://www.instagram.com/demflyers/), [Threads](https://www.threads.net/@demflyers), or [BlueSky](https://bsky.app/profile/demflyers.bsky.social) as @demflyers.",
     ],
   },
   guide: {
     fallbackDescription: "Michael's saved places for this city.",
+    sidebarContent: [
+      "See [beacons.ai/demflyers](https://beacons.ai/demflyers) for more, or follow on [Instagram](https://www.instagram.com/demflyers/), [Threads](https://www.threads.net/@demflyers), or [BlueSky](https://bsky.app/profile/demflyers.bsky.social) as @demflyers.",
+    ],
   },
 };

@@ -11,6 +11,7 @@ import {
   getGuideAreaFilters,
   normalizeTagValue,
 } from "../../lib/placeTags";
+import { getGuideAsideHtml } from "../../lib/heroAsideContent";
 import { renderRichText } from "../../lib/renderRichText";
 
 const DEFAULT_SUGGESTION_PRIORITY = [
@@ -173,6 +174,10 @@ const typeSeedTags = Object.fromEntries(
   }),
 );
 const guideDescriptionHtml = renderRichText(guide.description);
+const guideAsideHtml = getGuideAsideHtml(guide.slug);
+const guideSidebarFallback = siteConfig.guide.sidebarContent
+  .map((content) => renderRichText(content))
+  .filter((content): content is string => Boolean(content));
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
@@ -200,14 +205,26 @@ const guideDescriptionHtml = renderRichText(guide.description);
         {permanentlyClosedWarning && <p class="guide-warning small-copy">{permanentlyClosedWarning}</p>}
       </div>
 
-      {displayGuideTags.length > 0 && (
+      {(guideAsideHtml || guideSidebarFallback.length > 0 || displayGuideTags.length > 0) && (
         <div class="section-stack">
-          <p class="eyebrow">List tags</p>
-          <div class="tag-row">
-            {displayGuideTags.map((tag) => (
-              <span class="tag-pill">#{tag}</span>
-            ))}
-          </div>
+          {guideAsideHtml ? (
+            <div class="small-copy rich-copy" set:html={guideAsideHtml} />
+          ) : (
+            guideSidebarFallback.map((content) => (
+              <p class="small-copy rich-copy" set:html={content} />
+            ))
+          )}
+
+          {displayGuideTags.length > 0 && (
+            <>
+              <p class="eyebrow">List tags</p>
+              <div class="tag-row">
+                {displayGuideTags.map((tag) => (
+                  <span class="tag-pill">#{tag}</span>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
