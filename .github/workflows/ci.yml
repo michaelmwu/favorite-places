@@ -1,5 +1,9 @@
 name: CI
 
+# Keep hosted CI validation-only.
+# Do not add Google Maps scraping or enrichment refresh jobs here; those belong in
+# the dedicated self-hosted data-refresh workflow.
+
 on:
   pull_request:
   push:

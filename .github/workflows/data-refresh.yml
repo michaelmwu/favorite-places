@@ -1,0 +1,275 @@
+name: Data Refresh
+
+# This workflow is intentionally self-hosted only.
+# Do not run scraping or enrichment refreshes on GitHub-hosted runners:
+# session state, proxy behavior, and anti-bot handling are materially more reliable
+# on controlled infrastructure than on ephemeral public CI.
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Refresh profile to run
+        required: true
+        default: balanced
+        type: choice
+        options:
+          - balanced
+          - backfill
+          - sweep
+      refresh_list:
+        description: Optional slug, source URL, or source path to refresh
+        required: false
+        type: string
+      refresh_force:
+        description: Force raw source refresh even if the raw refresh window has not expired
+        required: false
+        default: false
+        type: boolean
+      skip_photos:
+        description: Skip refreshing missing local photo derivatives during the rebuild step
+        required: false
+        default: false
+        type: boolean
+      refresh_workers:
+        description: Max parallel workers for refresh, enrichment, and photo jobs
+        required: false
+        default: "4"
+        type: string
+  schedule:
+    - cron: "17 3 * * *"
+    - cron: "43 5 1 * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on:
+      - self-hosted
+      - Linux
+      - ARM64
+      - moo_hetzner
+      - vps
+      - ubuntu
+    timeout-minutes: 180
+    env:
+      REFRESH_BRANCH: automation/data-refresh
+      GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+      GMAPS_SCRAPER_PROXY: ${{ secrets.GMAPS_SCRAPER_PROXY }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Resolve refresh settings
+        id: settings
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            profile="${{ inputs.profile }}"
+            refresh_list="${{ inputs.refresh_list }}"
+            refresh_force="${{ inputs.refresh_force }}"
+            skip_photos="${{ inputs.skip_photos }}"
+            refresh_workers="${{ inputs.refresh_workers }}"
+          else
+            case "${{ github.event.schedule }}" in
+              "43 5 1 * *")
+                profile="sweep"
+                ;;
+              *)
+                profile="balanced"
+                ;;
+            esac
+            refresh_list=""
+            refresh_force="false"
+            skip_photos="false"
+            refresh_workers="4"
+          fi
+
+          echo "profile=${profile}" >> "${GITHUB_OUTPUT}"
+          echo "refresh_list=${refresh_list}" >> "${GITHUB_OUTPUT}"
+          echo "refresh_force=${refresh_force}" >> "${GITHUB_OUTPUT}"
+          echo "skip_photos=${skip_photos}" >> "${GITHUB_OUTPUT}"
+          echo "refresh_workers=${refresh_workers}" >> "${GITHUB_OUTPUT}"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.12
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install frontend dependencies
+        run: bun ci
+
+      - name: Install Python dependencies
+        run: uv sync --frozen
+
+      - name: Prepare refresh branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+          if git ls-remote --exit-code --heads origin "${REFRESH_BRANCH}" >/dev/null 2>&1; then
+            git fetch origin "${REFRESH_BRANCH}:${REFRESH_BRANCH}"
+            git switch "${REFRESH_BRANCH}"
+            git merge --no-edit origin/main
+          elif git show-ref --verify --quiet "refs/heads/${REFRESH_BRANCH}"; then
+            git branch -f "${REFRESH_BRANCH}" origin/main
+            git switch "${REFRESH_BRANCH}"
+          else
+            git switch --create "${REFRESH_BRANCH}" origin/main
+          fi
+
+      - name: Run self-hosted refresh
+        shell: bash
+        env:
+          PROFILE: ${{ steps.settings.outputs.profile }}
+          REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
+          REFRESH_FORCE: ${{ steps.settings.outputs.refresh_force }}
+          SKIP_PHOTOS: ${{ steps.settings.outputs.skip_photos }}
+          REFRESH_WORKERS: ${{ steps.settings.outputs.refresh_workers }}
+        run: |
+          set -euo pipefail
+
+          args=("${PROFILE}" "--refresh-workers" "${REFRESH_WORKERS}")
+
+          if [[ "${REFRESH_FORCE}" == "true" ]]; then
+            args+=("--refresh-force")
+          fi
+
+          if [[ "${SKIP_PHOTOS}" == "true" ]]; then
+            args+=("--skip-photos")
+          fi
+
+          if [[ -n "${REFRESH_LIST}" ]]; then
+            args+=("--refresh-list" "${REFRESH_LIST}")
+          fi
+
+          uv run python3 scripts/refresh_profiles.py "${args[@]}"
+
+      - name: Create commit if data changed
+        id: commit
+        shell: bash
+        env:
+          PROFILE: ${{ steps.settings.outputs.profile }}
+        run: |
+          set -euo pipefail
+
+          git add -A -- data/raw data/cache/places.sqlite public/place-photos
+
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh place data (${PROFILE})"
+          git push origin "${REFRESH_BRANCH}"
+
+          echo "changed=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Create or update pull request
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          PROFILE: ${{ steps.settings.outputs.profile }}
+          REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
+          REFRESH_FORCE: ${{ steps.settings.outputs.refresh_force }}
+          SKIP_PHOTOS: ${{ steps.settings.outputs.skip_photos }}
+          REFRESH_WORKERS: ${{ steps.settings.outputs.refresh_workers }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:${process.env.REFRESH_BRANCH}`;
+            const title = `Refresh place data (${process.env.PROFILE})`;
+            const manualRun = context.eventName === "workflow_dispatch";
+            const bodyLines = [
+              "Automated self-hosted data refresh.",
+              "",
+              `- Profile: \`${process.env.PROFILE}\``,
+              `- Trigger: \`${context.eventName}\``,
+              `- Refresh workers: \`${process.env.REFRESH_WORKERS}\``,
+            ];
+
+            if (process.env.REFRESH_LIST) {
+              bodyLines.push(`- Refresh list: \`${process.env.REFRESH_LIST}\``);
+            }
+            if (process.env.REFRESH_FORCE === "true") {
+              bodyLines.push("- Raw source refresh forced");
+            }
+            if (process.env.SKIP_PHOTOS === "true") {
+              bodyLines.push("- Photo refresh skipped");
+            }
+            if (manualRun) {
+              bodyLines.push(`- Manual run: https://github.com/${owner}/${repo}/actions/runs/${context.runId}`);
+            }
+
+            const body = bodyLines.join("\n");
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: "open",
+              head,
+              base: "main",
+            });
+
+            if (pulls.length > 0) {
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pulls[0].number,
+                title,
+                body,
+              });
+              core.info(`Updated PR #${pulls[0].number}`);
+              return;
+            }
+
+            const { data: pull } = await github.rest.pulls.create({
+              owner,
+              repo,
+              title,
+              head: process.env.REFRESH_BRANCH,
+              base: "main",
+              body,
+            });
+            core.info(`Created PR #${pull.number}`);
+
+      - name: Summarize result
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ steps.commit.outputs.changed }}" == "true" ]]; then
+            echo "Opened or updated a PR from ${REFRESH_BRANCH}."
+          else
+            echo "No tracked data changes detected."
+          fi

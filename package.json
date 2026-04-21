@@ -30,6 +30,9 @@
     "refresh:all:force": "uv run python3 scripts/build_data.py --refresh --refresh-force --refresh-enrichment",
     "refresh:all:with-photos": "uv run python3 scripts/build_data.py --refresh --refresh-enrichment --refresh-photos",
     "refresh:all:force:with-photos": "uv run python3 scripts/build_data.py --refresh --refresh-force --refresh-enrichment --refresh-photos",
+    "refresh:balanced": "uv run python3 scripts/refresh_profiles.py balanced",
+    "refresh:backfill": "uv run python3 scripts/refresh_profiles.py backfill",
+    "refresh:sweep": "uv run python3 scripts/refresh_profiles.py sweep",
     "export:cache:json": "uv run python3 scripts/build_data.py --export-cache-json"
   },
   "dependencies": {

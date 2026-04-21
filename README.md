@@ -64,8 +64,8 @@ bun run sync:sources
 ```
 
 This is the first step in the normal data workflow. It refreshes every configured raw source and rebuilds generated site data.
-Public Google Maps URLs are always re-scraped. Local Google export CSV files are re-imported only when their
-contents or config change.
+Public Google Maps URLs are re-scraped only when their `refresh_after` window expires or the source config changes.
+Local Google export CSV files are re-imported only when their contents or config change.
 Headless refreshes run up to 4 scraper workers in parallel by default. Use
 `uv run python3 scripts/build_data.py --refresh --refresh-workers 1` to force
 serial execution, or `--headed` to keep browser windows single-worker.
@@ -103,6 +103,46 @@ This is also a good fit for automation later:
 - then either `bun run fill:gaps` for a light recurring pass or `bun run refresh:enrichment` for a full refresh
 - then `bun run build:data`
 - then open a PR with the updated raw data / cache snapshot if anything changed
+
+For a recurring refresh job, use the profile wrapper instead of hand-assembling the steps:
+
+```bash
+bun run refresh:balanced
+```
+
+Profiles:
+
+- `bun run refresh:balanced` runs the balanced incremental pass. It refreshes only due raw sources, then runs normal enrichment. Missing places and raw-place changes go first; stale cache entries are refreshed afterward according to their own TTLs.
+- `bun run refresh:backfill` refreshes due raw sources, then fills only missing enrichment and missing photos.
+- `bun run refresh:sweep` refreshes due raw sources, then force-refreshes every enrichment entry as a periodic backstop.
+
+Recommended schedule for self-hosted infra:
+
+- Run `bun run refresh:balanced` once per day. This is the default balance: raw snapshots already use a 14-day TTL with stable jitter, and enrichment already prioritizes missing or changed places before TTL-based stale refreshes.
+- Run `bun run refresh:sweep -- --refresh-workers 1` about once per month as a slower consistency sweep. That catches long-lived stale fields without paying the cost of force-refreshing every place on every daily job.
+- Use `bun run refresh:backfill` or `bun run sync:source -- <slug>` for ad hoc follow-up after adding a new source or when you want a very cheap catch-up pass.
+
+Example cron entries:
+
+```cron
+17 3 * * * cd /srv/favorite-places && bun run refresh:balanced
+43 5 1 * * cd /srv/favorite-places && bun run refresh:sweep -- --refresh-workers 1
+```
+
+GitHub Actions `schedule` uses UTC, so the workflow mirrors those times in UTC rather than the runner's local timezone.
+
+If you prefer GitHub Actions as the control plane, the repo now includes `.github/workflows/data-refresh.yml`.
+It is pinned to the self-hosted runner labels `self-hosted`, `Linux`, `ARM64`, `moo_hetzner`, `vps`, and `ubuntu`,
+runs the refresh job only on that runner class, passes through optional `GOOGLE_PLACES_API_KEY` and
+`GMAPS_SCRAPER_PROXY` repo secrets, and opens or updates a PR from `automation/data-refresh`.
+
+Recommended boundary:
+
+- Do not run Google Maps list scraping or enrichment refreshes on GitHub-hosted runners.
+- Keep `.github/workflows/ci.yml` validation-only: tests, `bun run build:data` against committed artifacts, and `bun run build`.
+- Keep `.github/workflows/data-refresh.yml` self-hosted only. Do not broaden its `runs-on` labels to `ubuntu-latest` or add `push` / `pull_request` triggers.
+- Treat scraper session state, proxy routing, and anti-bot handling as infrastructure concerns that belong on the self-hosted runner, not on ephemeral public CI.
+- If the self-hosted runner is unavailable, skip the refresh run rather than falling back to GitHub-hosted infrastructure.
 
 Force-refresh raw source imports even if a CSV input is unchanged:
 
