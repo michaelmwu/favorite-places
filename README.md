@@ -63,12 +63,46 @@ Populate local raw data from public Google Maps lists:
 bun run sync:sources
 ```
 
-This refreshes every configured source and then rebuilds generated site data.
+This is the first step in the normal data workflow. It refreshes every configured raw source and rebuilds generated site data.
 Public Google Maps URLs are always re-scraped. Local Google export CSV files are re-imported only when their
 contents or config change.
 Headless refreshes run up to 4 scraper workers in parallel by default. Use
 `uv run python3 scripts/build_data.py --refresh --refresh-workers 1` to force
 serial execution, or `--headed` to keep browser windows single-worker.
+
+Recommended operator flow:
+
+1. Sync raw sources:
+
+```bash
+bun run sync:sources
+```
+
+2. Choose one enrichment mode:
+
+```bash
+GOOGLE_PLACES_API_KEY=... bun run fill:gaps
+```
+
+Use `fill:gaps` for the smallest incremental pass. It only fills totally missing enrichment and downloads any newly available missing photos.
+
+```bash
+GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
+```
+
+Use `refresh:enrichment` when you want to sweep and refresh the entire place cache, not just missing entries.
+
+3. Build the site inputs:
+
+```bash
+bun run build:data
+```
+
+This is also a good fit for automation later:
+- `bun run sync:sources`
+- then either `bun run fill:gaps` for a light recurring pass or `bun run refresh:enrichment` for a full refresh
+- then `bun run build:data`
+- then open a PR with the updated raw data / cache snapshot if anything changed
 
 Force-refresh raw source imports even if a CSV input is unchanged:
 
@@ -99,13 +133,31 @@ Fill missing or stale place enrichment cache entries, then rebuild:
 GOOGLE_PLACES_API_KEY=... bun run enrich:data
 ```
 
-The same key can live in `.env` as `GOOGLE_PLACES_API_KEY=...`.
+This is the default incremental mode. It still refreshes stale entries, but it prioritizes totally missing places first.
+
+Fill only missing enrichment entries:
+
+```bash
+GOOGLE_PLACES_API_KEY=... bun run fill:enrichment
+```
+
+This skips expiry-based refreshes and only backfills places with no cache entry at all.
+
+Fill only missing enrichment entries, then download any newly available missing photos:
+
+```bash
+GOOGLE_PLACES_API_KEY=... bun run fill:gaps
+```
+
+Use this for the smallest incremental pass when you want to backfill gaps without touching expired cache entries.
 
 Force-refresh all place enrichment cache entries:
 
 ```bash
 GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
 ```
+
+The same key can live in `.env` as `GOOGLE_PLACES_API_KEY=...`.
 
 Optional debug export of per-guide cache JSON from SQLite:
 
@@ -269,6 +321,18 @@ bun run enrich:data
 ```
 
 This updates the SQLite cache at `data/cache/places.sqlite`.
+
+Use:
+- `bun run fill:enrichment` to backfill only missing place enrichment
+- `bun run fill:gaps` to backfill only missing enrichment plus missing photos
+- `bun run enrich:data` for the normal incremental path; missing places go first, then stale entries
+- `bun run refresh:enrichment` to sweep and refetch everything
+
+For a simple operator workflow, use:
+1. `bun run sync:sources`
+2. either `bun run fill:gaps` or `bun run refresh:enrichment`
+3. `bun run build:data`
+
 If you want per-guide JSON debug dumps, run `bun run export:cache:json`.
 
 6. Build generated site data:

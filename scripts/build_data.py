@@ -1208,7 +1208,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--enrich",
         action="store_true",
-        help="Fill missing or stale place enrichment cache entries from Google Maps place pages, with Places API fallback when configured.",
+        help="Fill missing or stale place enrichment cache entries from Google Maps place pages, prioritizing totally missing places first.",
+    )
+    parser.add_argument(
+        "--enrich-missing",
+        action="store_true",
+        help="Fill only missing place enrichment cache entries, skipping expiry-based refreshes.",
     )
     parser.add_argument(
         "--refresh-enrichment",
@@ -1218,7 +1223,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--refresh-photos",
         action="store_true",
-        help="Download or refresh local optimized place photos from cached enrichment photo URLs.",
+        help="Download missing local optimized place photos from cached enrichment photo URLs.",
     )
     parser.add_argument(
         "--migrate-cache",
@@ -2363,6 +2368,7 @@ def percentile(sorted_values: list[float], fraction: float) -> float:
 def enrich_raw_sources(
     *,
     force_refresh: bool,
+    missing_only: bool = False,
     refresh_workers: int = DEFAULT_REFRESH_WORKERS,
     refresh_startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
 ) -> None:
@@ -2386,8 +2392,13 @@ def enrich_raw_sources(
             )
             if migrated:
                 dirty_cache_slugs.add(raw_path.stem)
-            refresh_reason = None if force_refresh else cache_refresh_reason(place, cache_entry)
-            if not force_refresh and refresh_reason is None:
+            refresh_reason = enrichment_refresh_reason(
+                place,
+                cache_entry,
+                force_refresh=force_refresh,
+                missing_only=missing_only,
+            )
+            if refresh_reason is None:
                 continue
 
             enrich_jobs.append(
@@ -2395,7 +2406,7 @@ def enrich_raw_sources(
                     raw_path.stem,
                     place_id,
                     place.name,
-                    refresh_reason or "forced",
+                    refresh_reason,
                     place.model_dump(mode="json"),
                 )
             )
@@ -2405,6 +2416,8 @@ def enrich_raw_sources(
 
     if not enrich_jobs:
         return
+
+    enrich_jobs.sort(key=enrichment_job_priority)
 
     effective_startup_jitter_seconds = (
         refresh_startup_jitter_seconds if len(enrich_jobs) > 1 else 0
@@ -3421,6 +3434,43 @@ def cache_refresh_reason(place: RawPlace, cache_entry: EnrichmentCacheEntry | No
     if cache_entry.input_signature is None:
         return "missing-input-signature"
     return None
+
+
+ENRICHMENT_REFRESH_REASON_PRIORITY = {
+    "missing-cache-entry": 0,
+    "raw-place-changed": 1,
+    "invalid-refresh-after": 2,
+    "invalid-fetched-at": 2,
+    "missing-input-signature": 2,
+    "legacy-cache-entry": 3,
+    "refresh-window-expired": 4,
+    "forced": 5,
+}
+
+
+def enrichment_refresh_reason(
+    place: RawPlace,
+    cache_entry: EnrichmentCacheEntry | None,
+    *,
+    force_refresh: bool,
+    missing_only: bool,
+) -> str | None:
+    if force_refresh:
+        return "forced"
+
+    refresh_reason = cache_refresh_reason(place, cache_entry)
+    if missing_only and refresh_reason != "missing-cache-entry":
+        return None
+    return refresh_reason
+
+
+def enrichment_job_priority(job: tuple[str, str, str, str, dict[str, Any]]) -> tuple[int, str, str]:
+    slug, place_id, _place_name, refresh_reason, _place_payload = job
+    return (
+        ENRICHMENT_REFRESH_REASON_PRIORITY.get(refresh_reason, 99),
+        slug,
+        place_id,
+    )
 
 
 def legacy_place_input_signature(place: RawPlace) -> str:
@@ -5306,10 +5356,11 @@ def main() -> int:
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )
 
-    if args.enrich or args.refresh_enrichment:
+    if args.enrich or args.enrich_missing or args.refresh_enrichment:
         sync_local_csv_sources()
         enrich_raw_sources(
             force_refresh=args.refresh_enrichment,
+            missing_only=args.enrich_missing,
             refresh_workers=args.refresh_workers,
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )

@@ -86,6 +86,7 @@ Fill or refresh Google Places enrichment cache:
 
 ```bash
 GOOGLE_PLACES_API_KEY=... bun run enrich:data
+GOOGLE_PLACES_API_KEY=... bun run fill:gaps
 GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
 ```
 

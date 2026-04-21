@@ -2572,6 +2572,133 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(startup_sleep.call_count, 2)
         retry_sleep.assert_called_once_with(10)
 
+    def test_enrich_raw_sources_missing_only_skips_expired_entries(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="Expired Place", maps_url="https://maps.google.com/?cid=111", cid="111"),
+                RawPlace(name="Missing Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            seen_reasons: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, _place_name, refresh_reason, _place_payload, **_kwargs):
+                seen_reasons.append(refresh_reason)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query="Missing Place, Tokyo",
+                    matched=True,
+                    place=EnrichmentPlace(display_name="Missing Place"),
+                )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "build_cache_migration_index", return_value={}),
+                patch.object(
+                    build_data,
+                    "migrate_cache_entry_for_place",
+                    side_effect=lambda cache_payload, _index, *, place, place_id: (cache_payload.get(place_id), False),
+                ),
+                patch.object(
+                    build_data,
+                    "cache_refresh_reason",
+                    side_effect=lambda place, _cache_entry: {
+                        "Expired Place": "refresh-window-expired",
+                        "Missing Place": "missing-cache-entry",
+                    }[place.name],
+                ),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=False,
+                    missing_only=True,
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            self.assertEqual(seen_reasons, ["missing-cache-entry"])
+
+    def test_enrich_raw_sources_prioritizes_missing_entries_before_expired_refreshes(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="Expired Place", maps_url="https://maps.google.com/?cid=111", cid="111"),
+                RawPlace(name="Missing Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            seen_reasons: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, _place_name, refresh_reason, _place_payload, **_kwargs):
+                seen_reasons.append(refresh_reason)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query="Tokyo",
+                    matched=True,
+                    place=EnrichmentPlace(display_name="Tokyo"),
+                )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "build_cache_migration_index", return_value={}),
+                patch.object(
+                    build_data,
+                    "migrate_cache_entry_for_place",
+                    side_effect=lambda cache_payload, _index, *, place, place_id: (cache_payload.get(place_id), False),
+                ),
+                patch.object(
+                    build_data,
+                    "cache_refresh_reason",
+                    side_effect=lambda place, _cache_entry: {
+                        "Expired Place": "refresh-window-expired",
+                        "Missing Place": "missing-cache-entry",
+                    }[place.name],
+                ),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=False,
+                    missing_only=False,
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            self.assertEqual(
+                seen_reasons,
+                ["missing-cache-entry", "refresh-window-expired"],
+            )
+
     def test_enrich_raw_sources_parallel_writes_cache_incrementally(self) -> None:
         raw = RawSavedList(
             title="Tokyo",
