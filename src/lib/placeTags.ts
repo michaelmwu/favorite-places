@@ -10,12 +10,14 @@ const STREET_AREA_PATTERN =
   /^(p\.|d\.|ng\.|c\/|c\.|carrer\b|rda\.|calle\b|av\b|av\.|jl\.|jalan\b|ngo\b|duong\b)/;
 const DEFAULT_AREA_FILTER_LIMIT = 12;
 const GUIDE_LOCATION_PART_SPLIT_PATTERN = /\s*(?:&|\/|\+|\band\b)\s*/i;
-const COUNTRY_TAG_ALIASES: Record<string, string[]> = {
+const LOCATION_TAG_ALIASES: Record<string, string[]> = {
   korea: ["kr", "south-korea"],
   "south-korea": ["kr", "korea"],
   "united-arab-emirates": ["ae", "uae"],
   "united-kingdom": ["gb", "uk"],
   "united-states": ["us", "usa"],
+  geneve: ["geneva"],
+  geneva: ["geneve"],
 };
 
 interface AreaFilterPlace {
@@ -73,7 +75,7 @@ function getGuideLocationTagsToHide({
     const normalized = value ? getTagComparisonValue(value) : "";
     if (normalized) {
       hiddenTags.add(normalized);
-      (COUNTRY_TAG_ALIASES[normalized] ?? []).forEach((alias) => hiddenTags.add(alias));
+      (LOCATION_TAG_ALIASES[normalized] ?? []).forEach((alias) => hiddenTags.add(alias));
     }
   };
 

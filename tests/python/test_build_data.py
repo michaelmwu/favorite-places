@@ -784,6 +784,144 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertFalse(build_data.should_fallback_to_places_api(entry))
 
+    def test_extract_hashtags_normalizes_accented_and_malformed_location_tags(self) -> None:
+        tags = build_data.extract_hashtags("Great spots #genève #gen-ve #park")
+        self.assertEqual(tags, ["geneve", "park"])
+
+    def test_stable_place_id_fallback_uses_plain_slugify_output(self) -> None:
+        place = RawPlace(
+            name="Gen-ve Cafe",
+            address="1 Example St, Geneva, Switzerland",
+            maps_url="https://maps.google.com/?q=Gen-ve+Cafe",
+            lat=46.2044,
+            lng=6.1432,
+        )
+
+        self.assertEqual(
+            build_data.stable_place_id(place),
+            "slug:gen-ve-cafe-46-2044-6-1432",
+        )
+
+    def test_stable_place_id_fallback_does_not_fold_accents(self) -> None:
+        place = RawPlace(
+            name="Genève Cafe",
+            address="1 Example St, Geneva, Switzerland",
+            maps_url="https://maps.google.com/?q=Gen%C3%A8ve+Cafe",
+            lat=46.2044,
+            lng=6.1432,
+        )
+
+        self.assertEqual(
+            build_data.stable_place_id(place),
+            "slug:gen-ve-cafe-46-2044-6-1432",
+        )
+
+    def test_normalize_guide_expands_location_aliases_in_list_tags(self) -> None:
+        raw = RawSavedList(
+            title="Genève, Switzerland",
+            description="Walkable guide #genève #park",
+            places=[
+                RawPlace(
+                    name="Parc de La Perle du Lac",
+                    address="Rue de Lausanne 120B, 1202 Genève, Switzerland",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            (list_overrides_dir / "geneve-switzerland.json").write_text(
+                json.dumps(
+                    {
+                        "city_name": "Genève",
+                        "country_name": "Switzerland",
+                        "country_code": "CH",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide("geneve-switzerland", raw, enrichment_cache={})
+
+        self.assertEqual(guide.list_tags, ["geneva", "geneve", "park"])
+
+    def test_normalize_guide_normalizes_accented_override_list_tags(self) -> None:
+        raw = RawSavedList(
+            title="Genève, Switzerland",
+            places=[
+                RawPlace(
+                    name="Parc de La Perle du Lac",
+                    address="Rue de Lausanne 120B, 1202 Genève, Switzerland",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            (list_overrides_dir / "geneve-switzerland.json").write_text(
+                json.dumps({"list_tags": ["Genève", "Park"]}),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide("geneve-switzerland", raw, enrichment_cache={})
+
+        self.assertEqual(guide.list_tags, ["geneva", "geneve", "park"])
+
+    def test_normalize_guide_skips_placeholder_override_list_tags(self) -> None:
+        raw = RawSavedList(
+            title="Genève, Switzerland",
+            places=[
+                RawPlace(
+                    name="Parc de La Perle du Lac",
+                    address="Rue de Lausanne 120B, 1202 Genève, Switzerland",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            (list_overrides_dir / "geneve-switzerland.json").write_text(
+                json.dumps({"list_tags": ["🌯", "東京", "Park"]}),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide("geneve-switzerland", raw, enrichment_cache={})
+
+        self.assertEqual(guide.list_tags, ["park"])
+
     def test_normalize_guide_applies_overrides_and_hides_places_from_counts(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",

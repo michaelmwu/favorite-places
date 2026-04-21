@@ -124,6 +124,17 @@ describe("getDisplayGuideTags", () => {
     ).toEqual(["pizza"]);
   });
 
+
+  it("hides translated city aliases for display while keeping them searchable", () => {
+    expect(
+      getDisplayGuideTags(["geneve", "geneva", "park"], {
+        cityName: "Genève",
+        countryCode: "CH",
+        countryName: "Switzerland",
+      }),
+    ).toEqual(["park"]);
+  });
+
   it("drops single-location country tags such as tonga", () => {
     expect(
       getDisplayGuideTags(["tonga"], {
@@ -149,6 +160,7 @@ describe("normalizeTagValue", () => {
   it("slugifies human-readable vibe overrides for guide filter matching", () => {
     expect(normalizeTagValue("Date Night")).toBe("date-night");
     expect(normalizeTagValue("Laptop Friendly")).toBe("laptop-friendly");
+    expect(normalizeTagValue("Genève")).toBe("geneve");
   });
 });
 

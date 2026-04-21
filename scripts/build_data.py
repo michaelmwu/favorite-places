@@ -12,6 +12,7 @@ import re
 import shutil
 import sqlite3
 import time
+import unicodedata
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
@@ -113,6 +114,13 @@ COUNTRY_LOCALITY_ALIASES = (
     "Ivory Coast",
 )
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
+LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
+    "geneve": ("geneva",),
+    "geneva": ("geneve",),
+}
+BROKEN_TAG_NORMALIZATION_MAP: dict[str, str] = {
+    "gen-ve": "geneve",
+}
 
 
 def default_refresh_workers() -> int:
@@ -1680,6 +1688,13 @@ def extract_maps_place_token(maps_url: str | None) -> str | None:
     return match.group(1).lower()
 
 
+def expand_location_tag_aliases(tags: set[str]) -> set[str]:
+    expanded = set(tags)
+    for tag in list(tags):
+        expanded.update(LOCATION_TAG_ALIASES.get(tag, ()))
+    return expanded
+
+
 def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str, EnrichmentCacheEntry]) -> Guide:
     list_override = read_json(LIST_OVERRIDES_DIR / f"{slug}.json")
     place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
@@ -1692,8 +1707,12 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
     country_code = as_string(list_override.get("country_code")) or infer_country_code(country_name)
 
     description_tags = extract_hashtags(description)
-    override_tags = coerce_string_list(list_override.get("list_tags"))
-    list_tags = sorted({*description_tags, *override_tags})
+    override_tags = [
+        normalized
+        for tag in coerce_string_list(list_override.get("list_tags"))
+        if (normalized := normalize_list_tag(tag)) != "item"
+    ]
+    list_tags = sorted(expand_location_tag_aliases({*description_tags, *override_tags}))
 
     normalized_places: list[NormalizedPlace] = []
     category_counter: Counter[str] = Counter()
@@ -3178,7 +3197,18 @@ def split_title_parts(title: str) -> list[str]:
 def extract_hashtags(text: str | None) -> list[str]:
     if text is None:
         return []
-    return sorted({match.group(1).lower() for match in re.finditer(r"#([a-zA-Z0-9-]+)", text)})
+    normalized_tags = {
+        normalize_list_tag(match.group(1))
+        for match in re.finditer(r"#([^\s#]+)", text)
+    }
+    return sorted(tag for tag in normalized_tags if tag and tag != "item")
+
+
+def normalize_list_tag(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value)
+    ascii_value = "".join(char for char in normalized if not unicodedata.combining(char))
+    slug = slugify(ascii_value)
+    return BROKEN_TAG_NORMALIZATION_MAP.get(slug, slug)
 
 
 def slugify(value: str) -> str:
