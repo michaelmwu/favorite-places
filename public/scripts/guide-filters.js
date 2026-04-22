@@ -377,6 +377,21 @@ if (root) {
 
   const countFilteredCards = (filters) => cards.filter((card) => cardMatchesFilters(card, filters)).length;
 
+  const compareHighlightedPlace = (left, right) => {
+    if (!highlightedPlaceId) {
+      return 0;
+    }
+
+    const leftIsHighlighted = left.dataset.placeId === highlightedPlaceId;
+    const rightIsHighlighted = right.dataset.placeId === highlightedPlaceId;
+
+    if (leftIsHighlighted === rightIsHighlighted) {
+      return 0;
+    }
+
+    return leftIsHighlighted ? -1 : 1;
+  };
+
   const clearMapFrameFilter = () => {
     mapFramePlaceIds = null;
     update("map-reset");
@@ -472,7 +487,7 @@ if (root) {
         || sorters.curated(left, right)
       : sorters[sort] || sorters.curated;
 
-    visibleCards.sort(sorter).forEach((card) => {
+    visibleCards.sort((left, right) => compareHighlightedPlace(left, right) || sorter(left, right)).forEach((card) => {
       list?.appendChild(card);
     });
 
