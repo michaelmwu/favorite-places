@@ -72,6 +72,170 @@ PHOTO_DOWNLOAD_TIMEOUT_SECONDS = 20
 PHOTO_CARD_WIDTH = 800
 PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
+# Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
+PLACES_SQLITE_SIGNATURE_VERSION = 2
+PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
+STABLE_GENERATED_AT_FALLBACK = "1970-01-01T00:00:00+00:00"
+SQLITE_UNREADABLE_ERROR_MARKERS = (
+    "database disk image is malformed",
+    "file is not a database",
+    "malformed",
+    "not a database",
+)
+PLACES_SQLITE_SCHEMA_SQL = """
+CREATE TABLE build_metadata (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+CREATE TABLE guides (
+    slug TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    source_url TEXT,
+    list_id TEXT,
+    country_name TEXT NOT NULL,
+    country_code TEXT,
+    city_name TEXT NOT NULL,
+    list_tags_json TEXT NOT NULL,
+    featured_place_ids_json TEXT NOT NULL,
+    best_hit_place_ids_json TEXT NOT NULL,
+    best_hit_min_rating REAL,
+    best_hit_min_reviews INTEGER,
+    top_categories_json TEXT NOT NULL,
+    generated_at TEXT NOT NULL,
+    place_count INTEGER NOT NULL,
+    center_lat REAL,
+    center_lng REAL
+);
+
+CREATE TABLE canonical_places (
+    place_id TEXT PRIMARY KEY,
+    first_seen_guide_slug TEXT NOT NULL,
+    raw_name TEXT,
+    raw_address TEXT,
+    raw_lat REAL,
+    raw_lng REAL,
+    raw_maps_url TEXT,
+    raw_cid TEXT,
+    raw_google_id TEXT,
+    raw_maps_place_token TEXT,
+    normalized_name TEXT NOT NULL,
+    normalized_address TEXT,
+    normalized_lat REAL,
+    normalized_lng REAL,
+    normalized_maps_url TEXT,
+    normalized_cid TEXT,
+    normalized_google_id TEXT,
+    normalized_google_place_id TEXT,
+    normalized_google_place_resource_name TEXT,
+    normalized_rating REAL,
+    normalized_user_rating_count INTEGER,
+    normalized_primary_category TEXT,
+    normalized_tags_json TEXT NOT NULL,
+    normalized_vibe_tags_json TEXT NOT NULL,
+    normalized_neighborhood TEXT,
+    normalized_note TEXT,
+    normalized_why_recommended TEXT,
+    normalized_main_photo_path TEXT,
+    normalized_top_pick INTEGER NOT NULL,
+    normalized_hidden INTEGER NOT NULL,
+    normalized_manual_rank INTEGER NOT NULL,
+    normalized_status TEXT NOT NULL,
+    cache_fetched_at TEXT,
+    cache_last_verified_at TEXT,
+    cache_refresh_after TEXT,
+    cache_source TEXT,
+    cache_query TEXT,
+    cache_input_signature TEXT,
+    cache_matched INTEGER,
+    cache_score INTEGER,
+    cache_error TEXT,
+    cache_error_body TEXT,
+    enrichment_google_place_id TEXT,
+    enrichment_google_place_resource_name TEXT,
+    enrichment_display_name TEXT,
+    enrichment_formatted_address TEXT,
+    enrichment_google_maps_uri TEXT,
+    enrichment_rating REAL,
+    enrichment_user_rating_count INTEGER,
+    enrichment_primary_type TEXT,
+    enrichment_primary_type_display_name TEXT,
+    enrichment_types_json TEXT NOT NULL,
+    enrichment_business_status TEXT,
+    enrichment_website TEXT,
+    enrichment_phone TEXT,
+    enrichment_plus_code TEXT,
+    enrichment_description TEXT,
+    enrichment_main_photo_url TEXT,
+    enrichment_photo_url TEXT,
+    enrichment_limited_view INTEGER
+);
+
+CREATE TABLE guide_enrichment_cache (
+    guide_slug TEXT NOT NULL,
+    place_id TEXT NOT NULL,
+    fetched_at TEXT NOT NULL,
+    last_verified_at TEXT,
+    refresh_after TEXT,
+    source TEXT,
+    query TEXT NOT NULL,
+    input_signature TEXT,
+    matched INTEGER,
+    score INTEGER,
+    error TEXT,
+    error_body TEXT,
+    cache_json TEXT NOT NULL,
+    PRIMARY KEY (guide_slug, place_id)
+);
+
+CREATE TABLE guide_places (
+    guide_slug TEXT NOT NULL,
+    sort_order INTEGER NOT NULL,
+    place_id TEXT NOT NULL,
+    is_featured INTEGER NOT NULL,
+    is_best_hit INTEGER NOT NULL,
+    place_name TEXT NOT NULL,
+    neighborhood TEXT,
+    primary_category TEXT,
+    rating REAL,
+    user_rating_count INTEGER,
+    status TEXT NOT NULL,
+    top_pick INTEGER NOT NULL,
+    hidden INTEGER NOT NULL,
+    manual_rank INTEGER NOT NULL,
+    note TEXT,
+    why_recommended TEXT,
+    main_photo_path TEXT,
+    maps_url TEXT NOT NULL,
+    PRIMARY KEY (guide_slug, sort_order),
+    FOREIGN KEY (guide_slug) REFERENCES guides(slug) ON DELETE CASCADE,
+    FOREIGN KEY (place_id) REFERENCES canonical_places(place_id) ON DELETE CASCADE
+);
+
+CREATE TABLE place_photos (
+    guide_slug TEXT NOT NULL,
+    sort_order INTEGER NOT NULL,
+    place_id TEXT NOT NULL,
+    source_photo_url TEXT,
+    local_path TEXT,
+    fetch_status TEXT NOT NULL,
+    last_fetched_at TEXT,
+    content_sha256 TEXT,
+    size_bytes INTEGER,
+    PRIMARY KEY (guide_slug, sort_order),
+    FOREIGN KEY (guide_slug, sort_order) REFERENCES guide_places(guide_slug, sort_order) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_canonical_places_google_place_id
+    ON canonical_places(enrichment_google_place_id);
+CREATE INDEX idx_guide_enrichment_cache_place_id
+    ON guide_enrichment_cache(place_id);
+CREATE INDEX idx_guide_places_place_id
+    ON guide_places(place_id);
+CREATE INDEX idx_place_photos_local_path
+    ON place_photos(local_path);
+"""
 SCRAPER_BLOCK_ERROR_MARKERS = (
     "429",
     "403",
@@ -97,6 +261,17 @@ class PendingPhotoJob:
     place_id: str
     place_name: str
     photo_url: str
+
+
+@dataclass(frozen=True)
+class PlacesSqliteRows:
+    guide_rows: list[tuple[Any, ...]]
+    canonical_place_rows: list[tuple[Any, ...]]
+    guide_cache_rows: list[tuple[Any, ...]]
+    guide_place_rows: list[tuple[Any, ...]]
+    photo_rows: list[tuple[Any, ...]]
+
+
 SCRAPER_SESSION_RESET_ERROR_MARKERS = SCRAPER_BLOCK_ERROR_MARKERS + (
     "failed to load http cookie jar",
 )
@@ -1512,6 +1687,49 @@ def refresh_google_export_csv(
     return payload
 
 
+def metadata_datetime_or_none(value: str | None) -> datetime | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    try:
+        return parse_metadata_datetime(normalized)
+    except ValueError:
+        return None
+
+
+def stable_generated_at(
+    raw: RawSavedList,
+    enrichment_cache: dict[str, EnrichmentCacheEntry],
+    *,
+    photo_paths: list[str | None] | None = None,
+) -> str:
+    candidates: list[datetime] = []
+
+    raw_fetched_at = metadata_datetime_or_none(raw.fetched_at)
+    if raw_fetched_at is not None:
+        candidates.append(raw_fetched_at)
+
+    for entry in enrichment_cache.values():
+        verified_at = metadata_datetime_or_none(entry.last_verified_at)
+        if verified_at is not None:
+            candidates.append(verified_at)
+            continue
+
+        fetched_at = metadata_datetime_or_none(entry.fetched_at)
+        if fetched_at is not None:
+            candidates.append(fetched_at)
+
+    for public_path in photo_paths or []:
+        absolute_path = public_asset_absolute_path(public_path)
+        if absolute_path is None or not absolute_path.exists():
+            continue
+        candidates.append(datetime.fromtimestamp(absolute_path.stat().st_mtime, tz=UTC))
+
+    if not candidates:
+        return STABLE_GENERATED_AT_FALLBACK
+    return max(candidates).isoformat()
+
+
 def rebuild_generated_data(
     *,
     refresh_photos: bool = False,
@@ -1541,6 +1759,12 @@ def rebuild_generated_data(
         photo_workers=photo_workers,
         startup_jitter_seconds=startup_jitter_seconds,
     )
+    for guide in guides:
+        guide.generated_at = stable_generated_at(
+            raw_lists[guide.slug],
+            enrichment_caches.get(guide.slug, {}),
+            photo_paths=[place.main_photo_path for place in guide.places],
+        )
     rebuild_places_sqlite(
         raw_lists=raw_lists,
         guides=guides,
@@ -1846,7 +2070,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
     )
 
     top_categories = [name for name, _count in category_counter.most_common(4)]
-    generated_at = datetime.now(UTC).isoformat()
+    generated_at = stable_generated_at(raw, enrichment_cache)
     guide_center = guide_location_center(display_places)
     warn_far_map_pins(slug, display_places, guide_center)
 
@@ -2802,7 +3026,10 @@ def vibe_keyword_matches(lookup_text: str, keyword: str) -> bool:
 
 
 def build_search_index(guides: list[Guide]) -> dict[str, Any]:
-    generated_at = datetime.now(UTC).isoformat()
+    generated_at = max(
+        (guide.generated_at for guide in guides if as_string(guide.generated_at) is not None),
+        default=STABLE_GENERATED_AT_FALLBACK,
+    )
     return {
         "version": 1,
         "generated_at": generated_at,
@@ -3221,7 +3448,10 @@ def write_json(path: Path, payload: Any, *, compact: bool = False) -> None:
         text = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     else:
         text = json.dumps(payload, indent=2, ensure_ascii=False)
-    tmp_path.write_text(f"{text}\n", encoding="utf-8")
+    serialized = f"{text}\n"
+    if path.exists() and path.read_text(encoding="utf-8") == serialized:
+        return
+    tmp_path.write_text(serialized, encoding="utf-8")
     tmp_path.replace(path)
 
 
@@ -3231,6 +3461,8 @@ def normalize_json_payload(payload: Any) -> Any:
     if isinstance(payload, dict):
         return {key: normalize_json_payload(value) for key, value in payload.items()}
     if isinstance(payload, list):
+        return [normalize_json_payload(item) for item in payload]
+    if isinstance(payload, tuple):
         return [normalize_json_payload(item) for item in payload]
     return payload
 
@@ -3584,6 +3816,11 @@ def sqlite_bool_or_none(value: bool | None) -> int | None:
     return sqlite_bool(value)
 
 
+def sqlite_error_is_unreadable_database(error: sqlite3.Error) -> bool:
+    message = str(error).lower()
+    return any(marker in message for marker in SQLITE_UNREADABLE_ERROR_MARKERS)
+
+
 def ensure_guide_enrichment_cache_table(connection: sqlite3.Connection) -> None:
     connection.execute(
         """
@@ -3619,18 +3856,23 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
 
     connection = sqlite3.connect(PLACES_SQLITE_PATH)
     try:
-        if not sqlite_table_exists(connection, "guide_enrichment_cache"):
-            return None
+        try:
+            if not sqlite_table_exists(connection, "guide_enrichment_cache"):
+                return None
 
-        rows = connection.execute(
-            """
-            SELECT place_id, cache_json
-            FROM guide_enrichment_cache
-            WHERE guide_slug = ?
-            ORDER BY place_id
-            """,
-            (slug,),
-        ).fetchall()
+            rows = connection.execute(
+                """
+                SELECT place_id, cache_json
+                FROM guide_enrichment_cache
+                WHERE guide_slug = ?
+                ORDER BY place_id
+                """,
+                (slug,),
+            ).fetchall()
+        except sqlite3.DatabaseError as error:
+            if not sqlite_error_is_unreadable_database(error):
+                raise
+            return None
     finally:
         connection.close()
 
@@ -3700,11 +3942,328 @@ def export_all_places_cache_json() -> int:
     return exported
 
 
-def rebuild_places_sqlite(
+def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int, int, int, int]:
+    sync_local_csv_sources()
+    migrated_guides = 0
+    raw_places_rewritten = 0
+    cache_entries_rewritten = 0
+    sqlite_cache_rows = 0
+
+    for raw_path in sorted(RAW_DIR.glob("*.json")):
+        slug = raw_path.stem
+        raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+        raw_changed = False
+        cache_changed = False
+        updated_places: list[RawPlace] = []
+
+        cache_payload = load_places_cache_json(slug)
+        if not cache_payload:
+            cache_payload = load_places_cache_from_sqlite(slug) or {}
+        cache_migration_index = build_cache_migration_index(cache_payload)
+
+        for place in raw.places:
+            updated_place = place
+            if rewrite_raw_maps_urls:
+                public_maps_url = build_public_google_maps_url(
+                    name=place.name,
+                    address=place.address,
+                    lat=place.lat,
+                    lng=place.lng,
+                    raw_maps_url=place.maps_url,
+                )
+                if public_maps_url != place.maps_url:
+                    updated_place = updated_place.model_copy(update={"maps_url": public_maps_url})
+                    raw_changed = True
+                    raw_places_rewritten += 1
+
+            place_id = stable_place_id(updated_place, source_type=raw.configured_source_type)
+            cache_entry, migrated = migrate_cache_entry_for_place(
+                cache_payload,
+                cache_migration_index,
+                place=updated_place,
+                place_id=place_id,
+            )
+            if migrated:
+                cache_changed = True
+                cache_entries_rewritten += 1
+            if cache_entry is not None:
+                normalized_entry = migrate_cache_entry(cache_entry, updated_place)
+                if normalized_entry.model_dump(mode="json") != cache_entry.model_dump(mode="json"):
+                    cache_payload[place_id] = normalized_entry
+                    cache_changed = True
+                    cache_entries_rewritten += 1
+
+            updated_places.append(updated_place)
+
+        if raw_changed:
+            raw = raw.model_copy(update={"places": updated_places})
+            write_json(raw_path, raw)
+
+        save_places_cache(slug, cache_payload)
+        sqlite_cache_rows += len(cache_payload)
+        if raw_changed or cache_changed:
+            migrated_guides += 1
+
+    return migrated_guides, raw_places_rewritten, cache_entries_rewritten, sqlite_cache_rows
+
+
+def place_photo_signature_state(
+    public_path: str | None,
+    *,
+    source_photo_url: str | None,
+    metadata_cache: dict[str, tuple[Any, ...]],
+) -> tuple[Any, ...]:
+    cache_key = public_path or f"missing:{source_photo_url or 'none'}"
+    cached = metadata_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    absolute_path = public_asset_absolute_path(public_path)
+    if absolute_path and absolute_path.exists():
+        stat_result = absolute_path.stat()
+        state = (
+            "downloaded",
+            sha256_file(absolute_path),
+            stat_result.st_size,
+            source_photo_url,
+            public_path,
+        )
+    elif source_photo_url:
+        state = ("missing_file", source_photo_url, public_path)
+    else:
+        state = ("missing_url", public_path)
+
+    metadata_cache[cache_key] = state
+    return state
+
+
+def build_places_sqlite_signature(
     *,
     raw_lists: dict[str, RawSavedList],
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
+) -> str:
+    photo_state_cache: dict[str, tuple[Any, ...]] = {}
+    photo_states: list[dict[str, Any]] = []
+
+    for guide in sorted(guides, key=lambda item: item.slug):
+        enrichment_cache = enrichment_caches.get(guide.slug, {})
+        for sort_order, place in enumerate(guide.places):
+            cache_entry = enrichment_cache.get(place.id)
+            source_photo_url = cached_place_photo_url(cache_entry)
+            if source_photo_url or place.main_photo_path:
+                photo_states.append(
+                    {
+                        "guide_slug": guide.slug,
+                        "sort_order": sort_order,
+                        "place_id": place.id,
+                        "state": place_photo_signature_state(
+                            place.main_photo_path,
+                            source_photo_url=source_photo_url,
+                            metadata_cache=photo_state_cache,
+                        ),
+                    }
+                )
+
+    payload = {
+        "signature_version": PLACES_SQLITE_SIGNATURE_VERSION,
+        "schema_sha256": hashlib.sha256(PLACES_SQLITE_SCHEMA_SQL.encode("utf-8")).hexdigest(),
+        "raw_lists": {
+            slug: raw.model_dump(mode="json")
+            for slug, raw in sorted(raw_lists.items())
+        },
+        "guides": [
+            guide.model_dump(mode="json")
+            for guide in sorted(guides, key=lambda item: item.slug)
+        ],
+        "enrichment_caches": {
+            slug: {
+                place_id: entry.model_dump(mode="json")
+                for place_id, entry in sorted(cache_payload.items())
+            }
+            for slug, cache_payload in sorted(enrichment_caches.items())
+        },
+        "photo_states": photo_states,
+    }
+    serialized = json.dumps(
+        normalize_json_payload(payload),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def load_places_sqlite_build_signature() -> str | None:
+    if not PLACES_SQLITE_PATH.exists():
+        return None
+
+    connection = sqlite3.connect(PLACES_SQLITE_PATH)
+    try:
+        try:
+            if not sqlite_table_exists(connection, "build_metadata"):
+                return None
+            row = connection.execute(
+                "SELECT value FROM build_metadata WHERE key = ?",
+                (PLACES_SQLITE_BUILD_METADATA_KEY,),
+            ).fetchone()
+        except sqlite3.DatabaseError as error:
+            if not sqlite_error_is_unreadable_database(error):
+                raise
+            return None
+    finally:
+        connection.close()
+
+    if row is None or not isinstance(row[0], str):
+        return None
+    return row[0]
+
+
+def build_places_sqlite_rows(
+    *,
+    raw_lists: dict[str, RawSavedList],
+    guides: list[Guide],
+    enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
+) -> PlacesSqliteRows:
+    raw_place_maps = {
+        slug: {
+            stable_place_id(place, source_type=raw.configured_source_type): place
+            for place in raw.places
+        }
+        for slug, raw in raw_lists.items()
+    }
+    photo_metadata_cache: dict[str, tuple[str, str | None, str | None, int | None]] = {}
+    canonical_places: dict[str, tuple[tuple[int, int, int, int], tuple[Any, ...]]] = {}
+    guide_rows: list[tuple[Any, ...]] = []
+    guide_place_rows: list[tuple[Any, ...]] = []
+    photo_rows: list[tuple[Any, ...]] = []
+
+    for guide in guides:
+        guide_rows.append(
+            (
+                guide.slug,
+                guide.title,
+                guide.description,
+                guide.source_url,
+                guide.list_id,
+                guide.country_name,
+                guide.country_code,
+                guide.city_name,
+                sqlite_json(guide.list_tags),
+                sqlite_json(guide.featured_place_ids),
+                sqlite_json(guide.best_hit_place_ids),
+                guide.best_hit_min_rating,
+                guide.best_hit_min_reviews,
+                sqlite_json(guide.top_categories),
+                guide.generated_at,
+                guide.place_count,
+                guide.center_lat,
+                guide.center_lng,
+            )
+        )
+
+        raw_places_by_id = raw_place_maps.get(guide.slug, {})
+        enrichment_cache = enrichment_caches.get(guide.slug, {})
+        featured_ids = set(guide.featured_place_ids)
+        best_hit_ids = set(guide.best_hit_place_ids)
+
+        for sort_order, place in enumerate(guide.places):
+            raw_place = raw_places_by_id.get(place.id)
+            cache_entry = enrichment_cache.get(place.id)
+            candidate_row = canonical_place_row(
+                guide_slug=guide.slug,
+                raw_place=raw_place,
+                place=place,
+                cache_entry=cache_entry,
+            )
+            candidate_score = canonical_place_score(place, cache_entry)
+            current = canonical_places.get(place.id)
+            if current is None or candidate_score > current[0]:
+                canonical_places[place.id] = (candidate_score, candidate_row)
+
+            guide_place_rows.append(
+                (
+                    guide.slug,
+                    sort_order,
+                    place.id,
+                    sqlite_bool(place.id in featured_ids),
+                    sqlite_bool(place.id in best_hit_ids),
+                    place.name,
+                    place.neighborhood,
+                    place.primary_category,
+                    place.rating,
+                    place.user_rating_count,
+                    place.status,
+                    sqlite_bool(place.top_pick),
+                    sqlite_bool(place.hidden),
+                    place.manual_rank,
+                    place.note,
+                    place.why_recommended,
+                    place.main_photo_path,
+                    place.maps_url,
+                )
+            )
+
+            source_photo_url = cached_place_photo_url(cache_entry)
+            if source_photo_url or place.main_photo_path:
+                fetch_status, last_fetched_at, content_sha256, size_bytes = place_photo_metadata(
+                    place.main_photo_path,
+                    source_photo_url=source_photo_url,
+                    metadata_cache=photo_metadata_cache,
+                )
+                photo_rows.append(
+                    (
+                        guide.slug,
+                        sort_order,
+                        place.id,
+                        source_photo_url,
+                        place.main_photo_path,
+                        fetch_status,
+                        last_fetched_at,
+                        content_sha256,
+                        size_bytes,
+                    )
+                )
+
+    guide_cache_rows = [
+        (
+            guide_slug,
+            place_id,
+            entry.fetched_at,
+            entry.last_verified_at,
+            entry.refresh_after,
+            entry.source,
+            entry.query,
+            entry.input_signature,
+            sqlite_bool_or_none(entry.matched),
+            entry.score,
+            entry.error,
+            entry.error_body,
+            json.dumps(entry.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")),
+        )
+        for guide_slug, payload in sorted(enrichment_caches.items())
+        for place_id, entry in sorted(payload.items())
+    ]
+
+    return PlacesSqliteRows(
+        guide_rows=guide_rows,
+        canonical_place_rows=[
+            row
+            for _, row in (
+                canonical_places[place_id]
+                for place_id in sorted(canonical_places)
+            )
+        ],
+        guide_cache_rows=guide_cache_rows,
+        guide_place_rows=guide_place_rows,
+        photo_rows=photo_rows,
+    )
+
+
+def write_places_sqlite(
+    rows: PlacesSqliteRows,
+    *,
+    build_signature: str,
 ) -> None:
     PLACES_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = PLACES_SQLITE_PATH.with_suffix(".sqlite.tmp")
@@ -3715,315 +4274,51 @@ def rebuild_places_sqlite(
         connection.execute("PRAGMA foreign_keys = ON")
         connection.execute("PRAGMA journal_mode = DELETE")
         connection.execute("PRAGMA synchronous = NORMAL")
-        connection.executescript(
-            """
-            CREATE TABLE guides (
-                slug TEXT PRIMARY KEY,
-                title TEXT NOT NULL,
-                description TEXT,
-                source_url TEXT,
-                list_id TEXT,
-                country_name TEXT NOT NULL,
-                country_code TEXT,
-                city_name TEXT NOT NULL,
-                list_tags_json TEXT NOT NULL,
-                featured_place_ids_json TEXT NOT NULL,
-                best_hit_place_ids_json TEXT NOT NULL,
-                best_hit_min_rating REAL,
-                best_hit_min_reviews INTEGER,
-                top_categories_json TEXT NOT NULL,
-                generated_at TEXT NOT NULL,
-                place_count INTEGER NOT NULL,
-                center_lat REAL,
-                center_lng REAL
-            );
+        connection.executescript(PLACES_SQLITE_SCHEMA_SQL)
 
-            CREATE TABLE canonical_places (
-                place_id TEXT PRIMARY KEY,
-                first_seen_guide_slug TEXT NOT NULL,
-                raw_name TEXT,
-                raw_address TEXT,
-                raw_lat REAL,
-                raw_lng REAL,
-                raw_maps_url TEXT,
-                raw_cid TEXT,
-                raw_google_id TEXT,
-                raw_maps_place_token TEXT,
-                normalized_name TEXT NOT NULL,
-                normalized_address TEXT,
-                normalized_lat REAL,
-                normalized_lng REAL,
-                normalized_maps_url TEXT,
-                normalized_cid TEXT,
-                normalized_google_id TEXT,
-                normalized_google_place_id TEXT,
-                normalized_google_place_resource_name TEXT,
-                normalized_rating REAL,
-                normalized_user_rating_count INTEGER,
-                normalized_primary_category TEXT,
-                normalized_tags_json TEXT NOT NULL,
-                normalized_vibe_tags_json TEXT NOT NULL,
-                normalized_neighborhood TEXT,
-                normalized_note TEXT,
-                normalized_why_recommended TEXT,
-                normalized_main_photo_path TEXT,
-                normalized_top_pick INTEGER NOT NULL,
-                normalized_hidden INTEGER NOT NULL,
-                normalized_manual_rank INTEGER NOT NULL,
-                normalized_status TEXT NOT NULL,
-                cache_fetched_at TEXT,
-                cache_last_verified_at TEXT,
-                cache_refresh_after TEXT,
-                cache_source TEXT,
-                cache_query TEXT,
-                cache_input_signature TEXT,
-                cache_matched INTEGER,
-                cache_score INTEGER,
-                cache_error TEXT,
-                cache_error_body TEXT,
-                enrichment_google_place_id TEXT,
-                enrichment_google_place_resource_name TEXT,
-                enrichment_display_name TEXT,
-                enrichment_formatted_address TEXT,
-                enrichment_google_maps_uri TEXT,
-                enrichment_rating REAL,
-                enrichment_user_rating_count INTEGER,
-                enrichment_primary_type TEXT,
-                enrichment_primary_type_display_name TEXT,
-                enrichment_types_json TEXT NOT NULL,
-                enrichment_business_status TEXT,
-                enrichment_website TEXT,
-                enrichment_phone TEXT,
-                enrichment_plus_code TEXT,
-                enrichment_description TEXT,
-                enrichment_main_photo_url TEXT,
-                enrichment_photo_url TEXT,
-                enrichment_limited_view INTEGER
-            );
-
-            CREATE TABLE guide_enrichment_cache (
-                guide_slug TEXT NOT NULL,
-                place_id TEXT NOT NULL,
-                fetched_at TEXT NOT NULL,
-                last_verified_at TEXT,
-                refresh_after TEXT,
-                source TEXT,
-                query TEXT NOT NULL,
-                input_signature TEXT,
-                matched INTEGER,
-                score INTEGER,
-                error TEXT,
-                error_body TEXT,
-                cache_json TEXT NOT NULL,
-                PRIMARY KEY (guide_slug, place_id)
-            );
-
-            CREATE TABLE guide_places (
-                guide_slug TEXT NOT NULL,
-                sort_order INTEGER NOT NULL,
-                place_id TEXT NOT NULL,
-                is_featured INTEGER NOT NULL,
-                is_best_hit INTEGER NOT NULL,
-                place_name TEXT NOT NULL,
-                neighborhood TEXT,
-                primary_category TEXT,
-                rating REAL,
-                user_rating_count INTEGER,
-                status TEXT NOT NULL,
-                top_pick INTEGER NOT NULL,
-                hidden INTEGER NOT NULL,
-                manual_rank INTEGER NOT NULL,
-                note TEXT,
-                why_recommended TEXT,
-                main_photo_path TEXT,
-                maps_url TEXT NOT NULL,
-                PRIMARY KEY (guide_slug, sort_order),
-                FOREIGN KEY (guide_slug) REFERENCES guides(slug) ON DELETE CASCADE,
-                FOREIGN KEY (place_id) REFERENCES canonical_places(place_id) ON DELETE CASCADE
-            );
-
-            CREATE TABLE place_photos (
-                guide_slug TEXT NOT NULL,
-                sort_order INTEGER NOT NULL,
-                place_id TEXT NOT NULL,
-                source_photo_url TEXT,
-                local_path TEXT,
-                fetch_status TEXT NOT NULL,
-                last_fetched_at TEXT,
-                content_sha256 TEXT,
-                size_bytes INTEGER,
-                PRIMARY KEY (guide_slug, sort_order),
-                FOREIGN KEY (guide_slug, sort_order) REFERENCES guide_places(guide_slug, sort_order) ON DELETE CASCADE
-            );
-
-            CREATE INDEX idx_canonical_places_google_place_id
-                ON canonical_places(enrichment_google_place_id);
-            CREATE INDEX idx_guide_enrichment_cache_place_id
-                ON guide_enrichment_cache(place_id);
-            CREATE INDEX idx_guide_places_place_id
-                ON guide_places(place_id);
-            CREATE INDEX idx_place_photos_local_path
-                ON place_photos(local_path);
-            """
-        )
-
-        raw_place_maps = {
-            slug: {
-                stable_place_id(place, source_type=raw.configured_source_type): place
-                for place in raw.places
-            }
-            for slug, raw in raw_lists.items()
-        }
-        photo_metadata_cache: dict[str, tuple[str, str | None, str | None, int | None]] = {}
-        canonical_places: dict[str, tuple[tuple[int, int, int, int], tuple[Any, ...]]] = {}
-        guide_place_rows: list[tuple[Any, ...]] = []
-        photo_rows: list[tuple[Any, ...]] = []
+        canonical_place_columns = """
+            place_id, first_seen_guide_slug, raw_name, raw_address, raw_lat, raw_lng, raw_maps_url,
+            raw_cid, raw_google_id, raw_maps_place_token, normalized_name,
+            normalized_address, normalized_lat, normalized_lng, normalized_maps_url, normalized_cid,
+            normalized_google_id, normalized_google_place_id, normalized_google_place_resource_name,
+            normalized_rating, normalized_user_rating_count, normalized_primary_category,
+            normalized_tags_json, normalized_vibe_tags_json, normalized_neighborhood, normalized_note,
+            normalized_why_recommended, normalized_main_photo_path, normalized_top_pick,
+            normalized_hidden, normalized_manual_rank, normalized_status, cache_fetched_at,
+            cache_last_verified_at, cache_refresh_after, cache_source, cache_query, cache_input_signature,
+            cache_matched, cache_score, cache_error, cache_error_body,
+            enrichment_google_place_id, enrichment_google_place_resource_name, enrichment_display_name,
+            enrichment_formatted_address, enrichment_google_maps_uri, enrichment_rating,
+            enrichment_user_rating_count, enrichment_primary_type, enrichment_primary_type_display_name,
+            enrichment_types_json, enrichment_business_status, enrichment_website, enrichment_phone,
+            enrichment_plus_code, enrichment_description, enrichment_main_photo_url, enrichment_photo_url,
+            enrichment_limited_view
+        """
 
         with connection:
-            for guide in guides:
-                connection.execute(
-                    """
-                    INSERT INTO guides (
-                        slug, title, description, source_url, list_id, country_name, country_code, city_name,
-                        list_tags_json, featured_place_ids_json, best_hit_place_ids_json, best_hit_min_rating,
-                        best_hit_min_reviews, top_categories_json, generated_at, place_count, center_lat, center_lng
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        guide.slug,
-                        guide.title,
-                        guide.description,
-                        guide.source_url,
-                        guide.list_id,
-                        guide.country_name,
-                        guide.country_code,
-                        guide.city_name,
-                        sqlite_json(guide.list_tags),
-                        sqlite_json(guide.featured_place_ids),
-                        sqlite_json(guide.best_hit_place_ids),
-                        guide.best_hit_min_rating,
-                        guide.best_hit_min_reviews,
-                        sqlite_json(guide.top_categories),
-                        guide.generated_at,
-                        guide.place_count,
-                        guide.center_lat,
-                        guide.center_lng,
-                    ),
-                )
-
-                raw_places_by_id = raw_place_maps.get(guide.slug, {})
-                enrichment_cache = enrichment_caches.get(guide.slug, {})
-                featured_ids = set(guide.featured_place_ids)
-                best_hit_ids = set(guide.best_hit_place_ids)
-
-                for sort_order, place in enumerate(guide.places):
-                    raw_place = raw_places_by_id.get(place.id)
-                    cache_entry = enrichment_cache.get(place.id)
-                    candidate_row = canonical_place_row(
-                        guide_slug=guide.slug,
-                        raw_place=raw_place,
-                        place=place,
-                        cache_entry=cache_entry,
-                    )
-                    candidate_score = canonical_place_score(place, cache_entry)
-                    current = canonical_places.get(place.id)
-                    if current is None or candidate_score > current[0]:
-                        canonical_places[place.id] = (candidate_score, candidate_row)
-
-                    guide_place_rows.append(
-                        (
-                            guide.slug,
-                            sort_order,
-                            place.id,
-                            sqlite_bool(place.id in featured_ids),
-                            sqlite_bool(place.id in best_hit_ids),
-                            place.name,
-                            place.neighborhood,
-                            place.primary_category,
-                            place.rating,
-                            place.user_rating_count,
-                            place.status,
-                            sqlite_bool(place.top_pick),
-                            sqlite_bool(place.hidden),
-                            place.manual_rank,
-                            place.note,
-                            place.why_recommended,
-                            place.main_photo_path,
-                            place.maps_url,
-                        )
-                    )
-
-                    source_photo_url = cached_place_photo_url(cache_entry)
-                    if source_photo_url or place.main_photo_path:
-                        fetch_status, last_fetched_at, content_sha256, size_bytes = place_photo_metadata(
-                            place.main_photo_path,
-                            source_photo_url=source_photo_url,
-                            metadata_cache=photo_metadata_cache,
-                        )
-                        photo_rows.append(
-                            (
-                                guide.slug,
-                                sort_order,
-                                place.id,
-                                source_photo_url,
-                                place.main_photo_path,
-                                fetch_status,
-                                last_fetched_at,
-                                content_sha256,
-                                size_bytes,
-                            )
-                        )
-
-            canonical_place_columns = """
-                place_id, first_seen_guide_slug, raw_name, raw_address, raw_lat, raw_lng, raw_maps_url,
-                raw_cid, raw_google_id, raw_maps_place_token, normalized_name,
-                normalized_address, normalized_lat, normalized_lng, normalized_maps_url, normalized_cid,
-                normalized_google_id, normalized_google_place_id, normalized_google_place_resource_name,
-                normalized_rating, normalized_user_rating_count, normalized_primary_category,
-                normalized_tags_json, normalized_vibe_tags_json, normalized_neighborhood, normalized_note,
-                normalized_why_recommended, normalized_main_photo_path, normalized_top_pick,
-                normalized_hidden, normalized_manual_rank, normalized_status, cache_fetched_at,
-                cache_last_verified_at, cache_refresh_after, cache_source, cache_query, cache_input_signature,
-                cache_matched, cache_score, cache_error, cache_error_body,
-                enrichment_google_place_id, enrichment_google_place_resource_name, enrichment_display_name,
-                enrichment_formatted_address, enrichment_google_maps_uri, enrichment_rating,
-                enrichment_user_rating_count, enrichment_primary_type, enrichment_primary_type_display_name,
-                enrichment_types_json, enrichment_business_status, enrichment_website, enrichment_phone,
-                enrichment_plus_code, enrichment_description, enrichment_main_photo_url, enrichment_photo_url,
-                enrichment_limited_view
-            """
-            for _, canonical_row in canonical_places.values():
-                canonical_place_placeholders = ", ".join("?" for _ in canonical_row)
+            connection.execute(
+                "INSERT INTO build_metadata (key, value) VALUES (?, ?)",
+                (PLACES_SQLITE_BUILD_METADATA_KEY, build_signature),
+            )
+            connection.executemany(
+                """
+                INSERT INTO guides (
+                    slug, title, description, source_url, list_id, country_name, country_code, city_name,
+                    list_tags_json, featured_place_ids_json, best_hit_place_ids_json, best_hit_min_rating,
+                    best_hit_min_reviews, top_categories_json, generated_at, place_count, center_lat, center_lng
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                rows.guide_rows,
+            )
+            for canonical_row in rows.canonical_place_rows:
+                placeholders = ", ".join("?" for _ in canonical_row)
                 connection.execute(
                     """
                     INSERT INTO canonical_places ({columns})
                     VALUES ({placeholders})
-                    """.format(
-                        columns=canonical_place_columns,
-                        placeholders=canonical_place_placeholders,
-                    ),
+                    """.format(columns=canonical_place_columns, placeholders=placeholders),
                     canonical_row,
                 )
-
-            guide_cache_rows = [
-                (
-                    guide_slug,
-                    place_id,
-                    entry.fetched_at,
-                    entry.last_verified_at,
-                    entry.refresh_after,
-                    entry.source,
-                    entry.query,
-                    entry.input_signature,
-                    sqlite_bool_or_none(entry.matched),
-                    entry.score,
-                    entry.error,
-                    entry.error_body,
-                    json.dumps(entry.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")),
-                )
-                for guide_slug, payload in sorted(enrichment_caches.items())
-                for place_id, entry in sorted(payload.items())
-            ]
             connection.executemany(
                 """
                 INSERT INTO guide_enrichment_cache (
@@ -4031,7 +4326,7 @@ def rebuild_places_sqlite(
                     query, input_signature, matched, score, error, error_body, cache_json
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                guide_cache_rows,
+                rows.guide_cache_rows,
             )
             connection.executemany(
                 """
@@ -4041,7 +4336,7 @@ def rebuild_places_sqlite(
                     hidden, manual_rank, note, why_recommended, main_photo_path, maps_url
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                guide_place_rows,
+                rows.guide_place_rows,
             )
             connection.executemany(
                 """
@@ -4050,12 +4345,34 @@ def rebuild_places_sqlite(
                     last_fetched_at, content_sha256, size_bytes
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                photo_rows,
+                rows.photo_rows,
             )
     finally:
         connection.close()
 
     tmp_path.replace(PLACES_SQLITE_PATH)
+
+
+def rebuild_places_sqlite(
+    *,
+    raw_lists: dict[str, RawSavedList],
+    guides: list[Guide],
+    enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
+) -> None:
+    build_signature = build_places_sqlite_signature(
+        raw_lists=raw_lists,
+        guides=guides,
+        enrichment_caches=enrichment_caches,
+    )
+    if load_places_sqlite_build_signature() == build_signature:
+        return
+
+    rows = build_places_sqlite_rows(
+        raw_lists=raw_lists,
+        guides=guides,
+        enrichment_caches=enrichment_caches,
+    )
+    write_places_sqlite(rows, build_signature=build_signature)
 
 
 def canonical_place_score(
@@ -5146,6 +5463,15 @@ def haversine_meters(lat1: float, lon1: float, lat2: float, lon2: float) -> floa
     return radius * c
 
 
+def format_duration_seconds(duration_seconds: float) -> str:
+    total_tenths = max(0, int(max(0.0, duration_seconds) * 10 + 0.5))
+    minutes, remaining_tenths = divmod(total_tenths, 600)
+    seconds, tenths = divmod(remaining_tenths, 10)
+    if minutes >= 1:
+        return f"{minutes}m {seconds:02d}.{tenths}s"
+    return f"{seconds}.{tenths}s"
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
@@ -5177,12 +5503,14 @@ def main() -> int:
         exported_guides = export_all_places_cache_json()
         print(f"Exported JSON cache debug files for {exported_guides} guide(s).")
 
+    build_started_at = time.perf_counter()
     rebuild_generated_data(
         refresh_photos=args.refresh_photos,
         photo_workers=args.refresh_workers,
         startup_jitter_seconds=args.refresh_startup_jitter_seconds,
     )
-    print("Generated list data, manifests, and search index.")
+    build_duration = time.perf_counter() - build_started_at
+    print(f"Generated list data, manifests, and search index in {format_duration_seconds(build_duration)}.")
     return 0
 
 

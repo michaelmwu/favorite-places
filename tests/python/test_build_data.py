@@ -29,6 +29,11 @@ from scripts.pipeline_models import (
 
 
 class BuildDataTests(unittest.TestCase):
+    def test_format_duration_seconds_formats_short_and_long_values(self) -> None:
+        self.assertEqual(build_data.format_duration_seconds(9.34), "9.3s")
+        self.assertEqual(build_data.format_duration_seconds(68.25), "1m 08.3s")
+        self.assertEqual(build_data.format_duration_seconds(59.95), "1m 00.0s")
+
     def test_default_refresh_workers_scales_down_to_cpu_count(self) -> None:
         with patch.object(build_data.os, "cpu_count", return_value=2):
             self.assertEqual(build_data.default_refresh_workers(), 2)
@@ -1538,12 +1543,41 @@ class BuildDataTests(unittest.TestCase):
         index = build_data.build_search_index([guide])
 
         self.assertEqual(index["version"], 1)
+        self.assertEqual(index["generated_at"], build_data.STABLE_GENERATED_AT_FALLBACK)
         self.assertEqual(index["guides"][0]["slug"], "tokyo-japan")
         self.assertEqual(index["entries"][0]["guide_slug"], "tokyo-japan")
         self.assertEqual(index["entries"][0]["name"], "Quiet Coffee")
         self.assertIn("quiet", index["entries"][0]["vibe_tags"])
         self.assertIn("laptop-friendly", index["entries"][0]["vibe_tags"])
         self.assertIn("tokyo", index["entries"][0]["search_text"])
+
+    def test_normalize_guide_uses_stable_generated_at_from_inputs(self) -> None:
+        raw = RawSavedList(
+            fetched_at="2026-04-18T00:00:00+00:00",
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Quiet Coffee",
+                    address="1 Shibuya, Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0], source_type=raw.configured_source_type)
+        guide = build_data.normalize_guide(
+            "tokyo-japan",
+            raw,
+            enrichment_cache={
+                place_id: EnrichmentCacheEntry(
+                    fetched_at="2026-04-19T00:00:00+00:00",
+                    last_verified_at="2026-04-20T00:00:00+00:00",
+                    query="Quiet Coffee, 1 Shibuya, Tokyo, Japan",
+                ),
+            },
+        )
+
+        self.assertEqual(guide.generated_at, "2026-04-20T00:00:00+00:00")
 
     def test_build_search_index_includes_rating_fields_when_present_or_missing(self) -> None:
         guide = Guide(
@@ -2986,6 +3020,92 @@ class BuildDataTests(unittest.TestCase):
             build_data.place_input_signature(second_place),
         )
 
+    def test_build_places_sqlite_signature_changes_when_version_or_schema_changes(self) -> None:
+        raw = RawSavedList(
+            configured_source_type="google_list_url",
+            fetched_at="2026-04-20T00:00:00+00:00",
+            title="Tokyo",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    address="1 Shibuya, Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0], source_type=raw.configured_source_type)
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id=place_id,
+                    name="Coffee House",
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Coffee+House",
+                    status="active",
+                )
+            ],
+        )
+        baseline = build_data.build_places_sqlite_signature(
+            raw_lists={"tokyo-japan": raw},
+            guides=[guide],
+            enrichment_caches={"tokyo-japan": {}},
+        )
+
+        with patch.object(build_data, "PLACES_SQLITE_SIGNATURE_VERSION", build_data.PLACES_SQLITE_SIGNATURE_VERSION + 1):
+            bumped_version = build_data.build_places_sqlite_signature(
+                raw_lists={"tokyo-japan": raw},
+                guides=[guide],
+                enrichment_caches={"tokyo-japan": {}},
+            )
+
+        with patch.object(build_data, "PLACES_SQLITE_SCHEMA_SQL", build_data.PLACES_SQLITE_SCHEMA_SQL + "\n-- test change"):
+            changed_schema = build_data.build_places_sqlite_signature(
+                raw_lists={"tokyo-japan": raw},
+                guides=[guide],
+                enrichment_caches={"tokyo-japan": {}},
+            )
+
+        self.assertNotEqual(baseline, bumped_version)
+        self.assertNotEqual(baseline, changed_schema)
+
+    def test_place_photo_signature_state_tracks_photo_digest_not_mtime(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            photo_path = tmpdir_path / "public" / "place-photos" / "cid-111-photo.webp"
+            photo_path.parent.mkdir(parents=True, exist_ok=True)
+            first_bytes = b"first-photo"
+            second_bytes = b"other-photo"
+            fixed_mtime = 1_700_000_000
+
+            photo_path.write_bytes(first_bytes)
+            os.utime(photo_path, (fixed_mtime, fixed_mtime))
+
+            with patch.object(build_data, "ROOT", tmpdir_path):
+                first_state = build_data.place_photo_signature_state(
+                    "/place-photos/cid-111-photo.webp",
+                    source_photo_url="https://images.example/coffee-house.webp",
+                    metadata_cache={},
+                )
+
+                photo_path.write_bytes(second_bytes)
+                os.utime(photo_path, (fixed_mtime, fixed_mtime))
+
+                second_state = build_data.place_photo_signature_state(
+                    "/place-photos/cid-111-photo.webp",
+                    source_photo_url="https://images.example/coffee-house.webp",
+                    metadata_cache={},
+                )
+
+            self.assertNotEqual(first_state, second_state)
+            self.assertEqual(first_state[1], hashlib.sha256(first_bytes).hexdigest())
+            self.assertEqual(second_state[1], hashlib.sha256(second_bytes).hexdigest())
+
     def test_rebuild_places_sqlite_mirrors_cache_and_photo_metadata(self) -> None:
         raw = RawSavedList(
             configured_source_type="google_list_url",
@@ -3119,6 +3239,13 @@ class BuildDataTests(unittest.TestCase):
                     json.loads(sqlite_cache_entry[2])["place"]["display_name"],
                     "Coffee House",
                 )
+                build_metadata = connection.execute(
+                    "SELECT value FROM build_metadata WHERE key = ?",
+                    (build_data.PLACES_SQLITE_BUILD_METADATA_KEY,),
+                ).fetchone()
+                self.assertIsNotNone(build_metadata)
+                assert build_metadata is not None
+                self.assertRegex(build_metadata[0], r"^[0-9a-f]{64}$")
 
                 guide_place = connection.execute(
                     """
@@ -3152,6 +3279,162 @@ class BuildDataTests(unittest.TestCase):
                 )
             finally:
                 connection.close()
+
+    def test_rebuild_places_sqlite_skips_rewrite_when_signature_matches(self) -> None:
+        raw = RawSavedList(
+            configured_source_type="google_list_url",
+            fetched_at="2026-04-20T00:00:00+00:00",
+            title="Tokyo",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    address="1 Shibuya, Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                    lat=35.6595,
+                    lng=139.7005,
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0], source_type=raw.configured_source_type)
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            last_verified_at="2026-04-20T00:00:00+00:00",
+            refresh_after="2026-04-27T00:00:00+00:00",
+            source="google_maps_page",
+            query="Coffee House, 1 Shibuya, Tokyo, Japan",
+            input_signature=build_data.place_input_signature(raw.places[0]),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(display_name="Coffee House"),
+        )
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            featured_place_ids=[place_id],
+            best_hit_place_ids=[place_id],
+            top_categories=["cafe"],
+            places=[
+                NormalizedPlace(
+                    id=place_id,
+                    name="Coffee House",
+                    address="1 Shibuya, Tokyo, Japan",
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Coffee+House",
+                    status="active",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "cache" / "places.sqlite"
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                build_data.rebuild_places_sqlite(
+                    raw_lists={"tokyo-japan": raw},
+                    guides=[guide],
+                    enrichment_caches={"tokyo-japan": {place_id: cache_entry}},
+                )
+                first_stat = db_path.stat()
+                build_data.rebuild_places_sqlite(
+                    raw_lists={"tokyo-japan": raw},
+                    guides=[guide],
+                    enrichment_caches={"tokyo-japan": {place_id: cache_entry}},
+                )
+                second_stat = db_path.stat()
+
+            self.assertEqual(first_stat.st_mtime_ns, second_stat.st_mtime_ns)
+
+    def test_rebuild_places_sqlite_recovers_from_invalid_existing_db(self) -> None:
+        raw = RawSavedList(
+            configured_source_type="google_list_url",
+            fetched_at="2026-04-20T00:00:00+00:00",
+            title="Tokyo",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    address="1 Shibuya, Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0], source_type=raw.configured_source_type)
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id=place_id,
+                    name="Coffee House",
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Coffee+House",
+                    status="active",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "cache" / "places.sqlite"
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            db_path.write_text("not a sqlite file", encoding="utf-8")
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                self.assertIsNone(build_data.load_places_cache_from_sqlite("tokyo-japan"))
+                self.assertIsNone(build_data.load_places_sqlite_build_signature())
+
+                build_data.rebuild_places_sqlite(
+                    raw_lists={"tokyo-japan": raw},
+                    guides=[guide],
+                    enrichment_caches={"tokyo-japan": {}},
+                )
+
+            connection = sqlite3.connect(db_path)
+            try:
+                build_metadata = connection.execute(
+                    "SELECT value FROM build_metadata WHERE key = ?",
+                    (build_data.PLACES_SQLITE_BUILD_METADATA_KEY,),
+                ).fetchone()
+                self.assertIsNotNone(build_metadata)
+            finally:
+                connection.close()
+
+    def test_load_places_cache_from_sqlite_raises_operational_error(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "cache" / "places.sqlite"
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            db_path.touch()
+
+            with (
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "sqlite_table_exists", side_effect=sqlite3.OperationalError("database is locked")),
+            ):
+                with self.assertRaises(sqlite3.OperationalError):
+                    build_data.load_places_cache_from_sqlite("tokyo-japan")
+
+    def test_load_places_sqlite_build_signature_raises_operational_error(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "cache" / "places.sqlite"
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            db_path.touch()
+
+            with (
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "sqlite_table_exists", side_effect=sqlite3.OperationalError("database is locked")),
+            ):
+                with self.assertRaises(sqlite3.OperationalError):
+                    build_data.load_places_sqlite_build_signature()
 
     def test_save_places_cache_writes_sqlite_only_by_default(self) -> None:
         cache_entry = EnrichmentCacheEntry(
