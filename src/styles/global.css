@@ -1765,6 +1765,11 @@ select {
     padding: 0.75rem;
   }
 
+  .country-browser {
+    position: static;
+    top: auto;
+  }
+
   .controls-grid {
     gap: 0.7rem;
   }
