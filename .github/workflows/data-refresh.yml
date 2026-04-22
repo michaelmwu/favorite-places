@@ -70,6 +70,65 @@ jobs:
           fetch-depth: 0
           ref: main
 
+      - name: Verify runner prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! command -v unzip >/dev/null 2>&1; then
+            echo "::error::Missing required runner tool: unzip. Provision it on the self-hosted runner; do not install it inside this workflow."
+            exit 1
+          fi
+
+          required_libs=(
+            libnspr4.so
+            libnss3.so
+            libatk-1.0.so.0
+            libatk-bridge-2.0.so.0
+            libgbm.so.1
+            libglib-2.0.so.0
+            libgtk-3.so.0
+            libx11.so.6
+            libx11-xcb.so.1
+            libxcb.so.1
+            libxcomposite.so.1
+            libxdamage.so.1
+            libxext.so.6
+            libxfixes.so.3
+            libxkbcommon.so.0
+            libxrandr.so.2
+          )
+
+          LDCONFIG="$(command -v ldconfig || true)"
+          if [[ -z "${LDCONFIG}" ]]; then
+            for candidate in /sbin/ldconfig /usr/sbin/ldconfig; do
+              if [[ -x "${candidate}" ]]; then
+                LDCONFIG="${candidate}"
+                break
+              fi
+            done
+          fi
+
+          if [[ -z "${LDCONFIG}" ]]; then
+            echo "::error::ldconfig is not available on the runner, so shared library prerequisites cannot be verified."
+            exit 1
+          fi
+
+          ldconfig_output="$("${LDCONFIG}" -p)"
+
+          missing_libs=()
+          for library in "${required_libs[@]}"; do
+            if ! printf '%s\n' "${ldconfig_output}" | grep -Fq "${library}"; then
+              missing_libs+=("${library}")
+            fi
+          done
+
+          if (( ${#missing_libs[@]} > 0 )); then
+            printf '::error::Missing required browser libraries for CloakBrowser/Playwright: %s\n' "${missing_libs[*]}"
+            echo "::error::Provision the self-hosted runner with Playwright Chromium system dependencies, for example the distro-equivalent of 'playwright install-deps chromium'."
+            exit 1
+          fi
+
       - name: Resolve refresh settings
         id: settings
         shell: bash

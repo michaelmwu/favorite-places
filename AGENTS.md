@@ -19,6 +19,15 @@
 - Use `bun run check` and `bun run build` before closing out frontend changes.
 - Use `.venv/bin/python` if `uv run` hits sandbox cache issues in Codex.
 
+## Self-Hosted Refresh Runner
+
+The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner. Treat the runner image or host provisioning as the contract for OS-level tools and browser libraries; do not install them ad hoc inside the workflow.
+
+- `unzip` must be present on `PATH` because `oven-sh/setup-bun` downloads a `.zip` release archive.
+- `cloakbrowser` downloads its own Chromium binary, but the host still needs Playwright/Chromium system libraries installed.
+- Provision the runner with the equivalent of Playwright's Chromium Linux dependencies, for example the packages behind `playwright install-deps chromium`, instead of trying to `apt install` during the workflow run.
+- The workflow includes a preflight check for `unzip` and a small set of required shared libraries (`libnspr4`, `libnss3`, GTK, GBM, X11, and related browser deps) so runner drift fails fast with a clear error.
+
 ## Environment Variables
 
 - `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and emitted into the page only when the Google map provider is active. Treat it as the browser Google Maps display key: production usage should be on a separate key restricted by HTTP referrer and limited to `Maps JavaScript API`.
