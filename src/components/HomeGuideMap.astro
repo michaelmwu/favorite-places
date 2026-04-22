@@ -163,14 +163,17 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     const safeGuideUrl = safeUrl(guide.url);
     const meta = [guide.cityName, guide.countryName].filter(Boolean).join(", ");
 
-    return `
+    const content = `
       <div class="guide-map-popup-content">
         <strong>${escapeHtml(guide.title)}</strong>
         <span>${escapeHtml(meta)}</span>
         <span>${guide.placeCount} saved place${guide.placeCount === 1 ? "" : "s"}</span>
-        ${safeGuideUrl ? `<a href="${escapeHtml(safeGuideUrl)}">Open guide</a>` : ""}
       </div>
     `;
+
+    return safeGuideUrl
+      ? `<a class="guide-map-popup-card-link" href="${escapeHtml(safeGuideUrl)}">${content}</a>`
+      : content;
   };
 
   const markerHtml = (guide: HomeMapGuide) => `
@@ -178,6 +181,30 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   `;
 
   const markerLabelUnits = (label: string) => Array.from(label).length;
+
+  const clampBounds = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+  const guideBounds = (guides: HomeMapGuide[]) => {
+    if (guides.length === 0) {
+      return null;
+    }
+
+    const lats = guides.map((guide) => guide.lat);
+    const lngs = guides.map((guide) => guide.lng);
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+    const latDelta = Math.max((maxLat - minLat) * 0.15, 1.2);
+    const lngDelta = Math.max((maxLng - minLng) * 0.15, 1.8);
+
+    return {
+      north: clampBounds(maxLat + latDelta, -85, 85),
+      south: clampBounds(minLat - latDelta, -85, 85),
+      east: clampBounds(maxLng + lngDelta, -180, 180),
+      west: clampBounds(minLng - lngDelta, -180, 180),
+    };
+  };
 
   const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
     if (guides.length === 0) return;
@@ -283,8 +310,11 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   };
 
   const initLeafletRuntime = (element: HTMLElement, guides: HomeMapGuide[]): HomeMapRuntime => {
+    const bounds = guideBounds(guides);
     const map = L.map(element, {
       dragging: true,
+      maxBounds: bounds ? L.latLngBounds([bounds.south, bounds.west], [bounds.north, bounds.east]) : undefined,
+      maxBoundsViscosity: 1,
       maxZoom: 12,
       scrollWheelZoom: false,
       touchZoom: "center",
@@ -337,12 +367,19 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     apiKey: string,
   ): Promise<HomeMapRuntime> => {
     const googleMaps = (await loadGoogleMapsApi(apiKey)) as GoogleMapsApi;
+    const bounds = guideBounds(guides);
     const map = new googleMaps.maps.Map(element, {
       center: { lat: guides[0].lat, lng: guides[0].lng },
       clickableIcons: false,
       disableDefaultUI: true,
       gestureHandling: "greedy",
       keyboardShortcuts: true,
+      restriction: bounds
+        ? {
+            latLngBounds: bounds,
+            strictBounds: false,
+          }
+        : undefined,
       zoom: 4,
       zoomControl: true,
     });
@@ -562,9 +599,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
 
   const initPanels = () => {
     const storedCollapsed = window.localStorage.getItem(HOME_MAP_COLLAPSED_KEY);
-    const defaultCollapsed = storedCollapsed === null
-      ? window.matchMedia("(max-width: 719px)").matches
-      : storedCollapsed === "true";
+    const defaultCollapsed = storedCollapsed === "true";
 
     document.querySelectorAll<HTMLElement>("[data-home-map-panel]").forEach((panel) => {
       if (panel.dataset.panelInitialized === "true") {
