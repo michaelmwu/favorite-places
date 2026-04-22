@@ -2785,12 +2785,6 @@ class BuildDataTests(unittest.TestCase):
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
                 patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
                 patch.object(build_data, "google_places_api_key", return_value=None),
-                patch.object(build_data, "build_cache_migration_index", return_value={}),
-                patch.object(
-                    build_data,
-                    "migrate_cache_entry_for_place",
-                    side_effect=lambda cache_payload, _index, *, place, place_id: (cache_payload.get(place_id), False),
-                ),
                 patch.object(
                     build_data,
                     "cache_refresh_reason",
@@ -2847,12 +2841,6 @@ class BuildDataTests(unittest.TestCase):
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
                 patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
                 patch.object(build_data, "google_places_api_key", return_value=None),
-                patch.object(build_data, "build_cache_migration_index", return_value={}),
-                patch.object(
-                    build_data,
-                    "migrate_cache_entry_for_place",
-                    side_effect=lambda cache_payload, _index, *, place, place_id: (cache_payload.get(place_id), False),
-                ),
                 patch.object(
                     build_data,
                     "cache_refresh_reason",
@@ -2974,91 +2962,6 @@ class BuildDataTests(unittest.TestCase):
             self.assertIn(second_place_id, cache_payload)
             self.assertEqual(cache_payload[first_place_id].place.display_name, "First Place")
             self.assertEqual(cache_payload[second_place_id].place.display_name, "Second Place")
-
-    def test_enrich_raw_sources_migrates_cache_entry_when_place_id_changes(self) -> None:
-        old_place = RawPlace(
-            name="Swagat Wine & Dine",
-            address="Bau St, Suva, Fiji",
-            maps_url="https://maps.google.com/?cid=111",
-            cid="111",
-            lat=-18.1416,
-            lng=178.4419,
-        )
-        new_place = RawPlace(
-            name="Swagat Wine & Dine",
-            address="Bau St, Suva, Fiji",
-            maps_url="https://www.google.com/maps/search/?api=1&query=Swagat+Wine+%26+Dine%2C+Bau+St%2C+Suva%2C+Fiji",
-            cid="222",
-            lat=-18.1416,
-            lng=178.4419,
-        )
-        raw = RawSavedList(title="Fiji", places=[new_place])
-
-        with TemporaryDirectory() as tmpdir:
-            tmpdir_path = Path(tmpdir)
-            raw_dir = tmpdir_path / "raw"
-            cache_dir = tmpdir_path / "cache"
-            db_path = tmpdir_path / "places.sqlite"
-            raw_dir.mkdir()
-            cache_dir.mkdir()
-            (raw_dir / "fiji.json").write_text(
-                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
-                encoding="utf-8",
-            )
-
-            old_place_id = build_data.stable_place_id(old_place)
-            new_place_id = build_data.stable_place_id(new_place)
-            self.assertNotEqual(old_place_id, new_place_id)
-
-            cache_entry = EnrichmentCacheEntry(
-                fetched_at="2026-04-20T00:00:00+00:00",
-                refresh_after="2026-04-27T00:00:00+00:00",
-                query=build_data.build_text_query(old_place),
-                input_signature=build_data.legacy_place_input_signature(old_place),
-                matched=True,
-                score=build_data.STRONG_MATCH_SCORE,
-                place=EnrichmentPlace(
-                    display_name="Swagat Wine & Dine",
-                    formatted_address="Bau St, Suva, Fiji",
-                    google_maps_uri="https://www.google.com/maps/place/Swagat+Wine+%26+Dine/",
-                ),
-            )
-            (cache_dir / "fiji.json").write_text(
-                json.dumps({old_place_id: cache_entry.model_dump(mode="json")}, ensure_ascii=False),
-                encoding="utf-8",
-            )
-
-            with (
-                patch.object(build_data, "RAW_DIR", raw_dir),
-                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
-                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
-                patch.object(build_data, "google_places_api_key", return_value=None),
-                patch.object(build_data, "enrich_place_job") as enrich_place_job,
-            ):
-                build_data.enrich_raw_sources(
-                    force_refresh=False,
-                    refresh_workers=1,
-                    refresh_startup_jitter_seconds=0,
-                )
-
-                enrich_place_job.assert_not_called()
-                sqlite_cache_payload = build_data.load_places_cache_from_sqlite("fiji")
-                self.assertIsNotNone(sqlite_cache_payload)
-                assert sqlite_cache_payload is not None
-                cache_payload = {
-                    place_id: entry.model_dump(mode="json")
-                    for place_id, entry in sqlite_cache_payload.items()
-                }
-            self.assertNotIn(old_place_id, cache_payload)
-            self.assertIn(new_place_id, cache_payload)
-            self.assertEqual(
-                cache_payload[new_place_id]["input_signature"],
-                build_data.place_input_signature(new_place),
-            )
-            self.assertEqual(
-                cache_payload[new_place_id]["query"],
-                build_data.build_text_query(new_place),
-            )
 
     def test_place_input_signature_prefers_stable_identifiers(self) -> None:
         first_place = RawPlace(
@@ -3314,114 +3217,6 @@ class BuildDataTests(unittest.TestCase):
             exported = json.loads((cache_dir / "tokyo-japan.json").read_text(encoding="utf-8"))
 
         self.assertEqual(exported["cid:111"]["query"], cache_entry.query)
-
-    def test_load_places_cache_merges_json_with_partial_sqlite_rows(self) -> None:
-        cache_entry = EnrichmentCacheEntry(
-            fetched_at="2026-04-20T00:00:00+00:00",
-            refresh_after="2026-04-27T00:00:00+00:00",
-            query="Coffee House, 1 Shibuya, Tokyo, Japan",
-            input_signature="signature-v1",
-            matched=True,
-            score=build_data.STRONG_MATCH_SCORE,
-            place=EnrichmentPlace(display_name="Coffee House"),
-        )
-
-        with TemporaryDirectory() as tmpdir:
-            tmpdir_path = Path(tmpdir)
-            cache_dir = tmpdir_path / "cache" / "google-places"
-            db_path = tmpdir_path / "cache" / "places.sqlite"
-            cache_dir.mkdir(parents=True, exist_ok=True)
-
-            with (
-                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
-                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
-            ):
-                build_data.save_places_cache("fiji", {"cid:999": cache_entry})
-                build_data.write_json(
-                    cache_dir / "tokyo-japan.json",
-                    {
-                        "cid:111": cache_entry,
-                        "cid:222": cache_entry.model_copy(update={"query": "Second place"}),
-                    },
-                )
-                build_data.save_places_cache_to_sqlite(
-                    "tokyo-japan",
-                    {"cid:222": cache_entry.model_copy(update={"query": "SQLite override"})},
-                )
-
-                loaded_payload = build_data.load_places_cache("tokyo-japan")
-
-            self.assertEqual(loaded_payload["cid:111"].query, cache_entry.query)
-            self.assertEqual(loaded_payload["cid:222"].query, "SQLite override")
-
-    def test_migrate_cache_to_sqlite_rewrites_raw_maps_urls_and_updates_signatures(self) -> None:
-        raw = RawSavedList(
-            configured_source_type="google_list_url",
-            title="Tokyo",
-            places=[
-                RawPlace(
-                    name="Coffee House",
-                    address="1 Shibuya, Tokyo, Japan",
-                    maps_url="https://maps.google.com/?cid=111",
-                    cid="111",
-                    lat=35.6595,
-                    lng=139.7005,
-                )
-            ],
-        )
-        legacy_place = raw.places[0]
-        place_id = build_data.stable_place_id(legacy_place, source_type=raw.configured_source_type)
-        cache_entry = EnrichmentCacheEntry(
-            fetched_at="2026-04-20T00:00:00+00:00",
-            refresh_after="2026-04-27T00:00:00+00:00",
-            query=build_data.build_text_query(legacy_place),
-            input_signature=build_data.legacy_place_input_signature(legacy_place),
-            matched=True,
-            score=build_data.STRONG_MATCH_SCORE,
-            place=EnrichmentPlace(display_name="Coffee House"),
-        )
-
-        with TemporaryDirectory() as tmpdir:
-            tmpdir_path = Path(tmpdir)
-            raw_dir = tmpdir_path / "raw"
-            cache_dir = tmpdir_path / "cache" / "google-places"
-            db_path = tmpdir_path / "cache" / "places.sqlite"
-            raw_dir.mkdir(parents=True, exist_ok=True)
-            cache_dir.mkdir(parents=True, exist_ok=True)
-            build_data.write_json(raw_dir / "tokyo-japan.json", raw)
-            build_data.write_json(cache_dir / "tokyo-japan.json", {place_id: cache_entry})
-
-            with (
-                patch.object(build_data, "RAW_DIR", raw_dir),
-                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
-                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
-                patch.object(build_data, "sync_local_csv_sources"),
-            ):
-                migrated_guides, raw_places_rewritten, cache_entries_rewritten, sqlite_cache_rows = (
-                    build_data.migrate_cache_to_sqlite()
-                )
-
-            self.assertEqual(migrated_guides, 1)
-            self.assertEqual(raw_places_rewritten, 1)
-            self.assertGreaterEqual(cache_entries_rewritten, 1)
-            self.assertEqual(sqlite_cache_rows, 1)
-
-            migrated_raw = RawSavedList.model_validate_json(
-                (raw_dir / "tokyo-japan.json").read_text(encoding="utf-8")
-            )
-            self.assertEqual(
-                migrated_raw.places[0].maps_url,
-                "https://www.google.com/maps/search/?api=1&query=Coffee+House%2C+1+Shibuya%2C+Tokyo%2C+Japan",
-            )
-
-            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
-                migrated_cache = build_data.load_places_cache_from_sqlite("tokyo-japan")
-            self.assertIsNotNone(migrated_cache)
-            assert migrated_cache is not None
-            self.assertEqual(
-                migrated_cache[place_id].input_signature,
-                build_data.place_input_signature(migrated_raw.places[0]),
-            )
 
     def test_parallel_enrichment_terminates_workers_on_interrupt(self) -> None:
         raw = RawSavedList(

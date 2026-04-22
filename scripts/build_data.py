@@ -1234,15 +1234,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Download missing local optimized place photos from cached enrichment photo URLs.",
     )
     parser.add_argument(
-        "--migrate-cache",
-        action="store_true",
-        help=(
-            "Backfill the SQLite guide enrichment cache from existing per-guide JSON, "
-            "rewrite raw maps URLs to the public search form, and normalize cached signatures "
-            "without forcing enrichment refreshes."
-        ),
-    )
-    parser.add_argument(
         "--export-cache-json",
         action="store_true",
         help="Export the current SQLite-backed enrichment cache into per-guide JSON files for debugging.",
@@ -2393,27 +2384,17 @@ def enrich_raw_sources(
 ) -> None:
     api_key = google_places_api_key()
     cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
-    dirty_cache_slugs: set[str] = set()
     enrich_jobs: list[tuple[str, str, str, str, dict[str, Any]]] = []
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
         cache_payload = load_places_cache(raw_path.stem)
         cache_payloads[raw_path.stem] = cache_payload
-        cache_migration_index = build_cache_migration_index(cache_payload)
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
-            cache_entry, migrated = migrate_cache_entry_for_place(
-                cache_payload,
-                cache_migration_index,
-                place=place,
-                place_id=place_id,
-            )
-            if migrated:
-                dirty_cache_slugs.add(raw_path.stem)
             refresh_reason = enrichment_refresh_reason(
                 place,
-                cache_entry,
+                cache_payload.get(place_id),
                 force_refresh=force_refresh,
                 missing_only=missing_only,
             )
@@ -2429,9 +2410,6 @@ def enrich_raw_sources(
                     place.model_dump(mode="json"),
                 )
             )
-
-    for slug in sorted(dirty_cache_slugs):
-        save_places_cache(slug, cache_payloads[slug])
 
     if not enrich_jobs:
         return
@@ -3507,23 +3485,6 @@ def enrichment_job_priority(job: tuple[str, str, str, str, dict[str, Any]]) -> t
         slug,
         place_id,
     )
-
-
-def legacy_place_input_signature(place: RawPlace) -> str:
-    payload = {
-        "name": place.name,
-        "address": place.address,
-        "lat": place.lat,
-        "lng": place.lng,
-        "maps_url": place.maps_url,
-        "cid": place.cid,
-        "google_id": place.google_id,
-        "maps_place_token": place.maps_place_token,
-    }
-    serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-
-
 def place_input_signature(place: RawPlace) -> str:
     payload = structured_place_identity_payload(place)
     if payload is None:
@@ -3551,116 +3512,6 @@ def structured_place_identity_payload(place: RawPlace) -> dict[str, str] | None:
         return {"maps_place_token": maps_place_token}
 
     return None
-
-
-def normalize_cache_migration_text(value: str | None) -> str | None:
-    normalized = as_string(value)
-    if normalized is None:
-        return None
-    return " ".join(normalized.strip().lower().split()) or None
-
-
-def place_cache_migration_keys(place: RawPlace) -> list[str]:
-    keys: list[str] = []
-    normalized_query = normalize_cache_migration_text(build_text_query(place))
-    if normalized_query:
-        keys.append(f"query:{normalized_query}")
-
-    if place.google_id:
-        keys.append(f"gid:{place.google_id.strip('/').replace('/', '-')}")
-
-    maps_place_token = place.maps_place_token or extract_maps_place_token(place.maps_url)
-    if maps_place_token:
-        keys.append(f"gms:{maps_place_token}")
-    return keys
-
-
-def cache_entry_migration_keys(entry: EnrichmentCacheEntry) -> set[str]:
-    keys: set[str] = set()
-    normalized_query = normalize_cache_migration_text(entry.query)
-    if normalized_query:
-        keys.add(f"query:{normalized_query}")
-
-    if entry.place:
-        place_query = ", ".join(
-            part
-            for part in (entry.place.display_name, entry.place.formatted_address)
-            if isinstance(part, str) and part.strip()
-        )
-        normalized_place_query = normalize_cache_migration_text(place_query)
-        if normalized_place_query:
-            keys.add(f"query:{normalized_place_query}")
-
-        if entry.place.google_place_id:
-            keys.add(f"gid:{entry.place.google_place_id.strip('/').replace('/', '-')}")
-
-        maps_place_token = extract_maps_place_token(entry.place.google_maps_uri)
-        if maps_place_token:
-            keys.add(f"gms:{maps_place_token}")
-    return keys
-
-
-def build_cache_migration_index(
-    cache_payload: dict[str, EnrichmentCacheEntry],
-) -> dict[str, str]:
-    index: dict[str, str] = {}
-    collisions: set[str] = set()
-    for place_id, entry in cache_payload.items():
-        for key in cache_entry_migration_keys(entry):
-            if key in collisions:
-                continue
-            existing_place_id = index.get(key)
-            if existing_place_id is None:
-                index[key] = place_id
-            elif existing_place_id != place_id:
-                collisions.add(key)
-                index.pop(key, None)
-    return index
-
-
-def migrate_cache_entry(cache_entry: EnrichmentCacheEntry, place: RawPlace) -> EnrichmentCacheEntry:
-    return cache_entry.model_copy(
-        update={
-            "input_signature": place_input_signature(place),
-            "query": build_text_query(place),
-        }
-    )
-
-
-def migrate_cache_entry_for_place(
-    cache_payload: dict[str, EnrichmentCacheEntry],
-    cache_migration_index: dict[str, str],
-    *,
-    place: RawPlace,
-    place_id: str,
-) -> tuple[EnrichmentCacheEntry | None, bool]:
-    cache_entry = cache_payload.get(place_id)
-    if cache_entry is not None:
-        if cache_entry.input_signature == place_input_signature(place):
-            return cache_entry, False
-        if cache_entry.input_signature == legacy_place_input_signature(place):
-            migrated_entry = migrate_cache_entry(cache_entry, place)
-            cache_payload[place_id] = migrated_entry
-            return migrated_entry, True
-        return cache_entry, False
-
-    for key in place_cache_migration_keys(place):
-        legacy_place_id = cache_migration_index.get(key)
-        if not legacy_place_id or legacy_place_id == place_id:
-            continue
-        legacy_entry = cache_payload.get(legacy_place_id)
-        if legacy_entry is None:
-            continue
-        migrated_entry = migrate_cache_entry(legacy_entry, place)
-        cache_payload[place_id] = migrated_entry
-        del cache_payload[legacy_place_id]
-        for migrated_key in cache_entry_migration_keys(migrated_entry):
-            cache_migration_index[migrated_key] = place_id
-        for place_key in place_cache_migration_keys(place):
-            cache_migration_index[place_key] = place_id
-        return migrated_entry, True
-
-    return None, False
 
 
 def cache_refresh_ttl(cache_entry: EnrichmentCacheEntry) -> timedelta:
@@ -3707,22 +3558,8 @@ def build_cache_entry(
     return cache_entry
 
 
-def load_places_cache_json(slug: str) -> dict[str, EnrichmentCacheEntry]:
-    payload = read_json(PLACES_CACHE_DIR / f"{slug}.json")
-    result: dict[str, EnrichmentCacheEntry] = {}
-    for place_id, entry in payload.items():
-        if isinstance(place_id, str) and isinstance(entry, dict):
-            result[place_id] = EnrichmentCacheEntry.model_validate(entry)
-    return result
-
-
 def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
-    result = load_places_cache_json(slug)
-
-    sqlite_payload = load_places_cache_from_sqlite(slug)
-    if sqlite_payload is not None:
-        result.update(sqlite_payload)
-    return result
+    return load_places_cache_from_sqlite(slug) or {}
 
 
 def save_places_cache(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
@@ -3861,71 +3698,6 @@ def export_all_places_cache_json() -> int:
         exported += 1
 
     return exported
-
-
-def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int, int, int, int]:
-    sync_local_csv_sources()
-    migrated_guides = 0
-    raw_places_rewritten = 0
-    cache_entries_rewritten = 0
-    sqlite_cache_rows = 0
-
-    for raw_path in sorted(RAW_DIR.glob("*.json")):
-        slug = raw_path.stem
-        raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
-        raw_changed = False
-        cache_changed = False
-        updated_places: list[RawPlace] = []
-
-        cache_payload = load_places_cache_json(slug)
-        if not cache_payload:
-            cache_payload = load_places_cache_from_sqlite(slug) or {}
-        cache_migration_index = build_cache_migration_index(cache_payload)
-
-        for place in raw.places:
-            updated_place = place
-            if rewrite_raw_maps_urls:
-                public_maps_url = build_public_google_maps_url(
-                    name=place.name,
-                    address=place.address,
-                    lat=place.lat,
-                    lng=place.lng,
-                    raw_maps_url=place.maps_url,
-                )
-                if public_maps_url != place.maps_url:
-                    updated_place = updated_place.model_copy(update={"maps_url": public_maps_url})
-                    raw_changed = True
-                    raw_places_rewritten += 1
-
-            place_id = stable_place_id(updated_place, source_type=raw.configured_source_type)
-            cache_entry, migrated = migrate_cache_entry_for_place(
-                cache_payload,
-                cache_migration_index,
-                place=updated_place,
-                place_id=place_id,
-            )
-            if migrated:
-                cache_changed = True
-                cache_entries_rewritten += 1
-            if cache_entry is not None:
-                normalized_entry = migrate_cache_entry(cache_entry, updated_place)
-                if normalized_entry.model_dump(mode="json") != cache_entry.model_dump(mode="json"):
-                    cache_payload[place_id] = normalized_entry
-                    cache_changed = True
-                    cache_entries_rewritten += 1
-
-            updated_places.append(updated_place)
-
-        if raw_changed:
-            raw = raw.model_copy(update={"places": updated_places})
-            write_json(raw_path, raw)
-
-        save_places_cache(slug, cache_payload)
-        sqlite_cache_rows += len(cache_payload)
-        if raw_changed or cache_changed:
-            migrated_guides += 1
-
-    return migrated_guides, raw_places_rewritten, cache_entries_rewritten, sqlite_cache_rows
 
 
 def rebuild_places_sqlite(
@@ -5399,16 +5171,6 @@ def main() -> int:
             missing_only=args.enrich_missing,
             refresh_workers=args.refresh_workers,
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
-        )
-
-    if args.migrate_cache:
-        migrated_guides, raw_places_rewritten, cache_entries_rewritten, sqlite_cache_rows = migrate_cache_to_sqlite()
-        print(
-            "Migrated cache to SQLite: "
-            f"{migrated_guides} guide(s) changed, "
-            f"{raw_places_rewritten} raw maps URL(s) rewritten, "
-            f"{cache_entries_rewritten} cache entry rewrite(s), "
-            f"{sqlite_cache_rows} SQLite cache row(s) written."
         )
 
     if args.export_cache_json:
