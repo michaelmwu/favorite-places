@@ -1545,6 +1545,44 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("laptop-friendly", index["entries"][0]["vibe_tags"])
         self.assertIn("tokyo", index["entries"][0]["search_text"])
 
+    def test_build_search_index_includes_rating_fields_when_present_or_missing(self) -> None:
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo, Japan",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=2,
+            places=[
+                NormalizedPlace(
+                    id="rated",
+                    name="Rated Coffee",
+                    maps_url="https://maps.example/rated",
+                    rating=4.8,
+                    user_rating_count=321,
+                    status="active",
+                ),
+                NormalizedPlace(
+                    id="unrated",
+                    name="Unrated Tea",
+                    maps_url="https://maps.example/unrated",
+                    rating=None,
+                    user_rating_count=None,
+                    status="active",
+                ),
+            ],
+        )
+
+        index = build_data.build_search_index([guide])
+        entries = {entry["id"]: entry for entry in index["entries"]}
+
+        self.assertEqual(entries["rated"]["rating"], 4.8)
+        self.assertEqual(entries["rated"]["user_rating_count"], 321)
+        self.assertIn("rating", entries["unrated"])
+        self.assertIsNone(entries["unrated"]["rating"])
+        self.assertIn("user_rating_count", entries["unrated"])
+        self.assertIsNone(entries["unrated"]["user_rating_count"])
+
     def test_search_index_and_manifest_skip_permanently_closed_places(self) -> None:
         guide = Guide(
             slug="tokyo-japan",

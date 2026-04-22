@@ -153,6 +153,19 @@ if (root) {
     return `${value.slice(0, maxLength - 1).trim()}...`;
   };
 
+  const ratingValue = (value) => (typeof value === "number" && Number.isFinite(value) ? value : null);
+  const reviewCountValue = (value) =>
+    typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
+  const formatRating = (value) => value.toFixed(1);
+  const reviewCountFormatter = new Intl.NumberFormat("en-US");
+  const compactReviewCountFormatter = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+  const formatReviewCount = (value) =>
+    (value >= 1000 ? compactReviewCountFormatter : reviewCountFormatter).format(value);
+  const formatReviewLabel = (value) => `${formatReviewCount(value)} ${value === 1 ? "review" : "reviews"}`;
+
   const groupSearchResults = (results) =>
     [...results.reduce((groups, result) => {
       const country = result.entry.country || "Unknown";
@@ -196,6 +209,24 @@ if (root) {
       .filter(Boolean)
       .join(" · ");
 
+    const rating = ratingValue(entry.rating);
+    const reviewCount = reviewCountValue(entry.user_rating_count);
+    const stats = document.createElement("div");
+    stats.className = "stats-row";
+    if (rating !== null) {
+      const ratingPill = document.createElement("span");
+      ratingPill.className = "stat-pill";
+      ratingPill.textContent = `${formatRating(rating)} ★`;
+      stats.append(ratingPill);
+    }
+    if (reviewCount !== null) {
+      const reviewPill = document.createElement("span");
+      reviewPill.className = "stat-pill";
+      reviewPill.textContent = formatReviewLabel(reviewCount);
+      stats.append(reviewPill);
+    }
+    stats.hidden = stats.childElementCount === 0;
+
     const copy = document.createElement("p");
     copy.className = "small-copy";
     copy.textContent = truncateText(entry.why_recommended || entry.note || "", 180);
@@ -216,7 +247,7 @@ if (root) {
     link.href = createGuideLink(entry, query);
     link.textContent = "Open in guide";
 
-    card.append(title, meta, copy, tags, link);
+    card.append(title, meta, stats, copy, tags, link);
     return card;
   };
 
@@ -262,7 +293,16 @@ if (root) {
         .filter(Boolean)
         .join(" · ");
 
-      link.append(itemTitle, itemMeta);
+      const rating = ratingValue(entry.rating);
+      const reviewCount = reviewCountValue(entry.user_rating_count);
+      const itemStats = document.createElement("span");
+      itemStats.className = "search-country-item-meta";
+      itemStats.textContent = [rating !== null ? `${formatRating(rating)} ★` : null, reviewCount !== null ? formatReviewLabel(reviewCount) : null]
+        .filter(Boolean)
+        .join(" · ");
+      itemStats.hidden = !itemStats.textContent;
+
+      link.append(itemTitle, itemMeta, itemStats);
       list.append(link);
     });
 
