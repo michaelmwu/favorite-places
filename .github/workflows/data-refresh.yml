@@ -53,10 +53,6 @@ jobs:
     runs-on:
       - self-hosted
       - Linux
-      - ARM64
-      - moo_hetzner
-      - vps
-      - ubuntu
     timeout-minutes: 180
     env:
       REFRESH_BRANCH: automation/data-refresh
@@ -65,7 +61,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: main
@@ -88,15 +84,15 @@ jobs:
             libgbm.so.1
             libglib-2.0.so.0
             libgtk-3.so.0
-            libx11.so.6
-            libx11-xcb.so.1
+            libX11.so.6
+            libX11-xcb.so.1
             libxcb.so.1
-            libxcomposite.so.1
-            libxdamage.so.1
-            libxext.so.6
-            libxfixes.so.3
+            libXcomposite.so.1
+            libXdamage.so.1
+            libXext.so.6
+            libXfixes.so.3
             libxkbcommon.so.0
-            libxrandr.so.2
+            libXrandr.so.2
           )
 
           LDCONFIG="$(command -v ldconfig || true)"
@@ -168,12 +164,12 @@ jobs:
           bun-version: 1.3.12
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.14"
 
@@ -256,7 +252,7 @@ jobs:
 
       - name: Create or update pull request
         if: steps.commit.outputs.changed == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           PROFILE: ${{ steps.settings.outputs.profile }}
           REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
