@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { loadSearchIndex, prepareSearchIndex, searchGuides, searchPlaces } from "../../public/scripts/place-search.js";
+import {
+  loadSearchIndex,
+  prepareSearchIndex,
+  searchGuides,
+  searchPlaces,
+} from "../../public/scripts/place-search.js";
 
 const index = prepareSearchIndex({
   version: 1,
@@ -121,7 +126,9 @@ describe("place search", () => {
     const state = searchPlaces("date night restaurants in sf", { index, scope: "all" });
 
     expect(state.results[0].entry.id).toBe("sf-dinner");
-    expect(state.results.every((result) => result.entry.guide_slug === "san-francisco-california-usa")).toBe(true);
+    expect(
+      state.results.every((result) => result.entry.guide_slug === "san-francisco-california-usa"),
+    ).toBe(true);
   });
 
   it("supports guide-local queries without repeating the city name", () => {
@@ -156,7 +163,9 @@ describe("place search", () => {
   });
 
   it("returns guide matches for broad home-page discovery", () => {
-    expect(searchGuides("sf restaurants", { index })[0].guide.slug).toBe("san-francisco-california-usa");
+    expect(searchGuides("sf restaurants", { index })[0].guide.slug).toBe(
+      "san-francisco-california-usa",
+    );
   });
 
   it("does not return curated places for unrelated global searches", () => {

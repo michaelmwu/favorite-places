@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  getTagComparisonValue,
   getDisplayGuideTags,
   getDisplayPlaceTags,
   getGuideAreaFilters,
+  getTagComparisonValue,
   normalizeTagValue,
 } from "../../src/lib/placeTags";
 
@@ -123,7 +123,6 @@ describe("getDisplayGuideTags", () => {
       }),
     ).toEqual(["pizza"]);
   });
-
 
   it("hides translated city aliases for display while keeping them searchable", () => {
     expect(

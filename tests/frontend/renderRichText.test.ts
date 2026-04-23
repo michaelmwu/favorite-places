@@ -10,7 +10,7 @@ describe("renderRichText", () => {
   });
 
   it("renders markdown links and escapes labels and hrefs", () => {
-    expect(renderRichText('Read [x < y](https://example.com?q=1&z=2)')).toBe(
+    expect(renderRichText("Read [x < y](https://example.com?q=1&z=2)")).toBe(
       'Read <a href="https://example.com/?q=1&amp;z=2" target="_blank" rel="noreferrer">x &lt; y</a>',
     );
   });

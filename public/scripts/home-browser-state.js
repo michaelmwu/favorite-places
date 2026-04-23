@@ -1,6 +1,9 @@
 const DEFAULT_VIEW = "grouped";
 
-const normalizeCountry = (value) => String(value || "").trim().toLowerCase();
+const normalizeCountry = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase();
 
 export function slugifyCountry(country) {
   return normalizeCountry(country)
@@ -28,7 +31,10 @@ function resolveCountry(country, validCountries = []) {
       continue;
     }
 
-    if (normalizedCountry === normalizedCandidate || normalizedCountry === slugifyCountry(candidate)) {
+    if (
+      normalizedCountry === normalizedCandidate ||
+      normalizedCountry === slugifyCountry(candidate)
+    ) {
       return normalizedCandidate;
     }
   }
@@ -37,7 +43,9 @@ function resolveCountry(country, validCountries = []) {
 }
 
 export function parseHomeBrowserHash(hash, validCountries = []) {
-  const rawHash = String(hash || "").replace(/^#/, "").trim();
+  const rawHash = String(hash || "")
+    .replace(/^#/, "")
+    .trim();
   if (!rawHash) {
     return {
       country: "",

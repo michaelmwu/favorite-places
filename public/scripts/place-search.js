@@ -114,7 +114,10 @@ export function prepareSearchIndex(index) {
     _neighborhoodTokens: tokenize(entry.neighborhood || ""),
     _noteTokens: tokenize([entry.note || "", entry.why_recommended || ""].join(" ")),
     _searchTokens: tokenize(entry.search_text || ""),
-    _tagTokens: tokenizeList([...(Array.isArray(entry.tags) ? entry.tags : []), ...(Array.isArray(entry.vibe_tags) ? entry.vibe_tags : [])]),
+    _tagTokens: tokenizeList([
+      ...(Array.isArray(entry.tags) ? entry.tags : []),
+      ...(Array.isArray(entry.vibe_tags) ? entry.vibe_tags : []),
+    ]),
     _guide: guideBySlug.get(entry.guide_slug),
   }));
 
@@ -127,7 +130,9 @@ export function prepareSearchIndex(index) {
 }
 
 export function searchPlaces(query, options = {}) {
-  const index = options.index ? prepareSearchIndexOnce(options.index) : prepareSearchIndex({ entries: [] });
+  const index = options.index
+    ? prepareSearchIndexOnce(options.index)
+    : prepareSearchIndex({ entries: [] });
   const parsed = parseQuery(query, index, options);
   const activeFilters = options.activeFilters || {};
   const scopedEntries = index.entries.filter((entry) => {
@@ -143,7 +148,9 @@ export function searchPlaces(query, options = {}) {
     }
     if (
       activeFilters.tag &&
-      !normalizedList([...entry.tags, ...entry.vibe_tags]).includes(normalizeToken(activeFilters.tag))
+      !normalizedList([...entry.tags, ...entry.vibe_tags]).includes(
+        normalizeToken(activeFilters.tag),
+      )
     ) {
       return false;
     }
@@ -178,7 +185,9 @@ export function searchPlaces(query, options = {}) {
 }
 
 export function searchGuides(query, options = {}) {
-  const index = options.index ? prepareSearchIndexOnce(options.index) : prepareSearchIndex({ guides: [] });
+  const index = options.index
+    ? prepareSearchIndexOnce(options.index)
+    : prepareSearchIndex({ guides: [] });
   const normalizedQuery = normalizeText(query);
   const tokens = tokenize(normalizedQuery);
   if (tokens.length === 0) {
@@ -205,7 +214,10 @@ export function searchGuides(query, options = {}) {
       return { guide, matchedSignals: [...new Set(matchedSignals)], score };
     })
     .filter((result) => result.score > 0)
-    .sort((left, right) => right.score - left.score || left.guide.title.localeCompare(right.guide.title));
+    .sort(
+      (left, right) =>
+        right.score - left.score || left.guide.title.localeCompare(right.guide.title),
+    );
 }
 
 export function normalizeText(value) {
@@ -250,7 +262,9 @@ function parseQuery(query, index, options) {
     guideSlugs.clear();
   }
 
-  const unmatchedTerms = tokens.filter((token) => !STOP_WORDS.has(token) && !consumedTokens.has(token));
+  const unmatchedTerms = tokens.filter(
+    (token) => !STOP_WORDS.has(token) && !consumedTokens.has(token),
+  );
 
   return {
     categories,
@@ -319,10 +333,10 @@ function scoreEntry(entry, parsed) {
   }
 
   if (
-    parsed.normalizedQuery
-    && (entryTags.includes(normalizeToken(parsed.normalizedQuery))
-      || entryVibes.includes(normalizeToken(parsed.normalizedQuery))
-      || containsPhrase(categoryText, parsed.normalizedQuery))
+    parsed.normalizedQuery &&
+    (entryTags.includes(normalizeToken(parsed.normalizedQuery)) ||
+      entryVibes.includes(normalizeToken(parsed.normalizedQuery)) ||
+      containsPhrase(categoryText, parsed.normalizedQuery))
   ) {
     score += 18;
     matchedSignals.push("tag");
@@ -347,7 +361,12 @@ function scoreEntry(entry, parsed) {
     if (nameMatch > 0) {
       score += nameMatch === 1 ? 16 : 12;
       matchedSignals.push("name");
-    } else if (tagMatch > 0 || entryTags.includes(term) || entryVibes.includes(term) || categoryMatch > 0) {
+    } else if (
+      tagMatch > 0 ||
+      entryTags.includes(term) ||
+      entryVibes.includes(term) ||
+      categoryMatch > 0
+    ) {
       score += 10;
       matchedSignals.push("tag");
     } else if (cityMatch > 0 || guideTitleMatch > 0) {
@@ -469,7 +488,10 @@ function curatedSort(left, right) {
   if (topPickDelta !== 0) {
     return topPickDelta;
   }
-  return Number(right.manual_rank || 0) - Number(left.manual_rank || 0) || left.name.localeCompare(right.name);
+  return (
+    Number(right.manual_rank || 0) - Number(left.manual_rank || 0) ||
+    left.name.localeCompare(right.name)
+  );
 }
 
 function prepareSearchIndexOnce(index) {

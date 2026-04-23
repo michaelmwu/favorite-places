@@ -33,7 +33,9 @@ describe("home browser URL state", () => {
   });
 
   it("parses query-style hashes for country, search text, and view", () => {
-    expect(parseHomeBrowserHash("#country=south-korea&q=date+night&view=individual", validCountries)).toEqual({
+    expect(
+      parseHomeBrowserHash("#country=south-korea&q=date+night&view=individual", validCountries),
+    ).toEqual({
       country: "south korea",
       query: "date night",
       view: "individual",

@@ -28,7 +28,11 @@ const manifest = MAP_MARKER_ICON_NAMES.map((icon) => {
   };
 });
 
-writeFileSync(resolve(outputDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+writeFileSync(
+  resolve(outputDir, "manifest.json"),
+  `${JSON.stringify(manifest, null, 2)}\n`,
+  "utf8",
+);
 
 const previewHtml = `<!doctype html>
 <html lang="en">
@@ -118,8 +122,8 @@ const previewHtml = `<!doctype html>
       <p>Static SVG exports generated from the same marker source used by the guide map. Grab any file directly from this folder or use the manifest for programmatic lookups.</p>
       <section class="grid">
         ${manifest
-          .map(
-            (entry) => `
+          .map((entry) =>
+            `
               <article class="card">
                 <img src="./${entry.file}" alt="${entry.label}" />
                 <strong>${entry.label}</strong>

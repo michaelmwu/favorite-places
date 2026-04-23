@@ -10,8 +10,8 @@ export function getHomeAsideHtml(): string | null {
 
 export function getGuideAsideHtml(slug: string): string | null {
   return (
-    asideTemplateModules[`/src/content/templates/guide-aside/${slug}.html`]
-    ?? asideTemplateModules["/src/content/templates/guide-aside/default.html"]
-    ?? null
+    asideTemplateModules[`/src/content/templates/guide-aside/${slug}.html`] ??
+    asideTemplateModules["/src/content/templates/guide-aside/default.html"] ??
+    null
   );
 }

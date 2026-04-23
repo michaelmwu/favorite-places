@@ -7,9 +7,7 @@ function getTagComparisonValue(value) {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
-  const slug = normalizedText
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  const slug = normalizedText.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
   return slug || normalizedText;
 }
@@ -21,7 +19,9 @@ function parseCardTagValues(value) {
 
   try {
     const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed.map((item) => getTagComparisonValue(item)).filter(Boolean) : [];
+    return Array.isArray(parsed)
+      ? parsed.map((item) => getTagComparisonValue(item)).filter(Boolean)
+      : [];
   } catch {
     return String(value)
       .split(/\s+/)
@@ -56,22 +56,28 @@ export function cardMatchesType(card, { activeTypeValue = "", activeTypeSeedValu
   const normalizedType = getTagComparisonValue(activeTypeValue);
   const normalizedCardCategory = getTagComparisonValue(card.dataset.category || "");
 
-  return !normalizedType
-    || normalizedCardCategory === normalizedType
-    || activeTypeSeedValues.some((seedTag) => cardHasTag(card, seedTag));
+  return (
+    !normalizedType ||
+    normalizedCardCategory === normalizedType ||
+    activeTypeSeedValues.some((seedTag) => cardHasTag(card, seedTag))
+  );
 }
 
-export function countMatchingCards(cards, {
-  activeArea = "",
-  mapFramePlaceIds = null,
-  normalizedQuery = "",
-  searchResultIds = null,
-  tag = "",
-} = {}) {
+export function countMatchingCards(
+  cards,
+  {
+    activeArea = "",
+    mapFramePlaceIds = null,
+    normalizedQuery = "",
+    searchResultIds = null,
+    tag = "",
+  } = {},
+) {
   const normalizedActiveArea = getTagComparisonValue(activeArea);
   return cards.filter((card) => {
     const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-    const matchesArea = !normalizedActiveArea || getCardAreaComparisonValue(card) === normalizedActiveArea;
+    const matchesArea =
+      !normalizedActiveArea || getCardAreaComparisonValue(card) === normalizedActiveArea;
     const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
     return matchesSearch && matchesArea && matchesMapFrame && cardHasTag(card, tag);
   }).length;
@@ -128,9 +134,19 @@ if (root) {
   const initialParams = new URLSearchParams(window.location.search);
 
   const normalizeTag = (value) => getTagComparisonValue(String(value || ""));
-  const allTags = [...new Set(JSON.parse(root.dataset.allTags || "[]").map(normalizeTag).filter(Boolean))];
+  const allTags = [
+    ...new Set(
+      JSON.parse(root.dataset.allTags || "[]")
+        .map(normalizeTag)
+        .filter(Boolean),
+    ),
+  ];
   const defaultSuggestions = [
-    ...new Set(JSON.parse(root.dataset.defaultSuggestions || "[]").map(normalizeTag).filter(Boolean)),
+    ...new Set(
+      JSON.parse(root.dataset.defaultSuggestions || "[]")
+        .map(normalizeTag)
+        .filter(Boolean),
+    ),
   ];
   const typeSeeds = Object.fromEntries(
     Object.entries(JSON.parse(root.dataset.typeSeeds || "{}")).map(([type, tags]) => [
@@ -144,7 +160,7 @@ if (root) {
   let selectedTags = [];
   let mapFramePlaceIds = null;
   let searchIndex = null;
-  let highlightedPlaceId = initialParams.get("place") || "";
+  const highlightedPlaceId = initialParams.get("place") || "";
   let autocompleteTags = [];
   let highlightedAutocompleteIndex = -1;
 
@@ -328,7 +344,9 @@ if (root) {
 
     const autocompleteState = getAutocompleteState(searchInput.value);
     if (autocompleteState) {
-      searchInput.value = searchInput.value.slice(0, autocompleteState.hashIndex).replace(/\s+$/, "");
+      searchInput.value = searchInput.value
+        .slice(0, autocompleteState.hashIndex)
+        .replace(/\s+$/, "");
     }
 
     addTag(tag);
@@ -342,30 +360,36 @@ if (root) {
       const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
       const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
       if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
-      return Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0)
-        || (left.dataset.name || "").localeCompare(right.dataset.name || "");
+      return (
+        Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0) ||
+        (left.dataset.name || "").localeCompare(right.dataset.name || "")
+      );
     },
     rating: (left, right) =>
-      Number(right.dataset.rating || 0) - Number(left.dataset.rating || 0)
-      || Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0)
-      || sorters.curated(left, right),
+      Number(right.dataset.rating || 0) - Number(left.dataset.rating || 0) ||
+      Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0) ||
+      sorters.curated(left, right),
     name: (left, right) => (left.dataset.name || "").localeCompare(right.dataset.name || ""),
     neighborhood: (left, right) =>
-      (left.dataset.neighborhood || "").localeCompare(right.dataset.neighborhood || "")
-      || (left.dataset.name || "").localeCompare(right.dataset.name || ""),
+      (left.dataset.neighborhood || "").localeCompare(right.dataset.neighborhood || "") ||
+      (left.dataset.name || "").localeCompare(right.dataset.name || ""),
   };
 
-  const cardMatchesFilters = (card, {
-    activeAreaLabelValue = "",
-    activeTypeValue = "",
-    activeTypeSeedValues = [],
-    mapFrameIds = null,
-    normalizedQuery = "",
-    searchResultIds = null,
-    selectedTagValues = [],
-  } = {}) => {
+  const cardMatchesFilters = (
+    card,
+    {
+      activeAreaLabelValue = "",
+      activeTypeValue = "",
+      activeTypeSeedValues = [],
+      mapFrameIds = null,
+      normalizedQuery = "",
+      searchResultIds = null,
+      selectedTagValues = [],
+    } = {},
+  ) => {
     const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-    const matchesArea = !activeAreaLabelValue || getCardAreaComparisonValue(card) === activeAreaLabelValue;
+    const matchesArea =
+      !activeAreaLabelValue || getCardAreaComparisonValue(card) === activeAreaLabelValue;
     const matchesMapFrame = !mapFrameIds || mapFrameIds.has(card.dataset.placeId || "");
     const matchesSelectedTags = selectedTagValues.every((tag) => cardHasTag(card, tag));
     const matchesType = cardMatchesType(card, {
@@ -375,7 +399,8 @@ if (root) {
     return matchesSearch && matchesArea && matchesMapFrame && matchesSelectedTags && matchesType;
   };
 
-  const countFilteredCards = (filters) => cards.filter((card) => cardMatchesFilters(card, filters)).length;
+  const countFilteredCards = (filters) =>
+    cards.filter((card) => cardMatchesFilters(card, filters)).length;
 
   const compareHighlightedPlace = (left, right) => {
     if (!highlightedPlaceId) {
@@ -395,22 +420,25 @@ if (root) {
   const clearMapFrameFilter = () => {
     mapFramePlaceIds = null;
     update("map-reset");
-    root.dispatchEvent(new CustomEvent("guide:map-frame-reset", {
-      bubbles: true,
-    }));
+    root.dispatchEvent(
+      new CustomEvent("guide:map-frame-reset", {
+        bubbles: true,
+      }),
+    );
   };
 
   const update = (source = "list-filter") => {
     const query = searchInput ? getSanitizedQuery(searchInput.value) : "";
     const normalizedQuery = query.toLowerCase();
     const sort = sortSelect?.value || "curated";
-    const searchState = searchIndex && guideSlug
-      ? searchPlaces(query, {
-        index: searchIndex,
-        scope: "guide",
-        guideSlug,
-      })
-      : null;
+    const searchState =
+      searchIndex && guideSlug
+        ? searchPlaces(query, {
+            index: searchIndex,
+            scope: "guide",
+            guideSlug,
+          })
+        : null;
     const searchResultIds = searchState
       ? new Set(searchState.results.map((result) => result.entry.id))
       : null;
@@ -419,7 +447,8 @@ if (root) {
       : new Map();
     const activeTypeSeeds = activeType ? typeSeeds[activeType] || [] : [];
     const activeAreaLabel = activeArea
-      ? areaButtons.find((button) => (button.dataset.area || "") === activeArea)?.dataset.areaLabel || ""
+      ? areaButtons.find((button) => (button.dataset.area || "") === activeArea)?.dataset
+          .areaLabel || ""
       : "";
 
     const visibleCards = cards.filter((card) => {
@@ -433,28 +462,29 @@ if (root) {
         selectedTagValues: selectedTags,
       });
       card.hidden = !visible;
-      card.dataset.searchHighlight = highlightedPlaceId && card.dataset.placeId === highlightedPlaceId ? "true" : "false";
+      card.dataset.searchHighlight =
+        highlightedPlaceId && card.dataset.placeId === highlightedPlaceId ? "true" : "false";
       return visible;
     });
 
     const broaderAreaCount = activeArea
       ? countFilteredCards({
-        activeTypeValue: activeType,
-        activeTypeSeedValues: activeTypeSeeds,
-        normalizedQuery,
-        searchResultIds,
-        selectedTagValues: selectedTags,
-      })
+          activeTypeValue: activeType,
+          activeTypeSeedValues: activeTypeSeeds,
+          normalizedQuery,
+          searchResultIds,
+          selectedTagValues: selectedTags,
+        })
       : visibleCards.length;
     const areaMatchCount = activeArea
       ? countFilteredCards({
-        activeAreaLabelValue: activeArea,
-        activeTypeValue: activeType,
-        activeTypeSeedValues: activeTypeSeeds,
-        normalizedQuery,
-        searchResultIds,
-        selectedTagValues: selectedTags,
-      })
+          activeAreaLabelValue: activeArea,
+          activeTypeValue: activeType,
+          activeTypeSeedValues: activeTypeSeeds,
+          normalizedQuery,
+          searchResultIds,
+          selectedTagValues: selectedTags,
+        })
       : visibleCards.length;
     const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
 
@@ -480,16 +510,18 @@ if (root) {
       });
     }
 
-    const sorter = normalizedQuery && sort === "curated" && searchResultIds
-      ? (left, right) =>
-        (searchScores.get(right.dataset.placeId || "") || 0)
-          - (searchScores.get(left.dataset.placeId || "") || 0)
-        || sorters.curated(left, right)
-      : sorters[sort] || sorters.curated;
+    const sorter =
+      normalizedQuery && sort === "curated" && searchResultIds
+        ? (left, right) =>
+            (searchScores.get(right.dataset.placeId || "") || 0) -
+              (searchScores.get(left.dataset.placeId || "") || 0) || sorters.curated(left, right)
+        : sorters[sort] || sorters.curated;
 
-    visibleCards.sort((left, right) => compareHighlightedPlace(left, right) || sorter(left, right)).forEach((card) => {
-      list?.appendChild(card);
-    });
+    visibleCards
+      .sort((left, right) => compareHighlightedPlace(left, right) || sorter(left, right))
+      .forEach((card) => {
+        list?.appendChild(card);
+      });
 
     if (resultsCount) {
       const suffix = mapFramePlaceIds ? " in map view" : "";
@@ -523,14 +555,16 @@ if (root) {
       button.hidden = !mapFramePlaceIds;
     });
 
-    root.dispatchEvent(new CustomEvent("guide:places-updated", {
-      bubbles: true,
-      detail: {
-        source,
-        mapFrameActive: Boolean(mapFramePlaceIds),
-        visiblePlaceIds: visibleCards.map((card) => card.dataset.placeId).filter(Boolean),
-      },
-    }));
+    root.dispatchEvent(
+      new CustomEvent("guide:places-updated", {
+        bubbles: true,
+        detail: {
+          source,
+          mapFrameActive: Boolean(mapFramePlaceIds),
+          visiblePlaceIds: visibleCards.map((card) => card.dataset.placeId).filter(Boolean),
+        },
+      }),
+    );
   };
 
   searchInput?.addEventListener("input", () => {
@@ -553,7 +587,8 @@ if (root) {
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      highlightedAutocompleteIndex = (highlightedAutocompleteIndex - 1 + autocompleteTags.length) % autocompleteTags.length;
+      highlightedAutocompleteIndex =
+        (highlightedAutocompleteIndex - 1 + autocompleteTags.length) % autocompleteTags.length;
       updateAutocomplete();
       return;
     }
@@ -658,7 +693,9 @@ if (root) {
   });
 
   root.addEventListener("guide:map-frame-filter", (event) => {
-    const visiblePlaceIds = Array.isArray(event.detail?.visiblePlaceIds) ? event.detail.visiblePlaceIds : [];
+    const visiblePlaceIds = Array.isArray(event.detail?.visiblePlaceIds)
+      ? event.detail.visiblePlaceIds
+      : [];
     mapFramePlaceIds = new Set(visiblePlaceIds);
     update("map-frame");
   });

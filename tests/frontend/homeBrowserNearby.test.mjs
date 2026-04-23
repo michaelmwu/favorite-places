@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { nearbyGuideConfig, nearbyGuidesForLocation } from "../../public/scripts/home-browser-nearby.js";
+import {
+  nearbyGuideConfig,
+  nearbyGuidesForLocation,
+} from "../../public/scripts/home-browser-nearby.js";
 
 const buildGuide = (slug, lat, lng) => ({
   slug,
@@ -24,11 +27,15 @@ describe("home browser nearby guide selection", () => {
     expect(result?.guides.map((guide) => guide.slug)).toEqual(["far-away"]);
     expect(result?.guideSlugs.has("far-away")).toBe(true);
     expect(result?.radiusKm).toBeCloseTo(result?.nearestGuide.distance ?? 0, 6);
-    expect((result?.nearestGuide.distance ?? 0)).toBeGreaterThan(nearbyGuideConfig.MAX_NEARBY_RADIUS_KM);
+    expect(result?.nearestGuide.distance ?? 0).toBeGreaterThan(
+      nearbyGuideConfig.MAX_NEARBY_RADIUS_KM,
+    );
   });
 
   it("caps the nearby list to the configured maximum guide count", () => {
-    const guides = Array.from({ length: 12 }, (_, index) => buildGuide(`guide-${index + 1}`, 35 + index * 0.1, 139));
+    const guides = Array.from({ length: 12 }, (_, index) =>
+      buildGuide(`guide-${index + 1}`, 35 + index * 0.1, 139),
+    );
 
     const result = nearbyGuidesForLocation(guides, 35, 139);
 

@@ -212,7 +212,11 @@ export const getMapMarkerColors = (
   };
 };
 
-export const getMapMarkerSize = (_icon: MarkerIcon, topPick = false, active = false): MapMarkerSize => {
+export const getMapMarkerSize = (
+  _icon: MarkerIcon,
+  topPick = false,
+  active = false,
+): MapMarkerSize => {
   const scale = active ? (topPick ? 1.16 : 1.1) : topPick ? 1.08 : 1;
   const width = Math.round(34 * scale);
   const height = Math.round(34 * scale);

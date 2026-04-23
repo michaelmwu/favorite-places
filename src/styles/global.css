@@ -1296,12 +1296,7 @@ select {
   box-shadow: 0 6px 18px rgba(31, 26, 22, 0.16);
   color: var(--ink);
   font-family:
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Noto Color Emoji",
-    "Avenir Next",
-    "Segoe UI",
-    sans-serif;
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Avenir Next", "Segoe UI", sans-serif;
   font-size: 1rem;
   font-weight: 800;
   line-height: 1;
@@ -1495,8 +1490,7 @@ select {
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter:
-    drop-shadow(0 2px 0 rgba(255, 255, 255, 0.92))
+  filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.92))
     drop-shadow(0 5px 12px rgba(17, 12, 8, 0.28));
 }
 
@@ -2087,7 +2081,9 @@ select {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 120ms ease, opacity 120ms ease;
+  transition:
+    transform 120ms ease,
+    opacity 120ms ease;
 }
 
 .floating-scroll-button:hover,

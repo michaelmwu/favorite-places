@@ -3,10 +3,10 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 import {
+  resolveWorktreeDevPort,
   WORKTREE_DEV_PORT_ENV,
   WORKTREE_DEV_PORT_OFFSET_ENV,
   WORKTREE_DEV_ROOT_ENV,
-  resolveWorktreeDevPort,
 } from "./worktree_dev_port.mjs";
 
 const PORT_ARG_NAMES = new Set(["--port", "-p"]);
@@ -42,10 +42,7 @@ const forwardedArgs = process.argv.slice(2);
 const cliPort = parseCliPort(forwardedArgs);
 const worktreeRoot = gitWorktreeRoot();
 const portConfig = resolveWorktreeDevPort({
-  env:
-    cliPort === undefined
-      ? process.env
-      : { ...process.env, [WORKTREE_DEV_PORT_ENV]: cliPort },
+  env: cliPort === undefined ? process.env : { ...process.env, [WORKTREE_DEV_PORT_ENV]: cliPort },
   worktreeRoot,
 });
 

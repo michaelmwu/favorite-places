@@ -1,5 +1,5 @@
-import { parseHomeBrowserHash, serializeHomeBrowserHash } from "./home-browser-state.js";
 import { nearbyGuidesForLocation } from "./home-browser-nearby.js";
+import { parseHomeBrowserHash, serializeHomeBrowserHash } from "./home-browser-state.js";
 import { loadSearchIndex, searchGuides, searchPlaces } from "./place-search.js";
 
 const GROUP_LIMIT = 5;
@@ -39,14 +39,19 @@ if (root) {
   const pluralize = (count, singular, plural = `${singular}s`) =>
     `${count} ${count === 1 ? singular : plural}`;
 
-  const normalizeCountry = (value) => String(value || "").trim().toLowerCase();
+  const normalizeCountry = (value) =>
+    String(value || "")
+      .trim()
+      .toLowerCase();
 
   const countryLabel = (country) => {
     if (!country) {
       return "";
     }
 
-    const button = countryButtons.find((candidate) => (candidate.dataset.country || "") === country);
+    const button = countryButtons.find(
+      (candidate) => (candidate.dataset.country || "") === country,
+    );
     const label = button?.querySelector("span")?.textContent || country;
     return label.replace(FLAG_SUFFIX_PATTERN, "").trim();
   };
@@ -61,7 +66,11 @@ if (root) {
       return;
     }
 
-    history.replaceState(history.state, "", `${window.location.pathname}${window.location.search}${nextHash}`);
+    history.replaceState(
+      history.state,
+      "",
+      `${window.location.pathname}${window.location.search}${nextHash}`,
+    );
   };
 
   const applyUrlState = () => {
@@ -153,7 +162,8 @@ if (root) {
     return `${value.slice(0, maxLength - 1).trim()}...`;
   };
 
-  const ratingValue = (value) => (typeof value === "number" && Number.isFinite(value) ? value : null);
+  const ratingValue = (value) =>
+    typeof value === "number" && Number.isFinite(value) ? value : null;
   const reviewCountValue = (value) =>
     typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
   const formatRating = (value) => value.toFixed(1);
@@ -164,17 +174,22 @@ if (root) {
   });
   const formatReviewCount = (value) =>
     (value >= 1000 ? compactReviewCountFormatter : reviewCountFormatter).format(value);
-  const formatReviewLabel = (value) => `${formatReviewCount(value)} ${value === 1 ? "review" : "reviews"}`;
+  const formatReviewLabel = (value) =>
+    `${formatReviewCount(value)} ${value === 1 ? "review" : "reviews"}`;
 
   const groupSearchResults = (results) =>
-    [...results.reduce((groups, result) => {
-      const country = result.entry.country || "Unknown";
-      if (!groups.has(country)) {
-        groups.set(country, []);
-      }
-      groups.get(country).push(result);
-      return groups;
-    }, new Map()).entries()]
+    [
+      ...results
+        .reduce((groups, result) => {
+          const country = result.entry.country || "Unknown";
+          if (!groups.has(country)) {
+            groups.set(country, []);
+          }
+          groups.get(country).push(result);
+          return groups;
+        }, new Map())
+        .entries(),
+    ]
       .map(([country, items]) => ({ country, items }))
       .sort(
         (left, right) =>
@@ -297,7 +312,10 @@ if (root) {
       const reviewCount = reviewCountValue(entry.user_rating_count);
       const itemStats = document.createElement("span");
       itemStats.className = "search-country-item-meta";
-      itemStats.textContent = [rating !== null ? `${formatRating(rating)} ★` : null, reviewCount !== null ? formatReviewLabel(reviewCount) : null]
+      itemStats.textContent = [
+        rating !== null ? `${formatRating(rating)} ★` : null,
+        reviewCount !== null ? formatReviewLabel(reviewCount) : null,
+      ]
         .filter(Boolean)
         .join(" · ");
       itemStats.hidden = !itemStats.textContent;
@@ -403,14 +421,18 @@ if (root) {
       filteredResults ||
       state.results.filter(
         (result) =>
-          (!activeCountry || normalizeCountry(result.entry.country) === activeCountry)
-          && (!nearbyGuideState || nearbyGuideState.guideSlugs.has(result.entry.guide_slug)),
+          (!activeCountry || normalizeCountry(result.entry.country) === activeCountry) &&
+          (!nearbyGuideState || nearbyGuideState.guideSlugs.has(result.entry.guide_slug)),
       );
     const groupedResults = groupSearchResults(visibleResults);
     const visibleIndividualResults = visibleResults.slice(0, INDIVIDUAL_RESULT_LIMIT);
 
-    globalResultsList.replaceChildren(...visibleIndividualResults.map((result) => createSearchResultCard(result, query)));
-    groupedResultsList.replaceChildren(...groupedResults.map((group) => createGroupedCountryCard(group, query)));
+    globalResultsList.replaceChildren(
+      ...visibleIndividualResults.map((result) => createSearchResultCard(result, query)),
+    );
+    groupedResultsList.replaceChildren(
+      ...groupedResults.map((group) => createGroupedCountryCard(group, query)),
+    );
 
     globalResultsList.hidden = searchResultView !== "individual";
     groupedResultsList.hidden = searchResultView !== "grouped";
@@ -455,7 +477,10 @@ if (root) {
 
       if (searchResultView === "grouped" && visibleResults.length > 0) {
         summaryBits.push(`Showing up to ${GROUP_LIMIT} places per country`);
-      } else if (searchResultView === "individual" && visibleResults.length > INDIVIDUAL_RESULT_LIMIT) {
+      } else if (
+        searchResultView === "individual" &&
+        visibleResults.length > INDIVIDUAL_RESULT_LIMIT
+      ) {
         summaryBits.push(`Showing top ${INDIVIDUAL_RESULT_LIMIT} individual matches`);
       }
 
@@ -470,7 +495,11 @@ if (root) {
       const country = button.dataset.country || "";
       const count = country ? matchingGuidesByCountry.get(country) || 0 : totalMatchingGuides;
       const countLabel = button.querySelector(".country-filter-count");
-      const shouldHide = (searching || Boolean(nearbyGuideState)) && Boolean(country) && country !== activeCountry && count === 0;
+      const shouldHide =
+        (searching || Boolean(nearbyGuideState)) &&
+        Boolean(country) &&
+        country !== activeCountry &&
+        count === 0;
 
       button.dataset.active = country === activeCountry ? "true" : "false";
       button.dataset.locationMatch = country && country === locationMatchCountry ? "true" : "false";
@@ -493,8 +522,8 @@ if (root) {
     const filteredPlaceResults = placeSearchState
       ? placeSearchState.results.filter(
           (result) =>
-            (!activeCountry || normalizeCountry(result.entry.country) === activeCountry)
-            && (!nearbyGuideSlugs || nearbyGuideSlugs.has(result.entry.guide_slug)),
+            (!activeCountry || normalizeCountry(result.entry.country) === activeCountry) &&
+            (!nearbyGuideSlugs || nearbyGuideSlugs.has(result.entry.guide_slug)),
         )
       : [];
     const placeMatchGuideSlugs = placeSearchState
@@ -594,8 +623,12 @@ if (root) {
     update();
 
     if (scroll) {
-      const button = countryButtons.find((candidate) => (candidate.dataset.country || "") === country);
-      const block = countryBlocks.find((candidate) => (candidate.dataset.country || "") === country);
+      const button = countryButtons.find(
+        (candidate) => (candidate.dataset.country || "") === country,
+      );
+      const block = countryBlocks.find(
+        (candidate) => (candidate.dataset.country || "") === country,
+      );
 
       button?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       block?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -616,7 +649,9 @@ if (root) {
 
     if (scroll) {
       const firstNearbyCountry = state.guides[0]?.country;
-      const block = countryBlocks.find((candidate) => (candidate.dataset.country || "") === firstNearbyCountry);
+      const block = countryBlocks.find(
+        (candidate) => (candidate.dataset.country || "") === firstNearbyCountry,
+      );
       locationButton?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
       block?.scrollIntoView({ behavior: "smooth", block: "start" });
     }

@@ -40,7 +40,9 @@ export const nearbyGuidesForLocation = (guideLocations, latitude, longitude) => 
     distances[targetIndex]?.distance + NEARBY_RADIUS_BUFFER_KM,
   );
   const radiusKm = Math.max(nearestGuide.distance, Math.min(MAX_NEARBY_RADIUS_KM, adaptiveRadius));
-  const guides = distances.filter((guide) => guide.distance <= radiusKm).slice(0, MAX_NEARBY_GUIDES);
+  const guides = distances
+    .filter((guide) => guide.distance <= radiusKm)
+    .slice(0, MAX_NEARBY_GUIDES);
 
   return {
     guideSlugs: new Set(guides.map((guide) => guide.slug)),

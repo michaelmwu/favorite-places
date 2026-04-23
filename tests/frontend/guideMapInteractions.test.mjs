@@ -4,7 +4,12 @@ import { describe, expect, it } from "vitest";
 const readSource = (path) => readFileSync(path, "utf8");
 const cssBlocks = (css, selector) => {
   return [...css.matchAll(/([^{}]+){([^}]*)}/g)]
-    .filter((match) => match[1].split(",").map((part) => part.trim()).includes(selector))
+    .filter((match) =>
+      match[1]
+        .split(",")
+        .map((part) => part.trim())
+        .includes(selector),
+    )
     .map((match) => match[2]);
 };
 
@@ -36,7 +41,9 @@ describe("guide map interactions", () => {
     const css = readSource("src/styles/global.css");
 
     expect(css).toContain(".hero p,\n.lede {\n  margin: 0;");
-    expect(css).toContain("@media (max-width: 719px) {\n  .page-shell {\n    width: min(calc(100% - 0.5rem), var(--page-width));");
+    expect(css).toContain(
+      "@media (max-width: 719px) {\n  .page-shell {\n    width: min(calc(100% - 0.5rem), var(--page-width));",
+    );
     expect(css).toContain(".site-header {\n    padding: 0.35rem 0 0.2rem;");
     expect(css).toContain(".site-title img {\n    width: min(84px, 22vw);");
     expect(css).toContain(".hero {\n    padding-bottom: 1.4rem;");
@@ -53,13 +60,15 @@ describe("guide map interactions", () => {
     const placeCard = readSource("src/components/PlaceCard.astro");
     const css = readSource("src/styles/global.css");
 
-    expect(placeCard).toContain('import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";');
+    expect(placeCard).toContain(
+      'import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";',
+    );
     expect(placeCard).toContain('class="place-card-name-row"');
     expect(placeCard).toContain('class="place-card-marker"');
     expect(placeCard).toContain('class="place-card-map-link"');
-    expect(placeCard).toContain('aria-label={`Open ${place.name} in Google Maps`}');
+    expect(placeCard).toContain("aria-label={`Open ${place.name} in Google Maps`}");
     expect(placeCard).not.toContain(">Open in Google Maps<");
-    expect(placeCard).toContain('set:html={markerSvg}');
+    expect(placeCard).toContain("set:html={markerSvg}");
     expect(css).toContain(".place-card-map-link");
     expect(css).toContain(".place-card-marker");
     expect(css).toContain(".place-card-name-row");
@@ -73,7 +82,7 @@ describe("guide map interactions", () => {
     const placeCard = readSource("src/components/PlaceCard.astro");
     const css = readSource("src/styles/global.css");
 
-    expect(placeCard).toContain('const hasStats = ratingValue !== null || reviewCount !== null;');
+    expect(placeCard).toContain("const hasStats = ratingValue !== null || reviewCount !== null;");
     expect(placeCard).toContain('class="place-card-meta-row"');
     expect(placeCard).toContain('class="stats-row place-card-stats place-card-meta-stats"');
     expect(placeCard).not.toContain("{hasPhoto && hasStats && (");
@@ -97,8 +106,10 @@ describe("guide map interactions", () => {
       guidePage.indexOf("<GuideMap places={visiblePlaces} />"),
     );
     expect(guideMap).toContain('const DESKTOP_MAP_MEDIA_QUERY = "(min-width: 980px)"');
-    expect(guideMap).toContain('const syncPanelOrder = (panel: HTMLElement) => {');
-    expect(guideMap).toContain('const browseMain = layout?.querySelector<HTMLElement>("[data-browse-main]")');
+    expect(guideMap).toContain("const syncPanelOrder = (panel: HTMLElement) => {");
+    expect(guideMap).toContain(
+      'const browseMain = layout?.querySelector<HTMLElement>("[data-browse-main]")',
+    );
     expect(guideMap).toContain("browseMain.after(panel);");
     expect(guideMap).toContain("layout.prepend(panel);");
     expect(guideMap).toContain('panel.closest<HTMLElement>("[data-browse-layout]")');
@@ -107,7 +118,9 @@ describe("guide map interactions", () => {
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) 2.75rem");
     expect(css).toContain(".browse-layout > .map-panel {\n    order: 0;\n    position: sticky;");
     expect(css).toContain(".home-map-panel {\n  position: relative;\n  top: auto;");
-    expect(css).toContain('.browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"]');
+    expect(css).toContain(
+      '.browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"]',
+    );
     expect(css).toContain("grid-template-columns: repeat(auto-fit, minmax(23rem, 28rem))");
     expect(css).toContain("justify-content: start;");
     expect(cssBlocks(css, ".map-panel").join("\n")).toContain("order: 0;");
@@ -134,7 +147,7 @@ describe("guide map interactions", () => {
     expect(filters).toContain("countMatchingCards");
     expect(filters).toContain("buildAreaFilterStatusMessage");
     expect(filters).toContain('root.addEventListener("guide:map-frame-filter"');
-    expect(filters).toContain('root.dispatchEvent(new CustomEvent("guide:map-frame-reset"');
+    expect(filters).toContain('new CustomEvent("guide:map-frame-reset"');
   });
 
   it("guards the current-location map control with stored guide proximity bounds", () => {
@@ -159,7 +172,7 @@ describe("guide map interactions", () => {
     expect(css).toContain(".map-icon-button");
     expect(css).toContain('.map-icon-button[aria-disabled="true"]');
     expect(css).toContain('.map-icon-button[data-location-state="checking"]');
-    expect(css).toContain(".map-icon-button[data-busy=\"true\"] svg");
+    expect(css).toContain('.map-icon-button[data-busy="true"] svg');
   });
 
   it("renders map pins from normalized place-type icons instead of generic circles", () => {
@@ -184,10 +197,12 @@ describe("guide map interactions", () => {
 
     expect(homePage).toContain("<HomeGuideMap guides={locationGuideCandidates} />");
     expect(homeMap).toContain("data-home-guide-map");
-    expect(homeMap).toContain("data-guides={JSON.stringify(mapGuides).replace(/</g, \"\\\\u003c\")}");
+    expect(homeMap).toContain('data-guides={JSON.stringify(mapGuides).replace(/</g, "\\\\u003c")}');
     expect(homeBrowser).toContain('root.querySelector("[data-home-guide-map]")');
     expect(homeBrowser).toContain('new CustomEvent("favorite-places:home-map-update"');
-    expect(homeMap).toContain('document.addEventListener(\n      "favorite-places:home-map-update"');
+    expect(homeMap).toContain(
+      'document.addEventListener(\n      "favorite-places:home-map-update"',
+    );
     expect(homeMap).toContain("pendingState");
     expect(homeMap).toContain("runtime?.setVisibleGuides(currentVisibleGuideSlugs)");
     expect(homeMap).toContain("runtime?.fitGuides(currentVisibleGuides)");

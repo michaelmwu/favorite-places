@@ -1,8 +1,9 @@
 ---
-import type { Place } from "../lib/types";
+
 import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";
 import { getDisplayGuideTags, getDisplayPlaceTags, getTagComparisonValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
+import type { Place } from "../lib/types";
 
 interface Props {
   guideContext?: {
@@ -75,7 +76,7 @@ const markerSvg = buildMapMarkerSvg(
 >
   <div class="place-card-photo" aria-hidden={hasPhoto ? undefined : "true"}>
     {hasPhoto ? (
-      <img src={place.main_photo_path} alt={`Photo of ${place.name}`} loading="lazy" />
+      <img src={place.main_photo_path} alt={place.name} loading="lazy" />
     ) : (
       <div class="place-card-photo-placeholder">
         <div class="place-card-photo-placeholder-copy">
@@ -83,7 +84,7 @@ const markerSvg = buildMapMarkerSvg(
           <strong class="place-card-photo-placeholder-title">{placeholderMeta}</strong>
         </div>
         <span class="place-card-photo-placeholder-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="22" height="22">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
             <path
               fill="currentColor"
               d="M12 2.8a6.2 6.2 0 0 1 6.2 6.2c0 4.4-4.8 9.6-5 9.8a1 1 0 0 1-1.4 0c-.2-.2-5-5.4-5-9.8A6.2 6.2 0 0 1 12 2.8Zm0 8.8A2.6 2.6 0 1 0 12 6.4a2.6 2.6 0 0 0 0 5.2Z"
