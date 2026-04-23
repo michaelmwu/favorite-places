@@ -183,30 +183,6 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
 
   const markerLabelUnits = (label: string) => Array.from(label).length;
 
-  const clampBounds = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-  const guideBounds = (guides: HomeMapGuide[]) => {
-    if (guides.length === 0) {
-      return null;
-    }
-
-    const lats = guides.map((guide) => guide.lat);
-    const lngs = guides.map((guide) => guide.lng);
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLng = Math.min(...lngs);
-    const maxLng = Math.max(...lngs);
-    const latDelta = Math.max((maxLat - minLat) * 0.15, 1.2);
-    const lngDelta = Math.max((maxLng - minLng) * 0.15, 1.8);
-
-    return {
-      north: clampBounds(maxLat + latDelta, -85, 85),
-      south: clampBounds(minLat - latDelta, -85, 85),
-      east: clampBounds(maxLng + lngDelta, -180, 180),
-      west: clampBounds(minLng - lngDelta, -180, 180),
-    };
-  };
-
   const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
     if (guides.length === 0) return;
 
@@ -311,11 +287,9 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   };
 
   const initLeafletRuntime = (element: HTMLElement, guides: HomeMapGuide[]): HomeMapRuntime => {
-    const bounds = guideBounds(guides);
+    // Keep the overview map unconstrained so country-level fitBounds stays centered near world edges.
     const map = L.map(element, {
       dragging: true,
-      maxBounds: bounds ? L.latLngBounds([bounds.south, bounds.west], [bounds.north, bounds.east]) : undefined,
-      maxBoundsViscosity: 1,
       maxZoom: 12,
       scrollWheelZoom: false,
       touchZoom: "center",
@@ -368,19 +342,12 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     apiKey: string,
   ): Promise<HomeMapRuntime> => {
     const googleMaps = (await loadGoogleMapsApi(apiKey)) as GoogleMapsApi;
-    const bounds = guideBounds(guides);
     const map = new googleMaps.maps.Map(element, {
       center: { lat: guides[0].lat, lng: guides[0].lng },
       clickableIcons: false,
       disableDefaultUI: true,
       gestureHandling: "greedy",
       keyboardShortcuts: true,
-      restriction: bounds
-        ? {
-            latLngBounds: bounds,
-            strictBounds: false,
-          }
-        : undefined,
       zoom: 4,
       zoomControl: true,
     });
