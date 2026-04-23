@@ -107,16 +107,8 @@ const markerSvg = buildMapMarkerSvg(
           aria-label={`Open ${place.name} in Google Maps`}
           title="Open in Google Maps"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16">
-            <path
-              fill="currentColor"
-              d="M12 2.75a5.75 5.75 0 0 1 5.75 5.75c0 4.08-4.29 8.89-5.12 9.78a.86.86 0 0 1-1.26 0c-.83-.89-5.12-5.7-5.12-9.78A5.75 5.75 0 0 1 12 2.75Zm0 8a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"
-            ></path>
-            <path
-              fill="currentColor"
-              d="M14.75 13.25h5.5v1.5h-5.5v5.5h-1.5v-5.5h-5.5v-1.5h5.5v-5.5h1.5z"
-            ></path>
-          </svg>
+          <img src="/icons/google-maps.svg" alt="" width="18" height="26" loading="lazy" decoding="async" />
+          <span class="place-card-map-link-label" aria-hidden="true">Maps</span>
         </a>
       </div>
       <div class="place-card-meta-row">

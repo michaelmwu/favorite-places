@@ -942,29 +942,47 @@ img {
 }
 
 .place-card-map-link {
-  width: 2.3rem;
-  height: 2.3rem;
-  display: inline-grid;
-  place-items: center;
+  min-height: 2.3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.62rem 0.32rem 0.42rem;
   flex: 0 0 auto;
-  border: 1px solid rgba(152, 35, 31, 0.24);
+  border: 1px solid rgba(18, 73, 160, 0.14);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 88%, white);
-  color: var(--surface);
-  box-shadow: 0 8px 18px rgba(196, 49, 45, 0.18);
+  background: rgba(255, 255, 255, 0.96);
+  color: #18457a;
+  box-shadow: 0 10px 24px rgba(39, 47, 56, 0.1);
   text-decoration: none;
   transition:
     border-color 160ms ease,
     background-color 160ms ease,
     box-shadow 160ms ease,
+    color 160ms ease,
     transform 160ms ease;
+}
+
+.place-card-map-link img {
+  width: 1rem;
+  height: auto;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.place-card-map-link-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .place-card-map-link:hover,
 .place-card-map-link:focus-visible {
-  border-color: var(--accent-strong);
-  background: var(--accent-strong);
-  box-shadow: 0 10px 22px rgba(152, 35, 31, 0.24);
+  border-color: rgba(26, 115, 232, 0.28);
+  background: #ffffff;
+  color: #0b57d0;
+  box-shadow: 0 14px 28px rgba(26, 115, 232, 0.16);
   transform: translateY(-1px);
 }
 

@@ -56,7 +56,7 @@ describe("guide map interactions", () => {
     expect(css).toContain(".social-card-icon {\n    width: 1.5rem;");
   });
 
-  it("renders the Google Maps action as a compact icon beside the place name", () => {
+  it("renders the Google Maps action as a labeled pill beside the place name", () => {
     const placeCard = readSource("src/components/PlaceCard.astro");
     const css = readSource("src/styles/global.css");
 
@@ -67,14 +67,21 @@ describe("guide map interactions", () => {
     expect(placeCard).toContain('class="place-card-marker"');
     expect(placeCard).toContain('class="place-card-map-link"');
     expect(placeCard).toContain("aria-label={`Open ${place.name} in Google Maps`}");
+    expect(placeCard).toContain('<img src="/icons/google-maps.svg" alt="" width="18" height="26"');
+    expect(placeCard).toContain('class="place-card-map-link-label"');
+    expect(placeCard).toContain(">Maps</span>");
     expect(placeCard).not.toContain(">Open in Google Maps<");
     expect(placeCard).toContain("set:html={markerSvg}");
     expect(css).toContain(".place-card-map-link");
+    expect(css).toContain(".place-card-map-link img");
+    expect(css).toContain(".place-card-map-link-label");
     expect(css).toContain(".place-card-marker");
     expect(css).toContain(".place-card-name-row");
     expect(css).toContain("width: 1.8rem;");
-    expect(css).toContain("width: 2.3rem;");
-    expect(css).toContain("background: color-mix(in srgb, var(--accent) 88%, white);");
+    expect(css).toContain("display: inline-flex;");
+    expect(css).toContain("padding: 0.32rem 0.62rem 0.32rem 0.42rem;");
+    expect(css).toContain("background: rgba(255, 255, 255, 0.96);");
+    expect(css).toContain("color: #18457a;");
     expect(css).toContain("border-radius: 999px;");
   });
 
