@@ -73,7 +73,7 @@ PHOTO_CARD_WIDTH = 800
 PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
-PLACES_SQLITE_SIGNATURE_VERSION = 2
+PLACES_SQLITE_SIGNATURE_VERSION = 3
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
 STABLE_GENERATED_AT_FALLBACK = "1970-01-01T00:00:00+00:00"
 SQLITE_UNREADABLE_ERROR_MARKERS = (
@@ -132,6 +132,7 @@ CREATE TABLE canonical_places (
     normalized_rating REAL,
     normalized_user_rating_count INTEGER,
     normalized_primary_category TEXT,
+    normalized_primary_category_localized TEXT,
     normalized_tags_json TEXT NOT NULL,
     normalized_vibe_tags_json TEXT NOT NULL,
     normalized_neighborhood TEXT,
@@ -161,6 +162,7 @@ CREATE TABLE canonical_places (
     enrichment_user_rating_count INTEGER,
     enrichment_primary_type TEXT,
     enrichment_primary_type_display_name TEXT,
+    enrichment_primary_type_display_name_localized TEXT,
     enrichment_types_json TEXT NOT NULL,
     enrichment_business_status TEXT,
     enrichment_website TEXT,
@@ -198,6 +200,7 @@ CREATE TABLE guide_places (
     place_name TEXT NOT NULL,
     neighborhood TEXT,
     primary_category TEXT,
+    primary_category_localized TEXT,
     rating REAL,
     user_rating_count INTEGER,
     status TEXT NOT NULL,
@@ -724,6 +727,11 @@ GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
 )
 INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+-reviews?$"),
+)
+INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"^\d+\s+reviews?$", re.IGNORECASE),
+    re.compile(r"^floor\s+\d+$", re.IGNORECASE),
+    re.compile(r"^free cancellation\b", re.IGNORECASE),
 )
 PARENT_TYPE_TAG_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("restaurant", ("restaurant", "bistro", "diner", "grill", "eatery")),
@@ -1938,11 +1946,13 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         override = place_override_map.get(place_id, {})
         enrichment_cache_entry = enrichment_cache.get(place_id)
         enrichment = coerce_enrichment_place(enrichment_cache_entry)
+        manual_primary_category = as_string(override.get("primary_category"))
         primary_category = (
-            as_string(override.get("primary_category"))
+            manual_primary_category
             or enrichment.primary_type_display_name
-            or enrichment.primary_type
+            or humanize_type_id(enrichment.primary_type)
         )
+        primary_category_localized = None if manual_primary_category else enrichment.primary_type_display_name_localized
         tags = sorted(
             {
                 *coerce_string_list(override.get("tags")),
@@ -2013,6 +2023,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             rating=enrichment.rating,
             user_rating_count=enrichment.user_rating_count,
             primary_category=primary_category,
+            primary_category_localized=primary_category_localized,
             marker_icon=marker_icon,
             tags=tags,
             vibe_tags=vibe_tags,
@@ -2033,6 +2044,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             enrichment_cache_entry=enrichment_cache_entry,
             enrichment=enrichment,
             primary_category=primary_category,
+            primary_category_localized=primary_category_localized,
             tags=tags,
             city_name=city_name,
             top_pick_override=top_pick_override,
@@ -2106,6 +2118,7 @@ def build_place_provenance(
     enrichment_cache_entry: EnrichmentCacheEntry | None,
     enrichment: EnrichmentPlace,
     primary_category: str | None,
+    primary_category_localized: str | None,
     tags: list[str],
     city_name: str | None,
     top_pick_override: bool | None,
@@ -2163,6 +2176,8 @@ def build_place_provenance(
             if manual_category
             else google_places_field(primary_category, enrichment_cache_entry)
         )
+    if primary_category_localized:
+        provenance.primary_category_localized = google_places_field(primary_category_localized, enrichment_cache_entry)
     provenance.tags = build_tag_provenance(
         raw=raw,
         raw_place=raw_place,
@@ -2654,6 +2669,7 @@ def enrich_raw_sources(
                 place_payload,
                 api_key=api_key,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
+                existing_entry=cache_payloads[slug].get(place_id),
             )
             cache_payloads[slug][place_id] = entry
             save_places_cache(slug, cache_payloads[slug])
@@ -2672,6 +2688,7 @@ def enrich_raw_sources(
                 place_payload,
                 api_key=api_key,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
+                existing_entry=cache_payloads[slug].get(place_id),
             ): (slug, place_id)
             for slug, place_id, place_name, refresh_reason, place_payload in enrich_jobs
         }
@@ -2696,6 +2713,7 @@ def enrich_place_job(
     *,
     api_key: str | None,
     refresh_startup_jitter_seconds: float,
+    existing_entry: EnrichmentCacheEntry | None = None,
 ) -> EnrichmentCacheEntry:
     print(
         f"Enriching {slug}:{place_id} [{place_name}] ({refresh_reason})",
@@ -2703,7 +2721,17 @@ def enrich_place_job(
     )
     sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
     place = RawPlace.model_validate(place_payload)
-    return fetch_places_enrichment(place, api_key=api_key)
+    refreshed_entry = fetch_places_enrichment(place, api_key=api_key)
+    merged_entry, warning = preserve_existing_enrichment(
+        slug=slug,
+        place_id=place_id,
+        place_name=place_name,
+        existing_entry=existing_entry,
+        refreshed_entry=refreshed_entry,
+    )
+    if warning is not None:
+        print(warning, flush=True)
+    return merged_entry
 
 
 def stable_place_id(place: RawPlace, *, source_type: str | None = None) -> str:
@@ -2807,6 +2835,82 @@ def normalize_enrichment_type_tag(value: str | None) -> str | None:
     ):
         return None
     return tag
+
+
+def sanitize_enrichment_primary_category(value: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    normalized = " ".join(normalized.split())
+    tag = slugify(normalized)
+    has_ascii_alnum = bool(re.search(r"[a-zA-Z0-9]", normalized))
+    if (
+        any(pattern.match(normalized) for pattern in INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS)
+        or (has_ascii_alnum and tag in GENERIC_ENRICHMENT_TYPE_TAGS)
+        or (has_ascii_alnum and any(pattern.match(tag) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS))
+    ):
+        return None
+    return normalized
+
+
+def looks_english_category_label(value: str | None) -> bool:
+    return bool(value and value.isascii() and re.search(r"[A-Za-z]", value))
+
+
+def humanize_type_id(value: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    phrase = normalized.replace("_", " ").replace("-", " ").strip().lower()
+    if not phrase:
+        return None
+    return phrase[:1].upper() + phrase[1:]
+
+
+def canonical_primary_category_label(
+    *,
+    primary_type: str | None,
+    display_name: str | None,
+) -> str | None:
+    sanitized_display_name = sanitize_enrichment_primary_category(display_name)
+    if looks_english_category_label(sanitized_display_name):
+        return sanitized_display_name
+    return humanize_type_id(primary_type)
+
+
+def localized_primary_category_label(
+    *,
+    raw_display_name: str | None,
+    canonical_display_name: str | None,
+) -> str | None:
+    sanitized_display_name = sanitize_enrichment_primary_category(raw_display_name)
+    if sanitized_display_name is None or looks_english_category_label(sanitized_display_name):
+        return None
+    if (
+        canonical_display_name
+        and normalize_type_lookup_text(sanitized_display_name) == normalize_type_lookup_text(canonical_display_name)
+    ):
+        return None
+    return sanitized_display_name
+
+
+def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPlace | None:
+    if place is None:
+        return None
+
+    raw_display_name = place.primary_type_display_name_localized or place.primary_type_display_name
+    canonical_display_name = canonical_primary_category_label(
+        primary_type=place.primary_type,
+        display_name=place.primary_type_display_name,
+    )
+    localized_display_name = localized_primary_category_label(
+        raw_display_name=raw_display_name,
+        canonical_display_name=canonical_display_name,
+    )
+
+    place.primary_type_display_name = canonical_display_name
+    place.primary_type_display_name_localized = localized_display_name
+    return place
 
 
 def normalized_enrichment_type_ids(
@@ -3790,6 +3894,117 @@ def build_cache_entry(
     return cache_entry
 
 
+def cache_entry_has_publishable_enrichment(entry: EnrichmentCacheEntry | None) -> bool:
+    return bool(entry and entry.error is None and entry.matched is True and entry.place is not None)
+
+
+def append_unique_reason(reasons: list[str], reason: str) -> None:
+    if reason not in reasons:
+        reasons.append(reason)
+
+
+def google_maps_uri_strength(url: str | None) -> int:
+    normalized = as_string(url)
+    if normalized is None:
+        return 0
+    lowered = normalized.lower()
+    if "query_place_id=" in lowered:
+        return 4
+    if "/maps/place/" in lowered or re.search(r"[?&]cid=[^&#]+", lowered):
+        return 3
+    if "/maps/search/" in lowered:
+        return 1
+    return 2
+
+
+def preserve_existing_enrichment(
+    *,
+    slug: str,
+    place_id: str,
+    place_name: str,
+    existing_entry: EnrichmentCacheEntry | None,
+    refreshed_entry: EnrichmentCacheEntry,
+) -> tuple[EnrichmentCacheEntry, str | None]:
+    if not cache_entry_has_publishable_enrichment(existing_entry):
+        return refreshed_entry, None
+
+    if not cache_entry_has_publishable_enrichment(refreshed_entry):
+        reason = refreshed_entry.error or "no matched enrichment"
+        return (
+            existing_entry,
+            f"WARNING: Preserving previous enrichment for {slug}:{place_id} [{place_name}] "
+            f"because refresh returned degraded result ({reason}).",
+        )
+
+    previous_place = existing_entry.place
+    refreshed_place = refreshed_entry.place
+    canonicalize_enrichment_place(previous_place)
+    canonicalize_enrichment_place(refreshed_place)
+    assert previous_place is not None
+    assert refreshed_place is not None
+
+    preserved_fields: list[str] = []
+
+    if refreshed_place.rating is None and previous_place.rating is not None:
+        refreshed_place.rating = previous_place.rating
+        append_unique_reason(preserved_fields, "rating")
+    if refreshed_place.user_rating_count is None and previous_place.user_rating_count is not None:
+        refreshed_place.user_rating_count = previous_place.user_rating_count
+        append_unique_reason(preserved_fields, "user_rating_count")
+
+    if not refreshed_place.primary_type_display_name and previous_place.primary_type_display_name:
+        refreshed_place.primary_type_display_name = previous_place.primary_type_display_name
+        if not refreshed_place.primary_type and previous_place.primary_type:
+            refreshed_place.primary_type = previous_place.primary_type
+        if not refreshed_place.types and previous_place.types:
+            refreshed_place.types = previous_place.types[:]
+        append_unique_reason(preserved_fields, "primary_category")
+    elif (
+        refreshed_place.primary_type_display_name == previous_place.primary_type_display_name
+        and not refreshed_place.primary_type
+        and previous_place.primary_type
+    ):
+        refreshed_place.primary_type = previous_place.primary_type
+        if not refreshed_place.types and previous_place.types:
+            refreshed_place.types = previous_place.types[:]
+
+    if not refreshed_place.primary_type_display_name_localized and previous_place.primary_type_display_name_localized:
+        refreshed_place.primary_type_display_name_localized = previous_place.primary_type_display_name_localized
+
+    if not refreshed_place.business_status and previous_place.business_status:
+        refreshed_place.business_status = previous_place.business_status
+        append_unique_reason(preserved_fields, "status")
+
+    if google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri):
+        refreshed_place.google_maps_uri = previous_place.google_maps_uri
+        if not refreshed_place.google_place_id and previous_place.google_place_id:
+            refreshed_place.google_place_id = previous_place.google_place_id
+        if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
+            refreshed_place.google_place_resource_name = previous_place.google_place_resource_name
+        append_unique_reason(preserved_fields, "maps_url")
+    else:
+        if not refreshed_place.google_place_id and previous_place.google_place_id:
+            refreshed_place.google_place_id = previous_place.google_place_id
+        if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
+            refreshed_place.google_place_resource_name = previous_place.google_place_resource_name
+
+    if not refreshed_place.main_photo_url and previous_place.main_photo_url:
+        refreshed_place.main_photo_url = previous_place.main_photo_url
+        append_unique_reason(preserved_fields, "photo_url")
+    if not refreshed_place.photo_url and previous_place.photo_url:
+        refreshed_place.photo_url = previous_place.photo_url
+        append_unique_reason(preserved_fields, "photo_url")
+
+    if not preserved_fields:
+        return refreshed_entry, None
+
+    return (
+        refreshed_entry,
+        f"WARNING: Preserving previous enrichment fields for {slug}:{place_id} [{place_name}]: "
+        f"{', '.join(preserved_fields)}.",
+    )
+
+
 def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
     return load_places_cache_from_sqlite(slug) or {}
 
@@ -4191,6 +4406,7 @@ def build_places_sqlite_rows(
                     place.name,
                     place.neighborhood,
                     place.primary_category,
+                    place.primary_category_localized,
                     place.rating,
                     place.user_rating_count,
                     place.status,
@@ -4282,6 +4498,7 @@ def write_places_sqlite(
             normalized_address, normalized_lat, normalized_lng, normalized_maps_url, normalized_cid,
             normalized_google_id, normalized_google_place_id, normalized_google_place_resource_name,
             normalized_rating, normalized_user_rating_count, normalized_primary_category,
+            normalized_primary_category_localized,
             normalized_tags_json, normalized_vibe_tags_json, normalized_neighborhood, normalized_note,
             normalized_why_recommended, normalized_main_photo_path, normalized_top_pick,
             normalized_hidden, normalized_manual_rank, normalized_status, cache_fetched_at,
@@ -4290,6 +4507,7 @@ def write_places_sqlite(
             enrichment_google_place_id, enrichment_google_place_resource_name, enrichment_display_name,
             enrichment_formatted_address, enrichment_google_maps_uri, enrichment_rating,
             enrichment_user_rating_count, enrichment_primary_type, enrichment_primary_type_display_name,
+            enrichment_primary_type_display_name_localized,
             enrichment_types_json, enrichment_business_status, enrichment_website, enrichment_phone,
             enrichment_plus_code, enrichment_description, enrichment_main_photo_url, enrichment_photo_url,
             enrichment_limited_view
@@ -4332,9 +4550,9 @@ def write_places_sqlite(
                 """
                 INSERT INTO guide_places (
                     guide_slug, sort_order, place_id, is_featured, is_best_hit, place_name,
-                    neighborhood, primary_category, rating, user_rating_count, status, top_pick,
-                    hidden, manual_rank, note, why_recommended, main_photo_path, maps_url
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    neighborhood, primary_category, primary_category_localized, rating, user_rating_count,
+                    status, top_pick, hidden, manual_rank, note, why_recommended, main_photo_path, maps_url
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 rows.guide_place_rows,
             )
@@ -4432,6 +4650,7 @@ def canonical_place_row(
         place.rating,
         place.user_rating_count,
         place.primary_category,
+        place.primary_category_localized,
         sqlite_json(place.tags),
         sqlite_json(place.vibe_tags),
         place.neighborhood,
@@ -4461,6 +4680,7 @@ def canonical_place_row(
         enrichment_place.user_rating_count if enrichment_place else None,
         enrichment_place.primary_type if enrichment_place else None,
         enrichment_place.primary_type_display_name if enrichment_place else None,
+        enrichment_place.primary_type_display_name_localized if enrichment_place else None,
         sqlite_json(enrichment_place.types if enrichment_place else []),
         enrichment_place.business_status if enrichment_place else None,
         enrichment_place.website if enrichment_place else None,
@@ -4560,11 +4780,19 @@ def populate_place_photos_for_guides(
             enrichment_cache = enrichment_caches.get(guide.slug, {})
             for place in guide.places:
                 photo_url = cached_place_photo_url(enrichment_cache.get(place.id))
-                place.main_photo_path = existing_place_photo_path(
+                place.main_photo_path, fallback_reason = resolve_existing_place_photo_path(
                     guide.slug,
                     place.id,
                     photo_url=photo_url,
+                    allow_stale_place_id_fallback=True,
                 )
+                if fallback_reason == "missing-photo-url":
+                    print(
+                        f"WARNING: Reusing existing local photo for {guide.slug}:{place.id} "
+                        "because current enrichment did not yield a photo URL. "
+                        "Photo extraction may be failing on this runner.",
+                        flush=True,
+                    )
         return
 
     pending_jobs: list[PendingPhotoJob] = []
@@ -4664,26 +4892,82 @@ def photo_progress_line(
     )
 
 
-def existing_place_photo_path(slug: str, place_id: str, *, photo_url: str | None) -> str | None:
-    if not photo_url:
-        return None
+def resolve_existing_place_photo_path(
+    slug: str,
+    place_id: str,
+    *,
+    photo_url: str | None,
+    allow_stale_place_id_fallback: bool = False,
+) -> tuple[str | None, str | None]:
+    if photo_url:
+        filename_glob = canonical_place_photo_glob(place_id, photo_url)
+        canonical_matches = sorted(PLACE_PHOTOS_DIR.glob(filename_glob))
+        if canonical_matches:
+            remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
+            return public_photo_path(canonical_matches[0].name), None
 
-    filename_glob = canonical_place_photo_glob(place_id, photo_url)
-    canonical_matches = sorted(PLACE_PHOTOS_DIR.glob(filename_glob))
-    if canonical_matches:
-        remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
-        return public_photo_path(canonical_matches[0].name)
+        legacy_matches = sorted((PLACE_PHOTOS_DIR / slug).glob(filename_glob))
+        if legacy_matches:
+            migrated_path = migrate_legacy_place_photo_to_flat_dir(
+                slug,
+                filename_glob=filename_glob,
+                legacy_path=legacy_matches[0],
+            )
+            return public_photo_path(migrated_path.name), None
 
-    legacy_matches = sorted((PLACE_PHOTOS_DIR / slug).glob(filename_glob))
-    if not legacy_matches:
-        return None
+    if not allow_stale_place_id_fallback:
+        return None, None
+
+    place_prefix = f"{safe_place_photo_stem(place_id)}-"
+    fallback_matches = sorted(
+        (
+            path
+            for path in PLACE_PHOTOS_DIR.glob(f"{place_prefix}*.*")
+            if path.is_file() and not path.name.startswith(".")
+        ),
+        key=lambda path: (path.stat().st_mtime, path.name),
+        reverse=True,
+    )
+    if fallback_matches:
+        fallback_reason = "stale-photo-url" if photo_url else "missing-photo-url"
+        return public_photo_path(fallback_matches[0].name), fallback_reason
+
+    legacy_dir = PLACE_PHOTOS_DIR / slug
+    legacy_fallback_matches = sorted(
+        (
+            path
+            for path in legacy_dir.glob(f"{place_prefix}*.*")
+            if path.is_file() and not path.name.startswith(".")
+        ),
+        key=lambda path: (path.stat().st_mtime, path.name),
+        reverse=True,
+    )
+    if not legacy_fallback_matches:
+        return None, None
 
     migrated_path = migrate_legacy_place_photo_to_flat_dir(
         slug,
-        filename_glob=filename_glob,
-        legacy_path=legacy_matches[0],
+        filename_glob=legacy_fallback_matches[0].name,
+        legacy_path=legacy_fallback_matches[0],
     )
-    return public_photo_path(migrated_path.name)
+    fallback_reason = "stale-photo-url" if photo_url else "missing-photo-url"
+    return public_photo_path(migrated_path.name), fallback_reason
+
+
+def existing_place_photo_path(
+    slug: str,
+    place_id: str,
+    *,
+    photo_url: str | None,
+    allow_stale_place_id_fallback: bool = False,
+) -> str | None:
+    path, _fallback_reason = resolve_existing_place_photo_path(
+        slug,
+        place_id,
+        photo_url=photo_url,
+        allow_stale_place_id_fallback=allow_stale_place_id_fallback,
+    )
+    return path
 
 
 def sync_place_photo(
@@ -5120,15 +5404,20 @@ def dedupe_urls(urls: list[str]) -> list[str]:
 
 
 def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
-    category = as_string(getattr(details, "category", None))
+    raw_category = sanitize_enrichment_primary_category(as_string(getattr(details, "category", None)))
     primary_type = None
     types: list[str] = []
-    if category is not None:
+    if raw_category is not None:
         primary_type, types = normalized_enrichment_type_ids(
-            slugify(category).replace("-", "_"),
-            category,
-            [slugify(category).replace("-", "_")],
+            slugify(raw_category).replace("-", "_"),
+            raw_category,
+            [slugify(raw_category).replace("-", "_")],
         )
+    category = canonical_primary_category_label(primary_type=primary_type, display_name=raw_category)
+    category_localized = localized_primary_category_label(
+        raw_display_name=raw_category,
+        canonical_display_name=category,
+    )
 
     source_url = as_string(getattr(details, "source_url", None))
     resolved_url = as_string(getattr(details, "resolved_url", None))
@@ -5173,6 +5462,7 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         user_rating_count=user_rating_count,
         primary_type=primary_type,
         primary_type_display_name=category,
+        primary_type_display_name_localized=category_localized,
         types=types,
         business_status=normalize_place_page_business_status(as_string(getattr(details, "status", None))),
         website=website,
@@ -5387,10 +5677,21 @@ def score_text_search_candidate(raw_place: RawPlace, candidate: dict[str, Any]) 
 
 def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
     display_name = candidate.get("displayName")
-    primary_type_display_name = candidate.get("primaryTypeDisplayName")
+    raw_primary_type_display_name = sanitize_enrichment_primary_category(
+        display_name_text(candidate.get("primaryTypeDisplayName"))
+    )
+    primary_type = as_string(candidate.get("primaryType"))
+    primary_type_display_name = canonical_primary_category_label(
+        primary_type=primary_type,
+        display_name=raw_primary_type_display_name,
+    )
+    primary_type_display_name_localized = localized_primary_category_label(
+        raw_display_name=raw_primary_type_display_name,
+        canonical_display_name=primary_type_display_name,
+    )
     primary_type, types = normalized_enrichment_type_ids(
-        as_string(candidate.get("primaryType")),
-        display_name_text(primary_type_display_name),
+        primary_type,
+        primary_type_display_name,
         coerce_string_list(candidate.get("types")),
     )
     return EnrichmentPlace(
@@ -5402,7 +5703,8 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
         rating=as_float(candidate.get("rating")),
         user_rating_count=as_int(candidate.get("userRatingCount")),
         primary_type=primary_type,
-        primary_type_display_name=display_name_text(primary_type_display_name),
+        primary_type_display_name=primary_type_display_name,
+        primary_type_display_name_localized=primary_type_display_name_localized,
         types=types,
         business_status=as_string(candidate.get("businessStatus")),
     )
@@ -5411,7 +5713,7 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
 def coerce_enrichment_place(value: EnrichmentCacheEntry | None) -> EnrichmentPlace:
     if value is None or value.place is None:
         return EnrichmentPlace()
-    return value.place
+    return canonicalize_enrichment_place(value.place) or EnrichmentPlace()
 
 
 def display_name_text(value: Any) -> str | None:

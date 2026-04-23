@@ -132,9 +132,22 @@ Example cron entries:
 GitHub Actions `schedule` uses UTC, so the workflow mirrors those times in UTC rather than the runner's local timezone.
 
 If you prefer GitHub Actions as the control plane, the repo now includes `.github/workflows/data-refresh.yml`.
-It is pinned to the self-hosted runner labels `self-hosted`, `Linux`, `ARM64`, `moo_hetzner`, `vps`, and `ubuntu`,
+It is pinned to the self-hosted runner labels `self-hosted` and `Linux`,
 runs the refresh job only on that runner class, passes through optional `GOOGLE_PLACES_API_KEY` and
-`GMAPS_SCRAPER_PROXY` repo secrets, and opens or updates a PR from `automation/data-refresh`.
+`GMAPS_SCRAPER_PROXY` repo secrets, optionally uses `GH_AUTOMATION_TOKEN` for branch push / PR auth,
+and opens or updates a PR from `automation/data-refresh`.
+
+Set `GH_AUTOMATION_TOKEN` as a repo Actions secret if you want the workflow to create or advance
+`automation/data-refresh` after commits that touch `.github/workflows/**`.
+Minimum token permissions for `GH_AUTOMATION_TOKEN`:
+
+- Classic PAT: `repo` and `workflow`.
+- Fine-grained PAT: repository access to this repo with `Contents: Read and write`, `Pull requests: Read and write`, and `Workflows: Read and write`.
+
+Those permissions are enough for the workflow to push the `automation/data-refresh` branch and create or update
+the corresponding PR without granting broader access than necessary.
+
+The default `GITHUB_TOKEN` is not sufficient for that case.
 
 Recommended boundary:
 
@@ -143,6 +156,26 @@ Recommended boundary:
 - Keep `.github/workflows/data-refresh.yml` self-hosted only. Do not broaden its `runs-on` labels to `ubuntu-latest` or add `push` / `pull_request` triggers.
 - Treat scraper session state, proxy routing, and anti-bot handling as infrastructure concerns that belong on the self-hosted runner, not on ephemeral public CI.
 - If the self-hosted runner is unavailable, skip the refresh run rather than falling back to GitHub-hosted infrastructure.
+
+For Ubuntu-based self-hosted runners, prefer provisioning the full Playwright Chromium dependency set on the host before using `data-refresh`:
+
+```bash
+sudo npx playwright install-deps chromium
+```
+
+If preflight is only missing a few common shared libraries on an otherwise-provisioned runner, a partial Ubuntu fix is:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libnspr4 libnss3 libgbm1 libxcb1 libxkbcommon0
+sudo ldconfig
+```
+
+Verify the required libraries are visible to the dynamic linker before rerunning the workflow:
+
+```bash
+ldconfig -p | grep -E 'libnspr4\.so|libnss3\.so|libgbm\.so\.1|libxcb\.so\.1|libxkbcommon\.so\.0'
+```
 
 Force-refresh raw source imports even if a CSV input is unchanged:
 

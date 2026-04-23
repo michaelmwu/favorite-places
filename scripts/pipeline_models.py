@@ -137,6 +137,7 @@ class EnrichmentPlace(PipelineModel):
     user_rating_count: int | None = None
     primary_type: str | None = None
     primary_type_display_name: str | None = None
+    primary_type_display_name_localized: str | None = None
     types: list[str] = Field(default_factory=list)
     business_status: str | None = None
     website: str | None = None
@@ -208,6 +209,7 @@ class PlaceProvenance(PipelineModel):
     rating: PlaceField | None = None
     user_rating_count: PlaceField | None = None
     primary_category: PlaceField | None = None
+    primary_category_localized: PlaceField | None = None
     tags: list[PlaceField] = Field(default_factory=list)
     neighborhood: PlaceField | None = None
     note: PlaceField | None = None
@@ -232,6 +234,7 @@ class NormalizedPlace(PipelineModel):
     rating: float | None = None
     user_rating_count: int | None = None
     primary_category: str | None = None
+    primary_category_localized: str | None = None
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)

@@ -5,7 +5,7 @@ import json
 import os
 import sqlite3
 import unittest
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from datetime import UTC, datetime, timedelta
 from io import BytesIO, StringIO
 from pathlib import Path
@@ -691,6 +691,116 @@ class BuildDataTests(unittest.TestCase):
             guide.places[0].main_photo_path,
             f"/place-photos/cid-123-{photo_hash}.jpg",
         )
+
+    def test_populate_place_photos_for_guides_keeps_existing_photo_when_url_changes_and_refresh_is_disabled(
+        self,
+    ) -> None:
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo, Japan",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id="cid:123",
+                    name="Open Kitchen",
+                    maps_url="https://maps.google.com/?cid=123",
+                    status="active",
+                )
+            ],
+        )
+        old_photo_url = "https://lh3.googleusercontent.com/p/old-token=s680-w680-h510"
+        new_photo_url = "https://lh3.googleusercontent.com/p/new-token=s680-w680-h510"
+        old_photo_hash = hashlib.sha256(old_photo_url.encode("utf-8")).hexdigest()[:12]
+
+        with TemporaryDirectory() as tmpdir:
+            photo_dir = Path(tmpdir)
+            existing_path = photo_dir / f"cid-123-{old_photo_hash}.jpg"
+            existing_path.write_bytes(b"existing-image")
+
+            with (
+                patch.object(build_data, "PLACE_PHOTOS_DIR", photo_dir),
+                patch.object(build_data, "sync_place_photo", side_effect=AssertionError("should not refresh")),
+            ):
+                build_data.populate_place_photos_for_guides(
+                    [guide],
+                    enrichment_caches={
+                        "tokyo-japan": {
+                            "cid:123": EnrichmentCacheEntry(
+                                fetched_at="2026-04-20T00:00:00+00:00",
+                                query="Open Kitchen",
+                                matched=True,
+                                place=EnrichmentPlace(main_photo_url=new_photo_url),
+                            )
+                        }
+                    },
+                    refresh_photos=False,
+                    photo_workers=4,
+                    startup_jitter_seconds=8,
+                )
+
+        self.assertEqual(
+            guide.places[0].main_photo_path,
+            f"/place-photos/cid-123-{old_photo_hash}.jpg",
+        )
+
+    def test_populate_place_photos_for_guides_warns_when_reusing_photo_because_enrichment_lost_photo_url(
+        self,
+    ) -> None:
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo, Japan",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id="cid:123",
+                    name="Open Kitchen",
+                    maps_url="https://maps.google.com/?cid=123",
+                    status="active",
+                )
+            ],
+        )
+        old_photo_url = "https://lh3.googleusercontent.com/p/old-token=s680-w680-h510"
+        old_photo_hash = hashlib.sha256(old_photo_url.encode("utf-8")).hexdigest()[:12]
+
+        with TemporaryDirectory() as tmpdir:
+            photo_dir = Path(tmpdir)
+            existing_path = photo_dir / f"cid-123-{old_photo_hash}.jpg"
+            existing_path.write_bytes(b"existing-image")
+
+            stdout = StringIO()
+            with (
+                patch.object(build_data, "PLACE_PHOTOS_DIR", photo_dir),
+                patch.object(build_data, "sync_place_photo", side_effect=AssertionError("should not refresh")),
+                redirect_stdout(stdout),
+            ):
+                build_data.populate_place_photos_for_guides(
+                    [guide],
+                    enrichment_caches={
+                        "tokyo-japan": {
+                            "cid:123": EnrichmentCacheEntry(
+                                fetched_at="2026-04-20T00:00:00+00:00",
+                                query="Open Kitchen",
+                                matched=True,
+                                place=EnrichmentPlace(),
+                            )
+                        }
+                    },
+                    refresh_photos=False,
+                    photo_workers=4,
+                    startup_jitter_seconds=8,
+                )
+
+        self.assertEqual(
+            guide.places[0].main_photo_path,
+            f"/place-photos/cid-123-{old_photo_hash}.jpg",
+        )
+        self.assertIn("Photo extraction may be failing on this runner.", stdout.getvalue())
 
     def test_optimize_place_photo_asset_resizes_to_card_ratio(self) -> None:
         source = BytesIO()
@@ -1405,6 +1515,8 @@ class BuildDataTests(unittest.TestCase):
             )
         )
         self.assertEqual(steakhouse.primary_type, "steak_house")
+        self.assertEqual(steakhouse.primary_type_display_name, "Steak house")
+        self.assertEqual(steakhouse.primary_type_display_name_localized, "和風ステーキハウス")
         self.assertEqual(steakhouse.types, ["restaurant", "western_restaurant", "steak_house"])
 
         museum = build_data.normalize_place_page_enrichment(
@@ -1420,7 +1532,62 @@ class BuildDataTests(unittest.TestCase):
             )
         )
         self.assertEqual(museum.primary_type, "museum")
+        self.assertEqual(museum.primary_type_display_name, "Museum")
+        self.assertEqual(museum.primary_type_display_name_localized, "博物館")
         self.assertEqual(museum.types, ["museum"])
+
+    def test_normalize_place_page_enrichment_drops_suspicious_category_labels(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Test",
+                resolved_url="https://www.google.com/maps/place/Test",
+                name="Test Place",
+                category="Floor 1",
+                rating=4.2,
+                review_count=17,
+                address="Osaka",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertIsNone(place.primary_type_display_name_localized)
+        self.assertEqual(place.types, [])
+
+    def test_normalize_guide_keeps_english_primary_category_and_stores_localized_variant(self) -> None:
+        raw = RawSavedList(
+            title="Fukuoka",
+            places=[
+                RawPlace(
+                    name="やまや別邸西中洲",
+                    address="Fukuoka",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-23T00:00:00+00:00",
+                query="やまや別邸西中洲, Fukuoka",
+                matched=True,
+                score=45,
+                place=EnrichmentPlace(
+                    primary_type="restaurant",
+                    primary_type_display_name="もつ鍋料理店",
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("fukuoka-japan", raw, enrichment_cache=enrichment_cache)
+        place = guide.places[0]
+
+        self.assertEqual(place.primary_category, "Restaurant")
+        self.assertEqual(place.primary_category_localized, "もつ鍋料理店")
+        self.assertEqual(place.provenance.primary_category.value, "Restaurant")
+        self.assertEqual(place.provenance.primary_category_localized.value, "もつ鍋料理店")
 
     def test_normalize_enrichment_match_expands_parent_restaurant_types(self) -> None:
         place = build_data.normalize_enrichment_match(
@@ -3609,6 +3776,126 @@ class BuildDataTests(unittest.TestCase):
         )
         jitter_sleep.assert_called_once_with(3)
         fetch_enrichment.assert_called_once()
+
+    def test_enrich_place_job_preserves_previous_entry_when_refresh_degrades_to_error(self) -> None:
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="First Place",
+                rating=4.7,
+                user_rating_count=321,
+                primary_type="restaurant",
+                primary_type_display_name="Restaurant",
+                business_status="CLOSED_TEMPORARILY",
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
+                google_place_id="place123",
+                photo_url="https://photos.example/old.jpg",
+            ),
+        )
+        degraded_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-23T00:00:00+00:00",
+            query="First Place, Tokyo",
+            source="google_places_api",
+            error="http_403",
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data, "fetch_places_enrichment", return_value=degraded_entry),
+            patch("builtins.print") as print_mock,
+        ):
+            result = build_data.enrich_place_job(
+                "tokyo-japan",
+                "cid:111",
+                "First Place",
+                "refresh-window-expired",
+                {
+                    "name": "First Place",
+                    "address": "1 Example St, Tokyo",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key="test-key",
+                refresh_startup_jitter_seconds=0,
+                existing_entry=previous_entry,
+            )
+
+        self.assertIs(result, previous_entry)
+        self.assertEqual(print_mock.call_count, 2)
+        self.assertEqual(
+            print_mock.call_args_list[1].args[0],
+            "WARNING: Preserving previous enrichment for tokyo-japan:cid:111 [First Place] "
+            "because refresh returned degraded result (http_403).",
+        )
+
+    def test_enrich_place_job_preserves_previous_fields_when_refresh_loses_metadata(self) -> None:
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="First Place",
+                rating=4.7,
+                user_rating_count=321,
+                primary_type="restaurant",
+                primary_type_display_name="Restaurant",
+                business_status="CLOSED_TEMPORARILY",
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
+                google_place_id="place123",
+                google_place_resource_name="places/place123",
+                photo_url="https://photos.example/old.jpg",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-23T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="First Place",
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=First+Place",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data, "fetch_places_enrichment", return_value=refreshed_entry),
+            patch("builtins.print") as print_mock,
+        ):
+            result = build_data.enrich_place_job(
+                "tokyo-japan",
+                "cid:111",
+                "First Place",
+                "refresh-window-expired",
+                {
+                    "name": "First Place",
+                    "address": "1 Example St, Tokyo",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key=None,
+                refresh_startup_jitter_seconds=0,
+                existing_entry=previous_entry,
+            )
+
+        self.assertIs(result, refreshed_entry)
+        self.assertEqual(result.place.rating, 4.7)
+        self.assertEqual(result.place.user_rating_count, 321)
+        self.assertEqual(result.place.primary_type_display_name, "Restaurant")
+        self.assertEqual(result.place.business_status, "CLOSED_TEMPORARILY")
+        self.assertEqual(
+            result.place.google_maps_uri,
+            "https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
+        )
+        self.assertEqual(result.place.google_place_id, "place123")
+        self.assertEqual(result.place.photo_url, "https://photos.example/old.jpg")
+        self.assertEqual(print_mock.call_count, 2)
+        self.assertEqual(
+            print_mock.call_args_list[1].args[0],
+            "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
+            "rating, user_rating_count, primary_category, status, maps_url, photo_url.",
+        )
 
     def test_refresh_retries_transient_parse_failure(self) -> None:
         source = SourceConfig(

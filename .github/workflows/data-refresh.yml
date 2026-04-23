@@ -65,6 +65,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
+          token: ${{ secrets.GH_AUTOMATION_TOKEN != '' && secrets.GH_AUTOMATION_TOKEN || github.token }}
 
       - name: Verify runner prerequisites
         shell: bash
@@ -114,7 +115,7 @@ jobs:
 
           missing_libs=()
           for library in "${required_libs[@]}"; do
-            if ! printf '%s\n' "${ldconfig_output}" | grep -Fq "${library}"; then
+            if ! grep -Fq "${library}" <<< "${ldconfig_output}"; then
               missing_libs+=("${library}")
             fi
           done
@@ -207,6 +208,8 @@ jobs:
           PROFILE: ${{ steps.settings.outputs.profile }}
           REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
           REFRESH_FORCE: ${{ steps.settings.outputs.refresh_force }}
+          REFRESH_LOG_PATH: ${{ runner.temp }}/data-refresh.log
+          REFRESH_SUMMARY_PATH: ${{ runner.temp }}/data-refresh-summary.md
           SKIP_PHOTOS: ${{ steps.settings.outputs.skip_photos }}
           REFRESH_WORKERS: ${{ steps.settings.outputs.refresh_workers }}
         run: |
@@ -226,7 +229,8 @@ jobs:
             args+=("--refresh-list" "${REFRESH_LIST}")
           fi
 
-          uv run python3 scripts/refresh_profiles.py "${args[@]}"
+          uv run python3 scripts/refresh_profiles.py "${args[@]}" | tee "${REFRESH_LOG_PATH}"
+          uv run python3 scripts/refresh_summary.py --log "${REFRESH_LOG_PATH}" --output "${REFRESH_SUMMARY_PATH}"
 
       - name: Create commit if data changed
         id: commit
@@ -257,10 +261,13 @@ jobs:
           PROFILE: ${{ steps.settings.outputs.profile }}
           REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
           REFRESH_FORCE: ${{ steps.settings.outputs.refresh_force }}
+          REFRESH_SUMMARY_PATH: ${{ runner.temp }}/data-refresh-summary.md
           SKIP_PHOTOS: ${{ steps.settings.outputs.skip_photos }}
           REFRESH_WORKERS: ${{ steps.settings.outputs.refresh_workers }}
         with:
+          github-token: ${{ secrets.GH_AUTOMATION_TOKEN != '' && secrets.GH_AUTOMATION_TOKEN || github.token }}
           script: |
+            const fs = require("fs");
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const head = `${owner}:${process.env.REFRESH_BRANCH}`;
@@ -285,6 +292,12 @@ jobs:
             }
             if (manualRun) {
               bodyLines.push(`- Manual run: https://github.com/${owner}/${repo}/actions/runs/${context.runId}`);
+            }
+            if (process.env.REFRESH_SUMMARY_PATH && fs.existsSync(process.env.REFRESH_SUMMARY_PATH)) {
+              const summary = fs.readFileSync(process.env.REFRESH_SUMMARY_PATH, "utf8").trim();
+              if (summary) {
+                bodyLines.push("", "## Summary", "", summary);
+              }
             }
 
             const body = bodyLines.join("\n");

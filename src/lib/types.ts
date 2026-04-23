@@ -40,6 +40,7 @@ export interface PlaceProvenance {
   rating?: PlaceField<number> | null;
   user_rating_count?: PlaceField<number> | null;
   primary_category?: PlaceField<string> | null;
+  primary_category_localized?: PlaceField<string> | null;
   tags: PlaceField<string>[];
   neighborhood?: PlaceField<string> | null;
   note?: PlaceField<string> | null;
@@ -64,6 +65,7 @@ export interface Place {
   rating: number | null;
   user_rating_count: number | null;
   primary_category: string | null;
+  primary_category_localized?: string | null;
   marker_icon: MarkerIcon;
   tags: string[];
   vibe_tags: string[];

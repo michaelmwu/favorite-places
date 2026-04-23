@@ -27,6 +27,8 @@ The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner.
 - `cloakbrowser` downloads its own Chromium binary, but the host still needs Playwright/Chromium system libraries installed.
 - Provision the runner with the equivalent of Playwright's Chromium Linux dependencies, for example the packages behind `playwright install-deps chromium`, instead of trying to `apt install` during the workflow run.
 - The workflow includes a preflight check for `unzip` and a small set of required shared libraries (`libnspr4`, `libnss3`, GTK, GBM, X11, and related browser deps) so runner drift fails fast with a clear error.
+- For Ubuntu-based runners, the concrete package fix for the current preflight is `sudo apt-get install -y libnspr4 libnss3 libgbm1 libxcb1 libxkbcommon0`, then `sudo ldconfig`. Verify with `ldconfig -p | grep -E 'libnspr4\.so|libnss3\.so|libgbm\.so\.1|libxcb\.so\.1|libxkbcommon\.so\.0'`. Prefer baking the full Playwright Chromium dependency set into the runner image with `sudo npx playwright install-deps chromium`.
+- Set the repo Actions secret `GH_AUTOMATION_TOKEN` to a token with the minimum permissions needed for this automation: `workflows: write` to update refs that include `.github/workflows/**`, `contents: write` to push `automation/data-refresh`, and `pull-requests: write` to create or update the refresh PR. For a classic PAT, include the `workflow` scope in addition to normal `repo` write access. The default `GITHUB_TOKEN` cannot reliably create or advance `automation/data-refresh` after `.github/workflows/**` changes.
 
 ## Environment Variables
 
