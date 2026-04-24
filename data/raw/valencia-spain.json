@@ -132,7 +132,7 @@
     },
     {
       "name": "Russafa",
-      "address": null,
+      "address": "Valencia",
       "note": null,
       "is_favorite": false,
       "lat": 39.461257599999996,
@@ -192,7 +192,7 @@
     },
     {
       "name": "El Carmen",
-      "address": null,
+      "address": "Valencia",
       "note": null,
       "is_favorite": false,
       "lat": 39.4793514,

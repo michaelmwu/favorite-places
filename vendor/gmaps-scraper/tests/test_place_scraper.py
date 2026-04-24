@@ -5,6 +5,7 @@ import unittest
 
 from gmaps_scraper.place_scraper import (
     _build_place_details,
+    _clean_address_text,
     _clean_category_text,
     _clean_name_text,
     _extract_address_from_lines,
@@ -28,6 +29,9 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(_parse_review_count("1.296"), 1296)
         self.assertEqual(_parse_review_count("3.6K"), 3600)
         self.assertEqual(_parse_review_count("9.4万"), 94000)
+
+    def test_normalize_phone_candidate_rejects_plain_numeric_ids(self) -> None:
+        self.assertIsNone(_normalize_phone_candidate("1777026232472"))
 
     def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
         details = _build_place_details(
@@ -107,6 +111,57 @@ class PlaceScraperTests(unittest.TestCase):
             ),
             "1600 Amphitheatre Parkway, Mountain View, CA 94043",
         )
+
+    def test_extract_address_from_lines_supports_plus_code_addresses(self) -> None:
+        self.assertEqual(
+            _extract_address_from_lines(
+                [
+                    "Tourist attraction",
+                    "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+                ]
+            ),
+            "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+        )
+
+    def test_clean_address_text_rejects_page_chrome_and_entity_tokens(self) -> None:
+        self.assertIsNone(
+            _clean_address_text(
+                "Imagery ©2026 , Map data ©2026 United StatesTermsPrivacySend Product Feedback"
+            )
+        )
+        self.assertIsNone(_clean_address_text("/m/0cnyfm6"))
+        self.assertIsNone(
+            _clean_address_text("https://encrypted-tbn3.gstatic.com/faviconV2?foo=bar")
+        )
+        self.assertIsNone(_clean_address_text("Street View & 360°"))
+        self.assertIsNone(_clean_address_text("1,558 reviews"))
+        self.assertIsNone(
+            _clean_address_text(
+                "Unique, 150-m-tall building resembling a picture frame, with historic displays & panoramic views."
+            )
+        )
+
+    def test_clean_address_text_strips_ui_prefixes(self) -> None:
+        self.assertEqual(
+            _clean_address_text("企業のオフィス ·  · Exit 37 - Sheikh Mohammed Bin Zayed Rd"),
+            "Exit 37 - Sheikh Mohammed Bin Zayed Rd",
+        )
+
+    def test_build_place_details_drops_page_chrome_address(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Dubai+Frame",
+            resolved_url="https://www.google.com/maps/place/Dubai+Frame",
+            snapshot={
+                "name": "Dubai Frame",
+                "category": "Tourist attraction",
+                "address": (
+                    "Imagery ©2026 , Map data ©2026 United StatesTermsPrivacySend Product Feedback"
+                ),
+                "body_text": "Dubai Frame\nTourist attraction",
+            },
+        )
+
+        self.assertIsNone(details.address)
 
     def test_clean_name_text_preserves_names_that_start_with_open_or_closed(self) -> None:
         self.assertEqual(_clean_name_text("Open Kitchen"), "Open Kitchen")

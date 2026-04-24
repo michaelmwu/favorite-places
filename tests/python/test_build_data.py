@@ -142,6 +142,263 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertIn("Google My Maps URLs are not supported", str(context.exception))
 
+    def test_preserve_existing_raw_saved_list_keeps_stronger_prior_place_fields(self) -> None:
+        existing_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="Duke's Waikiki",
+                    address="2335 Kalākaua Ave #116, Honolulu, HI 96815, United States",
+                    is_favorite=True,
+                    lat=21.2769032,
+                    lng=-157.8278887,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Duke%27s+Waikiki",
+                    cid="8935267511126082507",
+                    google_id="/g/1tdwf48w",
+                    maps_place_token="0xdeadbeef:0x1",
+                )
+            ],
+        )
+        refreshed_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="Duke's Waikiki",
+                    address=None,
+                    is_favorite=False,
+                    lat=21.2769032,
+                    lng=-157.8278887,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Duke%27s+Waikiki",
+                    cid="8935267511126082507",
+                    google_id=None,
+                    maps_place_token=None,
+                )
+            ],
+        )
+
+        merged = build_data.preserve_existing_raw_saved_list(
+            slug="oahu-hawaii-usa",
+            existing_payload=existing_payload,
+            refreshed_payload=refreshed_payload,
+        )
+
+        self.assertEqual(
+            merged.places[0].address,
+            "2335 Kalākaua Ave #116, Honolulu, HI 96815, United States",
+        )
+        self.assertEqual(merged.places[0].google_id, "/g/1tdwf48w")
+        self.assertEqual(merged.places[0].maps_place_token, "0xdeadbeef:0x1")
+        self.assertTrue(merged.places[0].is_favorite)
+
+    def test_preserve_existing_raw_saved_list_does_not_apply_to_non_matching_place(self) -> None:
+        existing_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="Old Place",
+                    address="1 Example St",
+                    lat=35.0,
+                    lng=139.0,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Old+Place",
+                    cid="111",
+                    google_id="/g/old",
+                )
+            ],
+        )
+        refreshed_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="New Place",
+                    address=None,
+                    lat=36.0,
+                    lng=140.0,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=New+Place",
+                    cid="222",
+                    google_id=None,
+                )
+            ],
+        )
+
+        merged = build_data.preserve_existing_raw_saved_list(
+            slug="tokyo-japan",
+            existing_payload=existing_payload,
+            refreshed_payload=refreshed_payload,
+        )
+
+        self.assertIsNone(merged.places[0].address)
+        self.assertIsNone(merged.places[0].google_id)
+
+    def test_preserve_existing_raw_saved_list_skips_fields_when_names_do_not_match(self) -> None:
+        existing_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="Michael's list for Seoul, Korea",
+                    address="BONTÉ 본태",
+                    lat=37.0,
+                    lng=127.0,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=BONT%C3%89",
+                    cid="333",
+                )
+            ],
+        )
+        refreshed_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="BONTÉ 본태",
+                    address=None,
+                    lat=37.0,
+                    lng=127.0,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=BONT%C3%89",
+                    cid="333",
+                )
+            ],
+        )
+
+        merged = build_data.preserve_existing_raw_saved_list(
+            slug="seoul-korea",
+            existing_payload=existing_payload,
+            refreshed_payload=refreshed_payload,
+        )
+
+        self.assertIsNone(merged.places[0].address)
+
+    def test_preserve_existing_raw_saved_list_skips_note_like_address_restore(self) -> None:
+        existing_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="Gorat's Steakhouse",
+                    address="Warren Buffet's favorite steakhouse",
+                    note="Warren Buffet's favorite steakhouse",
+                    lat=41.2412347,
+                    lng=-95.9886973,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Gorat%27s+Steakhouse",
+                    cid="10697208099166303129",
+                )
+            ],
+        )
+        refreshed_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="Gorat's Steakhouse",
+                    address=None,
+                    note="Warren Buffet's favorite steakhouse",
+                    lat=41.2412347,
+                    lng=-95.9886973,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Gorat%27s+Steakhouse",
+                    cid="10697208099166303129",
+                )
+            ],
+        )
+
+        merged = build_data.preserve_existing_raw_saved_list(
+            slug="omaha-nebraska-usa",
+            existing_payload=existing_payload,
+            refreshed_payload=refreshed_payload,
+        )
+
+        self.assertIsNone(merged.places[0].address)
+
+    def test_preserve_existing_raw_saved_list_skips_generic_locality_address_restore(self) -> None:
+        existing_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="青湾情人海灘",
+                    address="台湾 澎湖縣馬公市嵵裡里",
+                    lat=23.5319641,
+                    lng=119.553573,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=%E9%9D%92%E6%B9%BE%E6%83%85%E4%BA%BA%E6%B5%B7%E7%81%98",
+                    cid="3777482742712049795",
+                    google_id="/g/11x9_8ngd",
+                )
+            ],
+        )
+        refreshed_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            places=[
+                RawPlace(
+                    name="青湾情人海灘",
+                    address=None,
+                    lat=23.5319641,
+                    lng=119.553573,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=%E9%9D%92%E6%B9%BE%E6%83%85%E4%BA%BA%E6%B5%B7%E7%81%98",
+                    cid="3777482742712049795",
+                    google_id="/g/11x9_8ngd",
+                )
+            ],
+        )
+
+        merged = build_data.preserve_existing_raw_saved_list(
+            slug="penghu-taiwan",
+            existing_payload=existing_payload,
+            refreshed_payload=refreshed_payload,
+        )
+
+        self.assertIsNone(merged.places[0].address)
+        self.assertEqual(merged.places[0].google_id, "/g/11x9_8ngd")
+
+    def test_preserve_existing_raw_saved_list_skips_cross_source_signature_reuse(self) -> None:
+        previous_source = SourceConfig(
+            slug="los-angeles-california-usa",
+            url="https://maps.app.goo.gl/old-list",
+        )
+        current_source = SourceConfig(
+            slug="los-angeles-california-usa",
+            url="https://maps.app.goo.gl/new-list",
+        )
+        existing_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            source_signature=build_data.raw_source_signature(previous_source),
+            places=[
+                RawPlace(
+                    name="Global Village",
+                    address="38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+                    is_favorite=True,
+                    lat=25.0716887,
+                    lng=55.3084347,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Global+Village",
+                    cid="4494433615859482133",
+                    google_id="/g/11oldsource",
+                    maps_place_token="0xold:0x1",
+                )
+            ],
+        )
+        refreshed_payload = RawSavedList(
+            configured_source_type="google_list_url",
+            source_signature=build_data.raw_source_signature(current_source),
+            places=[
+                RawPlace(
+                    name="Global Village",
+                    address=None,
+                    is_favorite=False,
+                    lat=25.0716887,
+                    lng=55.3084347,
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Global+Village",
+                    cid=None,
+                    google_id=None,
+                    maps_place_token=None,
+                )
+            ],
+        )
+
+        merged = build_data.preserve_existing_raw_saved_list(
+            source=current_source,
+            slug="los-angeles-california-usa",
+            existing_payload=existing_payload,
+            refreshed_payload=refreshed_payload,
+        )
+
+        self.assertIsNone(merged.places[0].address)
+        self.assertIsNone(merged.places[0].google_id)
+        self.assertIsNone(merged.places[0].cid)
+        self.assertIsNone(merged.places[0].maps_place_token)
+        self.assertFalse(merged.places[0].is_favorite)
+
     def test_build_place_page_candidate_urls_prefers_search_for_cid_inputs(self) -> None:
         place = RawPlace(
             name="Sister Midnight",
@@ -335,6 +592,85 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNotNone(entry.place)
         assert entry.place is not None
         self.assertEqual(entry.place.display_name, "Sister Midnight")
+
+    def test_fetch_place_page_enrichment_skips_search_result_with_junk_address(self) -> None:
+        place = RawPlace(
+            name="Global Village",
+            address="Dubai",
+            maps_url="https://maps.google.com/?cid=123456789",
+            lat=25.0715,
+            lng=55.3086,
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            if "/maps/search/" in url:
+                return SimpleNamespace(
+                    source_url=url,
+                    resolved_url="https://www.google.com/maps/search/?api=1&query=Global+Village",
+                    name="Global Village",
+                    category="Theme park",
+                    rating=4.6,
+                    review_count=100,
+                    address=(
+                        "Imagery ©2026 , Map data ©2026 "
+                        "United StatesTermsPrivacySend Product Feedback"
+                    ),
+                    located_in=None,
+                    status=None,
+                    website=None,
+                    phone=None,
+                    plus_code=None,
+                    description=None,
+                    lat=25.0715,
+                    lng=55.3086,
+                    limited_view=False,
+                )
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url="https://www.google.com/maps/place/Global+Village/@25.0715,55.3086,17z",
+                name="Global Village",
+                category="Theme park",
+                rating=4.6,
+                review_count=100,
+                address="38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+                located_in=None,
+                status=None,
+                website="https://www.globalvillage.ae/",
+                phone=None,
+                plus_code="38C5+F57 Dubai",
+                description=None,
+                lat=25.0715,
+                lng=55.3086,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(
+            called_urls,
+            [
+                "https://www.google.com/maps/search/?api=1&query=Global+Village%2C+Dubai&hl=en&gl=us",
+                "https://maps.google.com/?cid=123456789&hl=en&gl=us",
+            ],
+        )
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(
+            entry.place.formatted_address,
+            "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+        )
 
     def test_normalize_place_page_enrichment_prefers_stable_search_source_url(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
@@ -1554,6 +1890,106 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.primary_type_display_name)
         self.assertIsNone(place.primary_type_display_name_localized)
         self.assertEqual(place.types, [])
+
+    def test_normalize_place_page_enrichment_sanitizes_suspicious_addresses(self) -> None:
+        chrome = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Dubai+Frame",
+                resolved_url="https://www.google.com/maps/place/Dubai+Frame",
+                name="Dubai Frame",
+                category="Tourist attraction",
+                rating=4.6,
+                review_count=100,
+                address=(
+                    "Imagery ©2026 , Map data ©2026 "
+                    "United StatesTermsPrivacySend Product Feedback"
+                ),
+                limited_view=False,
+            )
+        )
+        token = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Jumeirah+Beach",
+                resolved_url="https://www.google.com/maps/place/Jumeirah+Beach",
+                name="Jumeirah Beach",
+                category="Beach",
+                rating=4.4,
+                review_count=20,
+                address="/m/0cnyfm6",
+                limited_view=False,
+            )
+        )
+        street_view = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Jumeirah+Beach",
+                resolved_url="https://www.google.com/maps/place/Jumeirah+Beach",
+                name="Jumeirah Beach",
+                category="Beach",
+                rating=4.4,
+                review_count=20,
+                address="Street View & 360°",
+                limited_view=False,
+            )
+        )
+        prefixed = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Global+Village",
+                resolved_url="https://www.google.com/maps/place/Global+Village",
+                name="Global Village",
+                category="Theme park",
+                rating=4.5,
+                review_count=20,
+                address="企業のオフィス ·  · Exit 37 - Sheikh Mohammed Bin Zayed Rd",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(chrome.formatted_address)
+        self.assertIsNone(token.formatted_address)
+        self.assertIsNone(street_view.formatted_address)
+        self.assertEqual(prefixed.formatted_address, "Exit 37 - Sheikh Mohammed Bin Zayed Rd")
+
+    def test_normalize_place_page_enrichment_falls_back_to_compound_plus_code(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Global+Village",
+                resolved_url="https://www.google.com/maps/place/Global+Village",
+                name="Global Village",
+                category="Theme park",
+                rating=4.5,
+                review_count=20,
+                address="Street View & 360°",
+                plus_code="38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+                limited_view=False,
+            )
+        )
+
+        self.assertEqual(
+            place.formatted_address,
+            "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
+        )
+
+    def test_normalize_place_page_enrichment_uses_address_like_description_when_address_missing(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Jumeirah+Beach",
+                resolved_url="https://www.google.com/maps/place/Jumeirah+Beach",
+                name="Jumeirah Beach",
+                category="Beach",
+                rating=4.6,
+                review_count=None,
+                address=None,
+                plus_code=None,
+                description="Jumeirah Beach - Jumeirah - Jumeira Third - Dubai - United Arab Emirates",
+                limited_view=True,
+            )
+        )
+
+        self.assertEqual(
+            place.formatted_address,
+            "Jumeirah Beach - Jumeirah - Jumeira Third - Dubai - United Arab Emirates",
+        )
+        self.assertIsNone(place.description)
 
     def test_normalize_guide_keeps_english_primary_category_and_stores_localized_variant(self) -> None:
         raw = RawSavedList(

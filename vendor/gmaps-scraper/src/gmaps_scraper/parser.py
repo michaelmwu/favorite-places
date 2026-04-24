@@ -506,7 +506,14 @@ def _find_place_is_favorite(
     if place_record is None:
         return False
     favorite_payload = _safe_index(place_record, 7)
-    return _contains_favorite_marker(favorite_payload)
+    if _contains_favorite_marker(favorite_payload):
+        return True
+    for index, value in enumerate(place_record):
+        if index == 3:
+            continue
+        if _contains_favorite_marker(value):
+            return True
+    return False
 
 
 def _find_place_added_by(place_record: list[JSONValue] | None) -> ListOwner | None:

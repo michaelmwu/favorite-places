@@ -457,6 +457,18 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(parsed.places[0].note, "Loved it ❤️")
         self.assertFalse(parsed.places[0].is_favorite)
 
+    def test_extracts_favorite_marker_from_non_primary_place_record_slot(self) -> None:
+        runtime_state = copy.deepcopy(["noise", _LIST_NODE])
+        first_place = runtime_state[1][8][0]
+        assert isinstance(first_place, list)
+
+        first_place[7] = []
+        first_place.append([[[[3, None, "104356373423434804635", "❤️", [1776133481, 81561000]]]]])
+
+        parsed = parse_saved_list_artifacts(_LIST_URL, runtime_state=runtime_state)
+
+        self.assertTrue(parsed.places[0].is_favorite)
+
     def test_preserves_note_with_inline_url(self) -> None:
         runtime_state = copy.deepcopy(["noise", _LIST_NODE])
         first_place = runtime_state[1][8][0]

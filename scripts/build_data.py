@@ -1476,7 +1476,7 @@ def refresh_raw_sources(
     sources = load_sources()
     selected_sources = resolve_refresh_sources(sources, refresh_lists)
     selected_slugs = {source.slug for source in selected_sources}
-    refresh_jobs: list[tuple[SourceConfig, Path, bool]] = []
+    refresh_jobs: list[tuple[SourceConfig, Path, bool, RawSavedList | None]] = []
 
     for source in sources:
         if selected_sources and source.slug not in selected_slugs:
@@ -1518,7 +1518,7 @@ def refresh_raw_sources(
             source,
             existing_payload.source_signature,
         )
-        refresh_jobs.append((source, raw_path, backup_available))
+        refresh_jobs.append((source, raw_path, backup_available, existing_payload))
 
     if not refresh_jobs:
         return
@@ -1529,7 +1529,7 @@ def refresh_raw_sources(
     max_workers = max(1, refresh_workers)
     if headed or len(refresh_jobs) == 1 or max_workers == 1:
         failures: list[str] = []
-        for source, raw_path, backup_available in refresh_jobs:
+        for source, raw_path, backup_available, existing_payload in refresh_jobs:
             try:
                 payload = scrape_google_list_url_with_retries(
                     source,
@@ -1544,6 +1544,12 @@ def refresh_raw_sources(
                     continue
                 failures.append(f"{source.slug}: {exc}")
                 continue
+            payload = preserve_existing_raw_saved_list(
+                source=source,
+                slug=source.slug,
+                existing_payload=existing_payload,
+                refreshed_payload=payload,
+            )
             write_json(raw_path, payload)
         if failures:
             failure_text = "\n".join(failures)
@@ -1564,11 +1570,11 @@ def refresh_raw_sources(
                 refresh_retries=refresh_retries,
                 refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
-            ): (source, raw_path, backup_available)
-            for source, raw_path, backup_available in refresh_jobs
+            ): (source, raw_path, backup_available, existing_payload)
+            for source, raw_path, backup_available, existing_payload in refresh_jobs
         }
         for future in as_completed(future_map):
-            source, raw_path, backup_available = future_map[future]
+            source, raw_path, backup_available, existing_payload = future_map[future]
             try:
                 payload = future.result()
             except RECOVERABLE_REFRESH_ERRORS as exc:
@@ -1577,6 +1583,12 @@ def refresh_raw_sources(
                 else:
                     failures.append(f"{source.slug}: {exc}")
                 continue
+            payload = preserve_existing_raw_saved_list(
+                source=source,
+                slug=source.slug,
+                existing_payload=existing_payload,
+                refreshed_payload=payload,
+            )
             write_json(raw_path, payload)
     except KeyboardInterrupt:
         print("Interrupt received; terminating refresh workers.", flush=True)
@@ -3656,6 +3668,185 @@ def stamp_raw_saved_list(payload: RawSavedList, source: SourceConfig, *, source_
     payload.configured_source_path = source.path
 
 
+def raw_place_match_keys(place: RawPlace, *, source_type: str | None = None) -> list[str]:
+    keys: list[str] = []
+
+    cid = as_string(place.cid) or extract_maps_cid(place.maps_url)
+    if cid:
+        keys.append(f"cid:{cid}")
+
+    google_id = as_string(place.google_id)
+    if google_id:
+        keys.append(f"gid:{google_id.strip('/').replace('/', '-')}")
+
+    maps_place_token = place.maps_place_token or extract_maps_place_token(place.maps_url)
+    if maps_place_token:
+        keys.append(f"gms:{maps_place_token}")
+
+    name = as_string(place.name)
+    lat = as_float(place.lat)
+    lng = as_float(place.lng)
+    if name and lat is not None and lng is not None:
+        keys.append(f"name-ll:{slugify(name)}:{lat:.6f}:{lng:.6f}")
+
+    address = as_string(place.address)
+    if name and address:
+        keys.append(f"name-address:{slugify(name)}:{slugify(address)}")
+
+    if source_type == "google_export_csv":
+        maps_url_id = short_maps_url_id(place.maps_url)
+        if maps_url_id:
+            keys.append(maps_url_id)
+
+    keys.append(stable_place_id(place, source_type=source_type))
+    return list(dict.fromkeys(keys))
+
+
+def build_raw_place_preservation_index(
+    raw: RawSavedList,
+    *,
+    source_type: str | None = None,
+) -> dict[str, RawPlace]:
+    index: dict[str, RawPlace] = {}
+    for place in raw.places:
+        for key in raw_place_match_keys(place, source_type=source_type):
+            index.setdefault(key, place)
+    return index
+
+
+def preserve_existing_raw_place(
+    *,
+    existing_place: RawPlace,
+    refreshed_place: RawPlace,
+) -> tuple[RawPlace, list[str]]:
+    preserved_fields: list[str] = []
+    updates: dict[str, Any] = {}
+    existing_name = as_string(existing_place.name)
+    refreshed_name = as_string(refreshed_place.name)
+    names_compatible = raw_place_names_are_compatible(existing_name, refreshed_name)
+
+    if (
+        names_compatible
+        and not refreshed_place.address
+        and raw_place_address_is_preservable(existing_place, refreshed_place)
+    ):
+        updates["address"] = existing_place.address
+        preserved_fields.append("address")
+    if names_compatible and not refreshed_place.google_id and existing_place.google_id:
+        updates["google_id"] = existing_place.google_id
+        preserved_fields.append("google_id")
+    if names_compatible and not refreshed_place.cid and existing_place.cid:
+        updates["cid"] = existing_place.cid
+        preserved_fields.append("cid")
+    if names_compatible and not refreshed_place.maps_place_token and existing_place.maps_place_token:
+        updates["maps_place_token"] = existing_place.maps_place_token
+        preserved_fields.append("maps_place_token")
+    if names_compatible and not refreshed_place.is_favorite and existing_place.is_favorite:
+        updates["is_favorite"] = True
+        preserved_fields.append("is_favorite")
+
+    if not updates:
+        return refreshed_place, preserved_fields
+
+    return refreshed_place.model_copy(update=updates), preserved_fields
+
+
+def raw_place_names_are_compatible(existing_name: str | None, refreshed_name: str | None) -> bool:
+    if not existing_name or not refreshed_name:
+        return True
+
+    existing_slug = slugify(existing_name)
+    refreshed_slug = slugify(refreshed_name)
+    if existing_slug == refreshed_slug:
+        return True
+
+    if existing_slug in refreshed_slug or refreshed_slug in existing_slug:
+        shorter = min(len(existing_slug), len(refreshed_slug))
+        return shorter >= 8
+
+    return False
+
+
+def raw_place_address_is_preservable(existing_place: RawPlace, refreshed_place: RawPlace) -> bool:
+    address = as_string(existing_place.address)
+    if not address:
+        return False
+
+    note = as_string(existing_place.note)
+    if note and normalize_text(note) == normalize_text(address):
+        return False
+
+    existing_name = as_string(existing_place.name)
+    refreshed_name = as_string(refreshed_place.name)
+    normalized_address = normalize_text(address)
+    if normalized_address is None:
+        return False
+    if existing_name and normalize_text(existing_name) == normalized_address:
+        return False
+    if refreshed_name and normalize_text(refreshed_name) == normalized_address:
+        return False
+
+    # Preserve only address-like strings, not generic locality labels or notes.
+    return (
+        bool(re.search(r"\d", address))
+        or "," in address
+        or "、" in address
+        or bool(re.search(r"\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|lane|ln|drive|dr|way|place|pl|court|ct|suite|ste|unit|floor|fl)\b", address, re.IGNORECASE))
+        or "〒" in address
+        or "號" in address
+    )
+
+
+def preserve_existing_raw_saved_list(
+    *,
+    source: SourceConfig | None = None,
+    slug: str,
+    existing_payload: RawSavedList | None,
+    refreshed_payload: RawSavedList,
+) -> RawSavedList:
+    if existing_payload is None:
+        return refreshed_payload
+    if source is not None:
+        if not raw_source_signature_matches(source, existing_payload.source_signature):
+            return refreshed_payload
+    elif (
+        existing_payload.source_signature
+        and refreshed_payload.source_signature
+        and existing_payload.source_signature != refreshed_payload.source_signature
+    ):
+        return refreshed_payload
+
+    source_type = refreshed_payload.configured_source_type or existing_payload.configured_source_type
+    existing_index = build_raw_place_preservation_index(existing_payload, source_type=source_type)
+    updated_places: list[RawPlace] = []
+
+    for refreshed_place in refreshed_payload.places:
+        existing_place = None
+        for key in raw_place_match_keys(refreshed_place, source_type=source_type):
+            existing_place = existing_index.get(key)
+            if existing_place is not None:
+                break
+
+        if existing_place is None:
+            updated_places.append(refreshed_place)
+            continue
+
+        merged_place, preserved_fields = preserve_existing_raw_place(
+            existing_place=existing_place,
+            refreshed_place=refreshed_place,
+        )
+        if preserved_fields:
+            place_id = stable_place_id(merged_place, source_type=source_type)
+            print(
+                f"WARNING: Preserving previous raw fields for {slug}:{place_id} "
+                f"[{merged_place.name}]: {', '.join(preserved_fields)}.",
+                flush=True,
+            )
+        updated_places.append(merged_place)
+
+    return refreshed_payload.model_copy(update={"places": updated_places})
+
+
 def raw_source_refresh_after(fetched_at: datetime, source: SourceConfig, *, source_signature: str) -> datetime:
     if source.type != "google_list_url":
         return fetched_at + RAW_SOURCE_CACHE_TTL
@@ -5216,6 +5407,9 @@ def fetch_place_page_enrichment(place: RawPlace) -> EnrichmentCacheEntry:
             saw_non_error_result = True
             record_scraper_session_use(session_state, proxy=proxy)
             enrichment_place = normalize_place_page_enrichment(details)
+            source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
+            if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
+                continue
             matched = place_page_has_meaningful_enrichment(details, enrichment_place)
             if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
                 continue
@@ -5403,6 +5597,49 @@ def dedupe_urls(urls: list[str]) -> list[str]:
     return deduped
 
 
+PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS = (
+    "about this data",
+    "faviconv2",
+    "imagery ©",
+    "map data ©",
+    "send product feedback",
+    "street view",
+    "termsprivacy",
+)
+PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
+PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
+
+
+def sanitize_place_page_formatted_address(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+
+    lowered = normalized.lower()
+    if lowered.startswith(("http://", "https://", "www.")):
+        return None
+    if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS):
+        return None
+    if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS):
+        return None
+    if PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE.fullmatch(normalized):
+        return None
+    if re.search(r"\d", normalized) and re.search(r"\breviews?\b", lowered):
+        return None
+    if normalized.endswith(".") and re.search(r"\b[23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3}\b", normalized) is None:
+        return None
+
+    if "·" in normalized:
+        segments = [segment.strip() for segment in normalized.split("·") if segment.strip()]
+        for candidate in reversed(segments):
+            cleaned = sanitize_place_page_formatted_address(candidate)
+            if cleaned is not None and cleaned != normalized:
+                return cleaned
+        return None
+
+    return normalized
+
+
 def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     raw_category = sanitize_enrichment_primary_category(as_string(getattr(details, "category", None)))
     primary_type = None
@@ -5423,13 +5660,22 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     resolved_url = as_string(getattr(details, "resolved_url", None))
     from_search_url = bool(source_url and "/maps/search/" in source_url)
     display_name = as_string(getattr(details, "name", None))
-    formatted_address = as_string(getattr(details, "address", None))
+    formatted_address = sanitize_place_page_formatted_address(getattr(details, "address", None))
     rating = as_float(getattr(details, "rating", None))
     user_rating_count = as_int(getattr(details, "review_count", None))
     website = as_string(getattr(details, "website", None))
     phone = as_string(getattr(details, "phone", None))
     plus_code = as_string(getattr(details, "plus_code", None))
+    if formatted_address is None and plus_code and any(
+        separator in plus_code for separator in (" - ", ",", " ")
+    ):
+        formatted_address = sanitize_place_page_formatted_address(plus_code)
     description = as_string(getattr(details, "description", None))
+    if formatted_address is None:
+        description_address = sanitize_place_page_formatted_address(description)
+        if description_address is not None:
+            formatted_address = description_address
+            description = None
     main_photo_url = as_string(getattr(details, "main_photo_url", None))
     photo_url = as_string(getattr(details, "photo_url", None))
     if from_search_url:
