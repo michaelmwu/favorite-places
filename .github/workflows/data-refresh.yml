@@ -153,11 +153,14 @@ jobs:
             refresh_workers="4"
           fi
 
+          refresh_date="$(date -u +%Y-%m-%d)"
+
           echo "profile=${profile}" >> "${GITHUB_OUTPUT}"
           echo "refresh_list=${refresh_list}" >> "${GITHUB_OUTPUT}"
           echo "refresh_force=${refresh_force}" >> "${GITHUB_OUTPUT}"
           echo "skip_photos=${skip_photos}" >> "${GITHUB_OUTPUT}"
           echo "refresh_workers=${refresh_workers}" >> "${GITHUB_OUTPUT}"
+          echo "refresh_date=${refresh_date}" >> "${GITHUB_OUTPUT}"
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -259,6 +262,7 @@ jobs:
         uses: actions/github-script@v8
         env:
           PROFILE: ${{ steps.settings.outputs.profile }}
+          REFRESH_DATE: ${{ steps.settings.outputs.refresh_date }}
           REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
           REFRESH_FORCE: ${{ steps.settings.outputs.refresh_force }}
           REFRESH_SUMMARY_PATH: ${{ runner.temp }}/data-refresh-summary.md
@@ -271,11 +275,12 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const head = `${owner}:${process.env.REFRESH_BRANCH}`;
-            const title = `Refresh place data (${process.env.PROFILE})`;
+            const title = `Refresh place data (${process.env.PROFILE}, ${process.env.REFRESH_DATE})`;
             const manualRun = context.eventName === "workflow_dispatch";
             const bodyLines = [
               "Automated self-hosted data refresh.",
               "",
+              `- Refresh date: \`${process.env.REFRESH_DATE}\``,
               `- Profile: \`${process.env.PROFILE}\``,
               `- Trigger: \`${context.eventName}\``,
               `- Refresh workers: \`${process.env.REFRESH_WORKERS}\``,
