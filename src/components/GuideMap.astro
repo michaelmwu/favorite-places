@@ -179,9 +179,6 @@ const mapPlaces = places
       };
       Point: new (x: number, y: number) => unknown;
       Size: new (width: number, height: number) => unknown;
-      SymbolPath: {
-        CIRCLE: unknown;
-      };
     };
   }
 
@@ -254,6 +251,34 @@ const mapPlaces = places
       ...markerColors(place, active),
       topPick: place.topPick,
     });
+
+  const userLocationMarkerDataUrl = ({
+    fillColor,
+    fillOpacity,
+    haloColor,
+    haloOpacity,
+    ringColor,
+    ringWidth,
+    size,
+  }: {
+    fillColor: string;
+    fillOpacity: number;
+    haloColor?: string;
+    haloOpacity?: number;
+    ringColor?: string;
+    ringWidth?: number;
+    size: number;
+  }) => {
+    const center = 20;
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none" aria-hidden="true">
+        ${haloColor ? `<circle cx="${center}" cy="${center}" r="${size}" fill="${haloColor}" fill-opacity="${haloOpacity ?? 1}" />` : ""}
+        <circle cx="${center}" cy="${center}" r="${size}" fill="${fillColor}" fill-opacity="${fillOpacity}" ${ringColor ? `stroke="${ringColor}" stroke-width="${ringWidth ?? 0}"` : ""} />
+      </svg>
+    `.trim();
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  };
 
   const leafletMarkerIcon = (place: MapPlace, active = false) => {
     const size = getMapMarkerSize(place.markerIcon, place.topPick, active);
@@ -713,6 +738,39 @@ const mapPlaces = places
       };
     };
 
+    const userLocationIcon = ({
+      fillColor,
+      fillOpacity,
+      haloColor,
+      haloOpacity,
+      ringColor,
+      ringWidth,
+      size,
+    }: {
+      fillColor: string;
+      fillOpacity: number;
+      haloColor?: string;
+      haloOpacity?: number;
+      ringColor?: string;
+      ringWidth?: number;
+      size: number;
+    }) => {
+      const dimension = 40;
+      return {
+        anchor: new google.maps.Point(dimension / 2, dimension / 2),
+        scaledSize: new google.maps.Size(dimension, dimension),
+        url: userLocationMarkerDataUrl({
+          fillColor,
+          fillOpacity,
+          haloColor,
+          haloOpacity,
+          ringColor,
+          ringWidth,
+          size,
+        }),
+      };
+    };
+
     places.forEach((place) => {
       const marker = new google.maps.Marker({
         icon: markerIcon(place),
@@ -765,15 +823,13 @@ const mapPlaces = places
         if (!userLocationHalo) {
           userLocationHalo = new google.maps.Marker({
             clickable: false,
-            icon: {
+            icon: userLocationIcon({
               fillColor: "#1a73e8",
               fillOpacity: 0.18,
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 10,
-              strokeColor: "#1a73e8",
-              strokeOpacity: 0,
-              strokeWeight: 0,
-            },
+              haloColor: "#1a73e8",
+              haloOpacity: 0.18,
+              size: 10,
+            }),
             map,
             position,
             zIndex: 1200,
@@ -786,15 +842,13 @@ const mapPlaces = places
         if (!userLocationDot) {
           userLocationDot = new google.maps.Marker({
             clickable: false,
-            icon: {
+            icon: userLocationIcon({
               fillColor: "#1a73e8",
               fillOpacity: 1,
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 6,
-              strokeColor: "#ffffff",
-              strokeOpacity: 1,
-              strokeWeight: 3,
-            },
+              ringColor: "#ffffff",
+              ringWidth: 3,
+              size: 6,
+            }),
             map,
             position,
             zIndex: 1201,
