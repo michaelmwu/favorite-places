@@ -30,6 +30,24 @@ function parseCardTagValues(value) {
   }
 }
 
+function toRadians(degrees) {
+  return (degrees * Math.PI) / 180;
+}
+
+function distanceInKm(fromLat, fromLng, toLat, toLng) {
+  const earthRadiusKm = 6371;
+  const latDelta = toRadians(toLat - fromLat);
+  const lngDelta = toRadians(toLng - fromLng);
+  const fromLatRadians = toRadians(fromLat);
+  const toLatRadians = toRadians(toLat);
+  const a =
+    Math.sin(latDelta / 2) ** 2 +
+    Math.cos(fromLatRadians) * Math.cos(toLatRadians) * Math.sin(lngDelta / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return earthRadiusKm * c;
+}
+
 export function cardHasTag(card, tag) {
   const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
@@ -128,10 +146,15 @@ if (root) {
   const resultsCount = root.querySelector("[data-results-count]");
   const emptyState = root.querySelector("[data-empty-state]");
   const areaFilterStatus = root.querySelector("[data-area-filter-status]");
+  const locationSortStatus = root.querySelector("[data-location-sort-status]");
   const mapFilterStatus = root.querySelector("[data-map-filter-status]");
   const mapFilterResetButtons = Array.from(root.querySelectorAll("[data-map-filter-reset]"));
   const guideSlug = root.dataset.guideSlug || "";
+  const locationSortFallbackText =
+    root.dataset.locationSortFallbackText || "Location unavailable. Showing curated order instead.";
   const initialParams = new URLSearchParams(window.location.search);
+  const LOCATION_SORT_VALUE = "nearby";
+  const LOCATION_SORT_FALLBACK = "curated";
 
   const normalizeTag = (value) => getTagComparisonValue(String(value || ""));
   const allTags = [
@@ -160,6 +183,8 @@ if (root) {
   let selectedTags = [];
   let mapFramePlaceIds = null;
   let searchIndex = null;
+  let currentLocation = null;
+  let currentLocationStatus = "idle";
   const highlightedPlaceId = initialParams.get("place") || "";
   let autocompleteTags = [];
   let highlightedAutocompleteIndex = -1;
@@ -365,6 +390,35 @@ if (root) {
         (left.dataset.name || "").localeCompare(right.dataset.name || "")
       );
     },
+    nearby: (left, right) => {
+      const leftLat = left.dataset.lat ? Number(left.dataset.lat) : Number.NaN;
+      const leftLng = left.dataset.lng ? Number(left.dataset.lng) : Number.NaN;
+      const rightLat = right.dataset.lat ? Number(right.dataset.lat) : Number.NaN;
+      const rightLng = right.dataset.lng ? Number(right.dataset.lng) : Number.NaN;
+      const leftHasCoordinates = Number.isFinite(leftLat) && Number.isFinite(leftLng);
+      const rightHasCoordinates = Number.isFinite(rightLat) && Number.isFinite(rightLng);
+
+      if (!currentLocation) {
+        return sorters.curated(left, right);
+      }
+
+      if (leftHasCoordinates !== rightHasCoordinates) {
+        return leftHasCoordinates ? -1 : 1;
+      }
+
+      if (!leftHasCoordinates || !rightHasCoordinates) {
+        return sorters.curated(left, right);
+      }
+
+      const leftDistance = distanceInKm(currentLocation.lat, currentLocation.lng, leftLat, leftLng);
+      const rightDistance = distanceInKm(
+        currentLocation.lat,
+        currentLocation.lng,
+        rightLat,
+        rightLng,
+      );
+      return leftDistance - rightDistance || sorters.curated(left, right);
+    },
     rating: (left, right) =>
       Number(right.dataset.rating || 0) - Number(left.dataset.rating || 0) ||
       Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0) ||
@@ -422,6 +476,23 @@ if (root) {
     update("map-reset");
     root.dispatchEvent(
       new CustomEvent("guide:map-frame-reset", {
+        bubbles: true,
+      }),
+    );
+  };
+
+  const setLocationSortMessage = (message = "") => {
+    if (!locationSortStatus) {
+      return;
+    }
+
+    locationSortStatus.hidden = !message;
+    locationSortStatus.textContent = message;
+  };
+
+  const requestCurrentLocation = () => {
+    root.dispatchEvent(
+      new CustomEvent("guide:user-location-request", {
         bubbles: true,
       }),
     );
@@ -610,7 +681,18 @@ if (root) {
     });
   });
 
-  sortSelect?.addEventListener("change", () => update());
+  sortSelect?.addEventListener("change", () => {
+    if (sortSelect.value === LOCATION_SORT_VALUE) {
+      setLocationSortMessage("");
+      if (!currentLocation) {
+        requestCurrentLocation();
+      }
+    } else {
+      setLocationSortMessage("");
+    }
+
+    update();
+  });
 
   typeButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -701,6 +783,39 @@ if (root) {
   });
 
   root.addEventListener("guide:map-frame-reset-request", clearMapFrameFilter);
+
+  root.addEventListener("guide:user-location", (event) => {
+    const detail = event.detail || {};
+    const coordinates = detail.coordinates;
+    currentLocation =
+      coordinates &&
+      Number.isFinite(Number(coordinates.lat)) &&
+      Number.isFinite(Number(coordinates.lng))
+        ? {
+            lat: Number(coordinates.lat),
+            lng: Number(coordinates.lng),
+          }
+        : null;
+    currentLocationStatus = detail.status || "idle";
+
+    if (currentLocation) {
+      setLocationSortMessage("");
+      if (sortSelect?.value === LOCATION_SORT_VALUE) {
+        update("location-sort");
+      }
+      return;
+    }
+
+    if (
+      sortSelect?.value === LOCATION_SORT_VALUE &&
+      currentLocationStatus !== "idle" &&
+      currentLocationStatus !== "checking"
+    ) {
+      sortSelect.value = LOCATION_SORT_FALLBACK;
+      setLocationSortMessage(locationSortFallbackText);
+      update("location-sort-fallback");
+    }
+  });
 
   mapFilterResetButtons.forEach((button) => {
     button.addEventListener("click", clearMapFrameFilter);

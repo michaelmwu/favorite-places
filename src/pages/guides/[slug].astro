@@ -263,6 +263,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     data-all-tags={JSON.stringify(allTags)}
     data-default-suggestions={JSON.stringify(defaultSuggestions)}
     data-type-seeds={JSON.stringify(typeSeedTags)}
+    data-location-sort-fallback-text={siteConfig.guide.locationSortFallbackText}
   >
     <SectionHeading eyebrow={siteConfig.guide.browseEyebrow} title={siteConfig.guide.placesHeading} />
 
@@ -357,6 +358,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
               <span class="results-sort-shell">
                 <select class="ui-input" id="guide-sort" name="guide-sort" data-sort-select>
                   <option value="curated">{siteConfig.guide.sortCuratedLabel}</option>
+                  <option value="nearby">{siteConfig.guide.sortNearMeLabel}</option>
                   <option value="rating">{siteConfig.guide.sortRatingLabel}</option>
                   <option value="name">{siteConfig.guide.sortNameLabel}</option>
                   <option value="neighborhood">{siteConfig.guide.sortNeighborhoodLabel}</option>
@@ -372,6 +374,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
           </div>
         </div>
         <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-area-filter-status hidden></p>
+        <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-location-sort-status hidden></p>
         <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-map-filter-status hidden>{siteConfig.guide.mapFilteredText}</p>
         <div class="empty-state ui-empty-state" data-empty-state>{siteConfig.guide.emptyStateText}</div>
 
