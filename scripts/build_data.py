@@ -17,9 +17,10 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from statistics import median
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import parse_qsl, quote_plus, unquote, urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -2655,6 +2656,7 @@ def enrich_raw_sources(
     refresh_startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
 ) -> None:
     api_key = google_places_api_key()
+    strategy = google_places_enrichment_strategy()
     cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
     enrich_jobs: list[tuple[str, str, str, str, dict[str, Any]]] = []
 
@@ -2686,6 +2688,18 @@ def enrich_raw_sources(
     if not enrich_jobs:
         return
 
+    if strategy == "api" and api_key is None:
+        raise RuntimeError(
+            "GOOGLE_PLACES_API_KEY is required when GOOGLE_PLACES_ENRICHMENT_STRATEGY=api."
+        )
+
+    if strategy == "scrape_then_api" and api_key is None:
+        print(
+            "GOOGLE_PLACES_API_KEY is not set; enrichment will scrape Google Maps place pages "
+            "without Google Places API fallback.",
+            flush=True,
+        )
+
     enrich_jobs.sort(key=enrichment_job_priority)
 
     effective_startup_jitter_seconds = (
@@ -2701,6 +2715,7 @@ def enrich_raw_sources(
                 refresh_reason,
                 place_payload,
                 api_key=api_key,
+                strategy=strategy,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
                 existing_entry=cache_payloads[slug].get(place_id),
             )
@@ -2720,6 +2735,7 @@ def enrich_raw_sources(
                 refresh_reason,
                 place_payload,
                 api_key=api_key,
+                strategy=strategy,
                 refresh_startup_jitter_seconds=effective_startup_jitter_seconds,
                 existing_entry=cache_payloads[slug].get(place_id),
             ): (slug, place_id)
@@ -2745,6 +2761,7 @@ def enrich_place_job(
     place_payload: dict[str, Any],
     *,
     api_key: str | None,
+    strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
     refresh_startup_jitter_seconds: float,
     existing_entry: EnrichmentCacheEntry | None = None,
 ) -> EnrichmentCacheEntry:
@@ -2754,7 +2771,7 @@ def enrich_place_job(
     )
     sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
     place = RawPlace.model_validate(place_payload)
-    refreshed_entry = fetch_places_enrichment(place, api_key=api_key)
+    refreshed_entry = fetch_places_enrichment(place, api_key=api_key, strategy=strategy)
     merged_entry, warning = preserve_existing_enrichment(
         slug=slug,
         place_id=place_id,
@@ -3637,6 +3654,11 @@ def coerce_string_list(value: Any) -> list[str]:
 
 def google_places_api_key() -> str | None:
     return PlacesSettings().google_places_api_key
+
+
+@cache
+def google_places_enrichment_strategy() -> Literal["scrape", "api", "scrape_then_api"]:
+    return PlacesSettings().google_places_enrichment_strategy
 
 
 def configured_source_path(source: SourceConfig) -> Path:
@@ -5364,7 +5386,25 @@ def public_photo_path(filename: str) -> str:
     return f"/place-photos/{filename}"
 
 
-def fetch_places_enrichment(place: RawPlace, *, api_key: str | None) -> EnrichmentCacheEntry:
+def fetch_places_enrichment(
+    place: RawPlace,
+    *,
+    api_key: str | None,
+    strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
+) -> EnrichmentCacheEntry:
+    if strategy is None:
+        strategy = google_places_enrichment_strategy()
+
+    if strategy == "scrape":
+        return fetch_place_page_enrichment(place)
+
+    if strategy == "api":
+        if api_key is None:
+            raise RuntimeError(
+                "GOOGLE_PLACES_API_KEY is required when GOOGLE_PLACES_ENRICHMENT_STRATEGY=api."
+            )
+        return fetch_places_api_enrichment(place, api_key=api_key)
+
     page_entry = fetch_place_page_enrichment(place)
     if page_entry.error is None and page_entry.place is not None:
         if api_key is None or not should_fallback_to_places_api(page_entry):
