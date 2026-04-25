@@ -249,9 +249,15 @@ describe("guide map interactions", () => {
     const guideMap = readSource("src/components/GuideMap.astro");
 
     expect(homeMap).toContain("const WORLD_MAP_MAX_LATITUDE = 85.05112878");
-    expect(homeMap).toContain("const WORLD_MAP_MIN_ZOOM = 1");
+    expect(homeMap).toContain("const WORLD_MAP_MIN_ZOOM = 0");
+    expect(homeMap).toContain("const WORLD_MAP_MIN_LONGITUDE = -180");
+    expect(homeMap).toContain("const WORLD_MAP_MAX_LONGITUDE = 180");
     expect(homeMap).toContain("const WORLD_MAP_BOUNDS = {");
+    expect(homeMap).toContain("east: WORLD_MAP_MAX_LONGITUDE");
+    expect(homeMap).toContain("west: WORLD_MAP_MIN_LONGITUDE");
     expect(homeMap).toContain("const LEAFLET_WORLD_BOUNDS = L.latLngBounds");
+    expect(homeMap).toContain("[-WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MIN_LONGITUDE]");
+    expect(homeMap).toContain("[WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MAX_LONGITUDE]");
     expect(homeMap).toContain("maxBounds: LEAFLET_WORLD_BOUNDS");
     expect(homeMap).toContain("maxBoundsViscosity: 1");
     expect(homeMap).toContain("minZoom: WORLD_MAP_MIN_ZOOM");
