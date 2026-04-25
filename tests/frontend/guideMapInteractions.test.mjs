@@ -243,4 +243,30 @@ describe("guide map interactions", () => {
     expect(homeMap).toContain("runtime?.fitGuides(currentVisibleGuides)");
     expect(homeMap).toContain("applyVisibility(\n      pendingState.visibleGuideSlugs,");
   });
+
+  it("constrains map panning before the world scrolls into grey tile space", () => {
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
+    const guideMap = readSource("src/components/GuideMap.astro");
+
+    expect(homeMap).toContain("const WORLD_MAP_MAX_LATITUDE = 85.05112878");
+    expect(homeMap).toContain("const WORLD_MAP_MIN_ZOOM = 1");
+    expect(homeMap).toContain("const WORLD_MAP_BOUNDS = {");
+    expect(homeMap).toContain("const LEAFLET_WORLD_BOUNDS = L.latLngBounds");
+    expect(homeMap).toContain("maxBounds: LEAFLET_WORLD_BOUNDS");
+    expect(homeMap).toContain("maxBoundsViscosity: 1");
+    expect(homeMap).toContain("minZoom: WORLD_MAP_MIN_ZOOM");
+    expect(homeMap).toContain("restriction: {");
+    expect(homeMap).toContain("latLngBounds: WORLD_MAP_BOUNDS");
+    expect(homeMap).toContain("strictBounds: true");
+
+    expect(guideMap).not.toContain("const WORLD_MAP_MAX_LATITUDE = 85.05112878");
+    expect(guideMap).not.toContain("const WORLD_MAP_MIN_ZOOM");
+    expect(guideMap).not.toContain("const WORLD_MAP_BOUNDS = {");
+    expect(guideMap).not.toContain("const LEAFLET_WORLD_BOUNDS = L.latLngBounds");
+    expect(guideMap).not.toContain("maxBounds: LEAFLET_WORLD_BOUNDS");
+    expect(guideMap).not.toContain("maxBoundsViscosity: 1");
+    expect(guideMap).not.toContain("restriction: {");
+    expect(guideMap).not.toContain("latLngBounds: WORLD_MAP_BOUNDS");
+    expect(guideMap).not.toContain("strictBounds: true");
+  });
 });
