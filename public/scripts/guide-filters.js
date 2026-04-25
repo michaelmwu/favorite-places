@@ -628,9 +628,12 @@ if (root) {
       const areaValue = normalizeTag(button.dataset.area || "");
       const count = countAreaOptionCards(cards, areaCountFilters, areaValue);
       const isActive = areaValue === activeArea;
+      const unavailable = Boolean(areaValue) && !isActive && count === 0;
       setFilterCount(button, count);
       setToggleButtonState(button, {
         active: isActive,
+        unavailable,
+        disabled: unavailable,
       });
       return {
         active: isActive,

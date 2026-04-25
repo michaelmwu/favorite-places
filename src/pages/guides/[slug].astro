@@ -166,25 +166,51 @@ const typeSeedTags = Object.fromEntries(
     ];
   }),
 );
-const typeCounts = Object.fromEntries(
-  browseTypes.map((type) => {
-    const typeKey = normalizeTagValue(type);
-    const seeds = typeSeedTags[typeKey] ?? [];
-    const count = visiblePlaces.filter((place) => {
-      const normalizedCategory = normalizeTagValue(place.primary_category ?? "");
-      if (normalizedCategory === typeKey) {
-        return true;
-      }
+const placeBrowseData = visiblePlaces.map((place) => ({
+  filterTagSet: new Set(
+    getPlaceFilterTags(place, placeTagGuideContext)
+      .map((tag) => normalizeTagValue(tag))
+      .filter(Boolean),
+  ),
+  normalizedCategory: normalizeTagValue(place.primary_category ?? ""),
+}));
+const typeCountsAccumulator = Object.fromEntries(
+  browseTypes.map((type) => [normalizeTagValue(type), 0]),
+) as Record<string, number>;
+const typeKeysBySeed = new Map<string, string[]>();
 
-      const placeFilterTags = getPlaceFilterTags(place, placeTagGuideContext).map((tag) =>
-        normalizeTagValue(tag),
-      );
-      return seeds.some((seed) => placeFilterTags.includes(seed));
-    }).length;
+for (const [typeKey, seeds] of Object.entries(typeSeedTags)) {
+  for (const seed of seeds) {
+    const matchingTypeKeys = typeKeysBySeed.get(seed) ?? [];
+    matchingTypeKeys.push(typeKey);
+    typeKeysBySeed.set(seed, matchingTypeKeys);
+  }
+}
 
-    return [typeKey, count];
-  }),
-);
+for (const placeData of placeBrowseData) {
+  const matchingTypeKeys = new Set<string>();
+
+  if (placeData.normalizedCategory && placeData.normalizedCategory in typeCountsAccumulator) {
+    matchingTypeKeys.add(placeData.normalizedCategory);
+  }
+
+  for (const seed of placeData.filterTagSet) {
+    const seededTypeKeys = typeKeysBySeed.get(seed);
+    if (!seededTypeKeys) {
+      continue;
+    }
+
+    for (const typeKey of seededTypeKeys) {
+      matchingTypeKeys.add(typeKey);
+    }
+  }
+
+  for (const typeKey of matchingTypeKeys) {
+    typeCountsAccumulator[typeKey] += 1;
+  }
+}
+
+const typeCounts = typeCountsAccumulator;
 const guideDescriptionHtml = renderRichText(guide.description);
 const guideAsideHtml = getGuideAsideHtml(guide.slug);
 const guideBeforePlacesHtml = getTemplateHtml(`guide-before-places/${guide.slug}.html`) ?? getTemplateHtml("guide-before-places/default.html");
