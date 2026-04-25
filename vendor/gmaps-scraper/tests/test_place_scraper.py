@@ -216,6 +216,7 @@ class PlaceScraperTests(unittest.TestCase):
                 None,
                 None,
                 None,
+                [["0x60188c981788132b:0x6ef132909b155a88", None, None, "/m/0131whcb", "ChIJ8T36HxCLGGARvpARPDyaKLA"]],
                 None,
                 None,
                 None,
@@ -315,6 +316,7 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(enrichment["description"], "Modern setting for fine dining menus")
         self.assertEqual(enrichment["lat"], 35.6731762)
         self.assertEqual(enrichment["lng"], 139.7127216)
+        self.assertEqual(enrichment["google_place_id"], "ChIJ8T36HxCLGGARvpARPDyaKLA")
 
     def test_extract_preview_description_preserves_text_starting_with_open(self) -> None:
         description = _extract_preview_description(

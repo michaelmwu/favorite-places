@@ -440,6 +440,30 @@ class BuildDataTests(unittest.TestCase):
             ],
         )
 
+    def test_build_place_page_candidate_urls_replaces_name_only_search_urls_with_city_country_bias(self) -> None:
+        place = RawPlace(
+            name="Locale",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Locale",
+            cid="6924437521980544303",
+            lat=35.636208,
+            lng=139.709467,
+        )
+
+        self.assertEqual(
+            build_data.build_place_page_candidate_urls(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            ),
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
+                ),
+            ],
+        )
+
     def test_localize_google_maps_scrape_url_forces_english_locale(self) -> None:
         self.assertEqual(
             build_data.localize_google_maps_scrape_url(
@@ -511,6 +535,66 @@ class BuildDataTests(unittest.TestCase):
         assert entry.place is not None
         self.assertEqual(entry.place.display_name, "Sister Midnight")
         self.assertEqual(entry.place.primary_type_display_name, "Cocktail bar")
+
+    def test_fetch_place_page_enrichment_uses_city_country_bias_for_name_only_search_urls(self) -> None:
+        place = RawPlace(
+            name="Locale",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Locale",
+            cid="6924437521980544303",
+            lat=35.636208,
+            lng=139.709467,
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url="https://www.google.com/maps/place/Locale/@35.636208,139.709467,17z",
+                name="Locale",
+                category="Cafe",
+                rating=4.4,
+                review_count=215,
+                address="1 Chome-19-14 Aobadai, Meguro City, Tokyo 153-0042, Japan",
+                located_in=None,
+                status=None,
+                website="https://locale.jp/",
+                phone="+81 3-1234-5678",
+                plus_code=None,
+                description=None,
+                lat=35.636208,
+                lng=139.709467,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            )
+
+        self.assertEqual(
+            called_urls,
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
+                )
+            ],
+        )
+        self.assertTrue(entry.matched)
+        self.assertIsNotNone(entry.place)
 
     def test_fetch_place_page_enrichment_falls_back_to_canonical_url_for_weak_search_match(self) -> None:
         place = RawPlace(
@@ -2045,6 +2129,54 @@ class BuildDataTests(unittest.TestCase):
             ["restaurant", "japanese_restaurant", "udon_noodle_restaurant"],
         )
 
+    def test_normalize_enrichment_match_drops_generic_item_category(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "test-id",
+                "name": "places/test-id",
+                "displayName": {"text": "Elephant Mountain"},
+                "formattedAddress": "Taipei",
+                "googleMapsUri": "https://maps.google.com/?cid=1",
+                "primaryType": "item",
+                "primaryTypeDisplayName": {"text": "Item"},
+                "types": ["establishment", "point_of_interest", "item"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertEqual(place.types, [])
+
+    def test_normalize_guide_ignores_generic_item_primary_type(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="象山",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-26T00:00:00+00:00",
+                query="象山, Taipei, Taiwan",
+                matched=True,
+                score=40,
+                place=EnrichmentPlace(
+                    primary_type="item",
+                    primary_type_display_name=None,
+                    types=["item"],
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("taipei-taiwan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertIsNone(guide.places[0].primary_category)
+
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [
             ("Bar Rooster", "bar"),
@@ -3120,7 +3252,12 @@ class BuildDataTests(unittest.TestCase):
         ):
             entry = build_data.fetch_places_enrichment(place, api_key="test-key")
 
-        page_fetch.assert_called_once_with(place)
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
         api_fetch.assert_not_called()
         self.assertIs(entry, page_entry)
 
@@ -3219,6 +3356,32 @@ class BuildDataTests(unittest.TestCase):
         self.assertTrue(entry.matched)
         self.assertEqual(entry.place.display_name, "Cantina OK!")
 
+    def test_build_place_page_candidate_urls_prefers_query_place_id_when_available(self) -> None:
+        place = RawPlace(
+            name="Locale",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Locale",
+            cid="6924437521980544303",
+            lat=35.636208,
+            lng=139.709467,
+        )
+
+        self.assertEqual(
+            build_data.build_place_page_candidate_urls(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+                google_place_id="ChIJ1234567890example",
+            ),
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Locale%2C+Tokyo%2C+Japan"
+                    "&query_place_id=ChIJ1234567890example&hl=en&gl=us"
+                )
+            ],
+        )
+
     def test_fetch_places_enrichment_falls_back_to_api_when_page_is_limited(self) -> None:
         place = RawPlace(
             name="Jimbocho Den",
@@ -3262,7 +3425,12 @@ class BuildDataTests(unittest.TestCase):
         ):
             entry = build_data.fetch_places_enrichment(place, api_key="test-key")
 
-        page_fetch.assert_called_once_with(place)
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
         api_fetch.assert_called_once_with(place, api_key="test-key")
         self.assertIs(entry, api_entry)
 
@@ -3302,7 +3470,12 @@ class BuildDataTests(unittest.TestCase):
         ):
             entry = build_data.fetch_places_enrichment(place, api_key="test-key")
 
-        page_fetch.assert_called_once_with(place)
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
         api_fetch.assert_called_once_with(place, api_key="test-key")
         self.assertIs(entry, page_entry)
 

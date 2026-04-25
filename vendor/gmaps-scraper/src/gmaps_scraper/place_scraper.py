@@ -492,6 +492,7 @@ def _build_place_details(
     return PlaceDetails(
         source_url=source_url,
         resolved_url=resolved_url,
+        google_place_id=_normalize_google_place_id(snapshot.get("google_place_id")),
         name=name,
         secondary_name=_clean_name_text(snapshot.get("secondary_name"))
         or _extract_secondary_name(combined_lines, name=name),
@@ -645,6 +646,10 @@ def _extract_preview_place_enrichment(payload_text: str) -> dict[str, object]:
     if coordinates is not None:
         enrichment["lat"] = coordinates[0]
         enrichment["lng"] = coordinates[1]
+
+    google_place_id = _extract_preview_google_place_id(root)
+    if google_place_id is not None:
+        enrichment["google_place_id"] = google_place_id
 
     return enrichment
 
@@ -932,6 +937,53 @@ def _normalize_photo_url(value: object) -> str | None:
     if "streetviewpixels-pa.googleapis.com" in host:
         return None
     return normalized
+
+
+def _normalize_google_place_id(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    return normalized if _GOOGLE_PLACE_ID_PATTERN.fullmatch(normalized) else None
+
+
+_GOOGLE_PLACE_ID_PATTERN = re.compile(r"\bChIJ[0-9A-Za-z_-]{10,}\b")
+_MAPS_ENTITY_TOKEN_PATTERN = re.compile(r"0x[0-9a-fA-F]+:0x[0-9a-fA-F]+")
+_KNOWLEDGE_GRAPH_MID_PATTERN = re.compile(r"^/m/[A-Za-z0-9_-]+$")
+
+
+def _extract_preview_google_place_id(root: list[object]) -> str | None:
+    unique_place_ids: list[str] = []
+    seen_place_ids: set[str] = set()
+
+    for node in _iter_preview_lists(root):
+        strings = [value for value in node if isinstance(value, str)]
+        if not strings:
+            continue
+
+        place_ids = [value for value in strings if _GOOGLE_PLACE_ID_PATTERN.fullmatch(value)]
+        if not place_ids:
+            continue
+
+        for place_id in place_ids:
+            if place_id not in seen_place_ids:
+                unique_place_ids.append(place_id)
+                seen_place_ids.add(place_id)
+
+        if any(_MAPS_ENTITY_TOKEN_PATTERN.fullmatch(value) for value in strings) or any(
+            _KNOWLEDGE_GRAPH_MID_PATTERN.fullmatch(value) for value in strings
+        ):
+            return place_ids[0]
+
+    if len(unique_place_ids) == 1:
+        return unique_place_ids[0]
+    return None
+
+
+def _iter_preview_lists(value: object) -> Iterable[list[object]]:
+    if isinstance(value, list):
+        yield value
+        for item in value:
+            yield from _iter_preview_lists(item)
 
 
 def _extract_preview_phone(strings: list[str]) -> str | None:

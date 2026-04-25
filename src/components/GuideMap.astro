@@ -192,6 +192,7 @@ const mapPlaces = places
 
   const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
   const DESKTOP_MAP_MEDIA_QUERY = "(min-width: 980px)";
+  const SIDE_BY_SIDE_MAP_MEDIA_QUERY = "(min-width: 1280px)";
   const LOCATION_PROXIMITY_BUFFER_KM = 25;
   const LOCATION_PROXIMITY_MULTIPLIER = 1.8;
   const LOCATION_OUTLIER_MIN_DISTANCE_KM = 50;
@@ -479,7 +480,7 @@ const mapPlaces = places
     const browseMain = layout?.querySelector<HTMLElement>("[data-browse-main]");
     if (!layout || !browseMain) return;
 
-    if (window.matchMedia(DESKTOP_MAP_MEDIA_QUERY).matches) {
+    if (window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY).matches) {
       if (browseMain.nextElementSibling !== panel) {
         browseMain.after(panel);
       }
@@ -494,6 +495,7 @@ const mapPlaces = places
   const initPanels = () => {
     const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY);
     const desktopMediaQuery = window.matchMedia(DESKTOP_MAP_MEDIA_QUERY);
+    const sideBySideMediaQuery = window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY);
     const defaultCollapsed = storedCollapsed === null ? !desktopMediaQuery.matches : storedCollapsed === "true";
 
     document.querySelectorAll<HTMLElement>("[data-map-panel]").forEach((panel) => {
@@ -505,7 +507,7 @@ const mapPlaces = places
       panel.querySelector("[data-map-toggle]")?.addEventListener("click", () => {
         setPanelCollapsed(panel, panel.dataset.collapsed !== "true");
       });
-      desktopMediaQuery.addEventListener("change", () => syncPanelOrder(panel));
+      sideBySideMediaQuery.addEventListener("change", () => syncPanelOrder(panel));
     });
   };
 
