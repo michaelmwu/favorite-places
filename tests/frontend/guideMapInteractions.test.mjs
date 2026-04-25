@@ -175,6 +175,8 @@ describe("guide map interactions", () => {
 
   it("guards the current-location map control with stored guide proximity bounds", () => {
     const guideMap = readSource("src/components/GuideMap.astro");
+    const guidePage = readSource("src/pages/guides/[slug].astro");
+    const filters = readSource("public/scripts/guide-filters.js");
     const css = readSource("src/styles/global.css");
 
     expect(guideMap).toContain('class="map-icon-button"');
@@ -192,6 +194,22 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain('setLocationButtonState("checking", "Checking current location")');
     expect(guideMap).toContain('setLocationButtonState("near", "Center map on current location")');
     expect(guideMap).toContain("watchPosition");
+    expect(
+      guideMap.indexOf(
+        'root?.addEventListener("guide:user-location-request", handleUserLocationRequest)',
+      ),
+    ).toBeLessThan(guideMap.indexOf("await initGoogleRuntime"));
+    expect(guidePage).toContain("const hasMappablePlaces = visiblePlaces.some");
+    expect(guidePage).toContain('data-has-mappable-places={hasMappablePlaces ? "true" : "false"}');
+    expect(guidePage).toContain(
+      '{hasMappablePlaces && <option value="nearby">{siteConfig.guide.sortNearMeLabel}</option>}',
+    );
+    expect(filters).toContain(
+      'const hasMappablePlaces = root.dataset.hasMappablePlaces === "true";',
+    );
+    expect(filters).toContain("const requestCurrentLocationDirectly = () => {");
+    expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
+    expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');
@@ -242,5 +260,37 @@ describe("guide map interactions", () => {
     expect(homeMap).toContain("runtime?.setVisibleGuides(currentVisibleGuideSlugs)");
     expect(homeMap).toContain("runtime?.fitGuides(currentVisibleGuides)");
     expect(homeMap).toContain("applyVisibility(\n      pendingState.visibleGuideSlugs,");
+  });
+
+  it("constrains map panning before the world scrolls into grey tile space", () => {
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
+    const guideMap = readSource("src/components/GuideMap.astro");
+
+    expect(homeMap).toContain("const WORLD_MAP_MAX_LATITUDE = 85.05112878");
+    expect(homeMap).toContain("const WORLD_MAP_MIN_ZOOM = 0");
+    expect(homeMap).toContain("const WORLD_MAP_MIN_LONGITUDE = -180");
+    expect(homeMap).toContain("const WORLD_MAP_MAX_LONGITUDE = 180");
+    expect(homeMap).toContain("const WORLD_MAP_BOUNDS = {");
+    expect(homeMap).toContain("east: WORLD_MAP_MAX_LONGITUDE");
+    expect(homeMap).toContain("west: WORLD_MAP_MIN_LONGITUDE");
+    expect(homeMap).toContain("const LEAFLET_WORLD_BOUNDS = L.latLngBounds");
+    expect(homeMap).toContain("[-WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MIN_LONGITUDE]");
+    expect(homeMap).toContain("[WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MAX_LONGITUDE]");
+    expect(homeMap).toContain("maxBounds: LEAFLET_WORLD_BOUNDS");
+    expect(homeMap).toContain("maxBoundsViscosity: 1");
+    expect(homeMap).toContain("minZoom: WORLD_MAP_MIN_ZOOM");
+    expect(homeMap).toContain("restriction: {");
+    expect(homeMap).toContain("latLngBounds: WORLD_MAP_BOUNDS");
+    expect(homeMap).toContain("strictBounds: true");
+
+    expect(guideMap).not.toContain("const WORLD_MAP_MAX_LATITUDE = 85.05112878");
+    expect(guideMap).not.toContain("const WORLD_MAP_MIN_ZOOM");
+    expect(guideMap).not.toContain("const WORLD_MAP_BOUNDS = {");
+    expect(guideMap).not.toContain("const LEAFLET_WORLD_BOUNDS = L.latLngBounds");
+    expect(guideMap).not.toContain("maxBounds: LEAFLET_WORLD_BOUNDS");
+    expect(guideMap).not.toContain("maxBoundsViscosity: 1");
+    expect(guideMap).not.toContain("restriction: {");
+    expect(guideMap).not.toContain("latLngBounds: WORLD_MAP_BOUNDS");
+    expect(guideMap).not.toContain("strictBounds: true");
   });
 });

@@ -30,6 +30,115 @@ function parseCardTagValues(value) {
   }
 }
 
+function toRadians(degrees) {
+  return (degrees * Math.PI) / 180;
+}
+
+function distanceInKm(fromLat, fromLng, toLat, toLng) {
+  const earthRadiusKm = 6371;
+  const latDelta = toRadians(toLat - fromLat);
+  const lngDelta = toRadians(toLng - fromLng);
+  const fromLatRadians = toRadians(fromLat);
+  const toLatRadians = toRadians(toLat);
+  const a =
+    Math.sin(latDelta / 2) ** 2 +
+    Math.cos(fromLatRadians) * Math.cos(toLatRadians) * Math.sin(lngDelta / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return earthRadiusKm * c;
+}
+
+function getCardCoordinates(card) {
+  const lat = card.dataset.lat ? Number(card.dataset.lat) : Number.NaN;
+  const lng = card.dataset.lng ? Number(card.dataset.lng) : Number.NaN;
+
+  return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+}
+
+export function buildNearbyDistanceMap(cards, currentLocation) {
+  const distances = new Map();
+  if (!currentLocation) {
+    return distances;
+  }
+
+  cards.forEach((card) => {
+    const coordinates = getCardCoordinates(card);
+    if (!coordinates) {
+      return;
+    }
+
+    distances.set(
+      card.dataset.placeId || "",
+      distanceInKm(currentLocation.lat, currentLocation.lng, coordinates.lat, coordinates.lng),
+    );
+  });
+
+  return distances;
+}
+
+export function compareCardsByCurated(left, right) {
+  const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
+  const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
+  if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
+  return (
+    Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0) ||
+    (left.dataset.name || "").localeCompare(right.dataset.name || "")
+  );
+}
+
+export function compareCardsByNearby(
+  left,
+  right,
+  { currentLocation = null, distanceByPlaceId = new Map() } = {},
+) {
+  if (!currentLocation) {
+    return compareCardsByCurated(left, right);
+  }
+
+  const leftDistance = distanceByPlaceId.get(left.dataset.placeId || "");
+  const rightDistance = distanceByPlaceId.get(right.dataset.placeId || "");
+  const leftHasDistance = Number.isFinite(leftDistance);
+  const rightHasDistance = Number.isFinite(rightDistance);
+
+  if (leftHasDistance !== rightHasDistance) {
+    return leftHasDistance ? -1 : 1;
+  }
+
+  if (!leftHasDistance || !rightHasDistance) {
+    return compareCardsByCurated(left, right);
+  }
+
+  return leftDistance - rightDistance || compareCardsByCurated(left, right);
+}
+
+export function resolveLocationSortState({
+  fallbackMessage = "Location unavailable. Showing curated order instead.",
+  fallbackSortValue = "curated",
+  currentLocation = null,
+  currentLocationStatus = "idle",
+  sortValue,
+} = {}) {
+  const shouldFallback =
+    sortValue === "nearby" &&
+    !currentLocation &&
+    currentLocationStatus !== "idle" &&
+    currentLocationStatus !== "checking";
+
+  if (!shouldFallback) {
+    return {
+      message: "",
+      shouldFallback: false,
+      sortValue,
+    };
+  }
+
+  return {
+    message: fallbackMessage,
+    shouldFallback: true,
+    sortValue: fallbackSortValue,
+  };
+}
+
 export function cardHasTag(card, tag) {
   const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
@@ -254,10 +363,16 @@ if (root) {
   const resultsCount = root.querySelector("[data-results-count]");
   const emptyState = root.querySelector("[data-empty-state]");
   const areaFilterStatus = root.querySelector("[data-area-filter-status]");
+  const locationSortStatus = root.querySelector("[data-location-sort-status]");
   const mapFilterStatus = root.querySelector("[data-map-filter-status]");
   const mapFilterResetButtons = Array.from(root.querySelectorAll("[data-map-filter-reset]"));
   const guideSlug = root.dataset.guideSlug || "";
+  const hasMappablePlaces = root.dataset.hasMappablePlaces === "true";
+  const locationSortFallbackText =
+    root.dataset.locationSortFallbackText || "Location unavailable. Showing curated order instead.";
   const initialParams = new URLSearchParams(window.location.search);
+  const LOCATION_SORT_VALUE = "nearby";
+  const LOCATION_SORT_FALLBACK = "curated";
 
   const normalizeTag = (value) => getTagComparisonValue(String(value || ""));
   const allTags = [
@@ -286,6 +401,12 @@ if (root) {
   let selectedTags = [];
   let mapFramePlaceIds = null;
   let searchIndex = null;
+  let currentLocation = null;
+  let currentLocationStatus = "idle";
+  let nearbyDistanceByPlaceId = new Map();
+  let hasHandledLocationRequest = false;
+  let directLocationRequestInFlight = false;
+  let directLocationFallbackTimer = null;
   const highlightedPlaceId = initialParams.get("place") || "";
   let autocompleteTags = [];
   let highlightedAutocompleteIndex = -1;
@@ -482,15 +603,12 @@ if (root) {
   };
 
   const sorters = {
-    curated: (left, right) => {
-      const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
-      const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
-      if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
-      return (
-        Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0) ||
-        (left.dataset.name || "").localeCompare(right.dataset.name || "")
-      );
-    },
+    curated: compareCardsByCurated,
+    nearby: (left, right) =>
+      compareCardsByNearby(left, right, {
+        currentLocation,
+        distanceByPlaceId: nearbyDistanceByPlaceId,
+      }),
     rating: (left, right) =>
       Number(right.dataset.rating || 0) - Number(left.dataset.rating || 0) ||
       Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0) ||
@@ -550,6 +668,100 @@ if (root) {
         bubbles: true,
       }),
     );
+  };
+
+  const setLocationSortMessage = (message = "") => {
+    if (!locationSortStatus) {
+      return;
+    }
+
+    locationSortStatus.hidden = !message;
+    locationSortStatus.textContent = message;
+  };
+
+  const clearDirectLocationFallbackTimer = () => {
+    if (directLocationFallbackTimer !== null) {
+      window.clearTimeout(directLocationFallbackTimer);
+      directLocationFallbackTimer = null;
+    }
+  };
+
+  const dispatchUserLocation = ({ coordinates = null, source = "filters", status }) => {
+    root.dispatchEvent(
+      new CustomEvent("guide:user-location", {
+        bubbles: true,
+        detail: {
+          coordinates,
+          nearGuide: false,
+          source,
+          status,
+        },
+      }),
+    );
+  };
+
+  const requestCurrentLocationDirectly = () => {
+    if (directLocationRequestInFlight) {
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      dispatchUserLocation({ status: "unavailable" });
+      return;
+    }
+
+    directLocationRequestInFlight = true;
+    dispatchUserLocation({ status: "checking" });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        directLocationRequestInFlight = false;
+        clearDirectLocationFallbackTimer();
+        dispatchUserLocation({
+          coordinates: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          },
+          status: "available",
+        });
+      },
+      (error) => {
+        directLocationRequestInFlight = false;
+        clearDirectLocationFallbackTimer();
+        dispatchUserLocation({
+          status: error.code === error.PERMISSION_DENIED ? "denied" : "unavailable",
+        });
+      },
+      {
+        maximumAge: 300_000,
+        timeout: 10_000,
+      },
+    );
+  };
+
+  const requestCurrentLocation = () => {
+    hasHandledLocationRequest = false;
+    clearDirectLocationFallbackTimer();
+    root.dispatchEvent(
+      new CustomEvent("guide:user-location-request", {
+        bubbles: true,
+      }),
+    );
+
+    if (!hasMappablePlaces || !document.querySelector("[data-guide-map]")) {
+      requestCurrentLocationDirectly();
+      return;
+    }
+
+    directLocationFallbackTimer = window.setTimeout(() => {
+      if (!hasHandledLocationRequest) {
+        requestCurrentLocationDirectly();
+      }
+    }, 500);
+  };
+
+  const refreshNearbyDistances = () => {
+    nearbyDistanceByPlaceId = buildNearbyDistanceMap(cards, currentLocation);
   };
 
   const update = (source = "list-filter") => {
@@ -791,7 +1003,18 @@ if (root) {
     });
   });
 
-  sortSelect?.addEventListener("change", () => update());
+  sortSelect?.addEventListener("change", () => {
+    if (sortSelect.value === LOCATION_SORT_VALUE) {
+      setLocationSortMessage("");
+      if (!currentLocation) {
+        requestCurrentLocation();
+      }
+    } else {
+      setLocationSortMessage("");
+    }
+
+    update();
+  });
 
   typeButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -878,6 +1101,46 @@ if (root) {
   });
 
   root.addEventListener("guide:map-frame-reset-request", clearMapFrameFilter);
+
+  root.addEventListener("guide:user-location", (event) => {
+    hasHandledLocationRequest = true;
+    clearDirectLocationFallbackTimer();
+    const detail = event.detail || {};
+    const coordinates = detail.coordinates;
+    currentLocation =
+      coordinates &&
+      Number.isFinite(Number(coordinates.lat)) &&
+      Number.isFinite(Number(coordinates.lng))
+        ? {
+            lat: Number(coordinates.lat),
+            lng: Number(coordinates.lng),
+          }
+        : null;
+    currentLocationStatus = detail.status || "idle";
+    refreshNearbyDistances();
+
+    if (currentLocation) {
+      setLocationSortMessage("");
+      if (sortSelect?.value === LOCATION_SORT_VALUE) {
+        update("location-sort");
+      }
+      return;
+    }
+
+    const nextLocationSortState = resolveLocationSortState({
+      fallbackMessage: locationSortFallbackText,
+      fallbackSortValue: LOCATION_SORT_FALLBACK,
+      currentLocation,
+      currentLocationStatus,
+      sortValue: sortSelect?.value,
+    });
+
+    if (nextLocationSortState.shouldFallback && sortSelect) {
+      sortSelect.value = nextLocationSortState.sortValue;
+      setLocationSortMessage(nextLocationSortState.message);
+      update("location-sort-fallback");
+    }
+  });
 
   mapFilterResetButtons.forEach((button) => {
     button.addEventListener("click", clearMapFrameFilter);
