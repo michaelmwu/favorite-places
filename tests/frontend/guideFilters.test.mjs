@@ -5,11 +5,23 @@ import {
   buildEmptyStateMessage,
   cardHasTag,
   cardMatchesType,
+  countAreaOptionCards,
   countMatchingCards,
+  countTagOptionCards,
+  countTypeOptionCards,
+  sortFilterOptions,
 } from "../../public/scripts/guide-filters.js";
 
-const makeCard = ({ neighborhood = "", placeId, search = "", tags = "", vibeTags = "" }) => ({
+const makeCard = ({
+  category = "",
+  neighborhood = "",
+  placeId,
+  search = "",
+  tags = "",
+  vibeTags = "",
+}) => ({
   dataset: {
+    category,
     neighborhood,
     placeId,
     search,
@@ -252,5 +264,105 @@ describe("guide filters", () => {
         tag: "date-night",
       }),
     ).toBe(1);
+  });
+
+  it("counts area options against the current non-area filters", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "lastarria",
+        category: "cafe",
+        vibeTags: JSON.stringify(["cozy"]),
+      }),
+      makeCard({
+        placeId: "2",
+        neighborhood: "providencia",
+        category: "restaurant",
+        vibeTags: JSON.stringify(["cozy"]),
+      }),
+      makeCard({
+        placeId: "3",
+        neighborhood: "bellavista",
+        category: "cafe",
+        vibeTags: JSON.stringify(["lively"]),
+      }),
+    ];
+
+    expect(
+      countAreaOptionCards(
+        cards,
+        {
+          activeTypeValue: "cafe",
+          activeTypeSeedValues: [],
+          selectedTagValues: ["cozy"],
+        },
+        "lastarria",
+      ),
+    ).toBe(1);
+    expect(
+      countAreaOptionCards(cards, {
+        activeTypeValue: "cafe",
+        activeTypeSeedValues: [],
+        selectedTagValues: ["cozy"],
+      }),
+    ).toBe(1);
+  });
+
+  it("counts type and tag options within the selected area", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "lastarria",
+        category: "cafe",
+        vibeTags: JSON.stringify(["cozy"]),
+      }),
+      makeCard({
+        placeId: "2",
+        neighborhood: "lastarria",
+        category: "restaurant",
+        vibeTags: JSON.stringify(["date-night"]),
+      }),
+      makeCard({
+        placeId: "3",
+        neighborhood: "providencia",
+        category: "restaurant",
+        vibeTags: JSON.stringify(["date-night"]),
+      }),
+    ];
+
+    expect(
+      countTypeOptionCards(
+        cards,
+        {
+          activeArea: "lastarria",
+        },
+        {
+          typeValue: "restaurant",
+          typeSeedValues: [],
+        },
+      ),
+    ).toBe(1);
+    expect(
+      countTagOptionCards(
+        cards,
+        {
+          activeArea: "lastarria",
+          activeTypeValue: "restaurant",
+          activeTypeSeedValues: [],
+        },
+        "cozy",
+      ),
+    ).toBe(0);
+  });
+
+  it("sorts matching filter options ahead of zero-count options while keeping pinned items first", () => {
+    expect(
+      sortFilterOptions([
+        { pinned: false, active: false, count: 0, originalIndex: 3, id: "zero" },
+        { pinned: false, active: false, count: 2, originalIndex: 2, id: "two" },
+        { pinned: true, active: false, count: 1, originalIndex: 0, id: "all" },
+        { pinned: false, active: false, count: 5, originalIndex: 1, id: "five" },
+      ]).map((option) => option.id),
+    ).toEqual(["all", "five", "two", "zero"]);
   });
 });

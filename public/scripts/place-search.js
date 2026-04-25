@@ -279,6 +279,7 @@ function parseQuery(query, index, options) {
 function scoreEntry(entry, parsed) {
   const matchedSignals = [];
   let score = 0;
+  let matchedUnmatchedTermCount = 0;
   const entryTags = normalizedList(entry.tags);
   const entryVibes = normalizedList(entry.vibe_tags);
   const categoryText = normalizeText([entry.category, ...entryTags].join(" "));
@@ -357,10 +358,12 @@ function scoreEntry(entry, parsed) {
     const noteMatch = scoreTokenMatch(term, entry._noteTokens);
     const countryMatch = scoreTokenMatch(term, entry._countryTokens);
     const searchMatch = scoreTokenMatch(term, entry._searchTokens);
+    let termMatched = false;
 
     if (nameMatch > 0) {
       score += nameMatch === 1 ? 16 : 12;
       matchedSignals.push("name");
+      termMatched = true;
     } else if (
       tagMatch > 0 ||
       entryTags.includes(term) ||
@@ -369,26 +372,43 @@ function scoreEntry(entry, parsed) {
     ) {
       score += 10;
       matchedSignals.push("tag");
+      termMatched = true;
     } else if (cityMatch > 0 || guideTitleMatch > 0) {
       score += 8;
       matchedSignals.push("city");
+      termMatched = true;
     } else if (neighborhoodMatch > 0) {
       score += 7;
       matchedSignals.push("neighborhood");
+      termMatched = true;
     } else if (noteMatch > 0) {
       score += 5;
       matchedSignals.push("text");
+      termMatched = true;
     } else if (countryMatch > 0) {
       score += 4;
       matchedSignals.push("country");
+      termMatched = true;
     } else if (searchMatch > 0) {
       score += 1;
       matchedSignals.push("text");
+      termMatched = true;
+    }
+
+    if (termMatched) {
+      matchedUnmatchedTermCount += 1;
     }
   }
 
   if (parsed.tokens.length === 0) {
     score = 1;
+  }
+
+  if (
+    parsed.unmatchedTerms.length > 0 &&
+    matchedUnmatchedTermCount !== parsed.unmatchedTerms.length
+  ) {
+    score = 0;
   }
 
   const hasNonLocationIntent =
@@ -469,7 +489,7 @@ function scoreTokenMatch(term, tokens) {
   if (tokens.includes(term)) {
     return 1;
   }
-  if (term.length >= 3 && tokens.some((token) => token.startsWith(term))) {
+  if (term.length >= 2 && tokens.some((token) => token.startsWith(term))) {
     return 0.7;
   }
   return 0;
