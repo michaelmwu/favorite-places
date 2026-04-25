@@ -44,6 +44,14 @@
       "semicolons": "always"
     }
   },
+  "css": {
+    "formatter": {
+      "enabled": true
+    },
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "html": {
     "experimentalFullSupportEnabled": true
   },

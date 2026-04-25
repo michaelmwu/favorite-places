@@ -1,0 +1,22 @@
+@theme inline {
+  --font-sans: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --color-app-canvas: var(--bg);
+  --color-app-canvas-soft: var(--bg-strong);
+  --color-app-panel: var(--surface);
+  --color-app-panel-muted: var(--surface-strong);
+  --color-app-ink: var(--ink);
+  --color-app-muted: var(--muted);
+  --color-app-line: var(--line);
+  --color-app-brand: var(--accent);
+  --color-app-brand-strong: var(--accent-strong);
+  --color-app-brand-soft: var(--accent-soft);
+
+  --radius-card: var(--radius-lg);
+  --radius-control: var(--radius-md);
+  --radius-pill: var(--radius-sm);
+
+  --shadow-card: 0 18px 42px rgba(39, 47, 56, 0.1);
+  --shadow-floating: 0 12px 28px rgba(39, 47, 56, 0.12);
+}

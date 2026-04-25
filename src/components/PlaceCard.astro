@@ -49,7 +49,7 @@ const markerSvg = buildMapMarkerSvg(
 ---
 
 <article
-  class="place-card"
+  class="place-card ui-card"
   tabindex="0"
   data-place-card
   data-place-id={place.id}
@@ -96,9 +96,9 @@ const markerSvg = buildMapMarkerSvg(
   </div>
 
   <div class="place-card-title">
-    <div class="section-stack place-card-heading">
+    <div class="section-stack ui-stack place-card-heading">
       <div class="place-card-name-row">
-        <h3>{place.name}</h3>
+        <h3 class="ui-card-title">{place.name}</h3>
         <a
           class="place-card-map-link"
           href={place.maps_url}
@@ -123,10 +123,10 @@ const markerSvg = buildMapMarkerSvg(
           {place.neighborhood && ` · ${place.neighborhood}`}
         </p>
         {hasStats && (
-          <div class="stats-row place-card-stats place-card-meta-stats">
-            {ratingValue !== null && <span class="stat-pill">{ratingFormatter.format(ratingValue)} ★</span>}
+          <div class="stats-row ui-meta-row place-card-stats place-card-meta-stats">
+            {ratingValue !== null && <span class="stat-pill ui-pill">{ratingFormatter.format(ratingValue)} ★</span>}
             {reviewCount !== null && (
-              <span class="stat-pill" title={`${reviewCountFormatter.format(reviewCount)} Google Maps reviews`}>
+              <span class="stat-pill ui-pill" title={`${reviewCountFormatter.format(reviewCount)} Google Maps reviews`}>
                 {compactReviewCountFormatter.format(reviewCount)} reviews
               </span>
             )}
@@ -137,20 +137,20 @@ const markerSvg = buildMapMarkerSvg(
     {place.top_pick && <span class="badge">Top pick</span>}
   </div>
 
-  {whyRecommendedHtml && <p class="rich-copy" set:html={whyRecommendedHtml} />}
-  {noteHtml && <p class="small-copy rich-copy" set:html={noteHtml} />}
-  {place.address && <p class="small-copy">{place.address}</p>}
+  {whyRecommendedHtml && <p class="rich-copy ui-copy" set:html={whyRecommendedHtml} />}
+  {noteHtml && <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={noteHtml} />}
+  {place.address && <p class="small-copy ui-copy ui-copy--sm">{place.address}</p>}
   {displayTags.length > 0 && (
-    <div class="tag-row">
+    <div class="tag-row ui-tag-row">
       {displayTags.map((tag) => (
-        <span class="tag-pill">#{tag}</span>
+        <span class="tag-pill ui-tag-pill">#{tag}</span>
       ))}
     </div>
   )}
 
   {place.status !== "active" && (
-    <div class="place-card-footer">
-      <span class="stat-pill">{place.status}</span>
+    <div class="place-card-footer ui-card-footer">
+      <span class="stat-pill ui-pill">{place.status}</span>
     </div>
   )}
 </article>

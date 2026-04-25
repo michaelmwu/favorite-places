@@ -1,0 +1,30 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  copy?: string;
+  level?: 2 | 3;
+  class?: string;
+  align?: "between" | "start";
+}
+
+const {
+  eyebrow,
+  title,
+  copy,
+  level = 2,
+  class: className,
+  align = "between",
+} = Astro.props;
+const HeadingTag = level === 3 ? "h3" : "h2";
+---
+
+<div class:list={["ui-section-head", align === "start" && "ui-section-head--start", className]}>
+  <div class="ui-section-heading">
+    {eyebrow && <p class="ui-eyebrow">{eyebrow}</p>}
+    <HeadingTag class="ui-section-title">{title}</HeadingTag>
+    {copy && <p class="ui-copy ui-copy--sm">{copy}</p>}
+    <slot />
+  </div>
+  <slot name="aside" />
+</div>

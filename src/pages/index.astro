@@ -3,6 +3,7 @@
 import GuideCard from "../components/GuideCard.astro";
 import HomeGuideMap from "../components/HomeGuideMap.astro";
 import Layout from "../components/Layout.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
 import { siteConfig } from "../data/site";
 import { getGuideManifests } from "../lib/data";
 import { getHomeAsideHtml } from "../lib/heroAsideContent";
@@ -138,27 +139,27 @@ const homeHighlights = siteConfig.home.highlights
   title={siteConfig.siteName}
   description={siteConfig.siteDescription}
 >
-  <section class="hero">
-    <div class="hero-grid">
-      <div class="section-stack">
-        <p class="eyebrow">{siteConfig.home.eyebrow}</p>
-        <h1>{siteConfig.home.title}</h1>
-        <p class="lede">{siteConfig.home.intro}</p>
-        <div class="hero-meta">
-          <span class="stat-pill">{guides.length} guides</span>
-          <span class="stat-pill">{countryCount} countries</span>
-          <span class="stat-pill">{placeCount} places</span>
+  <section class="hero ui-hero">
+    <div class="hero-grid ui-hero-grid">
+      <div class="section-stack ui-stack">
+        <p class="eyebrow ui-eyebrow">{siteConfig.home.eyebrow}</p>
+        <h1 class="ui-display">{siteConfig.home.title}</h1>
+        <p class="lede ui-lede">{siteConfig.home.intro}</p>
+        <div class="hero-meta ui-meta-row">
+          <span class="stat-pill ui-pill">{guides.length} guides</span>
+          <span class="stat-pill ui-pill">{countryCount} countries</span>
+          <span class="stat-pill ui-pill">{placeCount} places</span>
         </div>
       </div>
 
-      <div class="section-stack">
+      <div class="section-stack ui-stack">
         {homeAsideHtml ? (
-          <div class="small-copy rich-copy" set:html={homeAsideHtml} />
+          <div class="small-copy ui-copy ui-copy--sm rich-copy" set:html={homeAsideHtml} />
         ) : (
           <>
-            <p class="eyebrow">{siteConfig.home.highlightsHeading}</p>
+            <p class="eyebrow ui-eyebrow">{siteConfig.home.highlightsHeading}</p>
             {homeHighlights.map((highlight) => (
-              <p class="small-copy rich-copy" set:html={highlight} />
+              <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={highlight} />
             ))}
           </>
         )}
@@ -166,22 +167,19 @@ const homeHighlights = siteConfig.home.highlights
     </div>
   </section>
 
-  <section class="section" data-home-browser-root>
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Guides</p>
-        <h2 class="section-title">Browse by country</h2>
-      </div>
-      <p class="small-copy">
+  <section class="section ui-section" data-home-browser-root>
+    <SectionHeading eyebrow="Guides" title="Browse by country">
+      <p slot="aside" class="small-copy ui-copy ui-copy--sm">
         More travel notes at <a href={siteConfig.demFlyersUrl}>DEM Flyers</a>.
       </p>
-    </div>
+    </SectionHeading>
 
-    <div class="controls-panel country-browser" data-home-browser-controls>
+    <div class="controls-panel ui-control-panel country-browser" data-home-browser-controls>
       <div class="controls-grid">
         <div class="control-group">
-          <label class="control-label" for="country-search">Search</label>
+          <label class="control-label ui-control-label" for="country-search">Search</label>
           <input
+            class="ui-input"
             id="country-search"
             name="country-search"
             type="search"
@@ -191,14 +189,14 @@ const homeHighlights = siteConfig.home.highlights
         </div>
 
         <div class="control-group">
-          <span class="control-label">Showing</span>
-          <p class="browse-count" data-home-results-count>
+          <span class="control-label ui-control-label">Showing</span>
+          <p class="browse-count ui-copy" data-home-results-count>
             {guides.length} guides across {countryCount} countries
           </p>
         </div>
 
         <div class="control-group location-control-group">
-          <span class="control-label">Near me</span>
+          <span class="control-label ui-control-label">Near me</span>
           <div class="location-control-row">
             <button
               class="location-target-button"
@@ -219,15 +217,15 @@ const homeHighlights = siteConfig.home.highlights
                 ></path>
               </svg>
             </button>
-            <p class="location-status" data-location-status role="status" aria-live="polite"></p>
+            <p class="location-status ui-copy ui-copy--sm" data-location-status role="status" aria-live="polite"></p>
           </div>
         </div>
 
         <div class="control-group country-filter-group">
-          <span class="control-label">Countries</span>
+          <span class="control-label ui-control-label">Countries</span>
           <div class="country-filter-list" data-country-filter-list>
             <button
-              class="country-filter"
+              class="country-filter ui-tag-pill"
               type="button"
               data-country-filter
               data-country=""
@@ -238,7 +236,7 @@ const homeHighlights = siteConfig.home.highlights
             </button>
             {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
               <button
-                class="country-filter"
+                class="country-filter ui-tag-pill"
                 type="button"
                 data-country-filter
                 data-country={countryName.toLowerCase()}
@@ -253,10 +251,12 @@ const homeHighlights = siteConfig.home.highlights
       </div>
     </div>
 
-    <div class="empty-state" data-home-empty-state>No matching guides. Try a broader search or choose all countries.</div>
+    <div class="empty-state ui-empty-state" data-home-empty-state>
+      No matching guides. Try a broader search or choose all countries.
+    </div>
 
     <div
-      class="global-search-results"
+      class="global-search-results ui-search-results"
       data-global-search-results
       role="status"
       aria-live="polite"
@@ -264,14 +264,14 @@ const homeHighlights = siteConfig.home.highlights
       aria-hidden="true"
       hidden
     >
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Search results</p>
-          <h3 class="section-title" data-global-search-title>Matching places</h3>
+      <div class="ui-section-head">
+        <div class="ui-section-heading">
+          <p class="ui-eyebrow">Search results</p>
+          <h3 class="ui-section-title" data-global-search-title>Matching places</h3>
         </div>
       </div>
       <div class="search-results-toolbar" data-global-search-toolbar>
-        <p class="small-copy" data-global-search-summary></p>
+        <p class="small-copy ui-copy ui-copy--sm" data-global-search-summary></p>
         <div class="search-view-toggle-group" role="group" aria-label="Search results view">
           <button
             class="search-view-toggle"
@@ -295,7 +295,7 @@ const homeHighlights = siteConfig.home.highlights
       </div>
       <div class="search-country-grid" data-grouped-search-list></div>
       <div class="search-result-grid" data-global-search-list hidden></div>
-      <div class="empty-state" data-global-search-empty role="status" aria-live="polite">
+      <div class="empty-state ui-empty-state" data-global-search-empty role="status" aria-live="polite">
         No matching places. Try a broader search.
       </div>
     </div>
@@ -303,15 +303,14 @@ const homeHighlights = siteConfig.home.highlights
     <HomeGuideMap guides={locationGuideCandidates} />
 
     {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
-      <div class="country-block" data-country-block data-country={countryName.toLowerCase()}>
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">{countryGuides.length} guide{countryGuides.length === 1 ? "" : "s"}</p>
-            <h3 class="section-title">{countryFlag ? `${countryName} ${countryFlag}` : countryName}</h3>
-          </div>
-        </div>
+      <div class="country-block ui-country-block" data-country-block data-country={countryName.toLowerCase()}>
+        <SectionHeading
+          eyebrow={`${countryGuides.length} guide${countryGuides.length === 1 ? "" : "s"}`}
+          title={countryFlag ? `${countryName} ${countryFlag}` : countryName}
+          level={3}
+        />
 
-        <div class="card-grid">
+        <div class="card-grid ui-card-grid">
           {countryGuides.map((guide) => (
             <GuideCard guide={guide} />
           ))}

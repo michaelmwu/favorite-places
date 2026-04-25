@@ -64,32 +64,32 @@ const trimCountryFromTitle = (title: string) => {
 const guideDisplayTitle = trimCountryFromTitle(guide.title);
 ---
 
-<article class="guide-card" data-guide-card data-guide-slug={guide.slug} data-search={guideSearchText}>
-  <a class="guide-card-link" href={`/guides/${guide.slug}/`} aria-label={`Open ${guideDisplayTitle}`}></a>
+<article class="guide-card ui-card" data-guide-card data-guide-slug={guide.slug} data-search={guideSearchText}>
+  <a class="guide-card-link ui-card-link" href={`/guides/${guide.slug}/`} aria-label={`Open ${guideDisplayTitle}`}></a>
 
-  <div class="section-stack">
-    <h3>{guideDisplayTitle}</h3>
+  <div class="section-stack ui-stack">
+    <h3 class="ui-card-title">{guideDisplayTitle}</h3>
     {
       guideDescriptionHtml ? (
-        <p class="rich-copy" set:html={guideDescriptionHtml} />
+        <p class="rich-copy ui-copy" set:html={guideDescriptionHtml} />
       ) : (
-        <p>Saved places from Michael's travel notes.</p>
+        <p class="ui-copy">Saved places from Michael's travel notes.</p>
       )
     }
   </div>
 
   {displayGuideTags.length > 0 && (
-    <div class="tag-row">
+    <div class="tag-row ui-tag-row">
       {displayGuideTags.slice(0, 4).map((tag) => (
-        <span class="tag-pill">#{tag}</span>
+        <span class="tag-pill ui-tag-pill">#{tag}</span>
       ))}
     </div>
   )}
 
-  <div class="guide-card-footer">
-    <div class="stats-row">
-      <span class="stat-pill">{guide.place_count} places</span>
-      {guide.top_categories[0] && <span class="stat-pill">{guide.top_categories[0]}</span>}
+  <div class="guide-card-footer ui-card-footer">
+    <div class="stats-row ui-meta-row">
+      <span class="stat-pill ui-pill">{guide.place_count} places</span>
+      {guide.top_categories[0] && <span class="stat-pill ui-pill">{guide.top_categories[0]}</span>}
     </div>
 
   </div>

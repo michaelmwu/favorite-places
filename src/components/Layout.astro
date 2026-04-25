@@ -40,16 +40,16 @@ const metaDescription = description ?? siteConfig.siteDescription;
     />
   </head>
   <body>
-    <header class="site-header">
-      <a class="site-title" href={siteConfig.demFlyersUrl} aria-label="DEM Flyers">
+    <header class="ui-site-header">
+      <a class="ui-site-title" href={siteConfig.demFlyersUrl} aria-label="DEM Flyers">
         <img src="/demflyers-logo.png" alt="DEM Flyers" />
       </a>
-      <nav class="site-nav" aria-label="Primary">
+      <nav class="ui-site-nav" aria-label="Primary">
         <a href="/">Places</a>
         <a href={siteConfig.demFlyersUrl}>Main site</a>
       </nav>
     </header>
-    <main class="page-shell">
+    <main class="ui-page-shell">
       <slot />
     </main>
   </body>
