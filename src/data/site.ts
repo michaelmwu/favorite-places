@@ -73,9 +73,11 @@ export interface SiteConfig {
     allFilterLabel: string;
     resultsSortLabel: string;
     sortCuratedLabel: string;
+    sortNearMeLabel: string;
     sortRatingLabel: string;
     sortNameLabel: string;
     sortNeighborhoodLabel: string;
+    locationSortFallbackText: string;
     resetMapLabel: string;
     mapFilteredText: string;
     emptyStateText: string;
@@ -183,9 +185,11 @@ const defaultSiteConfig: SiteConfig = {
     allFilterLabel: "All",
     resultsSortLabel: "Sort",
     sortCuratedLabel: "Curated",
+    sortNearMeLabel: "Near me",
     sortRatingLabel: "Top rated",
     sortNameLabel: "Name",
     sortNeighborhoodLabel: "Area",
+    locationSortFallbackText: "Location unavailable. Showing curated order instead.",
     resetMapLabel: "Reset map",
     mapFilteredText: "Filtered to the visible map area.",
     emptyStateText: "No matches. Try a broader search or clear the tag filter.",

@@ -70,6 +70,8 @@ const markerSvg = buildMapMarkerSvg(
   data-rating={ratingValue !== null ? String(ratingValue) : ""}
   data-rating-count={reviewCount !== null ? String(reviewCount) : ""}
   data-rank={String(place.manual_rank)}
+  data-lat={place.lat !== null ? String(place.lat) : ""}
+  data-lng={place.lng !== null ? String(place.lng) : ""}
   data-search={[
     place.name,
     place.address ?? "",
