@@ -172,24 +172,150 @@ export function cardMatchesType(card, { activeTypeValue = "", activeTypeSeedValu
   );
 }
 
+export function cardMatchesFilters(
+  card,
+  {
+    activeAreaValue = "",
+    activeTypeValue = "",
+    activeTypeSeedValues = [],
+    mapFramePlaceIds = null,
+    normalizedQuery = "",
+    searchResultIds = null,
+    selectedTagValues = [],
+  } = {},
+) {
+  const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
+  const matchesArea = !activeAreaValue || getCardAreaComparisonValue(card) === activeAreaValue;
+  const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
+  const matchesSelectedTags = selectedTagValues.every((tag) => cardHasTag(card, tag));
+  const matchesType = cardMatchesType(card, {
+    activeTypeValue,
+    activeTypeSeedValues,
+  });
+  return matchesSearch && matchesArea && matchesMapFrame && matchesSelectedTags && matchesType;
+}
+
 export function countMatchingCards(
+  cards,
+  {
+    activeArea = "",
+    activeTypeValue = "",
+    activeTypeSeedValues = [],
+    mapFramePlaceIds = null,
+    normalizedQuery = "",
+    searchResultIds = null,
+    selectedTagValues = [],
+    tag = "",
+  } = {},
+) {
+  const normalizedActiveArea = getTagComparisonValue(activeArea);
+  const nextSelectedTags = tag ? [...selectedTagValues, tag] : selectedTagValues;
+
+  return cards.filter((card) =>
+    cardMatchesFilters(card, {
+      activeAreaValue: normalizedActiveArea,
+      activeTypeValue,
+      activeTypeSeedValues,
+      mapFramePlaceIds,
+      normalizedQuery,
+      searchResultIds,
+      selectedTagValues: nextSelectedTags,
+    }),
+  ).length;
+}
+
+export function countAreaOptionCards(
+  cards,
+  {
+    activeTypeValue = "",
+    activeTypeSeedValues = [],
+    mapFramePlaceIds = null,
+    normalizedQuery = "",
+    searchResultIds = null,
+    selectedTagValues = [],
+  } = {},
+  areaValue = "",
+) {
+  return countMatchingCards(cards, {
+    activeArea: areaValue,
+    activeTypeValue,
+    activeTypeSeedValues,
+    mapFramePlaceIds,
+    normalizedQuery,
+    searchResultIds,
+    selectedTagValues,
+  });
+}
+
+export function countTypeOptionCards(
   cards,
   {
     activeArea = "",
     mapFramePlaceIds = null,
     normalizedQuery = "",
     searchResultIds = null,
-    tag = "",
+    selectedTagValues = [],
   } = {},
+  { typeValue = "", typeSeedValues = [] } = {},
 ) {
-  const normalizedActiveArea = getTagComparisonValue(activeArea);
-  return cards.filter((card) => {
-    const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-    const matchesArea =
-      !normalizedActiveArea || getCardAreaComparisonValue(card) === normalizedActiveArea;
-    const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
-    return matchesSearch && matchesArea && matchesMapFrame && cardHasTag(card, tag);
-  }).length;
+  return countMatchingCards(cards, {
+    activeArea,
+    activeTypeValue: typeValue,
+    activeTypeSeedValues: typeSeedValues,
+    mapFramePlaceIds,
+    normalizedQuery,
+    searchResultIds,
+    selectedTagValues,
+  });
+}
+
+export function countTagOptionCards(
+  cards,
+  {
+    activeArea = "",
+    activeTypeValue = "",
+    activeTypeSeedValues = [],
+    mapFramePlaceIds = null,
+    normalizedQuery = "",
+    searchResultIds = null,
+    selectedTagValues = [],
+  } = {},
+  tag = "",
+) {
+  return countMatchingCards(cards, {
+    activeArea,
+    activeTypeValue,
+    activeTypeSeedValues,
+    mapFramePlaceIds,
+    normalizedQuery,
+    searchResultIds,
+    selectedTagValues,
+    tag,
+  });
+}
+
+export function sortFilterOptions(options) {
+  return [...options].sort((left, right) => {
+    if (Boolean(left.pinned) !== Boolean(right.pinned)) {
+      return left.pinned ? -1 : 1;
+    }
+
+    const leftHasMatches = left.count > 0;
+    const rightHasMatches = right.count > 0;
+    if (leftHasMatches !== rightHasMatches) {
+      return leftHasMatches ? -1 : 1;
+    }
+
+    if (left.count !== right.count) {
+      return right.count - left.count;
+    }
+
+    if (Boolean(left.active) !== Boolean(right.active)) {
+      return left.active ? -1 : 1;
+    }
+
+    return left.originalIndex - right.originalIndex;
+  });
 }
 
 export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, overflowCount }) {
@@ -361,9 +487,9 @@ if (root) {
     suggestionList.innerHTML = suggestions
       .map(
         (tag) => `
-          <button class="tag-pill" type="button" data-suggestion-tag="${escapeHtml(tag)}">
-            #${escapeHtml(tag)}
-            <span class="visually-hidden" data-tag-count-text></span>
+          <button class="tag-pill ui-tag-pill" type="button" data-suggestion-tag="${escapeHtml(tag)}">
+            <span>#${escapeHtml(tag)}</span>
+            <span class="tag-pill-count" data-filter-count data-tag-count-text>0</span>
           </button>
         `,
       )
@@ -492,33 +618,32 @@ if (root) {
       (left.dataset.neighborhood || "").localeCompare(right.dataset.neighborhood || "") ||
       (left.dataset.name || "").localeCompare(right.dataset.name || ""),
   };
+  const setFilterCount = (button, count) => {
+    const countLabel = button.querySelector("[data-filter-count]");
+    if (countLabel) {
+      countLabel.textContent = String(count);
+    }
+  };
+  const reorderFilterButtons = (buttons, options) => {
+    const parent = buttons[0]?.parentElement;
+    if (!parent) {
+      return;
+    }
 
-  const cardMatchesFilters = (
-    card,
-    {
-      activeAreaLabelValue = "",
-      activeTypeValue = "",
-      activeTypeSeedValues = [],
-      mapFrameIds = null,
-      normalizedQuery = "",
-      searchResultIds = null,
-      selectedTagValues = [],
-    } = {},
-  ) => {
-    const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-    const matchesArea =
-      !activeAreaLabelValue || getCardAreaComparisonValue(card) === activeAreaLabelValue;
-    const matchesMapFrame = !mapFrameIds || mapFrameIds.has(card.dataset.placeId || "");
-    const matchesSelectedTags = selectedTagValues.every((tag) => cardHasTag(card, tag));
-    const matchesType = cardMatchesType(card, {
-      activeTypeValue,
-      activeTypeSeedValues,
+    sortFilterOptions(options).forEach(({ button }) => {
+      parent.appendChild(button);
     });
-    return matchesSearch && matchesArea && matchesMapFrame && matchesSelectedTags && matchesType;
   };
 
-  const countFilteredCards = (filters) =>
-    cards.filter((card) => cardMatchesFilters(card, filters)).length;
+  const setToggleButtonState = (
+    button,
+    { active = false, unavailable = false, disabled = false },
+  ) => {
+    button.dataset.active = active ? "true" : "false";
+    button.dataset.unavailable = unavailable ? "true" : "false";
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+    button.disabled = disabled;
+  };
 
   const compareHighlightedPlace = (left, right) => {
     if (!highlightedPlaceId) {
@@ -665,10 +790,10 @@ if (root) {
 
     const visibleCards = cards.filter((card) => {
       const visible = cardMatchesFilters(card, {
-        activeAreaLabelValue: activeArea,
+        activeAreaValue: activeArea,
         activeTypeValue: activeType,
         activeTypeSeedValues: activeTypeSeeds,
-        mapFrameIds: mapFramePlaceIds,
+        mapFramePlaceIds,
         normalizedQuery,
         searchResultIds,
         selectedTagValues: selectedTags,
@@ -679,47 +804,103 @@ if (root) {
       return visible;
     });
 
+    const areaCountFilters = {
+      activeTypeValue: activeType,
+      activeTypeSeedValues: activeTypeSeeds,
+      mapFramePlaceIds,
+      normalizedQuery,
+      searchResultIds,
+      selectedTagValues: selectedTags,
+    };
+    const typeCountFilters = {
+      activeArea,
+      mapFramePlaceIds,
+      normalizedQuery,
+      searchResultIds,
+      selectedTagValues: selectedTags,
+    };
+    const tagCountFilters = {
+      activeArea,
+      activeTypeValue: activeType,
+      activeTypeSeedValues: activeTypeSeeds,
+      mapFramePlaceIds,
+      normalizedQuery,
+      searchResultIds,
+      selectedTagValues: selectedTags,
+    };
     const broaderAreaCount = activeArea
-      ? countFilteredCards({
-          activeTypeValue: activeType,
-          activeTypeSeedValues: activeTypeSeeds,
-          normalizedQuery,
-          searchResultIds,
-          selectedTagValues: selectedTags,
-        })
+      ? countAreaOptionCards(cards, areaCountFilters)
       : visibleCards.length;
     const areaMatchCount = activeArea
-      ? countFilteredCards({
-          activeAreaLabelValue: activeArea,
-          activeTypeValue: activeType,
-          activeTypeSeedValues: activeTypeSeeds,
-          normalizedQuery,
-          searchResultIds,
-          selectedTagValues: selectedTags,
-        })
+      ? countAreaOptionCards(cards, areaCountFilters, activeArea)
       : visibleCards.length;
     const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
 
-    if (suggestionList) {
-      suggestionList.querySelectorAll("[data-suggestion-tag]").forEach((button) => {
-        const suggestionTag = button.getAttribute("data-suggestion-tag") || "";
-        const countText = button.querySelector("[data-tag-count-text]");
-        if (!countText) {
-          return;
-        }
-
-        const count = countFilteredCards({
-          activeAreaLabelValue: activeArea,
-          activeTypeValue: activeType,
-          activeTypeSeedValues: activeTypeSeeds,
-          mapFrameIds: mapFramePlaceIds,
-          normalizedQuery,
-          searchResultIds,
-          selectedTagValues: [...selectedTags, suggestionTag],
-        });
-
-        countText.textContent = ` (${count} match${count === 1 ? "" : "es"})`;
+    const areaOptions = areaButtons.map((button, index) => {
+      const areaValue = normalizeTag(button.dataset.area || "");
+      const count = countAreaOptionCards(cards, areaCountFilters, areaValue);
+      const isActive = areaValue === activeArea;
+      const unavailable = Boolean(areaValue) && !isActive && count === 0;
+      setFilterCount(button, count);
+      setToggleButtonState(button, {
+        active: isActive,
+        unavailable,
+        disabled: unavailable,
       });
+      return {
+        active: isActive,
+        button,
+        count,
+        originalIndex: index,
+        pinned: areaValue === "",
+      };
+    });
+    reorderFilterButtons(areaButtons, areaOptions);
+
+    const typeOptions = typeButtons.map((button, index) => {
+      const typeValue = normalizeTag(button.dataset.type || "");
+      const count = countTypeOptionCards(cards, typeCountFilters, {
+        typeValue,
+        typeSeedValues: typeValue ? typeSeeds[typeValue] || [] : [],
+      });
+      const isActive = typeValue === activeType;
+      const unavailable = Boolean(typeValue) && !isActive && count === 0;
+      setFilterCount(button, count);
+      setToggleButtonState(button, {
+        active: isActive,
+        unavailable,
+        disabled: unavailable,
+      });
+      return {
+        active: isActive,
+        button,
+        count,
+        originalIndex: index,
+        pinned: typeValue === "",
+      };
+    });
+    reorderFilterButtons(typeButtons, typeOptions);
+
+    if (suggestionList) {
+      const suggestionButtons = Array.from(
+        suggestionList.querySelectorAll("[data-suggestion-tag]"),
+      );
+      const suggestionOptions = suggestionButtons.map((button, index) => {
+        const suggestionTag = normalizeTag(button.getAttribute("data-suggestion-tag") || "");
+        const count = countTagOptionCards(cards, tagCountFilters, suggestionTag);
+        const unavailable = count === 0;
+        setFilterCount(button, count);
+        button.dataset.unavailable = unavailable ? "true" : "false";
+        button.disabled = unavailable;
+        return {
+          active: false,
+          button,
+          count,
+          originalIndex: index,
+          pinned: false,
+        };
+      });
+      reorderFilterButtons(suggestionButtons, suggestionOptions);
     }
 
     const sorter =
@@ -837,10 +1018,8 @@ if (root) {
 
   typeButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      activeType = button.dataset.type || "";
-      typeButtons.forEach((candidate) => {
-        candidate.dataset.active = candidate === button ? "true" : "false";
-      });
+      const nextType = normalizeTag(button.dataset.type || "");
+      activeType = activeType === nextType ? "" : nextType;
       updateSuggestions();
       update();
     });
@@ -848,10 +1027,8 @@ if (root) {
 
   areaButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      activeArea = button.dataset.area || "";
-      areaButtons.forEach((candidate) => {
-        candidate.dataset.active = candidate === button ? "true" : "false";
-      });
+      const nextArea = normalizeTag(button.dataset.area || "");
+      activeArea = activeArea === nextArea ? "" : nextArea;
       update();
     });
   });
@@ -987,15 +1164,6 @@ if (root) {
     target.scrollIntoView({ behavior: "smooth", block: "center" });
     target.focus({ preventScroll: true });
   };
-
-  const allTypeButton = typeButtons.find((button) => (button.dataset.type || "") === "");
-  if (allTypeButton) {
-    allTypeButton.dataset.active = "true";
-  }
-  const allAreaButton = areaButtons.find((button) => (button.dataset.area || "") === "");
-  if (allAreaButton) {
-    allAreaButton.dataset.active = "true";
-  }
 
   updateSelectedTags();
   updateSuggestions();

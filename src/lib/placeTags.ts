@@ -136,8 +136,16 @@ export function getGuideAreaFilters(
     });
   });
 
-  return [...areaCounts.values()]
-    .filter((area) => area.count >= minimumCount && area.count < totalPlaces)
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label))
-    .slice(0, limit);
+  const rankedAreas = [...areaCounts.values()].sort(
+    (left, right) => right.count - left.count || left.label.localeCompare(right.label),
+  );
+  const repeatedAreas = rankedAreas.filter(
+    (area) => area.count >= minimumCount && area.count < totalPlaces,
+  );
+
+  if (repeatedAreas.length > 0) {
+    return repeatedAreas.slice(0, limit);
+  }
+
+  return rankedAreas.filter((area) => area.count < totalPlaces).slice(0, limit);
 }
