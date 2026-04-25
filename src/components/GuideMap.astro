@@ -944,9 +944,13 @@ const mapPlaces = places
     const handlePlacesUpdated = ((event: PlacesUpdatedEvent) => {
       syncVisiblePlaces(event.detail);
     }) as EventListener;
+    const handleUserLocationRequest = () => {
+      startLocationAvailabilityWatch();
+    };
 
     updateMapFrameControls(mapFrameActive());
     document.addEventListener("guide:places-updated", handlePlacesUpdated);
+    root?.addEventListener("guide:user-location-request", handleUserLocationRequest);
     try {
       runtime =
         requestedProvider === "google" && apiKey
@@ -960,6 +964,7 @@ const mapPlaces = places
       element.dataset.initialized = "true";
     } catch (error) {
       document.removeEventListener("guide:places-updated", handlePlacesUpdated);
+      root?.removeEventListener("guide:user-location-request", handleUserLocationRequest);
       throw error;
     } finally {
       delete element.dataset.initializing;
@@ -1092,7 +1097,7 @@ const mapPlaces = places
 
       if (locationIsNearGuide(currentLocation)) {
         setLocationButtonState("near", "Center map on current location");
-        if (pendingLocationCenter) {
+        if (pendingLocationCenter && runtime) {
           pendingLocationCenter = false;
           runtime.setView(currentLocation, 15);
         }
@@ -1144,7 +1149,7 @@ const mapPlaces = places
     const centerOnCurrentLocation = () => {
       pendingLocationCenter = true;
       startLocationAvailabilityWatch();
-      if (!currentLocation || !locationIsNearGuide(currentLocation)) return;
+      if (!runtime || !currentLocation || !locationIsNearGuide(currentLocation)) return;
       pendingLocationCenter = false;
       runtime.setView(currentLocation, 15);
     };
@@ -1196,9 +1201,6 @@ const mapPlaces = places
     if (locationButton) {
       locationButton.addEventListener("click", centerOnCurrentLocation);
     }
-    root?.addEventListener("guide:user-location-request", () => {
-      startLocationAvailabilityWatch();
-    });
     mapElement.guideMapFit = () => {
       runtime?.invalidateSize?.();
       runtime?.fitPlaces(currentPlaces);

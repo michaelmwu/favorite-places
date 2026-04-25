@@ -175,6 +175,8 @@ describe("guide map interactions", () => {
 
   it("guards the current-location map control with stored guide proximity bounds", () => {
     const guideMap = readSource("src/components/GuideMap.astro");
+    const guidePage = readSource("src/pages/guides/[slug].astro");
+    const filters = readSource("public/scripts/guide-filters.js");
     const css = readSource("src/styles/global.css");
 
     expect(guideMap).toContain('class="map-icon-button"');
@@ -192,6 +194,22 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain('setLocationButtonState("checking", "Checking current location")');
     expect(guideMap).toContain('setLocationButtonState("near", "Center map on current location")');
     expect(guideMap).toContain("watchPosition");
+    expect(
+      guideMap.indexOf(
+        'root?.addEventListener("guide:user-location-request", handleUserLocationRequest)',
+      ),
+    ).toBeLessThan(guideMap.indexOf("await initGoogleRuntime"));
+    expect(guidePage).toContain("const hasMappablePlaces = visiblePlaces.some");
+    expect(guidePage).toContain('data-has-mappable-places={hasMappablePlaces ? "true" : "false"}');
+    expect(guidePage).toContain(
+      '{hasMappablePlaces && <option value="nearby">{siteConfig.guide.sortNearMeLabel}</option>}',
+    );
+    expect(filters).toContain(
+      'const hasMappablePlaces = root.dataset.hasMappablePlaces === "true";',
+    );
+    expect(filters).toContain("const requestCurrentLocationDirectly = () => {");
+    expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
+    expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');

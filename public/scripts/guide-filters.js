@@ -241,6 +241,7 @@ if (root) {
   const mapFilterStatus = root.querySelector("[data-map-filter-status]");
   const mapFilterResetButtons = Array.from(root.querySelectorAll("[data-map-filter-reset]"));
   const guideSlug = root.dataset.guideSlug || "";
+  const hasMappablePlaces = root.dataset.hasMappablePlaces === "true";
   const locationSortFallbackText =
     root.dataset.locationSortFallbackText || "Location unavailable. Showing curated order instead.";
   const initialParams = new URLSearchParams(window.location.search);
@@ -277,6 +278,9 @@ if (root) {
   let currentLocation = null;
   let currentLocationStatus = "idle";
   let nearbyDistanceByPlaceId = new Map();
+  let hasHandledLocationRequest = false;
+  let directLocationRequestInFlight = false;
+  let directLocationFallbackTimer = null;
   const highlightedPlaceId = initialParams.get("place") || "";
   let autocompleteTags = [];
   let highlightedAutocompleteIndex = -1;
@@ -550,12 +554,85 @@ if (root) {
     locationSortStatus.textContent = message;
   };
 
+  const clearDirectLocationFallbackTimer = () => {
+    if (directLocationFallbackTimer !== null) {
+      window.clearTimeout(directLocationFallbackTimer);
+      directLocationFallbackTimer = null;
+    }
+  };
+
+  const dispatchUserLocation = ({ coordinates = null, source = "filters", status }) => {
+    root.dispatchEvent(
+      new CustomEvent("guide:user-location", {
+        bubbles: true,
+        detail: {
+          coordinates,
+          nearGuide: false,
+          source,
+          status,
+        },
+      }),
+    );
+  };
+
+  const requestCurrentLocationDirectly = () => {
+    if (directLocationRequestInFlight) {
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      dispatchUserLocation({ status: "unavailable" });
+      return;
+    }
+
+    directLocationRequestInFlight = true;
+    dispatchUserLocation({ status: "checking" });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        directLocationRequestInFlight = false;
+        clearDirectLocationFallbackTimer();
+        dispatchUserLocation({
+          coordinates: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          },
+          status: "available",
+        });
+      },
+      (error) => {
+        directLocationRequestInFlight = false;
+        clearDirectLocationFallbackTimer();
+        dispatchUserLocation({
+          status: error.code === error.PERMISSION_DENIED ? "denied" : "unavailable",
+        });
+      },
+      {
+        maximumAge: 300_000,
+        timeout: 10_000,
+      },
+    );
+  };
+
   const requestCurrentLocation = () => {
+    hasHandledLocationRequest = false;
+    clearDirectLocationFallbackTimer();
     root.dispatchEvent(
       new CustomEvent("guide:user-location-request", {
         bubbles: true,
       }),
     );
+
+    if (!hasMappablePlaces || !document.querySelector("[data-guide-map]")) {
+      requestCurrentLocationDirectly();
+      return;
+    }
+
+    directLocationFallbackTimer = window.setTimeout(() => {
+      if (!hasHandledLocationRequest) {
+        requestCurrentLocationDirectly();
+      }
+    }, 500);
   };
 
   const refreshNearbyDistances = () => {
@@ -849,6 +926,8 @@ if (root) {
   root.addEventListener("guide:map-frame-reset-request", clearMapFrameFilter);
 
   root.addEventListener("guide:user-location", (event) => {
+    hasHandledLocationRequest = true;
+    clearDirectLocationFallbackTimer();
     const detail = event.detail || {};
     const coordinates = detail.coordinates;
     currentLocation =

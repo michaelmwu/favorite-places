@@ -173,6 +173,7 @@ const guideAfterPlacesHtml = getTemplateHtml(`guide-after-places/${guide.slug}.h
 const guideSidebarFallback = siteConfig.guide.sidebarContent
   .map((content) => renderRichText(content))
   .filter((content): content is string => Boolean(content));
+const hasMappablePlaces = visiblePlaces.some((place) => place.lat !== null && place.lng !== null);
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
@@ -263,6 +264,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     data-all-tags={JSON.stringify(allTags)}
     data-default-suggestions={JSON.stringify(defaultSuggestions)}
     data-type-seeds={JSON.stringify(typeSeedTags)}
+    data-has-mappable-places={hasMappablePlaces ? "true" : "false"}
     data-location-sort-fallback-text={siteConfig.guide.locationSortFallbackText}
   >
     <SectionHeading eyebrow={siteConfig.guide.browseEyebrow} title={siteConfig.guide.placesHeading} />
@@ -358,7 +360,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
               <span class="results-sort-shell">
                 <select class="ui-input" id="guide-sort" name="guide-sort" data-sort-select>
                   <option value="curated">{siteConfig.guide.sortCuratedLabel}</option>
-                  <option value="nearby">{siteConfig.guide.sortNearMeLabel}</option>
+                  {hasMappablePlaces && <option value="nearby">{siteConfig.guide.sortNearMeLabel}</option>}
                   <option value="rating">{siteConfig.guide.sortRatingLabel}</option>
                   <option value="name">{siteConfig.guide.sortNameLabel}</option>
                   <option value="neighborhood">{siteConfig.guide.sortNeighborhoodLabel}</option>
