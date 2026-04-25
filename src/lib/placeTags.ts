@@ -113,7 +113,6 @@ export function getGuideAreaFilters(
   { limit = DEFAULT_AREA_FILTER_LIMIT }: { limit?: number } = {},
 ): AreaFilter[] {
   const totalPlaces = places.length;
-  const minimumCount = totalPlaces >= 20 ? 3 : 2;
   const areaCounts = new Map<string, AreaFilter>();
 
   places.forEach((place) => {
@@ -137,7 +136,7 @@ export function getGuideAreaFilters(
   });
 
   return [...areaCounts.values()]
-    .filter((area) => area.count >= minimumCount && area.count < totalPlaces)
+    .filter((area) => area.count < totalPlaces)
     .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label))
     .slice(0, limit);
 }

@@ -39,7 +39,7 @@ describe("getDisplayPlaceTags", () => {
 });
 
 describe("getGuideAreaFilters", () => {
-  it("keeps repeated area filters and drops one-off or street-like labels", () => {
+  it("keeps singleton and repeated area filters while dropping street-like labels", () => {
     expect(
       getGuideAreaFilters(
         [
@@ -57,12 +57,13 @@ describe("getGuideAreaFilters", () => {
           { neighborhood: "C/ d'Aribau" },
           { neighborhood: "One-off" },
         ],
-        { limit: 3 },
+        { limit: 4 },
       ),
     ).toEqual([
       { label: "Ginza", value: "ginza", count: 3 },
       { label: "Juárez", value: "juarez", count: 3 },
       { label: "Shibuya", value: "shibuya", count: 3 },
+      { label: "One-off", value: "one-off", count: 1 },
     ]);
   });
 
