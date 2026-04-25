@@ -3,17 +3,37 @@ import { describe, expect, it } from "vitest";
 import {
   buildAreaFilterStatusMessage,
   buildEmptyStateMessage,
+  buildNearbyDistanceMap,
   cardHasTag,
   cardMatchesType,
+  compareCardsByCurated,
+  compareCardsByNearby,
   countMatchingCards,
+  resolveLocationSortState,
 } from "../../public/scripts/guide-filters.js";
 
-const makeCard = ({ neighborhood = "", placeId, search = "", tags = "", vibeTags = "" }) => ({
+const makeCard = ({
+  lat = "",
+  lng = "",
+  name = "",
+  neighborhood = "",
+  placeId,
+  rank = "0",
+  search = "",
+  tags = "",
+  topPick = "false",
+  vibeTags = "",
+} = {}) => ({
   dataset: {
+    lat,
+    lng,
+    name,
     neighborhood,
     placeId,
+    rank,
     search,
     tags,
+    topPick,
     vibeTags,
   },
 });
@@ -252,5 +272,111 @@ describe("guide filters", () => {
         tag: "date-night",
       }),
     ).toBe(1);
+  });
+
+  it("sorts nearby cards by cached distance and keeps cards without coordinates last", () => {
+    const currentLocation = { lat: 35.6812, lng: 139.7671 };
+    const cards = [
+      makeCard({ placeId: "far", lat: "35.6895", lng: "139.6917", name: "Far", rank: "1" }),
+      makeCard({ placeId: "missing", name: "Missing", rank: "99", topPick: "true" }),
+      makeCard({ placeId: "near", lat: "35.6814", lng: "139.7673", name: "Near", rank: "2" }),
+    ];
+    const distanceByPlaceId = buildNearbyDistanceMap(cards, currentLocation);
+
+    const sortedCards = [...cards].sort((left, right) =>
+      compareCardsByNearby(left, right, {
+        currentLocation,
+        distanceByPlaceId,
+      }),
+    );
+
+    expect(Array.from(distanceByPlaceId.keys())).toEqual(["far", "near"]);
+    expect(sortedCards.map((card) => card.dataset.placeId)).toEqual(["near", "far", "missing"]);
+  });
+
+  it("falls back to curated sorting when nearby sorting has no current location", () => {
+    const cards = [
+      makeCard({ placeId: "rank-1", name: "Bravo", rank: "1" }),
+      makeCard({ placeId: "rank-3", name: "Alpha", rank: "3" }),
+      makeCard({ placeId: "top-pick", name: "Cafe", rank: "2", topPick: "true" }),
+    ];
+
+    const nearbySorted = [...cards].sort((left, right) =>
+      compareCardsByNearby(left, right, {
+        currentLocation: null,
+        distanceByPlaceId: new Map(),
+      }),
+    );
+    const curatedSorted = [...cards].sort(compareCardsByCurated);
+
+    expect(nearbySorted.map((card) => card.dataset.placeId)).toEqual(
+      curatedSorted.map((card) => card.dataset.placeId),
+    );
+  });
+
+  it("resets nearby sorting to curated when location is denied or unavailable", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "denied",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "Location unavailable. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "unavailable",
+        fallbackMessage: "Location denied.",
+        fallbackSortValue: "rating",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "Location denied.",
+      shouldFallback: true,
+      sortValue: "rating",
+    });
+  });
+
+  it("does not reset nearby sorting while location is still idle, checking, or already available", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "idle",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "",
+      shouldFallback: false,
+      sortValue: "nearby",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "checking",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "",
+      shouldFallback: false,
+      sortValue: "nearby",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: { lat: 35.6812, lng: 139.7671 },
+        currentLocationStatus: "available",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "",
+      shouldFallback: false,
+      sortValue: "nearby",
+    });
   });
 });

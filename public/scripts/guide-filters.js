@@ -48,6 +48,97 @@ function distanceInKm(fromLat, fromLng, toLat, toLng) {
   return earthRadiusKm * c;
 }
 
+function getCardCoordinates(card) {
+  const lat = card.dataset.lat ? Number(card.dataset.lat) : Number.NaN;
+  const lng = card.dataset.lng ? Number(card.dataset.lng) : Number.NaN;
+
+  return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+}
+
+export function buildNearbyDistanceMap(cards, currentLocation) {
+  const distances = new Map();
+  if (!currentLocation) {
+    return distances;
+  }
+
+  cards.forEach((card) => {
+    const coordinates = getCardCoordinates(card);
+    if (!coordinates) {
+      return;
+    }
+
+    distances.set(
+      card.dataset.placeId || "",
+      distanceInKm(currentLocation.lat, currentLocation.lng, coordinates.lat, coordinates.lng),
+    );
+  });
+
+  return distances;
+}
+
+export function compareCardsByCurated(left, right) {
+  const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
+  const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
+  if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
+  return (
+    Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0) ||
+    (left.dataset.name || "").localeCompare(right.dataset.name || "")
+  );
+}
+
+export function compareCardsByNearby(
+  left,
+  right,
+  { currentLocation = null, distanceByPlaceId = new Map() } = {},
+) {
+  if (!currentLocation) {
+    return compareCardsByCurated(left, right);
+  }
+
+  const leftDistance = distanceByPlaceId.get(left.dataset.placeId || "");
+  const rightDistance = distanceByPlaceId.get(right.dataset.placeId || "");
+  const leftHasDistance = Number.isFinite(leftDistance);
+  const rightHasDistance = Number.isFinite(rightDistance);
+
+  if (leftHasDistance !== rightHasDistance) {
+    return leftHasDistance ? -1 : 1;
+  }
+
+  if (!leftHasDistance || !rightHasDistance) {
+    return compareCardsByCurated(left, right);
+  }
+
+  return leftDistance - rightDistance || compareCardsByCurated(left, right);
+}
+
+export function resolveLocationSortState({
+  fallbackMessage = "Location unavailable. Showing curated order instead.",
+  fallbackSortValue = "curated",
+  currentLocation = null,
+  currentLocationStatus = "idle",
+  sortValue,
+} = {}) {
+  const shouldFallback =
+    sortValue === "nearby" &&
+    !currentLocation &&
+    currentLocationStatus !== "idle" &&
+    currentLocationStatus !== "checking";
+
+  if (!shouldFallback) {
+    return {
+      message: "",
+      shouldFallback: false,
+      sortValue,
+    };
+  }
+
+  return {
+    message: fallbackMessage,
+    shouldFallback: true,
+    sortValue: fallbackSortValue,
+  };
+}
+
 export function cardHasTag(card, tag) {
   const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
@@ -185,6 +276,7 @@ if (root) {
   let searchIndex = null;
   let currentLocation = null;
   let currentLocationStatus = "idle";
+  let nearbyDistanceByPlaceId = new Map();
   const highlightedPlaceId = initialParams.get("place") || "";
   let autocompleteTags = [];
   let highlightedAutocompleteIndex = -1;
@@ -381,44 +473,12 @@ if (root) {
   };
 
   const sorters = {
-    curated: (left, right) => {
-      const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
-      const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
-      if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
-      return (
-        Number(right.dataset.rank || 0) - Number(left.dataset.rank || 0) ||
-        (left.dataset.name || "").localeCompare(right.dataset.name || "")
-      );
-    },
-    nearby: (left, right) => {
-      const leftLat = left.dataset.lat ? Number(left.dataset.lat) : Number.NaN;
-      const leftLng = left.dataset.lng ? Number(left.dataset.lng) : Number.NaN;
-      const rightLat = right.dataset.lat ? Number(right.dataset.lat) : Number.NaN;
-      const rightLng = right.dataset.lng ? Number(right.dataset.lng) : Number.NaN;
-      const leftHasCoordinates = Number.isFinite(leftLat) && Number.isFinite(leftLng);
-      const rightHasCoordinates = Number.isFinite(rightLat) && Number.isFinite(rightLng);
-
-      if (!currentLocation) {
-        return sorters.curated(left, right);
-      }
-
-      if (leftHasCoordinates !== rightHasCoordinates) {
-        return leftHasCoordinates ? -1 : 1;
-      }
-
-      if (!leftHasCoordinates || !rightHasCoordinates) {
-        return sorters.curated(left, right);
-      }
-
-      const leftDistance = distanceInKm(currentLocation.lat, currentLocation.lng, leftLat, leftLng);
-      const rightDistance = distanceInKm(
-        currentLocation.lat,
-        currentLocation.lng,
-        rightLat,
-        rightLng,
-      );
-      return leftDistance - rightDistance || sorters.curated(left, right);
-    },
+    curated: compareCardsByCurated,
+    nearby: (left, right) =>
+      compareCardsByNearby(left, right, {
+        currentLocation,
+        distanceByPlaceId: nearbyDistanceByPlaceId,
+      }),
     rating: (left, right) =>
       Number(right.dataset.rating || 0) - Number(left.dataset.rating || 0) ||
       Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0) ||
@@ -496,6 +556,10 @@ if (root) {
         bubbles: true,
       }),
     );
+  };
+
+  const refreshNearbyDistances = () => {
+    nearbyDistanceByPlaceId = buildNearbyDistanceMap(cards, currentLocation);
   };
 
   const update = (source = "list-filter") => {
@@ -797,6 +861,7 @@ if (root) {
           }
         : null;
     currentLocationStatus = detail.status || "idle";
+    refreshNearbyDistances();
 
     if (currentLocation) {
       setLocationSortMessage("");
@@ -806,13 +871,17 @@ if (root) {
       return;
     }
 
-    if (
-      sortSelect?.value === LOCATION_SORT_VALUE &&
-      currentLocationStatus !== "idle" &&
-      currentLocationStatus !== "checking"
-    ) {
-      sortSelect.value = LOCATION_SORT_FALLBACK;
-      setLocationSortMessage(locationSortFallbackText);
+    const nextLocationSortState = resolveLocationSortState({
+      fallbackMessage: locationSortFallbackText,
+      fallbackSortValue: LOCATION_SORT_FALLBACK,
+      currentLocation,
+      currentLocationStatus,
+      sortValue: sortSelect?.value,
+    });
+
+    if (nextLocationSortState.shouldFallback && sortSelect) {
+      sortSelect.value = nextLocationSortState.sortValue;
+      setLocationSortMessage(nextLocationSortState.message);
       update("location-sort-fallback");
     }
   });
