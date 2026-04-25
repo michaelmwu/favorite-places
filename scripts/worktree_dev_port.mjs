@@ -38,7 +38,10 @@ function parsePositiveInteger(value, name) {
 }
 
 export function worktreePathKey(worktreeRoot) {
-  return resolve(worktreeRoot).split(/[\\/]+/).filter(Boolean).join("/");
+  return resolve(worktreeRoot)
+    .split(/[\\/]+/)
+    .filter(Boolean)
+    .join("/");
 }
 
 export function worktreePortOffset(worktreeRoot, span) {

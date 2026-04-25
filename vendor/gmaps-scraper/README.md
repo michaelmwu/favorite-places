@@ -17,7 +17,7 @@ panel, and returns structured JSON.
 This project is intended to be consumed directly from source rather than from PyPI.
 
 ```bash
-uv add git+https://github.com/michaelmwu/gmaps-scraper.git
+uv add git+https://github.com/508-dev/gmaps-scraper.git
 ```
 
 If you vendor the package, also add the runtime dependency:
@@ -42,6 +42,24 @@ Scrape a place page:
 uv run gmaps-scraper \
   "https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z" \
   --kind place
+```
+
+Scrape a place page and download its representative image locally:
+
+```bash
+uv run gmaps-scraper \
+  "https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z" \
+  --kind place \
+  --download-photo den-photo.jpg
+```
+
+Scrape a place page and download the main place photo specifically:
+
+```bash
+uv run gmaps-scraper \
+  "https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z" \
+  --kind place \
+  --download-main-photo den-main-photo.jpg
 ```
 
 Explicit fetch modes:
@@ -78,6 +96,8 @@ Available CLI options:
 
 - `--kind {list,place}` selects which scraper to run
 - `--output PATH` writes the JSON result to a file
+- `--download-photo PATH` saves the place photo to a local file when scraping a place
+- `--download-main-photo PATH` saves the main place photo to a local file when available
 - `--headed` runs the browser in headed mode
 - `--fetch-mode {auto,curl,browser}` selects the transport path
 - `--session-dir PATH` reuses a persistent browser profile for browser fetches
@@ -126,6 +146,7 @@ Public top-level imports intended for consumers:
 - `scrape_saved_list`
 - `scrape_place`
 - `parse_saved_list_artifacts`
+- `ListOwner`
 - `SavedList`
 - `Place`
 - `PlaceDetails`
@@ -143,6 +164,18 @@ A saved list result looks like this:
   "list_id": "UGEPbA20Qd-OH4uoWjmDgQ",
   "title": "Tokyo Dinners",
   "description": "Best spots in the city",
+  "owner": {
+    "name": "Michael Wu",
+    "photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjW_i8-Eyr6conUhZ6tzGGlFe76mQTGeURI9NKDlca0FzlN0GY0Kjg",
+    "profile_id": "104356373423434804635"
+  },
+  "collaborators": [
+    {
+      "name": "Micca Guan",
+      "photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjW_collaborator",
+      "profile_id": "107609938540508038600"
+    }
+  ],
   "places": [
     {
       "name": "Yakumo",
@@ -151,7 +184,11 @@ A saved list result looks like this:
       "is_favorite": true,
       "lat": 35.6501307,
       "lng": 139.6868459,
-      "maps_url": "https://maps.google.com/?cid=7451636382641713350"
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Yakumo%2C+Shibuya%2C+Tokyo",
+      "added_by": {
+        "name": "Micca Guan",
+        "profile_id": "107609938540508038600"
+      }
     }
   ]
 }
@@ -162,7 +199,7 @@ after redirects, which is useful for short `maps.app.goo.gl` links.
 
 For place pages, the scraper returns a `PlaceDetails` object with fields such as
 `name`, `category`, `rating`, `review_count`, `address`, `status`, `website`,
-`phone`, `plus_code`, and coordinates when available.
+`phone`, `plus_code`, `main_photo_url`, `photo_url`, and coordinates when available.
 
 ## Behavior Notes
 
@@ -172,6 +209,9 @@ For place pages, the scraper returns a `PlaceDetails` object with fields such as
   fetches to carry cookies across runs.
 - Place pages currently use the browser path and extract review metadata from the
   rendered DOM.
+- `main_photo_url` is the direct main place photo when the rendered DOM exposes one.
+- `photo_url` remains the best available image and falls back to the page's
+  representative Maps image when the main photo isn't available.
 - Browser automation remains available for debugging, consent flows, and fallback.
 - By default each scrape uses a fresh browser session. Reuse a profile directory only
   when you want cookies, localStorage, and other browser state to persist across runs.

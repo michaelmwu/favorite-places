@@ -11,3 +11,7 @@ __pycache__/
 src/data/generated/
 public/data/search-index.json
 .gstack/
+data/cache/google-places/
+site/data/cache/google-places/
+site.example/data/cache/*
+!site.example/data/cache/.gitkeep

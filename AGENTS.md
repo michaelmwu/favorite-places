@@ -6,7 +6,7 @@
 
 - Frontend: Astro + TypeScript
 - Data pipeline: Python + `uv`
-- Source scraper: vendored git subtree at `vendor/gmaps-scraper/` from `https://github.com/michaelmwu/gmaps-scraper`
+- Source scraper: vendored git subtree at `vendor/gmaps-scraper/` from `https://github.com/508-dev/gmaps-scraper`
 - Hosting target: static deploys on Cloudflare Pages or GitHub Pages
 
 ## Working Rules
@@ -19,24 +19,36 @@
 - Use `bun run check` and `bun run build` before closing out frontend changes.
 - Use `.venv/bin/python` if `uv run` hits sandbox cache issues in Codex.
 
+## Self-Hosted Refresh Runner
+
+The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner. Treat the runner image or host provisioning as the contract for OS-level tools and browser libraries; do not install them ad hoc inside the workflow.
+
+- `unzip` must be present on `PATH` because `oven-sh/setup-bun` downloads a `.zip` release archive.
+- `cloakbrowser` downloads its own Chromium binary, but the host still needs Playwright/Chromium system libraries installed.
+- Provision the runner with the equivalent of Playwright's Chromium Linux dependencies, for example the packages behind `playwright install-deps chromium`, instead of trying to `apt install` during the workflow run.
+- The workflow includes a preflight check for `unzip` and a small set of required shared libraries (`libnspr4`, `libnss3`, GTK, GBM, X11, and related browser deps) so runner drift fails fast with a clear error.
+- For Ubuntu-based runners, the concrete package fix for the current preflight is `sudo apt-get install -y libnspr4 libnss3 libgbm1 libxcb1 libxkbcommon0`, then `sudo ldconfig`. Verify with `ldconfig -p | grep -E 'libnspr4\.so|libnss3\.so|libgbm\.so\.1|libxcb\.so\.1|libxkbcommon\.so\.0'`. Prefer baking the full Playwright Chromium dependency set into the runner image with `sudo npx playwright install-deps chromium`.
+- Set the repo Actions secret `GH_AUTOMATION_TOKEN` to a token with the minimum permissions needed for this automation: `workflows: write` to update refs that include `.github/workflows/**`, `contents: write` to push `automation/data-refresh`, and `pull-requests: write` to create or update the refresh PR. For a classic PAT, include the `workflow` scope in addition to normal `repo` write access. The default `GITHUB_TOKEN` cannot reliably create or advance `automation/data-refresh` after `.github/workflows/**` changes.
+
 ## Environment Variables
 
 - `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and emitted into the page only when the Google map provider is active. Treat it as the browser Google Maps display key: production usage should be on a separate key restricted by HTTP referrer and limited to `Maps JavaScript API`.
 - `GOOGLE_PLACES_API_KEY` is the optional server/build-time fallback key for Places enrichment when Google Maps place-page scraping cannot recover enough data. Do not expose it to the browser.
 - `PUBLIC_MAP_PROVIDER=leaflet` forces the Leaflet/OpenStreetMap fallback even when `GOOGLE_MAPS_JS_API_KEY` is present.
 - `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/` and rotates them when they go stale or get blocked.
+- `FAVORITE_PLACES_SITE_DIR` points both Astro and the Python data pipeline at the site pack. It defaults to `./site`, with `./site.example` as the fresh-checkout fallback.
 
 ## Data Practices
 
 This repo deliberately avoids committing generated build artifacts.
 
-- `data/raw/` may be committed when you want reproducible scraped snapshots in git.
-- `data/cache/google-places/` may be committed when you want reproducible enrichment snapshots in git.
+- `site/data/raw/` may be committed when you want reproducible scraped snapshots in git.
+- `site/data/cache/places.sqlite` is the canonical enrichment cache artifact when you want reproducible enrichment snapshots in git.
 - `src/data/generated/` is local-only generated site input data.
 - `public/data/search-index.json` is local-only generated browser search data.
-- `src/data/overrides/` is the source-controlled layer for handwritten curation.
-- `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
-- In `scripts/config/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; explicit `type` is allowed but must match the configured `url` or `path`. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
+- `site/overrides/` is the source-controlled layer for handwritten curation.
+- `site/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
+- In `site/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; explicit `type` is allowed but must match the configured `url` or `path`. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
 
 Merge precedence:
 
@@ -80,13 +92,20 @@ bun run build:data
 ```
 
 Use this when raw snapshots are already current and you only need to regenerate site inputs.
-Configured local CSV sources are auto-imported into `data/raw/<slug>.json` before rebuild. Public URL sources are not refreshed here.
+Configured local CSV sources are auto-imported into `site/data/raw/<slug>.json` before rebuild. Public URL sources are not refreshed here.
 
 Fill or refresh Google Places enrichment cache:
 
 ```bash
 GOOGLE_PLACES_API_KEY=... bun run enrich:data
+GOOGLE_PLACES_API_KEY=... bun run fill:gaps
 GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
+```
+
+Optional debug export of per-guide cache JSON from SQLite:
+
+```bash
+bun run export:cache:json
 ```
 
 Run the site:

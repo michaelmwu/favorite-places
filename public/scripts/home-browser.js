@@ -1,3 +1,5 @@
+import { nearbyGuidesForLocation } from "./home-browser-nearby.js";
+import { parseHomeBrowserHash, serializeHomeBrowserHash } from "./home-browser-state.js";
 import { loadSearchIndex, searchGuides, searchPlaces } from "./place-search.js";
 
 const GROUP_LIMIT = 5;
@@ -7,6 +9,7 @@ const FLAG_SUFFIX_PATTERN = /(?:\s*[\u{1F1E6}-\u{1F1FF}]{2})+$/u;
 const root = document.querySelector("[data-home-browser-root]");
 
 if (root) {
+  const countrySectionsVisible = root.dataset.countrySectionsVisible !== "false";
   const searchInput = root.querySelector("[data-home-search-input]");
   const countryBlocks = Array.from(root.querySelectorAll("[data-country-block]"));
   const countryButtons = Array.from(root.querySelectorAll("[data-country-filter]"));
@@ -23,9 +26,13 @@ if (root) {
   const groupedResultsList = root.querySelector("[data-grouped-search-list]");
   const globalResultsEmpty = root.querySelector("[data-global-search-empty]");
   const searchViewToggles = Array.from(root.querySelectorAll("[data-search-view-toggle]"));
+  const validCountries = countryButtons
+    .map((button) => button.dataset.country || "")
+    .filter((country) => Boolean(country));
 
   let activeCountry = "";
   let locationMatchCountry = "";
+  let nearbyGuideState = null;
   let searchIndex = null;
   let searchIndexUnavailable = false;
   let searchResultView = "grouped";
@@ -33,16 +40,53 @@ if (root) {
   const pluralize = (count, singular, plural = `${singular}s`) =>
     `${count} ${count === 1 ? singular : plural}`;
 
-  const normalizeCountry = (value) => String(value || "").trim().toLowerCase();
+  const normalizeCountry = (value) =>
+    String(value || "")
+      .trim()
+      .toLowerCase();
 
   const countryLabel = (country) => {
     if (!country) {
       return "";
     }
 
-    const button = countryButtons.find((candidate) => (candidate.dataset.country || "") === country);
+    const button = countryButtons.find(
+      (candidate) => (candidate.dataset.country || "") === country,
+    );
     const label = button?.querySelector("span")?.textContent || country;
     return label.replace(FLAG_SUFFIX_PATTERN, "").trim();
+  };
+
+  const syncUrlState = () => {
+    const nextHash = serializeHomeBrowserHash({
+      country: activeCountry,
+      query: searchInput?.value || "",
+      view: searchResultView,
+    });
+    if (window.location.hash === nextHash) {
+      return;
+    }
+
+    history.replaceState(
+      history.state,
+      "",
+      `${window.location.pathname}${window.location.search}${nextHash}`,
+    );
+  };
+
+  const applyUrlState = () => {
+    const state = parseHomeBrowserHash(window.location.hash, validCountries);
+
+    activeCountry = state.country;
+    nearbyGuideState = null;
+    searchResultView = state.view;
+    locationMatchCountry = "";
+    setLocationButtonActive(false);
+    setLocationStatus("");
+
+    if (searchInput) {
+      searchInput.value = state.query;
+    }
   };
 
   const guideLocations = (() => {
@@ -79,32 +123,29 @@ if (root) {
     locationButton.setAttribute("aria-busy", busy ? "true" : "false");
   };
 
-  const toRadians = (degrees) => (degrees * Math.PI) / 180;
+  const setLocationButtonActive = (active) => {
+    if (!locationButton) {
+      return;
+    }
 
-  const distanceInKm = (fromLat, fromLng, toLat, toLng) => {
-    const earthRadiusKm = 6371;
-    const latDelta = toRadians(toLat - fromLat);
-    const lngDelta = toRadians(toLng - fromLng);
-    const fromLatRadians = toRadians(fromLat);
-    const toLatRadians = toRadians(toLat);
-    const a =
-      Math.sin(latDelta / 2) ** 2 +
-      Math.cos(fromLatRadians) * Math.cos(toLatRadians) * Math.sin(lngDelta / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return earthRadiusKm * c;
+    locationButton.dataset.active = active ? "true" : "false";
+    const label = active ? "Clear nearby guides" : "Show nearby guides";
+    locationButton.title = label;
+    locationButton.setAttribute("aria-label", label);
   };
 
-  const nearestGuideForLocation = (latitude, longitude) =>
-    guideLocations.reduce((nearest, guide) => {
-      const distance = distanceInKm(latitude, longitude, guide.lat, guide.lng);
-
-      if (!nearest || distance < nearest.distance) {
-        return { ...guide, distance };
-      }
-
-      return nearest;
-    }, null);
+  const formatDistanceKm = (distanceKm) => {
+    if (!Number.isFinite(distanceKm)) {
+      return "";
+    }
+    if (distanceKm >= 100) {
+      return `${Math.round(distanceKm / 10) * 10} km`;
+    }
+    if (distanceKm >= 10) {
+      return `${Math.round(distanceKm)} km`;
+    }
+    return `${distanceKm.toFixed(1)} km`;
+  };
 
   const createGuideLink = (entry, query) => {
     const params = new URLSearchParams();
@@ -122,15 +163,34 @@ if (root) {
     return `${value.slice(0, maxLength - 1).trim()}...`;
   };
 
+  const ratingValue = (value) =>
+    typeof value === "number" && Number.isFinite(value) ? value : null;
+  const reviewCountValue = (value) =>
+    typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
+  const formatRating = (value) => value.toFixed(1);
+  const reviewCountFormatter = new Intl.NumberFormat("en-US");
+  const compactReviewCountFormatter = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+  const formatReviewCount = (value) =>
+    (value >= 1000 ? compactReviewCountFormatter : reviewCountFormatter).format(value);
+  const formatReviewLabel = (value) =>
+    `${formatReviewCount(value)} ${value === 1 ? "review" : "reviews"}`;
+
   const groupSearchResults = (results) =>
-    [...results.reduce((groups, result) => {
-      const country = result.entry.country || "Unknown";
-      if (!groups.has(country)) {
-        groups.set(country, []);
-      }
-      groups.get(country).push(result);
-      return groups;
-    }, new Map()).entries()]
+    [
+      ...results
+        .reduce((groups, result) => {
+          const country = result.entry.country || "Unknown";
+          if (!groups.has(country)) {
+            groups.set(country, []);
+          }
+          groups.get(country).push(result);
+          return groups;
+        }, new Map())
+        .entries(),
+    ]
       .map(([country, items]) => ({ country, items }))
       .sort(
         (left, right) =>
@@ -165,6 +225,24 @@ if (root) {
       .filter(Boolean)
       .join(" · ");
 
+    const rating = ratingValue(entry.rating);
+    const reviewCount = reviewCountValue(entry.user_rating_count);
+    const stats = document.createElement("div");
+    stats.className = "stats-row";
+    if (rating !== null) {
+      const ratingPill = document.createElement("span");
+      ratingPill.className = "stat-pill";
+      ratingPill.textContent = `${formatRating(rating)} ★`;
+      stats.append(ratingPill);
+    }
+    if (reviewCount !== null) {
+      const reviewPill = document.createElement("span");
+      reviewPill.className = "stat-pill";
+      reviewPill.textContent = formatReviewLabel(reviewCount);
+      stats.append(reviewPill);
+    }
+    stats.hidden = stats.childElementCount === 0;
+
     const copy = document.createElement("p");
     copy.className = "small-copy";
     copy.textContent = truncateText(entry.why_recommended || entry.note || "", 180);
@@ -185,7 +263,7 @@ if (root) {
     link.href = createGuideLink(entry, query);
     link.textContent = "Open in guide";
 
-    card.append(title, meta, copy, tags, link);
+    card.append(title, meta, stats, copy, tags, link);
     return card;
   };
 
@@ -203,8 +281,8 @@ if (root) {
     count.className = "small-copy";
     count.textContent =
       group.items.length > GROUP_LIMIT
-        ? `${pluralize(group.items.length, "match")} · top ${GROUP_LIMIT} shown`
-        : pluralize(group.items.length, "match");
+        ? `${pluralize(group.items.length, "match", "matches")} · top ${GROUP_LIMIT} shown`
+        : pluralize(group.items.length, "match", "matches");
 
     header.append(title, count);
 
@@ -231,7 +309,19 @@ if (root) {
         .filter(Boolean)
         .join(" · ");
 
-      link.append(itemTitle, itemMeta);
+      const rating = ratingValue(entry.rating);
+      const reviewCount = reviewCountValue(entry.user_rating_count);
+      const itemStats = document.createElement("span");
+      itemStats.className = "search-country-item-meta";
+      itemStats.textContent = [
+        rating !== null ? `${formatRating(rating)} ★` : null,
+        reviewCount !== null ? formatReviewLabel(reviewCount) : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      itemStats.hidden = !itemStats.textContent;
+
+      link.append(itemTitle, itemMeta, itemStats);
       list.append(link);
     });
 
@@ -250,10 +340,13 @@ if (root) {
   };
 
   const dispatchMapUpdate = (visibleGuideSlugs, visibleGuideCount, query) => {
+    const activeScopeMode = nearbyGuideState ? "nearby" : activeCountry ? "country" : "";
+    const activeScopeLabel = nearbyGuideState ? "near you" : countryLabel(activeCountry);
     document.dispatchEvent(
       new CustomEvent("favorite-places:home-map-update", {
         detail: {
-          activeCountry: countryLabel(activeCountry),
+          activeScopeLabel,
+          activeScopeMode,
           query,
           visibleGuideCount,
           visibleGuideSlugs,
@@ -327,19 +420,29 @@ if (root) {
     const state = placeSearchState || searchPlaces(query, { index: searchIndex, scope: "all" });
     const visibleResults =
       filteredResults ||
-      state.results.filter((result) => !activeCountry || normalizeCountry(result.entry.country) === activeCountry);
+      state.results.filter(
+        (result) =>
+          (!activeCountry || normalizeCountry(result.entry.country) === activeCountry) &&
+          (!nearbyGuideState || nearbyGuideState.guideSlugs.has(result.entry.guide_slug)),
+      );
     const groupedResults = groupSearchResults(visibleResults);
     const visibleIndividualResults = visibleResults.slice(0, INDIVIDUAL_RESULT_LIMIT);
 
-    globalResultsList.replaceChildren(...visibleIndividualResults.map((result) => createSearchResultCard(result, query)));
-    groupedResultsList.replaceChildren(...groupedResults.map((group) => createGroupedCountryCard(group, query)));
+    globalResultsList.replaceChildren(
+      ...visibleIndividualResults.map((result) => createSearchResultCard(result, query)),
+    );
+    groupedResultsList.replaceChildren(
+      ...groupedResults.map((group) => createGroupedCountryCard(group, query)),
+    );
 
     globalResultsList.hidden = searchResultView !== "individual";
     groupedResultsList.hidden = searchResultView !== "grouped";
     globalResultsEmpty.dataset.visible = visibleResults.length === 0 ? "true" : "false";
     globalResultsEmpty.textContent = activeCountry
       ? `No matching places in ${countryLabel(activeCountry)}. Try a broader search.`
-      : "No matching places. Try a broader search.";
+      : nearbyGuideState
+        ? "No matching places in nearby guides. Try a broader search."
+        : "No matching places. Try a broader search.";
 
     if (globalResultsToolbar) {
       globalResultsToolbar.hidden = false;
@@ -369,11 +472,16 @@ if (root) {
 
       if (activeCountry) {
         summaryBits.push(`Filtered to ${countryLabel(activeCountry)}`);
+      } else if (nearbyGuideState) {
+        summaryBits.push("Filtered to guides near you");
       }
 
       if (searchResultView === "grouped" && visibleResults.length > 0) {
         summaryBits.push(`Showing up to ${GROUP_LIMIT} places per country`);
-      } else if (searchResultView === "individual" && visibleResults.length > INDIVIDUAL_RESULT_LIMIT) {
+      } else if (
+        searchResultView === "individual" &&
+        visibleResults.length > INDIVIDUAL_RESULT_LIMIT
+      ) {
         summaryBits.push(`Showing top ${INDIVIDUAL_RESULT_LIMIT} individual matches`);
       }
 
@@ -383,16 +491,22 @@ if (root) {
     updateSearchViewButtons();
   };
 
-  const updateCountryButtons = (matchingGuidesByCountry, totalMatchingGuides) => {
+  const updateCountryButtons = (matchingGuidesByCountry, totalMatchingGuides, searching) => {
     countryButtons.forEach((button) => {
       const country = button.dataset.country || "";
       const count = country ? matchingGuidesByCountry.get(country) || 0 : totalMatchingGuides;
       const countLabel = button.querySelector(".country-filter-count");
+      const shouldHide =
+        (searching || Boolean(nearbyGuideState)) &&
+        Boolean(country) &&
+        country !== activeCountry &&
+        count === 0;
 
       button.dataset.active = country === activeCountry ? "true" : "false";
       button.dataset.locationMatch = country && country === locationMatchCountry ? "true" : "false";
       button.setAttribute("aria-pressed", country === activeCountry ? "true" : "false");
       button.disabled = Boolean(country) && country !== activeCountry && count === 0;
+      button.hidden = shouldHide;
 
       if (countLabel) {
         countLabel.textContent = String(count);
@@ -401,19 +515,24 @@ if (root) {
   };
 
   const update = () => {
-    const query = (searchInput?.value || "").trim().toLowerCase();
-    const placeSearchState = searchIndex && query ? searchPlaces(query, { index: searchIndex, scope: "all" }) : null;
+    const rawQuery = (searchInput?.value || "").trim();
+    const normalizedQuery = rawQuery.toLowerCase();
+    const nearbyGuideSlugs = nearbyGuideState?.guideSlugs || null;
+    const placeSearchState =
+      searchIndex && rawQuery ? searchPlaces(rawQuery, { index: searchIndex, scope: "all" }) : null;
     const filteredPlaceResults = placeSearchState
       ? placeSearchState.results.filter(
-          (result) => !activeCountry || normalizeCountry(result.entry.country) === activeCountry,
+          (result) =>
+            (!activeCountry || normalizeCountry(result.entry.country) === activeCountry) &&
+            (!nearbyGuideSlugs || nearbyGuideSlugs.has(result.entry.guide_slug)),
         )
       : [];
     const placeMatchGuideSlugs = placeSearchState
       ? new Set(filteredPlaceResults.map((result) => result.entry.guide_slug))
       : null;
     const guideMatches =
-      searchIndex && query
-        ? new Set(searchGuides(query, { index: searchIndex }).map((result) => result.guide.slug))
+      searchIndex && rawQuery
+        ? new Set(searchGuides(rawQuery, { index: searchIndex }).map((result) => result.guide.slug))
         : null;
     const matchingGuidesByCountry = new Map();
     const visibleGuideSlugs = [];
@@ -425,14 +544,17 @@ if (root) {
       const country = block.dataset.country || "";
       const cards = Array.from(block.querySelectorAll("[data-guide-card]"));
       const matchingCards = cards.filter((card) => {
-        if (!query) {
+        const guideSlug = card.dataset.guideSlug || "";
+        if (nearbyGuideSlugs && !nearbyGuideSlugs.has(guideSlug)) {
+          return false;
+        }
+        if (!normalizedQuery) {
           return true;
         }
-        const guideSlug = card.dataset.guideSlug || "";
         return (
           placeMatchGuideSlugs?.has(guideSlug) ||
-          (card.dataset.search || "").includes(query) ||
-          guideMatches?.has(guideSlug)
+          guideMatches?.has(guideSlug) ||
+          (!searchIndex && (card.dataset.search || "").includes(normalizedQuery))
         );
       });
       const matchingCardSet = new Set(matchingCards);
@@ -456,7 +578,7 @@ if (root) {
         }
       });
 
-      block.hidden = blockVisibleGuideCount === 0;
+      block.hidden = !countrySectionsVisible || blockVisibleGuideCount === 0;
 
       if (blockVisibleGuideCount > 0) {
         visibleCountryCount += 1;
@@ -464,45 +586,79 @@ if (root) {
       }
     });
 
-    updateCountryButtons(matchingGuidesByCountry, totalMatchingGuides);
+    updateCountryButtons(matchingGuidesByCountry, totalMatchingGuides, Boolean(rawQuery));
 
     if (resultsCount) {
-      resultsCount.textContent = `${pluralize(visibleGuideCount, "guide")} across ${pluralize(
-        visibleCountryCount,
-        "country",
-        "countries",
-      )}`;
+      resultsCount.textContent = nearbyGuideState
+        ? `${pluralize(visibleGuideCount, "nearby guide")} across ${pluralize(
+            visibleCountryCount,
+            "country",
+            "countries",
+          )}`
+        : `${pluralize(visibleGuideCount, "guide")} across ${pluralize(
+            visibleCountryCount,
+            "country",
+            "countries",
+          )}`;
     }
 
     if (emptyState) {
       emptyState.dataset.visible = visibleGuideCount === 0 ? "true" : "false";
+      emptyState.textContent = nearbyGuideState
+        ? "No nearby guides match right now. Clear the nearby filter or choose a country."
+        : "No matching guides. Try a broader search or choose all countries.";
     }
 
-    dispatchMapUpdate([...new Set(visibleGuideSlugs)], visibleGuideCount, query);
-    renderGlobalSearch(query, placeSearchState, filteredPlaceResults);
+    dispatchMapUpdate([...new Set(visibleGuideSlugs)], visibleGuideCount, rawQuery);
+    renderGlobalSearch(rawQuery, placeSearchState, filteredPlaceResults);
+    syncUrlState();
   };
 
-  const selectCountry = (country, { fromLocation = false, scroll = false } = {}) => {
+  const selectCountry = (country, { scroll = false } = {}) => {
     activeCountry = country;
+    nearbyGuideState = null;
+    locationMatchCountry = "";
+    setLocationButtonActive(false);
+    setLocationStatus("");
 
-    if (fromLocation) {
-      locationMatchCountry = country;
-      if (searchInput) {
-        searchInput.value = "";
+    update();
+
+    if (scroll) {
+      const button = countryButtons.find(
+        (candidate) => (candidate.dataset.country || "") === country,
+      );
+      const block = countryBlocks.find(
+        (candidate) => (candidate.dataset.country || "") === country,
+      );
+
+      button?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      if (countrySectionsVisible) {
+        block?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    } else {
-      locationMatchCountry = "";
-      setLocationStatus("");
+    }
+  };
+
+  const selectNearbyGuides = (state, { scroll = false } = {}) => {
+    nearbyGuideState = state;
+    activeCountry = "";
+    locationMatchCountry = state.nearestGuide?.country || "";
+    setLocationButtonActive(true);
+
+    if (searchInput) {
+      searchInput.value = "";
     }
 
     update();
 
     if (scroll) {
-      const button = countryButtons.find((candidate) => (candidate.dataset.country || "") === country);
-      const block = countryBlocks.find((candidate) => (candidate.dataset.country || "") === country);
-
-      button?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-      block?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const firstNearbyCountry = state.guides[0]?.country;
+      const block = countryBlocks.find(
+        (candidate) => (candidate.dataset.country || "") === firstNearbyCountry,
+      );
+      locationButton?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      if (countrySectionsVisible) {
+        block?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 
@@ -520,7 +676,8 @@ if (root) {
 
   countryButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      selectCountry(button.dataset.country || "");
+      const country = button.dataset.country || "";
+      selectCountry(country === activeCountry ? "" : country);
     });
   });
 
@@ -530,31 +687,53 @@ if (root) {
     });
   });
 
+  window.addEventListener("hashchange", () => {
+    applyUrlState();
+    updateSearchViewButtons();
+    update();
+  });
+
   if (locationButton) {
     if (!("geolocation" in navigator) || guideLocations.length === 0) {
       locationButton.disabled = true;
       setLocationStatus("Location is not available.", "error");
     } else {
+      setLocationButtonActive(false);
       locationButton.addEventListener("click", () => {
+        if (nearbyGuideState) {
+          nearbyGuideState = null;
+          locationMatchCountry = "";
+          setLocationButtonActive(false);
+          setLocationStatus("Nearby filter cleared.");
+          update();
+          return;
+        }
+
         setLocationButtonBusy(true);
         setLocationStatus("Locating...", "pending");
 
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            const nearestGuide = nearestGuideForLocation(
+            const nearbyGuides = nearbyGuidesForLocation(
+              guideLocations,
               position.coords.latitude,
               position.coords.longitude,
             );
 
             setLocationButtonBusy(false);
 
-            if (!nearestGuide) {
-              setLocationStatus("No guide countries have map data.", "error");
+            if (!nearbyGuides) {
+              setLocationStatus("No nearby guides have map data.", "error");
               return;
             }
 
-            selectCountry(nearestGuide.country, { fromLocation: true, scroll: true });
-            setLocationStatus(`Showing nearby guides in ${nearestGuide.countryName}.`, "success");
+            selectNearbyGuides(nearbyGuides, { scroll: true });
+            setLocationStatus(
+              `Showing ${pluralize(nearbyGuides.guides.length, "guide")} within ${formatDistanceKm(
+                nearbyGuides.radiusKm,
+              )} of you.`,
+              "success",
+            );
           },
           (error) => {
             setLocationButtonBusy(false);
@@ -581,6 +760,7 @@ if (root) {
     }
   }
 
+  applyUrlState();
   updateSearchViewButtons();
   update();
 

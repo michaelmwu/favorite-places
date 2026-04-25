@@ -1,5 +1,9 @@
 name: CI
 
+# Keep hosted CI validation-only.
+# Do not add Google Maps scraping or enrichment refresh jobs here; those belong in
+# the dedicated self-hosted data-refresh workflow.
+
 on:
   pull_request:
   push:
@@ -22,7 +26,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -48,6 +52,16 @@ jobs:
             content_or_data:
               - "data/raw/**"
               - "data/cache/**"
+              - "site/config.ts"
+              - "site/theme.css"
+              - "site/content/templates/**"
+              - "site/data/imports/**"
+              - "site/data/raw/**"
+              - "site/data/cache/**"
+              - "site/list_sources.json"
+              - "site/overrides/**"
+              - "site/public/**"
+              - "site.example/**"
               - "src/data/**"
               - "scripts/config/**"
             workflow:
@@ -60,7 +74,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -68,7 +82,7 @@ jobs:
           bun-version: 1.3.12
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -85,10 +99,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.14"
 
@@ -110,7 +124,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -118,12 +132,12 @@ jobs:
           bun-version: 1.3.12
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.14"
 

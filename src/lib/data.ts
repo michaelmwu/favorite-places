@@ -17,7 +17,7 @@ const countryNameAliases: Record<string, string> = {
   UAE: "United Arab Emirates",
   UK: "United Kingdom",
   USA: "United States",
-  "モナコ": "Monaco",
+  モナコ: "Monaco",
 };
 
 const countryNameBySlug: Record<string, string> = {

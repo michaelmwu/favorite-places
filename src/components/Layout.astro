@@ -1,5 +1,7 @@
 ---
+
 import "../styles/global.css";
+import "favorite-places:site-theme";
 import { siteConfig } from "../data/site";
 
 interface Props {
@@ -39,16 +41,23 @@ const metaDescription = description ?? siteConfig.siteDescription;
     />
   </head>
   <body>
-    <header class="site-header">
-      <a class="site-title" href={siteConfig.demFlyersUrl} aria-label="DEM Flyers">
-        <img src="/demflyers-logo.png" alt="DEM Flyers" />
-      </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="/">Places</a>
-        <a href={siteConfig.demFlyersUrl}>Main site</a>
+    <header class="ui-site-header">
+      {
+        siteConfig.logo ? (
+          <a class="ui-site-title" href={siteConfig.logo.href} aria-label={siteConfig.logo.alt}>
+            <img src={siteConfig.logo.src} alt={siteConfig.logo.alt} />
+          </a>
+        ) : (
+          <a class="ui-site-title ui-site-title-text" href="/" aria-label={siteConfig.siteName}>
+            {siteConfig.siteName}
+          </a>
+        )
+      }
+      <nav class="ui-site-nav" aria-label="Primary">
+        {siteConfig.navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
       </nav>
     </header>
-    <main class="page-shell">
+    <main class="ui-page-shell">
       <slot />
     </main>
   </body>

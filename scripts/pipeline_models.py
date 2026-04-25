@@ -137,12 +137,15 @@ class EnrichmentPlace(PipelineModel):
     user_rating_count: int | None = None
     primary_type: str | None = None
     primary_type_display_name: str | None = None
+    primary_type_display_name_localized: str | None = None
     types: list[str] = Field(default_factory=list)
     business_status: str | None = None
     website: str | None = None
     phone: str | None = None
     plus_code: str | None = None
     description: str | None = None
+    main_photo_url: str | None = None
+    photo_url: str | None = None
     limited_view: bool = False
 
 
@@ -203,7 +206,10 @@ class PlaceProvenance(PipelineModel):
     google_id: PlaceField | None = None
     google_place_id: PlaceField | None = None
     google_place_resource_name: PlaceField | None = None
+    rating: PlaceField | None = None
+    user_rating_count: PlaceField | None = None
     primary_category: PlaceField | None = None
+    primary_category_localized: PlaceField | None = None
     tags: list[PlaceField] = Field(default_factory=list)
     neighborhood: PlaceField | None = None
     note: PlaceField | None = None
@@ -225,13 +231,17 @@ class NormalizedPlace(PipelineModel):
     google_id: str | None = None
     google_place_id: str | None = None
     google_place_resource_name: str | None = None
+    rating: float | None = None
+    user_rating_count: int | None = None
     primary_category: str | None = None
+    primary_category_localized: str | None = None
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None
+    main_photo_path: str | None = None
     top_pick: bool = False
     hidden: bool = False
     manual_rank: int = 0
@@ -250,6 +260,9 @@ class Guide(PipelineModel):
     city_name: str
     list_tags: list[str] = Field(default_factory=list)
     featured_place_ids: list[str] = Field(default_factory=list)
+    best_hit_place_ids: list[str] = Field(default_factory=list)
+    best_hit_min_rating: float | None = None
+    best_hit_min_reviews: int | None = None
     top_categories: list[str] = Field(default_factory=list)
     generated_at: str
     place_count: int
