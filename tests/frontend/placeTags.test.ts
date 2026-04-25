@@ -91,6 +91,23 @@ describe("getGuideAreaFilters", () => {
       { label: "Pinheiros", value: "pinheiros", count: 2 },
     ]);
   });
+
+  it("falls back to singleton neighborhoods when no repeated areas exist", () => {
+    expect(
+      getGuideAreaFilters(
+        [
+          { neighborhood: "Lastarria" },
+          { neighborhood: "Providencia" },
+          { neighborhood: "Bellavista" },
+          { neighborhood: "C/ d'Aribau" },
+        ],
+        { limit: 2 },
+      ),
+    ).toEqual([
+      { label: "Bellavista", value: "bellavista", count: 1 },
+      { label: "Lastarria", value: "lastarria", count: 1 },
+    ]);
+  });
 });
 
 describe("getDisplayGuideTags", () => {

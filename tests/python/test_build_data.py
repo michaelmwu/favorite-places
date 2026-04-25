@@ -3078,7 +3078,10 @@ class BuildDataTests(unittest.TestCase):
             limited_view=False,
         )
 
-        with patch.object(build_data, "scrape_place", return_value=details) as scrape:
+        with (
+            patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
+            patch.object(build_data, "scrape_place", return_value=details) as scrape,
+        ):
             entry = build_data.fetch_places_enrichment(place, api_key=None)
 
         scrape.assert_called_once()
@@ -3088,6 +3091,89 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(entry.place.primary_type, "japanese_restaurant")
         self.assertEqual(entry.place.user_rating_count, 324)
         self.assertEqual(entry.place.business_status, "OPERATIONAL")
+
+    def test_fetch_places_enrichment_uses_scrape_strategy_without_api_fallback(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+        page_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-16T00:00:00+00:00",
+            refresh_after="2026-04-19T00:00:00+00:00",
+            source="google_maps_page",
+            query="Jimbocho Den, Tokyo, Japan",
+            matched=True,
+            score=45,
+            place=EnrichmentPlace(
+                display_name="Jimbocho Den",
+                formatted_address="Tokyo, Japan",
+                google_maps_uri=place.maps_url,
+                limited_view=True,
+            ),
+        )
+
+        with (
+            patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape"),
+            patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment") as api_fetch,
+        ):
+            entry = build_data.fetch_places_enrichment(place, api_key="test-key")
+
+        page_fetch.assert_called_once_with(place)
+        api_fetch.assert_not_called()
+        self.assertIs(entry, page_entry)
+
+    def test_fetch_places_enrichment_uses_api_strategy_without_scraping(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+        api_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-16T00:00:00+00:00",
+            refresh_after="2026-04-23T00:00:00+00:00",
+            source="google_places_api",
+            query="Jimbocho Den, Tokyo, Japan",
+            matched=True,
+            score=88,
+            place=EnrichmentPlace(
+                display_name="Jimbocho Den",
+                formatted_address="Tokyo, Japan",
+                google_maps_uri="https://maps.google.com/?cid=1",
+                primary_type="restaurant",
+                primary_type_display_name="Restaurant",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "google_places_enrichment_strategy", return_value="api"),
+            patch.object(build_data, "fetch_place_page_enrichment") as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
+        ):
+            entry = build_data.fetch_places_enrichment(place, api_key="test-key")
+
+        page_fetch.assert_not_called()
+        api_fetch.assert_called_once_with(place, api_key="test-key")
+        self.assertIs(entry, api_entry)
+
+    def test_fetch_places_enrichment_fails_for_api_strategy_without_key(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+
+        with (
+            patch.object(build_data, "google_places_enrichment_strategy", return_value="api"),
+            patch.object(build_data, "fetch_place_page_enrichment") as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment") as api_fetch,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "GOOGLE_PLACES_API_KEY is required"):
+                build_data.fetch_places_enrichment(place, api_key=None)
+
+        page_fetch.assert_not_called()
+        api_fetch.assert_not_called()
 
     def test_fetch_place_page_enrichment_rewrites_cid_url_before_scraping(self) -> None:
         place = RawPlace(
@@ -3170,6 +3256,7 @@ class BuildDataTests(unittest.TestCase):
         )
 
         with (
+            patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
             patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
             patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
         ):
@@ -3209,6 +3296,7 @@ class BuildDataTests(unittest.TestCase):
         )
 
         with (
+            patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
             patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
             patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
         ):
@@ -3422,6 +3510,7 @@ class BuildDataTests(unittest.TestCase):
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
                 patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
                 patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
                 patch.object(
                     build_data,
                     "cache_refresh_reason",
@@ -3440,6 +3529,128 @@ class BuildDataTests(unittest.TestCase):
                 )
 
             self.assertEqual(seen_reasons, ["missing-cache-entry"])
+
+    def test_enrich_raw_sources_fails_for_api_strategy_without_key(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="Missing Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="api"),
+                patch.object(build_data, "enrich_place_job") as enrich_job,
+            ):
+                with self.assertRaisesRegex(RuntimeError, "GOOGLE_PLACES_API_KEY is required"):
+                    build_data.enrich_raw_sources(
+                        force_refresh=True,
+                        refresh_workers=1,
+                        refresh_startup_jitter_seconds=0,
+                    )
+
+            enrich_job.assert_not_called()
+            self.assertEqual(list(cache_dir.iterdir()), [])
+
+    def test_enrich_raw_sources_allows_api_strategy_without_key_when_no_jobs_run(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="Cached Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="api"),
+                patch.object(build_data, "cache_refresh_reason", return_value=None),
+                patch.object(build_data, "enrich_place_job") as enrich_job,
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=False,
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            enrich_job.assert_not_called()
+
+    def test_enrich_raw_sources_warns_when_api_fallback_is_unavailable(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="Missing Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            def fake_enrich_place_job(_slug, _place_id, _place_name, _refresh_reason, _place_payload, **kwargs):
+                self.assertEqual(kwargs["strategy"], "scrape_then_api")
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query="Missing Place, Tokyo",
+                    matched=True,
+                    place=EnrichmentPlace(display_name="Missing Place"),
+                )
+
+            stdout = StringIO()
+            with (
+                redirect_stdout(stdout),
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=True,
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            self.assertIn("without Google Places API fallback", stdout.getvalue())
 
     def test_enrich_raw_sources_prioritizes_missing_entries_before_expired_refreshes(self) -> None:
         raw = RawSavedList(
@@ -3478,6 +3689,7 @@ class BuildDataTests(unittest.TestCase):
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
                 patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
                 patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
                 patch.object(
                     build_data,
                     "cache_refresh_reason",
@@ -3585,6 +3797,7 @@ class BuildDataTests(unittest.TestCase):
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
                 patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
                 patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
                 patch.object(build_data, "ThreadPoolExecutor", FakeExecutor),
                 patch.object(build_data, "as_completed", return_value=[first_future, second_future]),
             ):
@@ -4161,6 +4374,7 @@ class BuildDataTests(unittest.TestCase):
                 patch.object(build_data, "RAW_DIR", raw_dir),
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
                 patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "google_places_enrichment_strategy", return_value="scrape_then_api"),
                 patch.object(build_data, "ThreadPoolExecutor", FakeExecutor),
                 patch.object(build_data, "as_completed", return_value=[future]),
                 patch("builtins.print"),

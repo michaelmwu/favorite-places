@@ -166,6 +166,51 @@ const typeSeedTags = Object.fromEntries(
     ];
   }),
 );
+const placeBrowseData = visiblePlaces.map((place) => ({
+  filterTagSet: new Set(
+    getPlaceFilterTags(place, placeTagGuideContext)
+      .map((tag) => normalizeTagValue(tag))
+      .filter(Boolean),
+  ),
+  normalizedCategory: normalizeTagValue(place.primary_category ?? ""),
+}));
+const typeCountsAccumulator = Object.fromEntries(
+  browseTypes.map((type) => [normalizeTagValue(type), 0]),
+) as Record<string, number>;
+const typeKeysBySeed = new Map<string, string[]>();
+
+for (const [typeKey, seeds] of Object.entries(typeSeedTags)) {
+  for (const seed of seeds) {
+    const matchingTypeKeys = typeKeysBySeed.get(seed) ?? [];
+    matchingTypeKeys.push(typeKey);
+    typeKeysBySeed.set(seed, matchingTypeKeys);
+  }
+}
+
+for (const placeData of placeBrowseData) {
+  const matchingTypeKeys = new Set<string>();
+
+  if (placeData.normalizedCategory && placeData.normalizedCategory in typeCountsAccumulator) {
+    matchingTypeKeys.add(placeData.normalizedCategory);
+  }
+
+  for (const seed of placeData.filterTagSet) {
+    const seededTypeKeys = typeKeysBySeed.get(seed);
+    if (!seededTypeKeys) {
+      continue;
+    }
+
+    for (const typeKey of seededTypeKeys) {
+      matchingTypeKeys.add(typeKey);
+    }
+  }
+
+  for (const typeKey of matchingTypeKeys) {
+    typeCountsAccumulator[typeKey] += 1;
+  }
+}
+
+const typeCounts = typeCountsAccumulator;
 const guideDescriptionHtml = renderRichText(guide.description);
 const guideAsideHtml = getGuideAsideHtml(guide.slug);
 const guideBeforePlacesHtml = getTemplateHtml(`guide-before-places/${guide.slug}.html`) ?? getTemplateHtml("guide-before-places/default.html");
@@ -173,6 +218,7 @@ const guideAfterPlacesHtml = getTemplateHtml(`guide-after-places/${guide.slug}.h
 const guideSidebarFallback = siteConfig.guide.sidebarContent
   .map((content) => renderRichText(content))
   .filter((content): content is string => Boolean(content));
+const hasMappablePlaces = visiblePlaces.some((place) => place.lat !== null && place.lng !== null);
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
@@ -263,6 +309,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     data-all-tags={JSON.stringify(allTags)}
     data-default-suggestions={JSON.stringify(defaultSuggestions)}
     data-type-seeds={JSON.stringify(typeSeedTags)}
+    data-has-mappable-places={hasMappablePlaces ? "true" : "false"}
+    data-location-sort-fallback-text={siteConfig.guide.locationSortFallbackText}
   >
     <SectionHeading eyebrow={siteConfig.guide.browseEyebrow} title={siteConfig.guide.placesHeading} />
 
@@ -297,7 +345,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
                 <span class="control-label ui-control-label">{siteConfig.guide.areaLabel}</span>
                 <div class="tag-row ui-tag-row tag-row-mobile-scroll">
                   <button class="tag-pill ui-tag-pill" type="button" data-area-filter data-area="" data-area-label="All areas">
-                    {siteConfig.guide.allFilterLabel}
+                    <span>{siteConfig.guide.allFilterLabel}</span>
+                    <span class="tag-pill-count" data-filter-count>{visiblePlaces.length}</span>
                   </button>
                   {areaFilters.map((area) => (
                     <button
@@ -307,7 +356,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
                       data-area={area.value}
                       data-area-label={area.label}
                     >
-                      {area.label} ({area.count})
+                      <span>{area.label}</span>
+                      <span class="tag-pill-count" data-filter-count>{area.count}</span>
                     </button>
                   ))}
                 </div>
@@ -319,11 +369,13 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
                 <span class="control-label ui-control-label">{siteConfig.guide.typeLabel}</span>
                 <div class="tag-row ui-tag-row tag-row-mobile-scroll">
                   <button class="tag-pill ui-tag-pill" type="button" data-type-filter data-type="">
-                    {siteConfig.guide.allFilterLabel}
+                    <span>{siteConfig.guide.allFilterLabel}</span>
+                    <span class="tag-pill-count" data-filter-count>{visiblePlaces.length}</span>
                   </button>
                   {browseTypes.map((type) => (
                     <button class="tag-pill ui-tag-pill" type="button" data-type-filter data-type={normalizeTagValue(type)}>
-                      {type}
+                      <span>{type}</span>
+                      <span class="tag-pill-count" data-filter-count>{typeCounts[normalizeTagValue(type)] ?? 0}</span>
                     </button>
                   ))}
                 </div>
@@ -339,8 +391,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
                 <div class="tag-row ui-tag-row tag-row-mobile-scroll" data-suggestion-list>
                   {defaultSuggestions.map((tag) => (
                     <button class="tag-pill ui-tag-pill" type="button" data-suggestion-tag={tag}>
-                      #{tag}
-                      <span class="visually-hidden" data-tag-count-text></span>
+                      <span>#{tag}</span>
+                      <span class="tag-pill-count" data-filter-count data-tag-count-text>{tagCounts.get(tag) ?? 0}</span>
                     </button>
                   ))}
                 </div>
@@ -357,6 +409,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
               <span class="results-sort-shell">
                 <select class="ui-input" id="guide-sort" name="guide-sort" data-sort-select>
                   <option value="curated">{siteConfig.guide.sortCuratedLabel}</option>
+                  {hasMappablePlaces && <option value="nearby">{siteConfig.guide.sortNearMeLabel}</option>}
                   <option value="rating">{siteConfig.guide.sortRatingLabel}</option>
                   <option value="name">{siteConfig.guide.sortNameLabel}</option>
                   <option value="neighborhood">{siteConfig.guide.sortNeighborhoodLabel}</option>
@@ -372,6 +425,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
           </div>
         </div>
         <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-area-filter-status hidden></p>
+        <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-location-sort-status hidden></p>
         <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-map-filter-status hidden>{siteConfig.guide.mapFilteredText}</p>
         <div class="empty-state ui-empty-state" data-empty-state>{siteConfig.guide.emptyStateText}</div>
 

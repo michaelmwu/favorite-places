@@ -255,6 +255,13 @@
     border-color: transparent;
   }
 
+  button.tag-pill:disabled,
+  button.tag-pill[data-unavailable="true"] {
+    opacity: 0.46;
+    cursor: not-allowed;
+    filter: grayscale(1);
+  }
+
   .action-pill {
     background: var(--accent);
     color: var(--surface);

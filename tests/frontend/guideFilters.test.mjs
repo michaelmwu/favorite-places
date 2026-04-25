@@ -3,17 +3,43 @@ import { describe, expect, it } from "vitest";
 import {
   buildAreaFilterStatusMessage,
   buildEmptyStateMessage,
+  buildNearbyDistanceMap,
   cardHasTag,
   cardMatchesType,
+  compareCardsByCurated,
+  compareCardsByNearby,
+  countAreaOptionCards,
   countMatchingCards,
+  countTagOptionCards,
+  countTypeOptionCards,
+  resolveLocationSortState,
+  sortFilterOptions,
 } from "../../public/scripts/guide-filters.js";
 
-const makeCard = ({ neighborhood = "", placeId, search = "", tags = "", vibeTags = "" }) => ({
+const makeCard = ({
+  category = "",
+  lat = "",
+  lng = "",
+  name = "",
+  neighborhood = "",
+  placeId,
+  rank = "0",
+  search = "",
+  tags = "",
+  topPick = "false",
+  vibeTags = "",
+} = {}) => ({
   dataset: {
+    category,
+    lat,
+    lng,
+    name,
     neighborhood,
     placeId,
+    rank,
     search,
     tags,
+    topPick,
     vibeTags,
   },
 });
@@ -252,5 +278,211 @@ describe("guide filters", () => {
         tag: "date-night",
       }),
     ).toBe(1);
+  });
+
+  it("counts area options against the current non-area filters", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "lastarria",
+        category: "cafe",
+        vibeTags: JSON.stringify(["cozy"]),
+      }),
+      makeCard({
+        placeId: "2",
+        neighborhood: "providencia",
+        category: "restaurant",
+        vibeTags: JSON.stringify(["cozy"]),
+      }),
+      makeCard({
+        placeId: "3",
+        neighborhood: "bellavista",
+        category: "cafe",
+        vibeTags: JSON.stringify(["lively"]),
+      }),
+    ];
+
+    expect(
+      countAreaOptionCards(
+        cards,
+        {
+          activeTypeValue: "cafe",
+          activeTypeSeedValues: [],
+          selectedTagValues: ["cozy"],
+        },
+        "lastarria",
+      ),
+    ).toBe(1);
+    expect(
+      countAreaOptionCards(cards, {
+        activeTypeValue: "cafe",
+        activeTypeSeedValues: [],
+        selectedTagValues: ["cozy"],
+      }),
+    ).toBe(1);
+  });
+
+  it("counts type and tag options within the selected area", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "lastarria",
+        category: "cafe",
+        vibeTags: JSON.stringify(["cozy"]),
+      }),
+      makeCard({
+        placeId: "2",
+        neighborhood: "lastarria",
+        category: "restaurant",
+        vibeTags: JSON.stringify(["date-night"]),
+      }),
+      makeCard({
+        placeId: "3",
+        neighborhood: "providencia",
+        category: "restaurant",
+        vibeTags: JSON.stringify(["date-night"]),
+      }),
+    ];
+
+    expect(
+      countTypeOptionCards(
+        cards,
+        {
+          activeArea: "lastarria",
+        },
+        {
+          typeValue: "restaurant",
+          typeSeedValues: [],
+        },
+      ),
+    ).toBe(1);
+    expect(
+      countTagOptionCards(
+        cards,
+        {
+          activeArea: "lastarria",
+          activeTypeValue: "restaurant",
+          activeTypeSeedValues: [],
+        },
+        "cozy",
+      ),
+    ).toBe(0);
+  });
+
+  it("sorts matching filter options ahead of zero-count options while keeping pinned items first", () => {
+    expect(
+      sortFilterOptions([
+        { pinned: false, active: false, count: 0, originalIndex: 3, id: "zero" },
+        { pinned: false, active: false, count: 2, originalIndex: 2, id: "two" },
+        { pinned: true, active: false, count: 1, originalIndex: 0, id: "all" },
+        { pinned: false, active: false, count: 5, originalIndex: 1, id: "five" },
+      ]).map((option) => option.id),
+    ).toEqual(["all", "five", "two", "zero"]);
+  });
+
+  it("sorts nearby cards by cached distance and keeps cards without coordinates last", () => {
+    const currentLocation = { lat: 35.6812, lng: 139.7671 };
+    const cards = [
+      makeCard({ placeId: "far", lat: "35.6895", lng: "139.6917", name: "Far", rank: "1" }),
+      makeCard({ placeId: "missing", name: "Missing", rank: "99", topPick: "true" }),
+      makeCard({ placeId: "near", lat: "35.6814", lng: "139.7673", name: "Near", rank: "2" }),
+    ];
+    const distanceByPlaceId = buildNearbyDistanceMap(cards, currentLocation);
+
+    const sortedCards = [...cards].sort((left, right) =>
+      compareCardsByNearby(left, right, {
+        currentLocation,
+        distanceByPlaceId,
+      }),
+    );
+
+    expect(Array.from(distanceByPlaceId.keys())).toEqual(["far", "near"]);
+    expect(sortedCards.map((card) => card.dataset.placeId)).toEqual(["near", "far", "missing"]);
+  });
+
+  it("falls back to curated sorting when nearby sorting has no current location", () => {
+    const cards = [
+      makeCard({ placeId: "rank-1", name: "Bravo", rank: "1" }),
+      makeCard({ placeId: "rank-3", name: "Alpha", rank: "3" }),
+      makeCard({ placeId: "top-pick", name: "Cafe", rank: "2", topPick: "true" }),
+    ];
+
+    const nearbySorted = [...cards].sort((left, right) =>
+      compareCardsByNearby(left, right, {
+        currentLocation: null,
+        distanceByPlaceId: new Map(),
+      }),
+    );
+    const curatedSorted = [...cards].sort(compareCardsByCurated);
+
+    expect(nearbySorted.map((card) => card.dataset.placeId)).toEqual(
+      curatedSorted.map((card) => card.dataset.placeId),
+    );
+  });
+
+  it("resets nearby sorting to curated when location is denied or unavailable", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "denied",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "Location unavailable. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "unavailable",
+        fallbackMessage: "Location denied.",
+        fallbackSortValue: "rating",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "Location denied.",
+      shouldFallback: true,
+      sortValue: "rating",
+    });
+  });
+
+  it("does not reset nearby sorting while location is still idle, checking, or already available", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "idle",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "",
+      shouldFallback: false,
+      sortValue: "nearby",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "checking",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "",
+      shouldFallback: false,
+      sortValue: "nearby",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: { lat: 35.6812, lng: 139.7671 },
+        currentLocationStatus: "available",
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "",
+      shouldFallback: false,
+      sortValue: "nearby",
+    });
   });
 });
