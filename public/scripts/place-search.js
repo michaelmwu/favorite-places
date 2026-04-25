@@ -53,6 +53,31 @@ const VIBE_ALIASES = new Map([
   ["touristy-but-worth-it", ["touristy", "worth it", "iconic", "landmark"]],
 ]);
 
+const VIBE_ALIAS_GROUPS = new Map();
+for (const [vibe, aliases] of VIBE_ALIASES) {
+  for (const alias of aliases) {
+    const normalizedAlias = normalizeText(alias);
+    if (!normalizedAlias) {
+      continue;
+    }
+
+    if (!VIBE_ALIAS_GROUPS.has(normalizedAlias)) {
+      VIBE_ALIAS_GROUPS.set(normalizedAlias, new Set());
+    }
+
+    VIBE_ALIAS_GROUPS.get(normalizedAlias).add(vibe);
+  }
+}
+
+const SORTED_VIBE_ALIASES = [...VIBE_ALIAS_GROUPS.keys()].sort((left, right) => {
+  const tokenDelta = tokenize(right).length - tokenize(left).length;
+  if (tokenDelta !== 0) {
+    return tokenDelta;
+  }
+
+  return right.length - left.length || left.localeCompare(right);
+});
+
 const LOCATION_ALIASES = new Map([
   ["new-york-new-york-usa", ["nyc", "new york city"]],
   ["san-francisco-california-usa", ["sf", "san fran", "san francisco"]],
@@ -238,6 +263,7 @@ function parseQuery(query, index, options) {
   const consumedTokens = new Set();
   const categories = new Set();
   const vibes = new Set();
+  const vibeGroups = [];
   const guideSlugs = new Set();
 
   for (const [category, aliases] of CATEGORY_ALIASES) {
@@ -246,10 +272,18 @@ function parseQuery(query, index, options) {
     }
   }
 
-  for (const [vibe, aliases] of VIBE_ALIASES) {
-    if (aliases.some((alias) => consumePhrase(normalizedQuery, alias, consumedTokens))) {
-      vibes.add(vibe);
+  for (const alias of SORTED_VIBE_ALIASES) {
+    if (!consumeDisjointPhrase(normalizedQuery, alias, consumedTokens)) {
+      continue;
     }
+
+    const matchedVibes = [...(VIBE_ALIAS_GROUPS.get(alias) ?? [])];
+    if (matchedVibes.length === 0) {
+      continue;
+    }
+
+    matchedVibes.forEach((vibe) => vibes.add(vibe));
+    vibeGroups.push(matchedVibes);
   }
 
   for (const guide of index.guides) {
@@ -273,6 +307,7 @@ function parseQuery(query, index, options) {
     tokens,
     unmatchedTerms,
     vibes,
+    vibeGroups,
   };
 }
 
@@ -281,7 +316,6 @@ function scoreEntry(entry, parsed) {
   let score = 0;
   let matchedCategoryCount = 0;
   let matchedUnmatchedTermCount = 0;
-  let matchedVibeCount = 0;
   const entryTags = normalizedList(entry.tags);
   const entryVibes = normalizedList(entry.vibe_tags);
   const categoryText = normalizeText([entry.category, ...entryTags].join(" "));
@@ -299,7 +333,6 @@ function scoreEntry(entry, parsed) {
   for (const vibe of parsed.vibes) {
     if (entryVibes.includes(vibe) || entryTags.includes(vibe)) {
       score += 34;
-      matchedVibeCount += 1;
       matchedSignals.push("vibe");
     }
   }
@@ -410,7 +443,9 @@ function scoreEntry(entry, parsed) {
 
   const missingRequiredConstraint =
     (parsed.categories.size > 0 && matchedCategoryCount !== parsed.categories.size) ||
-    (parsed.vibes.size > 0 && matchedVibeCount !== parsed.vibes.size) ||
+    parsed.vibeGroups.some(
+      (group) => !group.some((vibe) => entryVibes.includes(vibe) || entryTags.includes(vibe)),
+    ) ||
     (parsed.unmatchedTerms.length > 0 &&
       matchedUnmatchedTermCount !== parsed.unmatchedTerms.length);
 
@@ -481,6 +516,17 @@ function consumePhrase(query, phrase, consumedTokens) {
     consumedTokens.add(token);
   }
   return true;
+}
+
+function consumeDisjointPhrase(query, phrase, consumedTokens) {
+  const normalizedPhrase = normalizeText(phrase);
+  const phraseTokens = tokenize(normalizedPhrase);
+
+  if (phraseTokens.length === 0 || phraseTokens.every((token) => consumedTokens.has(token))) {
+    return false;
+  }
+
+  return consumePhrase(query, normalizedPhrase, consumedTokens);
 }
 
 function containsPhrase(query, phrase) {

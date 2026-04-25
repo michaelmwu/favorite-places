@@ -190,6 +190,19 @@ describe("place search", () => {
     expect(state.results).toEqual([]);
   });
 
+  it("treats shared vibe aliases as alternatives instead of requiring every mapped vibe", () => {
+    const state = searchPlaces("good vibes", {
+      index,
+      scope: "guide",
+      guideSlug: "tokyo-japan",
+    });
+
+    expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-coffee"]);
+    expect(state.parsed.vibes).toEqual(
+      expect.arrayContaining(["cozy", "design-forward", "lively", "local-favorite"]),
+    );
+  });
+
   it("ignores cross-guide location aliases in guide-scoped searches", () => {
     const state = searchPlaces("quiet coffee in united states", {
       index,
