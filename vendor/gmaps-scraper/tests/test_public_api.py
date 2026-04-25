@@ -6,6 +6,7 @@ from gmaps_scraper import (
     BrowserProxyConfig,
     BrowserSessionConfig,
     HttpSessionConfig,
+    ListOwner,
     ParseError,
     Place,
     PlaceDetails,
@@ -23,54 +24,91 @@ class PublicApiTests(unittest.TestCase):
         self.assertEqual(BrowserSessionConfig.__name__, "BrowserSessionConfig")
         self.assertEqual(BrowserProxyConfig.__name__, "BrowserProxyConfig")
         self.assertEqual(HttpSessionConfig.__name__, "HttpSessionConfig")
+        self.assertEqual(ListOwner.__name__, "ListOwner")
         self.assertTrue(issubclass(ParseError, RuntimeError))
         self.assertTrue(issubclass(ScrapeError, RuntimeError))
 
     def test_saved_list_serializes_library_shape(self) -> None:
         place = Place(
-            name="Yakumo",
-            address="Shibuya, Tokyo",
-            note="Delicious wonton ramen. You can ask for a mix of white and dark broth.",
+            name="Northwind Cafe",
+            address="Example District",
+            note="Try the seasonal sampler.",
             lat=35.6501307,
             lng=139.6868459,
-            maps_url="https://maps.google.com/?cid=7451636382641713350",
+            maps_url=(
+                "https://www.google.com/maps/search/"
+                "?api=1&query=Northwind+Cafe%2C+Example+District"
+            ),
             is_favorite=True,
+            added_by=ListOwner(
+                name="Fixture Owner",
+                photo_url="https://lh3.googleusercontent.com/a-/fixture-owner",
+                profile_id="104356373423434804635",
+            ),
         )
         saved_list = SavedList(
-            source_url="https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18",
+            source_url="https://maps.app.goo.gl/TestSavedListShortUrl",
             resolved_url=(
                 "https://www.google.com/maps/@30.5370705,125.4120472,6z/"
-                "data=!4m3!11m2!2sUGEPbA20Qd-OH4uoWjmDgQ!3e3?entry=ttu"
+                "data=!4m3!11m2!2sTESTLISTABC123456789!3e3?entry=ttu"
             ),
-            list_id="UGEPbA20Qd-OH4uoWjmDgQ",
-            title="Tokyo Dinners",
-            description="Best spots in the city",
+            list_id="TESTLISTABC123456789",
+            title="Sample Coffee Stops",
+            description="Curated fixture data for parser tests",
             places=[place],
+            owner=ListOwner(
+                name="Fixture Owner",
+                photo_url="https://lh3.googleusercontent.com/a-/fixture-owner",
+                profile_id="104356373423434804635",
+            ),
+            collaborators=[
+                ListOwner(
+                    name="Fixture Collaborator",
+                    photo_url="https://lh3.googleusercontent.com/a-/fixture-collaborator",
+                    profile_id="205678901234567890123",
+                )
+            ],
         )
 
         self.assertEqual(
             saved_list.to_dict(),
             {
-                "source_url": "https://maps.app.goo.gl/MG2Vd5pWBkL7hXL18",
+                "source_url": "https://maps.app.goo.gl/TestSavedListShortUrl",
                 "resolved_url": (
                     "https://www.google.com/maps/@30.5370705,125.4120472,6z/"
-                    "data=!4m3!11m2!2sUGEPbA20Qd-OH4uoWjmDgQ!3e3?entry=ttu"
+                    "data=!4m3!11m2!2sTESTLISTABC123456789!3e3?entry=ttu"
                 ),
-                "list_id": "UGEPbA20Qd-OH4uoWjmDgQ",
-                "title": "Tokyo Dinners",
-                "description": "Best spots in the city",
+                "list_id": "TESTLISTABC123456789",
+                "title": "Sample Coffee Stops",
+                "description": "Curated fixture data for parser tests",
+                "owner": {
+                    "name": "Fixture Owner",
+                    "photo_url": "https://lh3.googleusercontent.com/a-/fixture-owner",
+                    "profile_id": "104356373423434804635",
+                },
+                "collaborators": [
+                    {
+                        "name": "Fixture Collaborator",
+                        "photo_url": "https://lh3.googleusercontent.com/a-/fixture-collaborator",
+                        "profile_id": "205678901234567890123",
+                    }
+                ],
                 "places": [
                     {
-                        "name": "Yakumo",
-                        "address": "Shibuya, Tokyo",
-                        "note": (
-                            "Delicious wonton ramen. You can ask for a mix of white and "
-                            "dark broth."
-                        ),
+                        "name": "Northwind Cafe",
+                        "address": "Example District",
+                        "note": "Try the seasonal sampler.",
                         "is_favorite": True,
                         "lat": 35.6501307,
                         "lng": 139.6868459,
-                        "maps_url": "https://maps.google.com/?cid=7451636382641713350",
+                        "maps_url": (
+                            "https://www.google.com/maps/search/"
+                            "?api=1&query=Northwind+Cafe%2C+Example+District"
+                        ),
+                        "added_by": {
+                            "name": "Fixture Owner",
+                            "profile_id": "104356373423434804635",
+                        },
                     }
                 ],
             },
@@ -90,6 +128,8 @@ class PublicApiTests(unittest.TestCase):
             website="http://www.jimbochoden.com/",
             phone="+81 3-6455-5433",
             plus_code="MPF7+73 Shibuya, Tokyo, Japan",
+            main_photo_url="https://lh3.googleusercontent.com/p/main-example=s680-w680-h510",
+            photo_url="https://lh3.googleusercontent.com/p/example=s680-w680-h510",
             lat=35.6731762,
             lng=139.7127216,
             limited_view=True,
@@ -114,6 +154,8 @@ class PublicApiTests(unittest.TestCase):
                 "website": "http://www.jimbochoden.com/",
                 "phone": "+81 3-6455-5433",
                 "plus_code": "MPF7+73 Shibuya, Tokyo, Japan",
+                "main_photo_url": "https://lh3.googleusercontent.com/p/main-example=s680-w680-h510",
+                "photo_url": "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
                 "secondary_name": "傳",
                 "lat": 35.6731762,
                 "lng": 139.7127216,

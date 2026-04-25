@@ -1,0 +1,38 @@
+{
+  "fetched_at": "2026-04-25T06:10:52.407508+00:00",
+  "refresh_after": "2026-05-06T17:59:11.407508+00:00",
+  "source_signature": "bd437c23e704220b8d5474599080dd9c862a874ca1b0f3187e5e4782502936a4",
+  "configured_source_type": "google_list_url",
+  "configured_source_url": "https://maps.app.goo.gl/raNHBHESDS9CsZiL9",
+  "configured_source_path": null,
+  "source_url": "https://maps.app.goo.gl/raNHBHESDS9CsZiL9",
+  "list_id": "_3wTY8A6sXa04MEQSVno6w",
+  "title": "Taipei, Taiwan (Example) 🇹🇼",
+  "description": null,
+  "places": [
+    {
+      "name": "Taipei 101",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 25.0332276,
+      "lng": 121.5648681,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Taipei+101",
+      "cid": "3765761221328423815",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Addiction Aquatic Development",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 25.066707899999997,
+      "lng": 121.5370059,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Addiction+Aquatic+Development",
+      "cid": "3765761343429964031",
+      "google_id": null,
+      "maps_place_token": null
+    }
+  ]
+}

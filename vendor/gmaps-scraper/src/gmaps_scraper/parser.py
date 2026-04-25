@@ -7,8 +7,9 @@ import re
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import TypeGuard, cast
+from urllib.parse import urlencode
 
-from gmaps_scraper.models import Place, SavedList
+from gmaps_scraper.models import ListOwner, Place, SavedList
 from gmaps_scraper.url_tools import (
     extract_list_id,
     extract_list_id_from_text,
@@ -21,6 +22,47 @@ type JSONValue = JSONScalar | list["JSONValue"] | dict[str, "JSONValue"]
 _XSSI_PREFIX = ")]}'"
 _APP_STATE_PATTERN = re.compile(r"APP_INITIALIZATION_STATE\s*=\s*", re.MULTILINE)
 _FAVORITE_MARKERS = frozenset({"❤", "♥", "♥️", "❤️"})
+_LONG_INTEGER_PATTERN = re.compile(r"-?\d{10,}")
+_ADDRESS_HINT_PATTERN = re.compile(
+    r"(?:"
+    r"\d"
+    r"|,"
+    r"|〒"
+    r"|号"
+    r"|\bstreet\b"
+    r"|\bst\b\.?"
+    r"|\bavenue\b"
+    r"|\bave\b\.?"
+    r"|\broad\b"
+    r"|\brd\b\.?"
+    r"|\bboulevard\b"
+    r"|\bblvd\b\.?"
+    r"|\blane\b"
+    r"|\bln\b\.?"
+    r"|\bdrive\b"
+    r"|\bdr\b\.?"
+    r"|\bway\b"
+    r"|\bplace\b"
+    r"|\bpl\b\.?"
+    r"|\bcourt\b"
+    r"|\bct\b\.?"
+    r"|\bsquare\b"
+    r"|\bsq\b\.?"
+    r"|\bsuite\b"
+    r"|\bste\b\.?"
+    r"|\bunit\b"
+    r"|\bfloor\b"
+    r"|\bfl\b\.?"
+    r"|\bbuilding\b"
+    r"|\bcity\b"
+    r"|\bdistrict\b"
+    r"|\bward\b"
+    r"|\bprefecture\b"
+    r"|\bprovince\b"
+    r"|\bstate\b"
+    r")",
+    re.IGNORECASE,
+)
 
 
 @dataclass(slots=True)
@@ -217,8 +259,8 @@ def _parse_candidate_node(
     resolved_url: str | None,
     list_id: str | None,
 ) -> SavedList:
-    title, description = _extract_metadata(node)
     places = _extract_places(node)
+    title, description, owner, collaborators = _extract_metadata(node, places=places)
     resolved_list_id = list_id or _find_list_id_in_node(node)
     return SavedList(
         source_url=list_url,
@@ -227,19 +269,37 @@ def _parse_candidate_node(
         title=title,
         description=description,
         places=places,
+        owner=owner,
+        collaborators=collaborators,
     )
 
 
-def _extract_metadata(node: JSONValue) -> tuple[str | None, str | None]:
+def _extract_metadata(
+    node: JSONValue,
+    *,
+    places: Sequence[Place],
+) -> tuple[str | None, str | None, ListOwner | None, list[ListOwner]]:
     metadata_node = _find_metadata_node(node)
     if metadata_node is None:
-        return None, None
+        return None, None, None, _collect_place_owners(places)
 
     title = _clean_text(_safe_index(metadata_node, 4))
     description = _clean_text(_safe_index(metadata_node, 5))
     if description == title:
         description = None
-    return title, description
+    owner = _parse_list_owner(_safe_index(metadata_node, 3))
+    collaborators = _merge_owner_lists(
+        _extract_additional_list_header_owners(metadata_node),
+        _collect_place_owners(places),
+    )
+    if owner is not None:
+        collaborators = _merge_owner_lists(collaborators, [])
+        collaborators = [
+            collaborator
+            for collaborator in collaborators
+            if not _owners_refer_to_same_person(collaborator, owner)
+        ]
+    return title, description, owner, collaborators
 
 
 def _find_metadata_node(node: JSONValue) -> list[JSONValue] | None:
@@ -262,6 +322,70 @@ def _contains_placelist_signal(node: list[JSONValue]) -> bool:
     return False
 
 
+def _extract_additional_list_header_owners(node: list[JSONValue]) -> list[ListOwner]:
+    owners: list[ListOwner] = []
+    seen: set[tuple[str, str | None, str | None]] = set()
+
+    for index, value in enumerate(node):
+        if index in {3, 8}:
+            continue
+        for current, _ in _walk_json(value):
+            owner = _parse_list_owner(current)
+            if owner is None:
+                continue
+            key = (owner.name, owner.photo_url, owner.profile_id)
+            if key in seen:
+                continue
+            seen.add(key)
+            owners.append(owner)
+
+    return owners
+
+
+def _collect_place_owners(places: Sequence[Place]) -> list[ListOwner]:
+    return _merge_owner_lists(
+        [place.added_by for place in places if place.added_by is not None],
+        [],
+    )
+
+
+def _merge_owner_lists(
+    primary: Sequence[ListOwner | None],
+    secondary: Sequence[ListOwner | None],
+) -> list[ListOwner]:
+    owners: list[ListOwner] = []
+    seen: set[tuple[str, str | None, str | None]] = set()
+
+    for owner in [*primary, *secondary]:
+        if owner is None:
+            continue
+        key = (owner.name, owner.photo_url, owner.profile_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        owners.append(owner)
+
+    return owners
+
+
+def _parse_list_owner(node: JSONValue | None) -> ListOwner | None:
+    if not isinstance(node, list) or len(node) < 1 or len(node) > 3:
+        return None
+
+    name = _clean_text(_safe_index(node, 0))
+    photo_url = _clean_text(_safe_index(node, 1))
+    profile_id = _clean_text(_safe_index(node, 2))
+
+    if name is None:
+        return None
+    if photo_url is not None and not photo_url.startswith(("http://", "https://")):
+        return None
+    if profile_id is not None and not _looks_like_profile_id(profile_id):
+        return None
+
+    return ListOwner(name=name, photo_url=photo_url, profile_id=profile_id)
+
+
 def _extract_places(node: JSONValue) -> list[Place]:
     places: list[Place] = []
     seen: set[str] = set()
@@ -275,25 +399,38 @@ def _extract_places(node: JSONValue) -> list[Place]:
         assert isinstance(lng_value, (int, float))
         lat = float(lat_value)
         lng = float(lng_value)
-        metadata_node = _find_place_metadata(ancestors)
+        place_record = _find_place_record(ancestors, coordinate_tuple=current)
+        metadata_node = _place_metadata_from_record(place_record)
+        if metadata_node is None:
+            metadata_node = _find_place_metadata(ancestors)
         address = _extract_address(metadata_node)
         cid = _find_cid(metadata_node)
         google_id = _find_google_id(metadata_node)
-        name = _find_place_name(ancestors, address=address)
-        note = _find_place_note(ancestors, name=name, address=address)
-        is_favorite = _find_place_is_favorite(ancestors, name=name)
+        name = _find_place_name(ancestors, address=address, place_record=place_record)
+        note = _find_place_note(place_record, name=name, address=address)
+        is_favorite = _find_place_is_favorite(place_record)
         place = Place(
             name=name or address or f"{lat:.6f},{lng:.6f}",
             address=address,
             note=note,
             lat=lat,
             lng=lng,
-            maps_url=_build_maps_url(lat=lat, lng=lng, cid=cid),
+            maps_url=_build_maps_url(
+                name=name,
+                address=address,
+                lat=lat,
+                lng=lng,
+            ),
             cid=cid,
             google_id=google_id,
             is_favorite=is_favorite,
+            added_by=_find_place_added_by(place_record),
         )
-        dedupe_key = cid or google_id or f"{place.name}:{lat:.6f}:{lng:.6f}"
+        dedupe_key = (
+            google_id
+            or (f"{cid}:{lat:.6f}:{lng:.6f}" if cid is not None else None)
+            or f"{place.name}:{lat:.6f}:{lng:.6f}"
+        )
         if dedupe_key in seen:
             continue
         seen.add(dedupe_key)
@@ -303,45 +440,46 @@ def _extract_places(node: JSONValue) -> list[Place]:
 
 
 def _find_place_metadata(ancestors: Sequence[JSONValue]) -> list[JSONValue] | None:
+    place_record = _find_place_record(ancestors)
+    metadata_node = _place_metadata_from_record(place_record)
+    if metadata_node is not None:
+        return metadata_node
     for ancestor in reversed(ancestors):
         if not isinstance(ancestor, list):
             continue
-        if _contains_place_metadata_signal(ancestor):
-            return ancestor
-    for ancestor in reversed(ancestors):
-        if isinstance(ancestor, list):
+        if _contains_coordinate_tuple_direct(ancestor):
             return ancestor
     return None
 
 
 def _contains_place_metadata_signal(node: list[JSONValue]) -> bool:
-    if _find_cid(node) is not None:
-        return True
-    if _find_google_id(node) is not None:
-        return True
-    if _extract_address(node) is not None:
-        return True
-    return False
+    return _contains_coordinate_tuple_direct(node)
 
 
-def _find_place_name(ancestors: Sequence[JSONValue], *, address: str | None) -> str | None:
+def _find_place_name(
+    ancestors: Sequence[JSONValue],
+    *,
+    address: str | None,
+    place_record: list[JSONValue] | None = None,
+) -> str | None:
+    if place_record is None:
+        place_record = _find_place_record(ancestors)
+    if place_record is None:
+        return None
+
+    scoped_nodes = [place_record]
+    metadata_node = _safe_index(place_record, 1)
+    if isinstance(metadata_node, list):
+        scoped_nodes.append(metadata_node)
+
     # Prefer the enclosing place record over its nested metadata payload.
-    for ancestor in reversed(ancestors):
-        if not isinstance(ancestor, list):
-            continue
-        if not _is_place_record_node(ancestor):
-            continue
-        preferred = _clean_text(_safe_index(ancestor, 2))
+    for node in scoped_nodes:
+        preferred = _clean_text(_safe_index(node, 2))
         if _is_name_candidate(preferred, address=address):
             return preferred
 
-    for ancestor in reversed(ancestors):
-        if not isinstance(ancestor, list):
-            continue
-        preferred = _clean_text(_safe_index(ancestor, 2))
-        if _is_name_candidate(preferred, address=address):
-            return preferred
-        for value in reversed(ancestor):
+    for node in scoped_nodes:
+        for value in reversed(node):
             candidate = _clean_text(value)
             if _is_name_candidate(candidate, address=address):
                 return candidate
@@ -349,37 +487,68 @@ def _find_place_name(ancestors: Sequence[JSONValue], *, address: str | None) -> 
 
 
 def _find_place_note(
-    ancestors: Sequence[JSONValue],
+    place_record: list[JSONValue] | None,
     *,
     name: str | None,
     address: str | None,
 ) -> str | None:
-    for ancestor in reversed(ancestors):
-        if not isinstance(ancestor, list):
-            continue
-        if name is not None and _clean_text(_safe_index(ancestor, 2)) != name:
-            continue
-        preferred = _clean_text(_safe_index(ancestor, 3))
-        if _is_note_candidate(preferred, name=name, address=address):
-            return preferred
+    if place_record is None:
+        return None
+    preferred = _clean_text(_safe_index(place_record, 3))
+    if _is_note_candidate(preferred, name=name, address=address):
+        return preferred
     return None
 
 
 def _find_place_is_favorite(
+    place_record: list[JSONValue] | None,
+) -> bool:
+    if place_record is None:
+        return False
+    favorite_payload = _safe_index(place_record, 7)
+    if _contains_favorite_marker(favorite_payload):
+        return True
+    for index, value in enumerate(place_record):
+        if index == 3:
+            continue
+        if _contains_favorite_marker(value):
+            return True
+    return False
+
+
+def _find_place_added_by(place_record: list[JSONValue] | None) -> ListOwner | None:
+    if place_record is None:
+        return None
+
+    preferred = _parse_list_owner(_safe_index(place_record, 12))
+    if preferred is not None:
+        return preferred
+
+    for value in reversed(place_record):
+        owner = _parse_list_owner(value)
+        if owner is not None:
+            return owner
+    return None
+
+
+def _find_place_record(
     ancestors: Sequence[JSONValue],
     *,
-    name: str | None,
-) -> bool:
+    coordinate_tuple: list[JSONValue] | None = None,
+) -> list[JSONValue] | None:
     for ancestor in reversed(ancestors):
         if not isinstance(ancestor, list):
             continue
-        if not _is_place_record_node(ancestor):
+        metadata_node = _place_metadata_from_record(ancestor)
+        if metadata_node is None:
             continue
-        candidate_name = _clean_text(_safe_index(ancestor, 2))
-        if candidate_name is not None and name is not None and candidate_name != name:
+        if coordinate_tuple is not None and not _metadata_matches_coordinate(
+            metadata_node,
+            coordinate_tuple,
+        ):
             continue
-        return _contains_favorite_marker(ancestor)
-    return False
+        return ancestor
+    return None
 
 
 def _extract_address(node: list[JSONValue] | None) -> str | None:
@@ -410,34 +579,103 @@ def _looks_like_address(value: str | None) -> bool:
         return False
     if value.isdigit():
         return False
-    return len(value) >= 5
+    if len(value) < 5:
+        return False
+    return _ADDRESS_HINT_PATTERN.search(value) is not None
 
 
 def _find_cid(node: list[JSONValue] | None) -> str | None:
     if node is None:
         return None
-    for current, _ in _walk_json(node):
-        if isinstance(current, str) and current.isdigit() and len(current) >= 10:
-            return current
+    structured = _find_cid_in_value(_safe_index(node, 6))
+    if structured is not None:
+        return structured
+    for value in node:
+        candidate = _find_cid_in_value(value)
+        if candidate is not None:
+            return candidate
     return None
 
 
 def _find_google_id(node: list[JSONValue] | None) -> str | None:
     if node is None:
         return None
-    for value in _iter_strings(node):
-        if value.startswith("/g/"):
-            return value
+    preferred = _clean_text(_safe_index(node, 7))
+    if preferred is not None and preferred.startswith("/g/"):
+        return preferred
+    for value in node:
+        candidate = _clean_text(value)
+        if candidate is None:
+            continue
+        if candidate.startswith("/g/"):
+            return candidate
     return None
+
+
+def _place_metadata_from_record(node: JSONValue | None) -> list[JSONValue] | None:
+    if not isinstance(node, list):
+        return None
+    metadata_node = _safe_index(node, 1)
+    if not isinstance(metadata_node, list):
+        return None
+    if not _contains_coordinate_tuple_direct(metadata_node):
+        return None
+    return metadata_node
+
+
+def _contains_coordinate_tuple_direct(node: list[JSONValue]) -> bool:
+    return any(_is_coordinate_tuple(value) for value in node)
+
+
+def _metadata_matches_coordinate(
+    metadata_node: list[JSONValue],
+    coordinate_tuple: list[JSONValue],
+) -> bool:
+    return any(
+        isinstance(value, list) and value == coordinate_tuple
+        for value in metadata_node
+    )
+
+
+def _find_cid_in_value(value: JSONValue | None) -> str | None:
+    if isinstance(value, int):
+        return _normalize_cid_token(str(value))
+    if isinstance(value, str):
+        return _normalize_cid_token(value)
+    if not isinstance(value, list):
+        return None
+
+    numeric_texts = [
+        text
+        for text in (_clean_text(item) for item in value)
+        if text is not None and _LONG_INTEGER_PATTERN.fullmatch(text) is not None
+    ]
+    if not numeric_texts:
+        return None
+    for text in numeric_texts:
+        if not text.startswith("-"):
+            return _normalize_cid_token(text)
+    if len(numeric_texts) >= 2:
+        return _normalize_cid_token(numeric_texts[1])
+    return _normalize_cid_token(numeric_texts[0])
+
+
+def _normalize_cid_token(value: JSONValue | None) -> str | None:
+    text = _clean_text(value)
+    if text is None or _LONG_INTEGER_PATTERN.fullmatch(text) is None:
+        return None
+    number = int(text)
+    if number < 0:
+        number += 1 << 64
+    return str(number)
+
+
+def _is_place_record_node(node: list[JSONValue]) -> bool:
+    return _place_metadata_from_record(node) is not None
 
 
 def _contains_favorite_marker(node: JSONValue) -> bool:
     return any(value in _FAVORITE_MARKERS for value in _iter_strings(node))
-
-
-def _is_place_record_node(node: list[JSONValue]) -> bool:
-    metadata_node = _safe_index(node, 1)
-    return isinstance(metadata_node, list) and _contains_place_metadata_signal(metadata_node)
 
 
 def _find_list_id_in_node(node: JSONValue) -> str | None:
@@ -448,10 +686,31 @@ def _find_list_id_in_node(node: JSONValue) -> str | None:
     return None
 
 
-def _build_maps_url(*, lat: float, lng: float, cid: str | None) -> str:
-    if cid is not None:
-        return f"https://maps.google.com/?cid={cid}"
-    return f"https://maps.google.com/?q={lat:.7f},{lng:.7f}"
+def _build_maps_url(
+    *,
+    name: str | None,
+    address: str | None,
+    lat: float,
+    lng: float,
+) -> str:
+    query = _build_maps_query(name=name, address=address, lat=lat, lng=lng)
+    return f"https://www.google.com/maps/search/?{urlencode({'api': '1', 'query': query})}"
+
+
+def _build_maps_query(
+    *,
+    name: str | None,
+    address: str | None,
+    lat: float,
+    lng: float,
+) -> str:
+    if name is not None and address is not None:
+        return f"{name}, {address}"
+    if name is not None:
+        return name
+    if address is not None:
+        return address
+    return f"{lat:.7f},{lng:.7f}"
 
 
 def _walk_json(
@@ -516,7 +775,7 @@ def _is_note_candidate(
 ) -> bool:
     if value is None:
         return False
-    if not _is_plain_text(value):
+    if not _is_note_text(value):
         return False
     if name is not None and value == name:
         return False
@@ -528,8 +787,45 @@ def _is_note_candidate(
 def _is_plain_text(value: str) -> bool:
     if value.startswith(("http://", "https://", "/g/")):
         return False
+    if "http://" in value or "https://" in value:
+        return False
     if has_placelist_marker(value):
         return False
     if value.startswith(_XSSI_PREFIX):
         return False
     return True
+
+
+def _is_note_text(value: str) -> bool:
+    if value.startswith(("http://", "https://", "/g/")):
+        return False
+    if value.startswith(_XSSI_PREFIX):
+        return False
+    return True
+
+
+def _owners_refer_to_same_person(left: ListOwner, right: ListOwner) -> bool:
+    if left.profile_id is not None and right.profile_id is not None:
+        return left.profile_id == right.profile_id
+
+    left_name = _normalize_owner_name(left.name)
+    right_name = _normalize_owner_name(right.name)
+    if left_name != right_name:
+        return False
+
+    if left.photo_url is not None and right.photo_url is not None:
+        return left.photo_url == right.photo_url
+    return False
+
+
+def _normalize_owner_name(value: str) -> str:
+    return " ".join(value.split()).casefold()
+
+
+def _looks_like_cid_candidate(value: str) -> bool:
+    normalized = value.removeprefix("-")
+    return normalized.isdigit() and len(normalized) >= 10
+
+
+def _looks_like_profile_id(value: str) -> bool:
+    return value.isdigit() and len(value) >= 10

@@ -9,7 +9,11 @@
     "dev": "bun scripts/dev.mjs",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "bun run check:astro && bun run check:biome",
+    "check:astro": "astro check",
+    "check:biome": "biome check .",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
     "test": "bun run test:frontend && bun run test:python",
     "test:frontend": "vitest run",
     "test:python": "uv run python3 -m unittest discover -s tests/python -p 'test_*.py'",
@@ -22,7 +26,18 @@
     "refresh:data:force": "bun run sync:sources:force",
     "refresh:data:list": "bun run sync:source --",
     "enrich:data": "uv run python3 scripts/build_data.py --enrich",
-    "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment"
+    "fill:enrichment": "uv run python3 scripts/build_data.py --enrich-missing",
+    "fill:gaps": "uv run python3 scripts/build_data.py --enrich-missing --refresh-photos",
+    "refresh:enrichment": "uv run python3 scripts/build_data.py --refresh-enrichment",
+    "refresh:photos": "uv run python3 scripts/build_data.py --refresh-photos",
+    "refresh:all": "uv run python3 scripts/build_data.py --refresh --refresh-enrichment",
+    "refresh:all:force": "uv run python3 scripts/build_data.py --refresh --refresh-force --refresh-enrichment",
+    "refresh:all:with-photos": "uv run python3 scripts/build_data.py --refresh --refresh-enrichment --refresh-photos",
+    "refresh:all:force:with-photos": "uv run python3 scripts/build_data.py --refresh --refresh-force --refresh-enrichment --refresh-photos",
+    "refresh:balanced": "uv run python3 scripts/refresh_profiles.py balanced",
+    "refresh:backfill": "uv run python3 scripts/refresh_profiles.py backfill",
+    "refresh:sweep": "uv run python3 scripts/refresh_profiles.py sweep",
+    "export:cache:json": "uv run python3 scripts/build_data.py --export-cache-json"
   },
   "dependencies": {
     "astro": "^6.1.6",
@@ -30,7 +45,10 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@biomejs/biome": "^2.4.12",
+    "@tailwindcss/vite": "^4.2.4",
     "@types/leaflet": "^1.9.21",
+    "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }

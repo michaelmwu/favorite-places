@@ -8,11 +8,15 @@ import os
 from pathlib import Path
 
 from gmaps_scraper.debug_dump import write_debug_dump
+from gmaps_scraper.models import PlaceDetails
 from gmaps_scraper.place_scraper import scrape_place
 from gmaps_scraper.scraper import (
+    _HTTP_IMPERSONATE,
     DEFAULT_COLLECTION_MODE,
     BrowserSessionConfig,
     HttpSessionConfig,
+    _import_curl_requests,
+    _raise_for_status,
     collect_saved_list_result,
 )
 from gmaps_scraper.url_tools import extract_list_id
@@ -31,6 +35,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Scrape a list or an individual place page.",
     )
     parser.add_argument("--output", type=Path, help="Optional JSON output path")
+    parser.add_argument(
+        "--download-photo",
+        type=Path,
+        help="For place scraping, download the representative photo to this file path.",
+    )
+    parser.add_argument(
+        "--download-main-photo",
+        type=Path,
+        help="For place scraping, download the main place photo to this file path.",
+    )
     parser.add_argument(
         "--show-browser-window",
         "--headed",
@@ -123,6 +137,26 @@ def main() -> int:
             )
         if args.debug_output_dir is not None or args.dump_debug_output:
             parser.error("Debug dump output is currently supported only for list scraping.")
+        if (
+            args.download_photo is not None
+            and args.output is not None
+            and args.download_photo == args.output
+        ):
+            parser.error("`--download-photo` must be different from `--output`.")
+        if (
+            args.download_main_photo is not None
+            and args.output is not None
+            and args.download_main_photo == args.output
+        ):
+            parser.error("`--download-main-photo` must be different from `--output`.")
+        if (
+            args.download_photo is not None
+            and args.download_main_photo is not None
+            and args.download_photo == args.download_main_photo
+        ):
+            parser.error(
+                "`--download-photo` and `--download-main-photo` must be different paths."
+            )
         place_result = scrape_place(
             args.url,
             headless=not args.show_browser_window,
@@ -131,12 +165,36 @@ def main() -> int:
             browser_session=browser_session,
             http_session=http_session,
         )
+        if args.download_photo is not None:
+            try:
+                _download_place_photo(
+                    place_result,
+                    output_path=args.download_photo,
+                    http_session=http_session,
+                )
+            except RuntimeError as exc:
+                parser.exit(1, f"{parser.prog}: error: {exc}\n")
+        if args.download_main_photo is not None:
+            try:
+                _download_place_image(
+                    place_result.main_photo_url,
+                    output_path=args.download_main_photo,
+                    http_session=http_session,
+                    referer=place_result.resolved_url or place_result.source_url,
+                    missing_message="No main photo URL was found for this place.",
+                )
+            except RuntimeError as exc:
+                parser.exit(1, f"{parser.prog}: error: {exc}\n")
         payload = json.dumps(place_result.to_dict(), indent=2, ensure_ascii=False)
         if args.output is not None:
             args.output.write_text(f"{payload}\n", encoding="utf-8")
         else:
             print(payload)
         return 0
+    if args.download_photo is not None or args.download_main_photo is not None:
+        parser.error(
+            "`--download-photo` and `--download-main-photo` are supported only with `--kind place`."
+        )
 
     artifacts, result = collect_saved_list_result(
         args.url,
@@ -169,6 +227,58 @@ def main() -> int:
     else:
         print(payload)
     return 0
+
+
+def _download_place_photo(
+    place_result: PlaceDetails,
+    *,
+    output_path: Path,
+    http_session: HttpSessionConfig | None,
+) -> None:
+    _download_place_image(
+        place_result.photo_url,
+        output_path=output_path,
+        http_session=http_session,
+        referer=place_result.resolved_url or place_result.source_url,
+        missing_message="No representative photo URL was found for this place.",
+    )
+
+
+def _download_place_image(
+    photo_url: str | None,
+    *,
+    output_path: Path,
+    http_session: HttpSessionConfig | None,
+    referer: str,
+    missing_message: str,
+) -> None:
+    if photo_url is None:
+        raise RuntimeError(missing_message)
+    try:
+        curl_requests = _import_curl_requests()
+        session_kwargs: dict[str, object] = {
+            "impersonate": _HTTP_IMPERSONATE,
+            "allow_redirects": True,
+            "default_headers": True,
+            "timeout": 30,
+        }
+        if http_session is not None and http_session.proxy is not None:
+            session_kwargs["proxy"] = http_session.proxy
+
+        with curl_requests.Session(**session_kwargs) as session:
+            response = session.get(
+                photo_url,
+                referer=referer,
+            )
+            _raise_for_status(response)
+            content = response.content
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_bytes(content)
+    except RuntimeError:
+        raise
+    except Exception as exc:
+        raise RuntimeError(f"Failed to download place photo: {exc}") from exc
 
 
 def _resolve_debug_output_dir(

@@ -1,4 +1,6 @@
 ---
+
+import { siteConfig } from "../data/site";
 import type { Place } from "../lib/types";
 
 interface Props {
@@ -7,8 +9,10 @@ interface Props {
 
 const { places } = Astro.props;
 const configuredGoogleMapsApiKey = process.env.GOOGLE_MAPS_JS_API_KEY || "";
-const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
-const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
+const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || siteConfig.mapProvider).toLowerCase();
+const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLowerCase() !== "off";
+const mapProvider =
+  requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
 const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
 const mapPlaces = places
   .filter((place) => place.lat !== null && place.lng !== null)
@@ -21,6 +25,7 @@ const mapPlaces = places
     lat: place.lat,
     lng: place.lng,
     mapsUrl: place.maps_url,
+    mainPhotoPath: place.main_photo_path,
     topPick: place.top_pick,
   }));
 ---
@@ -28,29 +33,32 @@ const mapPlaces = places
 {
   mapPlaces.length > 0 && (
     <aside class="map-panel" data-map-panel data-collapsed="false" aria-label="Places map">
-      <button class="map-toggle" type="button" data-map-toggle aria-label="Collapse map" title="Collapse map">
-        <span class="map-toggle-icon" aria-hidden="true" />
-      </button>
-
-      <div class="map-actions" data-map-actions>
-        <button class="map-control-button" type="button" data-map-frame-filter>Search this area</button>
-        <button class="map-control-button" type="button" data-map-full-area>Reset Map</button>
-        <button
-          class="map-icon-button"
-          type="button"
-          data-map-location
-          data-location-state="checking"
-          aria-label="Center map on current location"
-          aria-disabled="true"
-          aria-busy="true"
-          title="Center map on current location"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="7" />
-            <circle cx="12" cy="12" r="2.4" />
-            <path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22" />
-          </svg>
+      <div class="map-toolbar">
+        <button class="map-toggle" type="button" data-map-toggle aria-expanded="true" aria-label="Hide map" title="Hide map">
+          <span class="map-toggle-label">Hide map</span>
+          <span class="map-toggle-icon" aria-hidden="true" />
         </button>
+
+        <div class="map-actions" data-map-actions>
+          <button class="map-control-button" type="button" data-map-frame-filter>Search this area</button>
+          <button class="map-control-button" type="button" data-map-full-area>Reset Map</button>
+          <button
+            class="map-icon-button"
+            type="button"
+            data-map-location
+            data-location-state="idle"
+            aria-label="Use current location"
+            aria-disabled="false"
+            aria-busy="false"
+            title="Use current location"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="7" />
+              <circle cx="12" cy="12" r="2.4" />
+              <path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div
@@ -58,6 +66,7 @@ const mapPlaces = places
         data-guide-map
         data-map-provider={mapProvider}
         data-google-maps-api-key={googleMapsApiKey}
+        data-place-photos-enabled={placePhotosEnabled ? "true" : "false"}
         data-places={JSON.stringify(mapPlaces)}
       />
 
@@ -94,6 +103,7 @@ const mapPlaces = places
     lat: number;
     lng: number;
     mapsUrl: string;
+    mainPhotoPath: string | null;
     topPick: boolean;
   }
 
@@ -182,6 +192,7 @@ const mapPlaces = places
   }
 
   const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
+  const DESKTOP_MAP_MEDIA_QUERY = "(min-width: 980px)";
 
   const LOCATION_PROXIMITY_BUFFER_KM = 25;
   const LOCATION_PROXIMITY_MULTIPLIER = 1.8;
@@ -204,11 +215,24 @@ const mapPlaces = places
     }
   };
 
-  const popupHtml = (place: MapPlace) => {
+  const safePhotoUrl = (value: string | null) => {
+    if (!value) return null;
+    if (value.startsWith("/")) return value;
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const popupHtml = (place: MapPlace, placePhotosEnabled: boolean) => {
     const meta = [place.category, place.neighborhood].filter(Boolean).join(" · ");
     const mapsUrl = safeMapsUrl(place.mapsUrl);
+    const photoUrl = placePhotosEnabled ? safePhotoUrl(place.mainPhotoPath) : null;
     return `
       <div class="guide-map-popup-content">
+        ${photoUrl ? `<div class="guide-map-popup-photo"><img src="${escapeHtml(photoUrl)}" alt="Photo of ${escapeHtml(place.name)}" loading="lazy" /></div>` : ""}
         <strong>${escapeHtml(place.name)}</strong>
         <span>${escapeHtml(meta)}</span>
         ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : ""}
@@ -240,8 +264,8 @@ const mapPlaces = places
     });
   };
 
-  const placeMarker = (place: MapPlace) =>
-    L.marker([place.lat, place.lng], { icon: leafletMarkerIcon(place) }).bindPopup(popupHtml(place), {
+  const placeMarker = (place: MapPlace, placePhotosEnabled: boolean) =>
+    L.marker([place.lat, place.lng], { icon: leafletMarkerIcon(place) }).bindPopup(popupHtml(place, placePhotosEnabled), {
       className: "guide-map-popup-shell",
       closeButton: false,
     });
@@ -405,9 +429,14 @@ const mapPlaces = places
     }
 
     if (button) {
+      const buttonLabel = button.querySelector<HTMLElement>(".map-toggle-label");
+      const buttonText = collapsed ? "Show map" : "Hide map";
       button.setAttribute("aria-expanded", collapsed ? "false" : "true");
-      button.setAttribute("aria-label", collapsed ? "Expand map" : "Collapse map");
-      button.title = collapsed ? "Expand map" : "Collapse map";
+      button.setAttribute("aria-label", buttonText);
+      button.title = buttonText;
+      if (buttonLabel) {
+        buttonLabel.textContent = buttonText;
+      }
     }
 
     if (persist) {
@@ -419,17 +448,38 @@ const mapPlaces = places
     }
   };
 
+  const syncPanelOrder = (panel: HTMLElement) => {
+    const layout = panel.closest<HTMLElement>("[data-browse-layout]");
+    const browseMain = layout?.querySelector<HTMLElement>("[data-browse-main]");
+    if (!layout || !browseMain) return;
+
+    if (window.matchMedia(DESKTOP_MAP_MEDIA_QUERY).matches) {
+      if (browseMain.nextElementSibling !== panel) {
+        browseMain.after(panel);
+      }
+      return;
+    }
+
+    if (layout.firstElementChild !== panel) {
+      layout.prepend(panel);
+    }
+  };
+
   const initPanels = () => {
-    const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY) === "true";
+    const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY);
+    const desktopMediaQuery = window.matchMedia(DESKTOP_MAP_MEDIA_QUERY);
+    const defaultCollapsed = storedCollapsed === null ? !desktopMediaQuery.matches : storedCollapsed === "true";
 
     document.querySelectorAll<HTMLElement>("[data-map-panel]").forEach((panel) => {
       if (panel.dataset.panelInitialized === "true") return;
       panel.dataset.panelInitialized = "true";
 
-      setPanelCollapsed(panel, storedCollapsed, false);
+      syncPanelOrder(panel);
+      setPanelCollapsed(panel, defaultCollapsed, false);
       panel.querySelector("[data-map-toggle]")?.addEventListener("click", () => {
         setPanelCollapsed(panel, panel.dataset.collapsed !== "true");
       });
+      desktopMediaQuery.addEventListener("change", () => syncPanelOrder(panel));
     });
   };
 
@@ -520,6 +570,7 @@ const mapPlaces = places
     places: MapPlace[],
     onSelectPlace: (placeId: string) => void,
   ): MapRuntime => {
+    const placePhotosEnabled = mapElement.dataset.placePhotosEnabled === "true";
     const map = L.map(mapElement, {
       dragging: true,
       maxZoom: 19,
@@ -538,7 +589,7 @@ const mapPlaces = places
 
     const markers = new Map<string, L.Marker>();
     places.forEach((place) => {
-      const marker = placeMarker(place).addTo(map);
+      const marker = placeMarker(place, placePhotosEnabled).addTo(map);
       marker.on("click", () => onSelectPlace(place.id));
       markers.set(place.id, marker);
     });
@@ -584,6 +635,7 @@ const mapPlaces = places
     apiKey: string,
     onSelectPlace: (placeId: string) => void,
   ): Promise<MapRuntime> => {
+    const placePhotosEnabled = mapElement.dataset.placePhotosEnabled === "true";
     const google = await loadGoogleMapsApi(apiKey);
     const map = new google.maps.Map(mapElement, {
       center: { lat: places[0].lat, lng: places[0].lng },
@@ -650,7 +702,7 @@ const mapPlaces = places
       openPlace: (place) => {
         const marker = markers.get(place.id);
         if (!marker || !marker.getMap()) return;
-        infoWindow.setContent(popupHtml(place));
+        infoWindow.setContent(popupHtml(place, placePhotosEnabled));
         infoWindow.open({ anchor: marker, map, shouldFocus: false });
       },
       setView: (coordinates, zoom) => {
@@ -695,6 +747,8 @@ const mapPlaces = places
     let selectedPlaceId = "";
     let hoveredPlaceId = "";
     let currentLocation: Coordinates | null = null;
+    let pendingLocationCenter = false;
+    let locationWatchStarted = false;
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
     const apiKey = element.dataset.googleMapsApiKey || "";
     const handleMarkerSelect = (placeId: string) => selectPlace(placeId);
@@ -838,7 +892,7 @@ const mapPlaces = places
     };
 
     const setLocationButtonState = (
-      state: "checking" | "near" | "far" | "unavailable",
+      state: "idle" | "checking" | "near" | "far" | "unavailable",
       label: string,
     ) => {
       if (!locationButton) return;
@@ -847,7 +901,7 @@ const mapPlaces = places
       locationButton.dataset.busy = state === "checking" ? "true" : "false";
       locationButton.title = label;
       locationButton.setAttribute("aria-label", label);
-      locationButton.setAttribute("aria-disabled", state === "near" ? "false" : "true");
+      locationButton.setAttribute("aria-disabled", state === "checking" ? "true" : "false");
       locationButton.setAttribute("aria-busy", state === "checking" ? "true" : "false");
     };
 
@@ -870,23 +924,33 @@ const mapPlaces = places
 
       if (locationIsNearGuide(currentLocation)) {
         setLocationButtonState("near", "Center map on current location");
+        if (pendingLocationCenter) {
+          pendingLocationCenter = false;
+          runtime.setView(currentLocation, 15);
+        }
       } else {
+        pendingLocationCenter = false;
         setLocationButtonState("far", "Current location is too far from this guide");
       }
     };
 
     const startLocationAvailabilityWatch = () => {
       if (!locationButton) return;
+      if (locationWatchStarted) return;
 
       if (!navigator.geolocation) {
         setLocationButtonState("unavailable", "Current location is not available");
         return;
       }
 
+      locationWatchStarted = true;
       setLocationButtonState("checking", "Checking current location");
       navigator.geolocation.watchPosition(
         updateLocationFromPosition,
-        () => setLocationButtonState("unavailable", "Current location is not available"),
+        () => {
+          pendingLocationCenter = false;
+          setLocationButtonState("unavailable", "Current location is not available");
+        },
         {
           enableHighAccuracy: true,
           maximumAge: 60_000,
@@ -896,7 +960,10 @@ const mapPlaces = places
     };
 
     const centerOnCurrentLocation = () => {
+      pendingLocationCenter = true;
+      startLocationAvailabilityWatch();
       if (!currentLocation || !locationIsNearGuide(currentLocation)) return;
+      pendingLocationCenter = false;
       runtime.setView(currentLocation, 15);
     };
 
@@ -946,7 +1013,6 @@ const mapPlaces = places
     mapElement.guideLocationBounds = locationBoundsForPlaces(places) ?? undefined;
     if (locationButton) {
       locationButton.addEventListener("click", centerOnCurrentLocation);
-      startLocationAvailabilityWatch();
     }
     mapElement.guideMapFit = () => {
       runtime?.invalidateSize?.();

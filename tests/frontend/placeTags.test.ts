@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  getTagComparisonValue,
   getDisplayGuideTags,
   getDisplayPlaceTags,
   getGuideAreaFilters,
+  getTagComparisonValue,
   normalizeTagValue,
 } from "../../src/lib/placeTags";
 
@@ -61,7 +61,7 @@ describe("getGuideAreaFilters", () => {
       ),
     ).toEqual([
       { label: "Ginza", value: "ginza", count: 3 },
-      { label: "Juárez", value: "juárez", count: 3 },
+      { label: "Juárez", value: "juarez", count: 3 },
       { label: "Shibuya", value: "shibuya", count: 3 },
     ]);
   });
@@ -74,6 +74,21 @@ describe("getGuideAreaFilters", () => {
         { neighborhood: "Tokyo" },
       ]),
     ).toEqual([]);
+  });
+
+  it("groups area filters by normalized text so variant spellings share one pill", () => {
+    expect(
+      getGuideAreaFilters([
+        { neighborhood: "São Paulo" },
+        { neighborhood: "Sao Paulo" },
+        { neighborhood: "São Paulo" },
+        { neighborhood: "Pinheiros" },
+        { neighborhood: "Pinheiros" },
+      ]),
+    ).toEqual([
+      { label: "São Paulo", value: "sao-paulo", count: 3 },
+      { label: "Pinheiros", value: "pinheiros", count: 2 },
+    ]);
   });
 });
 
@@ -109,6 +124,16 @@ describe("getDisplayGuideTags", () => {
     ).toEqual(["pizza"]);
   });
 
+  it("hides translated city aliases for display while keeping them searchable", () => {
+    expect(
+      getDisplayGuideTags(["geneve", "geneva", "park"], {
+        cityName: "Genève",
+        countryCode: "CH",
+        countryName: "Switzerland",
+      }),
+    ).toEqual(["park"]);
+  });
+
   it("drops single-location country tags such as tonga", () => {
     expect(
       getDisplayGuideTags(["tonga"], {
@@ -134,6 +159,7 @@ describe("normalizeTagValue", () => {
   it("slugifies human-readable vibe overrides for guide filter matching", () => {
     expect(normalizeTagValue("Date Night")).toBe("date-night");
     expect(normalizeTagValue("Laptop Friendly")).toBe("laptop-friendly");
+    expect(normalizeTagValue("Genève")).toBe("geneve");
   });
 });
 

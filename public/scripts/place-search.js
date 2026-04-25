@@ -90,6 +90,7 @@ export function prepareSearchIndex(index) {
   const normalizedGuides = guides.map((guide) => ({
     ...guide,
     _searchText: normalizeText(guide.search_text || guide.title || ""),
+    _tokens: tokenize(guide.search_text || guide.title || ""),
     _aliases: guideAliases(guide),
   }));
   const guideBySlug = new Map(normalizedGuides.map((guide) => [guide.slug, guide]));
@@ -100,7 +101,23 @@ export function prepareSearchIndex(index) {
     _searchText: normalizeText(entry.search_text || ""),
     _name: normalizeText(entry.name || ""),
     _category: normalizeText(entry.category || ""),
+    _city: normalizeText(entry.city || ""),
+    _country: normalizeText(entry.country || ""),
+    _guideTitle: normalizeText(entry.guide_title || ""),
     _neighborhood: normalizeText(entry.neighborhood || ""),
+    _note: normalizeText([entry.note || "", entry.why_recommended || ""].join(" ")),
+    _nameTokens: tokenize(entry.name || ""),
+    _categoryTokens: tokenize(entry.category || ""),
+    _cityTokens: tokenize(entry.city || ""),
+    _countryTokens: tokenize(entry.country || ""),
+    _guideTitleTokens: tokenize(entry.guide_title || ""),
+    _neighborhoodTokens: tokenize(entry.neighborhood || ""),
+    _noteTokens: tokenize([entry.note || "", entry.why_recommended || ""].join(" ")),
+    _searchTokens: tokenize(entry.search_text || ""),
+    _tagTokens: tokenizeList([
+      ...(Array.isArray(entry.tags) ? entry.tags : []),
+      ...(Array.isArray(entry.vibe_tags) ? entry.vibe_tags : []),
+    ]),
     _guide: guideBySlug.get(entry.guide_slug),
   }));
 
@@ -113,7 +130,9 @@ export function prepareSearchIndex(index) {
 }
 
 export function searchPlaces(query, options = {}) {
-  const index = options.index ? prepareSearchIndexOnce(options.index) : prepareSearchIndex({ entries: [] });
+  const index = options.index
+    ? prepareSearchIndexOnce(options.index)
+    : prepareSearchIndex({ entries: [] });
   const parsed = parseQuery(query, index, options);
   const activeFilters = options.activeFilters || {};
   const scopedEntries = index.entries.filter((entry) => {
@@ -129,7 +148,9 @@ export function searchPlaces(query, options = {}) {
     }
     if (
       activeFilters.tag &&
-      !normalizedList([...entry.tags, ...entry.vibe_tags]).includes(normalizeToken(activeFilters.tag))
+      !normalizedList([...entry.tags, ...entry.vibe_tags]).includes(
+        normalizeToken(activeFilters.tag),
+      )
     ) {
       return false;
     }
@@ -164,7 +185,9 @@ export function searchPlaces(query, options = {}) {
 }
 
 export function searchGuides(query, options = {}) {
-  const index = options.index ? prepareSearchIndexOnce(options.index) : prepareSearchIndex({ guides: [] });
+  const index = options.index
+    ? prepareSearchIndexOnce(options.index)
+    : prepareSearchIndex({ guides: [] });
   const normalizedQuery = normalizeText(query);
   const tokens = tokenize(normalizedQuery);
   if (tokens.length === 0) {
@@ -182,14 +205,19 @@ export function searchGuides(query, options = {}) {
         }
       }
       for (const token of tokens) {
-        if (guide._searchText.includes(token)) {
-          score += 3;
+        const matchStrength = scoreTokenMatch(token, guide._tokens);
+        if (matchStrength > 0) {
+          score += matchStrength === 1 ? 6 : 4;
+          matchedSignals.push("guide");
         }
       }
       return { guide, matchedSignals: [...new Set(matchedSignals)], score };
     })
     .filter((result) => result.score > 0)
-    .sort((left, right) => right.score - left.score || left.guide.title.localeCompare(right.guide.title));
+    .sort(
+      (left, right) =>
+        right.score - left.score || left.guide.title.localeCompare(right.guide.title),
+    );
 }
 
 export function normalizeText(value) {
@@ -234,7 +262,9 @@ function parseQuery(query, index, options) {
     guideSlugs.clear();
   }
 
-  const unmatchedTerms = tokens.filter((token) => !STOP_WORDS.has(token) && !consumedTokens.has(token));
+  const unmatchedTerms = tokens.filter(
+    (token) => !STOP_WORDS.has(token) && !consumedTokens.has(token),
+  );
 
   return {
     categories,
@@ -272,30 +302,87 @@ function scoreEntry(entry, parsed) {
   if (parsed.normalizedQuery && entry._name === parsed.normalizedQuery) {
     score += 55;
     matchedSignals.push("name");
-  } else if (parsed.normalizedQuery && entry._name.includes(parsed.normalizedQuery)) {
-    score += 30;
+  } else if (parsed.normalizedQuery && containsPhrase(entry._name, parsed.normalizedQuery)) {
+    score += 36;
     matchedSignals.push("name");
   }
 
-  if (parsed.normalizedQuery && entry._neighborhood.includes(parsed.normalizedQuery)) {
-    score += 22;
+  if (parsed.normalizedQuery && containsPhrase(entry._guideTitle, parsed.normalizedQuery)) {
+    score += 28;
+    matchedSignals.push("guide");
+  }
+
+  if (parsed.normalizedQuery && containsPhrase(entry._city, parsed.normalizedQuery)) {
+    score += 24;
+    matchedSignals.push("city");
+  }
+
+  if (parsed.normalizedQuery && containsPhrase(entry._neighborhood, parsed.normalizedQuery)) {
+    score += 18;
     matchedSignals.push("neighborhood");
   }
 
-  if (parsed.normalizedQuery && entry._searchText.includes(parsed.normalizedQuery)) {
+  if (parsed.normalizedQuery && containsPhrase(entry._note, parsed.normalizedQuery)) {
+    score += 16;
+    matchedSignals.push("text");
+  }
+
+  if (parsed.normalizedQuery && containsPhrase(entry._country, parsed.normalizedQuery)) {
+    score += 12;
+    matchedSignals.push("country");
+  }
+
+  if (
+    parsed.normalizedQuery &&
+    (entryTags.includes(normalizeToken(parsed.normalizedQuery)) ||
+      entryVibes.includes(normalizeToken(parsed.normalizedQuery)) ||
+      containsPhrase(categoryText, parsed.normalizedQuery))
+  ) {
     score += 18;
+    matchedSignals.push("tag");
+  }
+
+  if (parsed.normalizedQuery && containsPhrase(entry._searchText, parsed.normalizedQuery)) {
+    score += 6;
     matchedSignals.push("text");
   }
 
   for (const term of parsed.unmatchedTerms) {
-    if (entry._name.includes(term)) {
-      score += 12;
+    const nameMatch = scoreTokenMatch(term, entry._nameTokens);
+    const tagMatch = scoreTokenMatch(term, entry._tagTokens);
+    const categoryMatch = scoreTokenMatch(term, entry._categoryTokens);
+    const cityMatch = scoreTokenMatch(term, entry._cityTokens);
+    const guideTitleMatch = scoreTokenMatch(term, entry._guideTitleTokens);
+    const neighborhoodMatch = scoreTokenMatch(term, entry._neighborhoodTokens);
+    const noteMatch = scoreTokenMatch(term, entry._noteTokens);
+    const countryMatch = scoreTokenMatch(term, entry._countryTokens);
+    const searchMatch = scoreTokenMatch(term, entry._searchTokens);
+
+    if (nameMatch > 0) {
+      score += nameMatch === 1 ? 16 : 12;
       matchedSignals.push("name");
-    } else if (entryTags.includes(term) || entryVibes.includes(term) || entry._category.includes(term)) {
-      score += 8;
+    } else if (
+      tagMatch > 0 ||
+      entryTags.includes(term) ||
+      entryVibes.includes(term) ||
+      categoryMatch > 0
+    ) {
+      score += 10;
       matchedSignals.push("tag");
-    } else if (entry._searchText.includes(term)) {
-      score += 3;
+    } else if (cityMatch > 0 || guideTitleMatch > 0) {
+      score += 8;
+      matchedSignals.push("city");
+    } else if (neighborhoodMatch > 0) {
+      score += 7;
+      matchedSignals.push("neighborhood");
+    } else if (noteMatch > 0) {
+      score += 5;
+      matchedSignals.push("text");
+    } else if (countryMatch > 0) {
+      score += 4;
+      matchedSignals.push("country");
+    } else if (searchMatch > 0) {
+      score += 1;
       matchedSignals.push("text");
     }
   }
@@ -350,6 +437,10 @@ function tokenize(value) {
     .filter((token) => token.length > 0);
 }
 
+function tokenizeList(values) {
+  return [...new Set(values.flatMap((value) => tokenize(value)).filter(Boolean))];
+}
+
 function consumePhrase(query, phrase, consumedTokens) {
   const normalizedPhrase = normalizeText(phrase);
   if (!containsPhrase(query, normalizedPhrase)) {
@@ -371,6 +462,19 @@ function containsPhrase(query, phrase) {
   return new RegExp(`(^|\\s)${escapeRegExp(phrase)}($|\\s)`).test(query);
 }
 
+function scoreTokenMatch(term, tokens) {
+  if (!term || !Array.isArray(tokens) || tokens.length === 0) {
+    return 0;
+  }
+  if (tokens.includes(term)) {
+    return 1;
+  }
+  if (term.length >= 3 && tokens.some((token) => token.startsWith(term))) {
+    return 0.7;
+  }
+  return 0;
+}
+
 function normalizedList(values) {
   return values.map(normalizeToken).filter(Boolean);
 }
@@ -384,7 +488,10 @@ function curatedSort(left, right) {
   if (topPickDelta !== 0) {
     return topPickDelta;
   }
-  return Number(right.manual_rank || 0) - Number(left.manual_rank || 0) || left.name.localeCompare(right.name);
+  return (
+    Number(right.manual_rank || 0) - Number(left.manual_rank || 0) ||
+    left.name.localeCompare(right.name)
+  );
 }
 
 function prepareSearchIndexOnce(index) {

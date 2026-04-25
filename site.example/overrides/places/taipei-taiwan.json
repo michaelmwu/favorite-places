@@ -1,0 +1,20 @@
+{
+  "cid:3765761221328423815": {
+    "primary_category": "Landmark",
+    "neighborhood": "Xinyi",
+    "why_recommended": "A recognizable skyline stop that makes map markers and guide search easy to verify.",
+    "top_pick": true,
+    "manual_rank": 20,
+    "tags": ["skyline", "viewpoint"],
+    "vibe_tags": ["views", "first-visit"]
+  },
+  "cid:3765761343429964031": {
+    "primary_category": "Seafood market",
+    "neighborhood": "Zhongshan",
+    "why_recommended": "A food-focused example card with a different category and neighborhood.",
+    "top_pick": true,
+    "manual_rank": 10,
+    "tags": ["seafood", "market"],
+    "vibe_tags": ["casual", "lunch"]
+  }
+}

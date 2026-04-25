@@ -1,0 +1,7 @@
+{
+  "description": "A tiny public Google Maps list used by the template demo. It keeps the sample deterministic while showing real list imports.",
+  "country_name": "Japan",
+  "country_code": "JP",
+  "list_tags": ["parks", "burgers", "landmarks", "example"],
+  "featured_place_ids": ["cid:6924439192396309311", "cid:6924438073363786761"]
+}

@@ -1,188 +1,59 @@
 # Favorite Places
 
-Static-first personal travel guides built from Google Maps saved lists.
+Static-first travel guides built from Google Maps saved lists.
 
-Frontend package management and script execution use `bun`.
-The scraper dependency is vendored into this repo as a git subtree at
-`vendor/gmaps-scraper/`, and `uv` installs it from that in-repo path.
+Favorite Places turns personal saved lists into a small shareable site: guide pages, searchable place cards, map views, top picks, tags, notes, and lightweight theming. It is designed as a template app with user-owned content kept in a separate `site/` pack.
 
-## Stack
+## What You Get
 
-- Astro for the site
-- Python + `uv` for scraping, normalization, and enrichment
-- Cloudflare Pages or GitHub Pages for static hosting
+- An Astro static site for browsing guides and places
+- A Python + `uv` data pipeline for importing Google Maps lists
+- A `site/` overlay for your config, theme, source lists, raw data, overrides, templates, and assets
+- Optional Google Places enrichment for categories, status, Maps links, ratings, and photos
+- A tiny committed `site.example/` pack that works as a demo
 
-## Commands
+## Quick Start
 
-Install frontend dependencies:
+Install dependencies:
 
 ```bash
 bun install
-```
-
-Install Python dependencies:
-
-```bash
 uv sync
 ```
 
-The repo pins Python via [`.python-version`](.python-version) so local `uv` usage and Cloudflare Pages builds both resolve the intended `3.14` runtime instead of Cloudflare's default `3.13.x`.
-
-## Environment Variables
-
-Put local secrets in `.env`.
-
-Recommended split:
+Preview the committed example site pack:
 
 ```bash
-# Browser Google Maps display only.
-GOOGLE_MAPS_JS_API_KEY=...
-
-# Optional backup for server/build-time enrichment fallback.
-GOOGLE_PLACES_API_KEY=...
-
-# Optional: force the old non-Google map path.
-PUBLIC_MAP_PROVIDER=leaflet
+FAVORITE_PLACES_SITE_DIR=site.example bun run build:data
+FAVORITE_PLACES_SITE_DIR=site.example bun run dev
 ```
 
-Notes:
+Then open the local URL printed by Astro.
 
-- `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and embedded into the page only when the Google map provider is active. Treat it as a browser key: restrict the production key by HTTP referrer and allow only `Maps JavaScript API`.
-- `GOOGLE_PLACES_API_KEY` should never be exposed to the browser. Use it only as a server/build-time fallback when place-page enrichment cannot recover enough data.
-- Use a separate production browser key instead of reusing a local dev key.
-- `PUBLIC_MAP_PROVIDER=leaflet` is an escape hatch if you need to force the Leaflet fallback while keeping the Google Maps codepath in the repo.
-- `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/`, clears them after obvious block/cookie-jar failures, and expires idle sessions after 14 days.
+The example pack uses two public Google Maps example lists, five places, manual overrides, tags, top picks, and template aside blocks. It does not need API keys to render.
 
-Populate local raw data from public Google Maps lists:
+## Create Your Site
+
+Copy the example pack into the default `site/` location:
 
 ```bash
-bun run sync:sources
+cp -R site.example site
 ```
 
-This refreshes every configured source and then rebuilds generated site data.
-Public Google Maps URLs are always re-scraped. Local Google export CSV files are re-imported only when their
-contents or config change.
-Headless refreshes run up to 4 scraper workers in parallel by default. Use
-`uv run python3 scripts/build_data.py --refresh --refresh-workers 1` to force
-serial execution, or `--headed` to keep browser windows single-worker.
+Edit:
 
-Force-refresh raw source imports even if a CSV input is unchanged:
+- `site/config.ts` for site name, nav, copy, labels, map provider, and display options
+- `site/theme.css` for colors, fonts, spacing, and custom styling
+- `site/list_sources.json` for your Google Maps list sources
+- `site/overrides/` for handwritten descriptions, tags, notes, top picks, and ranking
+- `site/content/templates/` for optional trusted HTML insertion points
+- `site/public/` for logos, favicons, and site-owned assets
 
-```bash
-bun run sync:sources:force
-```
+After `site/` exists, it is the default. You only need `FAVORITE_PLACES_SITE_DIR` when previewing `site.example`, using a private sibling site pack, or using a later `app/ + site/` layout.
 
-Refresh one configured source by slug, source URL, or source path:
+## Add Sources
 
-```bash
-bun run sync:source -- tokyo-japan
-bun run sync:source -- https://maps.app.goo.gl/your-public-list
-bun run sync:source -- data/imports/taipei-taiwan.csv
-```
-
-Build generated site data and the static browser search index from local raw JSON:
-
-```bash
-bun run build:data
-```
-
-Use this when `data/raw/` is already up to date and you only want to regenerate site inputs and search data.
-Configured local CSV sources are auto-imported before rebuild. Public Google Maps URL sources are not refreshed here.
-
-Fill missing or stale place enrichment cache entries, then rebuild:
-
-```bash
-GOOGLE_PLACES_API_KEY=... bun run enrich:data
-```
-
-The same key can live in `.env` as `GOOGLE_PLACES_API_KEY=...`.
-
-Force-refresh all place enrichment cache entries:
-
-```bash
-GOOGLE_PLACES_API_KEY=... bun run refresh:enrichment
-```
-
-Start the site:
-
-```bash
-bun run dev
-```
-
-Guide pages use Google Maps by default when `GOOGLE_MAPS_JS_API_KEY` is set at build/render time. If it is missing, or if `PUBLIC_MAP_PROVIDER=leaflet`, the site falls back to Leaflet/OpenStreetMap.
-
-Verify the site:
-
-```bash
-bun run test
-bun run check
-bun run build
-```
-
-## Cloudflare Pages
-
-Cloudflare Pages should not auto-install Python dependencies for this repo.
-The root `pyproject.toml` exists for the local data pipeline, and Cloudflare's
-default `pip` install path does not understand the vendored scraper declared in
-`[tool.uv.sources]`.
-
-Use these Pages settings instead:
-
-- Environment variable: `SKIP_DEPENDENCY_INSTALL=true`
-- Environment variable: `BUN_VERSION=1.3.12`
-- Python version: keep the root [`.python-version`](.python-version) in sync with `pyproject.toml`
-- Build command:
-
-```bash
-bun ci && pipx install uv==0.11.6 && export PATH="$HOME/.local/bin:$PATH" && uv sync && bun run build:data && bun run build
-```
-
-Why this is necessary:
-
-- `bun ci` installs the frontend dependencies from `bun.lock`
-- `pipx install uv==0.11.6` makes `uv` available in the Pages build image
-- `uv sync` installs Python dependencies, including the vendored scraper from `vendor/gmaps-scraper`
-- `bun run build:data` generates `src/data/generated/`, which Astro reads at build time
-- `bun run build` builds the static site
-
-Do not rely on Cloudflare's automatic Python dependency detection for this repo
-unless the packaging layout changes.
-
-## Populate Base Data
-
-This repo can commit raw scraped list snapshots in `data/raw/` and reproducible Google Places
-enrichment cache files in `data/cache/google-places/` when you want stable source data in git.
-It still does not commit generated build data.
-
-1. Export your saved lists from Google Takeout.
-
-Go to [Google Takeout](https://takeout.google.com/), select `Saved`, and download the export.
-
-![Google Takeout Saved export](docs/images/google-takeout.png)
-
-After extracting the archive, you should get a folder with one or more `.csv` files for your saved lists.
-
-![Google Takeout contents](docs/images/takeout-contents.png)
-
-You can then either keep those CSVs as your own reference data, or use the place names and URLs while
-building `scripts/config/list_sources.json`.
-
-2. Add your source definitions to `scripts/config/list_sources.json`.
-
-If you are starting from this repo as a base template, copy the example file first:
-
-```bash
-cp scripts/config/list_sources.example.json scripts/config/list_sources.json
-```
-
-Every source needs a `slug`.
-- `url` sources infer `type: "google_list_url"` for supported Google Maps links, including `https://maps.app.goo.gl/...` shortlinks and `https://www.google.com/maps/...` share links.
-- `path` sources infer `type: "google_export_csv"` and require `title`.
-- `type` can still be included explicitly, but it must match the configured `url` or `path`.
-- `title` is optional for Google Maps URL sources and acts as a fallback list title.
-- Google My Maps URLs such as `https://www.google.com/maps/d/...` are not supported yet.
-
-Example:
+Each source in `site/list_sources.json` needs a stable `slug`.
 
 ```json
 [
@@ -193,142 +64,91 @@ Example:
   {
     "slug": "taipei-taiwan",
     "path": "data/imports/taipei-taiwan.csv",
-    "title": "Taipei, Taiwan 🇹🇼"
+    "title": "Taipei, Taiwan"
   }
 ]
 ```
 
-Optional fallback title example:
+Supported sources:
 
-```json
-[
-  {
-    "slug": "tokyo-japan",
-    "url": "https://maps.app.goo.gl/your-public-list",
-    "title": "Tokyo, Japan 🇯🇵"
-  }
-]
-```
+- Public Google Maps saved-list URLs, including `https://maps.app.goo.gl/...` shortlinks
+- Google Takeout saved-list CSV exports
 
-3. Pull raw list data through the installed scraper dependency:
+Google My Maps URLs are not supported yet.
+
+## Build Your Data
+
+Refresh configured sources and rebuild generated site data:
 
 ```bash
 bun run sync:sources
 ```
 
-This writes local JSON files into `data/raw/`, including refresh metadata like `fetched_at`,
-`refresh_after`, and a source signature. URL-backed sources skip network refreshes until
-their refresh window expires unless the source config changes. CSV-backed sources skip rewrites
-when the input file hash is unchanged.
-It also rebuilds the generated site JSON afterward.
-
-4. Add manual curation files in `src/data/overrides/`.
-
-Example files live alongside the real override directories:
-
-- `src/data/overrides/lists/list.example.json`
-- `src/data/overrides/places/list.example.json`
-
-Per-list example at `src/data/overrides/lists/tokyo-japan.json`:
-
-```json
-{
-  "city_name": "Tokyo",
-  "country_name": "Japan",
-  "country_code": "JP",
-  "list_tags": ["tokyo", "japan", "food", "coffee"]
-}
-```
-
-Per-place example at `src/data/overrides/places/tokyo-japan.json`:
-
-```json
-{
-  "cid:6924437575605096209": {
-    "top_pick": true,
-    "tags": ["coffee", "nakameguro"],
-    "why_recommended": "A very easy first stop."
-  }
-}
-```
-
-5. Optionally fill Google Places enrichment cache:
-
-```bash
-bun run enrich:data
-```
-
-This writes cache files into `data/cache/google-places/`, which may be committed for reproducible
-enrichment results.
-
-6. Build generated site data:
+Rebuild generated site data from existing raw snapshots:
 
 ```bash
 bun run build:data
 ```
 
-This writes local generated JSON into `src/data/generated/` and the client-side search index into `public/data/search-index.json` from the current contents of `data/raw/`.
-Configured local CSV sources are imported into `data/raw/<slug>.json` first when needed.
-
-7. Run the site:
+Run the site:
 
 ```bash
 bun run dev
 ```
 
-If you already have raw JSON from elsewhere, you can skip source refresh and place compatible files directly in `data/raw/<slug>.json`, then run `bun run build:data`.
-For a targeted refresh, run `bun run sync:source -- <slug-or-url-or-path>`.
-For a full forced refresh, run `bun run sync:sources:force`.
+Verify before shipping:
 
-Legacy aliases still work:
-- `bun run refresh:data`
-- `bun run refresh:data:force`
-- `bun run refresh:data:list -- <slug-or-url>`
+```bash
+bun run check
+bun run build
+```
 
-## Template-Ready Files
+## Optional Enrichment
 
-This repo can keep personal data and still act as the basis for a cleaner template extraction later.
-The key is to keep "replace me" files obvious and colocated with the real paths future users will edit.
+The site works without Google Places enrichment. If you want richer metadata, add a server/build-time key in `.env`:
 
-- `scripts/config/list_sources.json` is your real source list config.
-- `scripts/config/list_sources.example.json` is the starter file for template users.
-- `src/data/site.ts` is the site-level branding, favicon, and copy config for this instance.
-- `src/data/site.example.ts` shows the expected shape for a new instance.
-- `src/data/overrides/lists/*.json` and `src/data/overrides/places/*.json` are real handwritten curation files, excluding `*.example.json`.
-- `src/data/overrides/lists/list.example.json` and `src/data/overrides/places/list.example.json` are starter examples showing the expected override shapes.
+```bash
+GOOGLE_PLACES_API_KEY=...
+```
 
-For future extraction into a dedicated template repo, the split is:
+Then run one of:
 
-- Engine: `scripts/`, `src/lib/`, `src/components/`, and Astro wiring.
-- Content: `scripts/config/list_sources.json`, `data/raw/`, and `src/data/overrides/`.
-- Theme and branding: `src/data/site.ts` plus any styling and assets under `src/styles/` and `public/`.
-
-## Data Model
-
-The project keeps three layers separate:
-
-1. `data/raw/` stores disposable scraper output.
-2. `data/cache/google-places/` stores cached Google Places lookups keyed by stable place id and may be committed.
-3. `src/data/overrides/` stores handwritten metadata, tags, notes, and ranking.
-4. `src/data/generated/` stores the static JSON that Astro reads at build time.
+```bash
+bun run fill:gaps
+bun run enrich:data
+bun run refresh:enrichment
+```
 
 Manual overrides always win over machine-enriched fields.
 
-## Google Places Enrichment
+## Common Environment Variables
 
-Enrichment is optional and cached. A normal build never calls Google.
+```bash
+# Browser Google Maps display key.
+GOOGLE_MAPS_JS_API_KEY=...
 
-- `--enrich` fills missing or stale cache entries according to the cache entry's own refresh window.
-- `--refresh-enrichment` ignores the 30-day cache window and refetches every place.
-- Manual overrides still win over Google data.
-- Cache invalidation is field-aware: raw input changes force a refresh, operational places refresh more slowly,
-  and volatile or risky states like ratings, closures, unmatched results, and API errors refresh sooner.
+# Server/build-time enrichment fallback.
+GOOGLE_PLACES_API_KEY=...
 
-The current enrichment pass uses Google Places Text Search with a narrow field mask and
-location bias around the scraped coordinates. It is meant to fill in useful metadata
-such as category, Maps URI, and business status without turning the site build into a
-runtime dependency on Google.
+# Force Leaflet/OpenStreetMap rendering.
+PUBLIC_MAP_PROVIDER=leaflet
 
-For CSV imports, the pipeline trusts each place's Google Maps URL more than the exported title.
-It derives stable place IDs from the Maps place token when needed and prefers Google Places display
-names during normalization so mojibake in the export does not leak into the final guide.
+# Hide place photos in the UI.
+PUBLIC_PLACE_PHOTOS=off
+
+# Point at a non-default site pack.
+FAVORITE_PLACES_SITE_DIR=../site
+```
+
+Use a restricted browser key for `GOOGLE_MAPS_JS_API_KEY`. Do not expose `GOOGLE_PLACES_API_KEY` to the browser.
+
+## Deploy
+
+This is a static Astro site, so it can deploy to Cloudflare Pages, GitHub Pages, or similar static hosts.
+
+For Cloudflare Pages, use the custom build path documented in [Architecture](docs/ARCHITECTURE.md#cloudflare-pages). Do not rely on Cloudflare's automatic Python dependency detection for this repo.
+
+## More Docs
+
+- [Architecture](docs/ARCHITECTURE.md): site-pack contract, Cloudflare Pages, refresh automation, data model, and enrichment internals
+- [Design System](docs/design-system.md): current visual system notes

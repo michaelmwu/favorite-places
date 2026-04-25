@@ -1,7 +1,10 @@
 ---
-import type { Place } from "../lib/types";
+
+import { siteConfig } from "../data/site";
+import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";
 import { getDisplayGuideTags, getDisplayPlaceTags, getTagComparisonValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
+import type { Place } from "../lib/types";
 
 interface Props {
   guideContext?: {
@@ -13,25 +16,59 @@ interface Props {
 }
 
 const { guideContext = {}, place } = Astro.props;
-const displayTags = getDisplayGuideTags(getDisplayPlaceTags(place.tags), guideContext);
-const displayVibeTags = getDisplayPlaceTags(place.vibe_tags);
+const placeTags = place.tags ?? [];
+const placeVibeTags = place.vibe_tags ?? [];
+const displayTags = getDisplayGuideTags(getDisplayPlaceTags(placeTags), guideContext);
+const displayVibeTags = getDisplayPlaceTags(placeVibeTags);
 const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
 const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
+const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLowerCase() !== "off";
+const hasPhoto = Boolean(siteConfig.placeCard.showPhoto && placePhotosEnabled && place.main_photo_path);
+const ratingValue = typeof place.rating === "number" ? place.rating : null;
+const reviewCount = typeof place.user_rating_count === "number" ? place.user_rating_count : null;
+const ratingFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+const compactReviewCountFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const reviewCountFormatter = new Intl.NumberFormat("en-US");
+const placeholderMeta =
+  place.neighborhood ??
+  guideContext.cityName ??
+  guideContext.countryName ??
+  siteConfig.placeCard.photoPlaceholderFallback;
+const hasStats =
+  (siteConfig.placeCard.showRating && ratingValue !== null) ||
+  (siteConfig.placeCard.showReviewCount && reviewCount !== null);
+const metaParts = [
+  siteConfig.placeCard.showCategory ? (place.primary_category ?? siteConfig.placeCard.savedPlaceLabel) : null,
+  siteConfig.placeCard.showNeighborhood ? place.neighborhood : null,
+].filter(Boolean);
+const markerSvg = buildMapMarkerSvg(
+  place.marker_icon,
+  getMapMarkerColors(place.marker_icon, { topPick: place.top_pick }),
+);
 ---
 
 <article
-  class="place-card"
+  class="place-card ui-card"
   tabindex="0"
   data-place-card
   data-place-id={place.id}
+  data-has-photo={hasPhoto ? "true" : "false"}
   data-name={place.name.toLowerCase()}
   data-tags={filterTagTokens}
   data-vibe-tags={filterVibeTagTokens}
   data-category={(place.primary_category ?? "").toLowerCase()}
   data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
   data-top-pick={place.top_pick ? "true" : "false"}
+  data-rating={ratingValue !== null ? String(ratingValue) : ""}
+  data-rating-count={reviewCount !== null ? String(reviewCount) : ""}
   data-rank={String(place.manual_rank)}
   data-search={[
     place.name,
@@ -40,37 +77,90 @@ const noteHtml = renderRichText(place.note);
     place.why_recommended ?? "",
     place.primary_category ?? "",
     place.neighborhood ?? "",
-    place.tags.join(" "),
-    place.vibe_tags.join(" "),
+    placeTags.join(" "),
+    placeVibeTags.join(" "),
   ].join(" ").toLowerCase()}
 >
-  <div class="place-card-title">
-    <div class="section-stack">
-      <h3>{place.name}</h3>
-      <p class="meta-copy">
-        {place.primary_category ?? "Saved place"}
-        {place.neighborhood && ` · ${place.neighborhood}`}
-      </p>
-    </div>
-    {place.top_pick && <span class="badge">Top pick</span>}
+  <div class="place-card-photo" aria-hidden={hasPhoto ? undefined : "true"}>
+    {hasPhoto ? (
+      <img src={place.main_photo_path} alt={place.name} loading="lazy" />
+    ) : (
+      <div class="place-card-photo-placeholder">
+        <div class="place-card-photo-placeholder-copy">
+          <span class="place-card-photo-placeholder-kicker">
+            {place.primary_category ?? siteConfig.placeCard.savedPlaceLabel}
+          </span>
+          <strong class="place-card-photo-placeholder-title">{placeholderMeta}</strong>
+        </div>
+        <span class="place-card-photo-placeholder-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M12 2.8a6.2 6.2 0 0 1 6.2 6.2c0 4.4-4.8 9.6-5 9.8a1 1 0 0 1-1.4 0c-.2-.2-5-5.4-5-9.8A6.2 6.2 0 0 1 12 2.8Zm0 8.8A2.6 2.6 0 1 0 12 6.4a2.6 2.6 0 0 0 0 5.2Z"
+            ></path>
+          </svg>
+        </span>
+      </div>
+    )}
   </div>
 
-  {whyRecommendedHtml && <p class="rich-copy" set:html={whyRecommendedHtml} />}
-  {noteHtml && <p class="small-copy rich-copy" set:html={noteHtml} />}
-  {place.address && <p class="small-copy">{place.address}</p>}
+  <div class="place-card-title">
+    <div class="section-stack ui-stack place-card-heading">
+      <div class="place-card-name-row">
+        <h3 class="ui-card-title">{place.name}</h3>
+        {siteConfig.placeCard.showMapLink && (
+          <a
+            class="place-card-map-link"
+            href={place.maps_url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open ${place.name} in Google Maps`}
+            title={`Open ${place.name} in Google Maps`}
+          >
+            <img src="/icons/google-maps.svg" alt="" width="18" height="26" loading="lazy" decoding="async" />
+            <span class="place-card-map-link-label" aria-hidden="true">{siteConfig.placeCard.mapsLabel}</span>
+          </a>
+        )}
+      </div>
+      <div class="place-card-meta-row">
+        <span
+          class="place-card-marker"
+          aria-hidden="true"
+          title={place.primary_category ?? siteConfig.placeCard.savedPlaceLabel}
+          set:html={markerSvg}
+        />
+        {metaParts.length > 0 && <p class="meta-copy">{metaParts.join(" · ")}</p>}
+        {hasStats && (
+          <div class="stats-row ui-meta-row place-card-stats place-card-meta-stats">
+            {siteConfig.placeCard.showRating && ratingValue !== null && (
+              <span class="stat-pill ui-pill">{ratingFormatter.format(ratingValue)} ★</span>
+            )}
+            {siteConfig.placeCard.showReviewCount && reviewCount !== null && (
+              <span class="stat-pill ui-pill" title={`${reviewCountFormatter.format(reviewCount)} Google Maps reviews`}>
+                {compactReviewCountFormatter.format(reviewCount)} reviews
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+    {siteConfig.placeCard.showTopPickBadge && place.top_pick && <span class="badge">{siteConfig.placeCard.topPickLabel}</span>}
+  </div>
 
-  {displayTags.length > 0 && (
-    <div class="tag-row">
+  {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && <p class="rich-copy ui-copy" set:html={whyRecommendedHtml} />}
+  {siteConfig.placeCard.showNote && noteHtml && <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={noteHtml} />}
+  {siteConfig.placeCard.showAddress && place.address && <p class="small-copy ui-copy ui-copy--sm">{place.address}</p>}
+  {siteConfig.placeCard.showTags && displayTags.length > 0 && (
+    <div class="tag-row ui-tag-row">
       {displayTags.map((tag) => (
-        <span class="tag-pill">#{tag}</span>
+        <span class="tag-pill ui-tag-pill">#{tag}</span>
       ))}
     </div>
   )}
 
-  <div class="place-card-footer">
-    <a class="action-pill" href={place.maps_url} target="_blank" rel="noreferrer">
-      Open in Google Maps
-    </a>
-    {place.status !== "active" && <span class="stat-pill">{place.status}</span>}
-  </div>
+  {siteConfig.placeCard.showStatus && place.status !== "active" && (
+    <div class="place-card-footer ui-card-footer">
+      <span class="stat-pill ui-pill">{place.status}</span>
+    </div>
+  )}
 </article>

@@ -1,9 +1,13 @@
 ---
+
 import GuideCard from "../components/GuideCard.astro";
 import HomeGuideMap from "../components/HomeGuideMap.astro";
 import Layout from "../components/Layout.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
 import { siteConfig } from "../data/site";
 import { getGuideManifests } from "../lib/data";
+import { getHomeAsideHtml, getTemplateHtml } from "../lib/heroAsideContent";
+import { renderRichText } from "../lib/renderRichText";
 
 const guides = getGuideManifests();
 const countryEntries = Object.entries(
@@ -125,109 +129,134 @@ const locationGuideCandidates = guides
   });
 const countryCount = guidesByCountry.length;
 const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0);
+const homeAsideHtml = getHomeAsideHtml();
+const homeHighlights = siteConfig.home.highlights
+  .map((highlight) => renderRichText(highlight))
+  .filter((highlight): highlight is string => Boolean(highlight));
+const homeBeforeGuidesHtml = getTemplateHtml("home-before-guides.html");
+const homeAfterGuidesHtml = getTemplateHtml("home-after-guides.html");
 ---
 
 <Layout
   title={siteConfig.siteName}
   description={siteConfig.siteDescription}
 >
-  <section class="hero">
-    <div class="hero-grid">
-      <div class="section-stack">
-        <p class="eyebrow">{siteConfig.home.eyebrow}</p>
-        <h1>{siteConfig.home.title}</h1>
-        <p class="lede">{siteConfig.home.intro}</p>
-        <div class="hero-meta">
-          <span class="stat-pill">{guides.length} guides</span>
-          <span class="stat-pill">{countryCount} countries</span>
-          <span class="stat-pill">{placeCount} places</span>
+  {siteConfig.home.showHero && (
+    <section class="hero ui-hero">
+      <div class="hero-grid ui-hero-grid">
+        <div class="section-stack ui-stack">
+          <p class="eyebrow ui-eyebrow">{siteConfig.home.eyebrow}</p>
+          <h1 class="ui-display">{siteConfig.home.title}</h1>
+          <p class="lede ui-lede">{siteConfig.home.intro}</p>
+          {siteConfig.home.showHeroStats && (
+            <div class="hero-meta ui-meta-row">
+              <span class="stat-pill ui-pill">{guides.length} guides</span>
+              <span class="stat-pill ui-pill">{countryCount} countries</span>
+              <span class="stat-pill ui-pill">{placeCount} places</span>
+            </div>
+          )}
+        </div>
+
+        <div class="section-stack ui-stack">
+          {homeAsideHtml ? (
+            <div class="small-copy ui-copy ui-copy--sm rich-copy" set:html={homeAsideHtml} />
+          ) : (
+            <>
+              <p class="eyebrow ui-eyebrow">{siteConfig.home.highlightsHeading}</p>
+              {homeHighlights.map((highlight) => (
+                <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={highlight} />
+              ))}
+            </>
+          )}
         </div>
       </div>
+    </section>
+  )}
 
-      <div class="section-stack">
-        <p class="eyebrow">{siteConfig.home.highlightsHeading}</p>
-        {siteConfig.home.highlights.map((highlight) => (
-          <p class="small-copy">{highlight}</p>
-        ))}
-      </div>
-    </div>
-  </section>
+  {homeBeforeGuidesHtml && <div class="template-block rich-copy" set:html={homeBeforeGuidesHtml} />}
 
-  <section class="section" data-home-browser-root>
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Guides</p>
-        <h2 class="section-title">Browse by country</h2>
-      </div>
-      <p class="small-copy">
-        More travel notes at <a href={siteConfig.demFlyersUrl}>DEM Flyers</a>.
-      </p>
-    </div>
+  {siteConfig.home.showGuideBrowser && (
+    <section
+      class="section ui-section"
+      data-home-browser-root
+      data-country-sections-visible={siteConfig.home.showCountrySections ? "true" : "false"}
+    >
+    <SectionHeading eyebrow={siteConfig.home.guidesEyebrow} title={siteConfig.home.guidesHeading}>
+      {
+        siteConfig.home.guidesLinkText && siteConfig.navLinks[1] && (
+          <p slot="aside" class="small-copy ui-copy ui-copy--sm">
+            <a href={siteConfig.navLinks[1].href}>{siteConfig.home.guidesLinkText}</a>
+          </p>
+        )
+      }
+    </SectionHeading>
 
-    <HomeGuideMap guides={locationGuideCandidates} />
-
-    <div class="controls-panel country-browser" data-home-browser-controls>
+    {siteConfig.home.showGuideBrowserControls && (
+      <div class="controls-panel ui-control-panel country-browser" data-home-browser-controls>
       <div class="controls-grid">
         <div class="control-group">
-          <label class="control-label" for="country-search">Search</label>
+          <label class="control-label ui-control-label" for="country-search">{siteConfig.home.searchLabel}</label>
           <input
+            class="ui-input"
             id="country-search"
             name="country-search"
             type="search"
-            placeholder="Search quiet coffee, date night, rainy day museums"
+            placeholder={siteConfig.home.searchPlaceholder}
             data-home-search-input
           />
         </div>
 
         <div class="control-group">
-          <span class="control-label">Showing</span>
-          <p class="browse-count" data-home-results-count>
+          <span class="control-label ui-control-label">{siteConfig.home.showingLabel}</span>
+          <p class="browse-count ui-copy" data-home-results-count>
             {guides.length} guides across {countryCount} countries
           </p>
         </div>
 
-        <div class="control-group location-control-group">
-          <span class="control-label">Near me</span>
-          <div class="location-control-row">
-            <button
-              class="location-target-button"
-              type="button"
-              data-location-target
-              aria-label="Show nearby country"
-              title="Show nearby country"
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
-                <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
-                <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
-                <path
-                  d="M12 2v3M12 19v3M2 12h3M19 12h3"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-width="2"
-                ></path>
-              </svg>
-            </button>
-            <p class="location-status" data-location-status role="status" aria-live="polite"></p>
+        {siteConfig.home.showMap && (
+          <div class="control-group location-control-group">
+            <span class="control-label ui-control-label">{siteConfig.home.nearMeLabel}</span>
+            <div class="location-control-row">
+              <button
+                class="location-target-button"
+                type="button"
+                data-location-target
+                aria-label="Show nearby guides"
+                title="Show nearby guides"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+                  <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                  <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+                  <path
+                    d="M12 2v3M12 19v3M2 12h3M19 12h3"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </button>
+              <p class="location-status ui-copy ui-copy--sm" data-location-status role="status" aria-live="polite"></p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div class="control-group country-filter-group">
-          <span class="control-label">Countries</span>
+          <span class="control-label ui-control-label">{siteConfig.home.countriesLabel}</span>
           <div class="country-filter-list" data-country-filter-list>
             <button
-              class="country-filter"
+              class="country-filter ui-tag-pill"
               type="button"
               data-country-filter
               data-country=""
               aria-pressed="true"
             >
-              <span>All</span>
+              <span>{siteConfig.home.allCountriesLabel}</span>
               <span class="country-filter-count">{guides.length}</span>
             </button>
             {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
               <button
-                class="country-filter"
+                class="country-filter ui-tag-pill"
                 type="button"
                 data-country-filter
                 data-country={countryName.toLowerCase()}
@@ -241,11 +270,14 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
         </div>
       </div>
     </div>
+    )}
 
-    <div class="empty-state" data-home-empty-state>No matching guides. Try a broader search or choose all countries.</div>
+    <div class="empty-state ui-empty-state" data-home-empty-state>
+      {siteConfig.home.emptyStateText}
+    </div>
 
     <div
-      class="global-search-results"
+      class="global-search-results ui-search-results"
       data-global-search-results
       role="status"
       aria-live="polite"
@@ -253,15 +285,16 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
       aria-hidden="true"
       hidden
     >
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Search results</p>
-          <h3 class="section-title" data-global-search-title>Matching places</h3>
+      <div class="ui-section-head">
+        <div class="ui-section-heading">
+          <p class="ui-eyebrow">{siteConfig.home.searchResultsEyebrow}</p>
+          <h3 class="ui-section-title" data-global-search-title>{siteConfig.home.searchResultsHeading}</h3>
         </div>
       </div>
       <div class="search-results-toolbar" data-global-search-toolbar>
-        <p class="small-copy" data-global-search-summary></p>
-        <div class="search-view-toggle-group" role="group" aria-label="Search results view">
+        <p class="small-copy ui-copy ui-copy--sm" data-global-search-summary></p>
+        <fieldset class="search-view-toggle-group">
+          <legend class="visually-hidden">Search results view</legend>
           <button
             class="search-view-toggle"
             type="button"
@@ -269,7 +302,7 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
             data-search-view="grouped"
             aria-pressed="true"
           >
-            By country
+            {siteConfig.home.searchResultsGroupedLabel}
           </button>
           <button
             class="search-view-toggle"
@@ -278,27 +311,28 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
             data-search-view="individual"
             aria-pressed="false"
           >
-            Individual
+            {siteConfig.home.searchResultsIndividualLabel}
           </button>
-        </div>
+        </fieldset>
       </div>
       <div class="search-country-grid" data-grouped-search-list></div>
       <div class="search-result-grid" data-global-search-list hidden></div>
-      <div class="empty-state" data-global-search-empty role="status" aria-live="polite">
-        No matching places. Try a broader search.
+      <div class="empty-state ui-empty-state" data-global-search-empty role="status" aria-live="polite">
+        {siteConfig.home.searchResultsEmptyText}
       </div>
     </div>
 
-    {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
-      <div class="country-block" data-country-block data-country={countryName.toLowerCase()}>
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">{countryGuides.length} guide{countryGuides.length === 1 ? "" : "s"}</p>
-            <h3 class="section-title">{countryFlag ? `${countryName} ${countryFlag}` : countryName}</h3>
-          </div>
-        </div>
+    {siteConfig.home.showMap && <HomeGuideMap guides={locationGuideCandidates} />}
 
-        <div class="card-grid">
+    {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
+      <div class="country-block ui-country-block" data-country-block data-country={countryName.toLowerCase()}>
+        <SectionHeading
+          eyebrow={`${countryGuides.length} guide${countryGuides.length === 1 ? "" : "s"}`}
+          title={countryFlag ? `${countryName} ${countryFlag}` : countryName}
+          level={3}
+        />
+
+        <div class="card-grid ui-card-grid">
           {countryGuides.map((guide) => (
             <GuideCard guide={guide} />
           ))}
@@ -306,6 +340,10 @@ const placeCount = guides.reduce((count, guide) => count + guide.place_count, 0)
       </div>
     ))}
   </section>
+  )}
 
-  <script is:inline type="module" src="/scripts/home-browser.js"></script>
+  {homeAfterGuidesHtml && <div class="template-block rich-copy" set:html={homeAfterGuidesHtml} />}
+
+  {siteConfig.home.showGuideBrowser && <script is:inline type="module" src="/scripts/home-browser.js"></script>}
+  {siteConfig.home.showGuideBrowser && <script is:inline type="module" src="/scripts/scroll-jump.js"></script>}
 </Layout>

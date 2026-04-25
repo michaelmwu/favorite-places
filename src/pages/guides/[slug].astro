@@ -1,9 +1,12 @@
 ---
-import Layout from "../../components/Layout.astro";
-import { siteConfig } from "../../data/site";
+
 import GuideMap from "../../components/GuideMap.astro";
+import Layout from "../../components/Layout.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
+import SectionHeading from "../../components/ui/SectionHeading.astro";
+import { siteConfig } from "../../data/site";
 import { getGuides } from "../../lib/data";
+import { getGuideAsideHtml, getTemplateHtml } from "../../lib/heroAsideContent";
 import {
   getDisplayGuideTags,
   getDisplayPlaceTags,
@@ -11,6 +14,83 @@ import {
   normalizeTagValue,
 } from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
+import type { Place } from "../../lib/types";
+
+const DEFAULT_SUGGESTION_PRIORITY = [
+  "cozy",
+  "date-night",
+  "scenic",
+  "rainy-day",
+  "lively",
+  "coffee",
+  "breakfast",
+  "favorite",
+  "fine-dining",
+  "fashion",
+  "shopping",
+  "dessert",
+  "cocktails",
+  "wine",
+  "bakery",
+];
+
+const TYPE_SUGGESTION_PRIORITY: Record<string, string[]> = {
+  cafe: ["coffee", "breakfast", "quiet", "dessert", "bakery", "pastries"],
+  restaurant: ["date-night", "favorite", "fine-dining", "omakase", "ramen", "wine"],
+  boutique: ["fashion", "shopping", "design", "vintage", "boutique"],
+  bar: ["cocktails", "wine", "nightcap", "lively", "speakeasy"],
+  bakery: ["coffee", "breakfast", "pastries", "dessert", "takeaway"],
+  "tourist-attraction": ["scenic", "rainy-day", "iconic", "museum", "viewpoint"],
+};
+
+function isSuggestibleTag(tag: string, citySlug: string, countrySlug: string): boolean {
+  return Boolean(
+    tag &&
+      tag !== citySlug &&
+      tag !== countrySlug &&
+      !tag.endsWith("-city") &&
+      !tag.endsWith("-county") &&
+      !tag.endsWith("-prefecture") &&
+      !tag.endsWith("-ward") &&
+      !tag.endsWith("-township"),
+  );
+}
+
+function buildSuggestionList(
+  preferredTags: string[],
+  fallbackTags: string[],
+  limit: number,
+  blockedTags: Set<string> = new Set(),
+): string[] {
+  const suggestions: string[] = [];
+  const seen = new Set<string>();
+  const availableTags = new Set(fallbackTags);
+
+  for (const tag of [...preferredTags, ...fallbackTags]) {
+    if (!tag || blockedTags.has(tag) || seen.has(tag) || !availableTags.has(tag)) {
+      continue;
+    }
+
+    seen.add(tag);
+    suggestions.push(tag);
+
+    if (suggestions.length >= limit) {
+      break;
+    }
+  }
+
+  return suggestions;
+}
+
+function getPlaceFilterTags(
+  place: Place,
+  guideContext: { cityName?: string | null; countryCode?: string | null; countryName?: string | null },
+): string[] {
+  return [
+    ...getDisplayGuideTags(getDisplayPlaceTags(place.tags ?? []), guideContext),
+    ...getDisplayPlaceTags(place.vibe_tags ?? []),
+  ];
+}
 
 export function getStaticPaths() {
   return getGuides().map((guide) => ({
@@ -21,94 +101,136 @@ export function getStaticPaths() {
 
 const { guide } = Astro.props;
 
-const visiblePlaces = guide.places.filter((place) => !place.hidden);
-const topPicks = visiblePlaces.filter((place) => guide.featured_place_ids.includes(place.id)).slice(0, 3);
-const areaFilters = getGuideAreaFilters(visiblePlaces);
-const displayGuideTags = getDisplayGuideTags(guide.list_tags, {
-  cityName: guide.city_name,
-  countryCode: guide.country_code,
-  countryName: guide.country_name,
-});
-const supportedGuideVibeTags = new Set([
-  "cozy",
-  "quiet",
-  "lively",
-  "date-night",
-  "laptop-friendly",
-  "scenic",
-  "hidden-gem",
-  "cheap-eats",
-  "splurge",
-  "rainy-day",
-]);
-const guideVibeCounts = visiblePlaces.reduce((counts, place) => {
-  getDisplayPlaceTags(place.vibe_tags).forEach((tag) => {
-    const normalizedTag = normalizeTagValue(tag);
-    if (!supportedGuideVibeTags.has(normalizedTag)) {
-      return;
-    }
-
-    counts.set(normalizedTag, (counts.get(normalizedTag) ?? 0) + 1);
-  });
-  return counts;
-}, new Map<string, number>());
-const guideVibeFilters = [...guideVibeCounts.keys()].sort((a, b) => a.localeCompare(b));
-const guideDescriptionHtml = renderRichText(guide.description);
-const formatVibeLabel = (tag: string) => tag.replaceAll("-", " ");
+const visiblePlaces = guide.places.filter(
+  (place) => !place.hidden && place.status !== "closed-permanently",
+);
 const placeTagGuideContext = {
   cityName: guide.city_name,
   countryCode: guide.country_code,
   countryName: guide.country_name,
 };
+const featuredPlaceIds = new Set(guide.featured_place_ids ?? []);
+const topPicks = visiblePlaces.filter((place) => featuredPlaceIds.has(place.id)).slice(0, 3);
+const visiblePlacesById = new Map(visiblePlaces.map((place) => [place.id, place] as const));
+const bestHits = (guide.best_hit_place_ids ?? [])
+  .map((placeId) => visiblePlacesById.get(placeId))
+  .filter((place): place is Place => Boolean(place));
+const areaFilters = getGuideAreaFilters(visiblePlaces);
+const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
+const reviewCountFormatter = new Intl.NumberFormat("en-US");
+const bestHitsDescription = [
+  "Highly rated Google Maps standouts",
+  typeof guide.best_hit_min_rating === "number" ? `at ${guide.best_hit_min_rating.toFixed(1)}+ stars` : null,
+  typeof guide.best_hit_min_reviews === "number"
+    ? `with at least ${reviewCountFormatter.format(guide.best_hit_min_reviews)} reviews for this guide`
+    : null,
+]
+  .filter(Boolean)
+  .join(" ");
+const explicitTypes = [
+  ...visiblePlaces.reduce((typeCounts, place) => {
+    if (place.primary_category) {
+      typeCounts.set(place.primary_category, (typeCounts.get(place.primary_category) ?? 0) + 1);
+    }
+    return typeCounts;
+  }, new Map<string, number>()),
+]
+  .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+  .map(([type]) => type);
+const visibleTypeSet = new Set(explicitTypes);
+const browseTypes = [...new Set([...guide.top_categories.filter((type) => visibleTypeSet.has(type)), ...explicitTypes])];
+const tagCounts = visiblePlaces.reduce((counts, place) => {
+  [...new Set(getPlaceFilterTags(place, placeTagGuideContext))].forEach((tag) => {
+    const normalizedTag = normalizeTagValue(tag);
+    if (normalizedTag) {
+      counts.set(normalizedTag, (counts.get(normalizedTag) ?? 0) + 1);
+    }
+  });
+  return counts;
+}, new Map<string, number>());
+const allTags = [...tagCounts.keys()].sort((left, right) => left.localeCompare(right));
+const citySlug = normalizeTagValue(guide.city_name);
+const countrySlug = normalizeTagValue(guide.country_name);
+const tagFallbacks = [...tagCounts.entries()]
+  .map(([tag, count]) => ({ tag, count }))
+  .filter(({ tag }) => isSuggestibleTag(tag, citySlug, countrySlug))
+  .sort((left, right) => right.count - left.count || left.tag.localeCompare(right.tag))
+  .map(({ tag }) => tag);
+const defaultSuggestions = buildSuggestionList(DEFAULT_SUGGESTION_PRIORITY, tagFallbacks, 6);
+const typeSeedTags = Object.fromEntries(
+  browseTypes.map((type) => {
+    const typeKey = normalizeTagValue(type);
+    return [
+      typeKey,
+      [...new Set([typeKey, ...((TYPE_SUGGESTION_PRIORITY[typeKey] ?? []).map((tag) => normalizeTagValue(tag)))])],
+    ];
+  }),
+);
+const guideDescriptionHtml = renderRichText(guide.description);
+const guideAsideHtml = getGuideAsideHtml(guide.slug);
+const guideBeforePlacesHtml = getTemplateHtml(`guide-before-places/${guide.slug}.html`) ?? getTemplateHtml("guide-before-places/default.html");
+const guideAfterPlacesHtml = getTemplateHtml(`guide-after-places/${guide.slug}.html`) ?? getTemplateHtml("guide-after-places/default.html");
+const guideSidebarFallback = siteConfig.guide.sidebarContent
+  .map((content) => renderRichText(content))
+  .filter((content): content is string => Boolean(content));
 ---
 
 <Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
-  <section class="hero">
-    <div class="hero-grid">
-      <div class="section-stack">
-        <a class="utility-link small-copy" href="/">← Back to all guides</a>
-        <p class="eyebrow">{guide.country_name}</p>
-        <h1>{guide.title}</h1>
+  <section class="hero ui-hero">
+    <div class="hero-grid ui-hero-grid">
+      <div class="section-stack ui-stack">
+        <a class="utility-link ui-back-link" href="/">← {siteConfig.guide.backLinkLabel}</a>
+        <p class="eyebrow ui-eyebrow">{guide.country_name}</p>
+        <h1 class="ui-display">{guide.title}</h1>
         {
           guideDescriptionHtml ? (
-            <p class="lede rich-copy" set:html={guideDescriptionHtml} />
+            <p class="lede ui-lede rich-copy" set:html={guideDescriptionHtml} />
           ) : (
-            <p class="lede">{siteConfig.guide.fallbackDescription}</p>
+            <p class="lede ui-lede">{siteConfig.guide.fallbackDescription}</p>
           )
         }
-        <div class="hero-meta">
-          <span class="stat-pill">{guide.place_count} places</span>
+        <div class="hero-meta ui-meta-row">
+          <span class="stat-pill ui-pill">{guide.place_count} places</span>
           {guide.source_url && (
-            <a class="action-pill" href={guide.source_url} target="_blank" rel="noreferrer">
-              View source list
+            <a class="action-pill ui-pill ui-pill--brand" href={guide.source_url} target="_blank" rel="noreferrer">
+              {siteConfig.guide.sourceListLabel}
             </a>
           )}
         </div>
       </div>
 
-      {displayGuideTags.length > 0 && (
-        <div class="section-stack">
-          <p class="eyebrow">List tags</p>
-          <div class="tag-row">
-            {displayGuideTags.map((tag) => (
-              <span class="tag-pill">#{tag}</span>
-            ))}
-          </div>
+      {(guideAsideHtml ||
+        guideSidebarFallback.length > 0 ||
+        (siteConfig.guide.showGuideTags && displayGuideTags.length > 0)) && (
+        <div class="section-stack ui-stack">
+          {guideAsideHtml ? (
+            <div class="small-copy ui-copy ui-copy--sm rich-copy" set:html={guideAsideHtml} />
+          ) : (
+            guideSidebarFallback.map((content) => (
+              <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={content} />
+            ))
+          )}
+
+          {siteConfig.guide.showGuideTags && displayGuideTags.length > 0 && (
+            <>
+              <p class="eyebrow ui-eyebrow">{siteConfig.guide.listTagsHeading}</p>
+              <div class="tag-row ui-tag-row">
+                {displayGuideTags.map((tag) => (
+                  <span class="tag-pill ui-tag-pill">#{tag}</span>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
   </section>
 
-  {topPicks.length > 0 && (
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Start here</p>
-          <h2 class="section-title">Top picks</h2>
-        </div>
-      </div>
+  {siteConfig.guide.showTopPicks && topPicks.length > 0 && (
+    <section class="section ui-section">
+      <SectionHeading eyebrow={siteConfig.guide.topPicksEyebrow} title={siteConfig.guide.topPicksHeading} />
 
-      <div class="top-picks-grid">
+      <div class="top-picks-grid ui-card-grid">
         {topPicks.map((place) => (
           <PlaceCard place={place} guideContext={placeTagGuideContext} />
         ))}
@@ -116,48 +238,70 @@ const placeTagGuideContext = {
     </section>
   )}
 
-  <section class="section browse-section" data-guide-root data-guide-slug={guide.slug}>
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Browse</p>
-        <h2 class="section-title">Places</h2>
+  {siteConfig.guide.showBestHits && bestHits.length > 0 && (
+    <section class="section ui-section">
+      <SectionHeading
+        eyebrow={siteConfig.guide.bestHitsEyebrow}
+        title={siteConfig.guide.bestHitsHeading}
+        copy={`${bestHitsDescription}.`}
+      />
+
+      <div class="top-picks-grid ui-card-grid">
+        {bestHits.map((place) => (
+          <PlaceCard place={place} guideContext={placeTagGuideContext} />
+        ))}
       </div>
-    </div>
+    </section>
+  )}
+
+  {guideBeforePlacesHtml && <div class="template-block rich-copy" set:html={guideBeforePlacesHtml} />}
+
+  <section
+    class="section ui-section browse-section"
+    data-guide-root
+    data-guide-slug={guide.slug}
+    data-all-tags={JSON.stringify(allTags)}
+    data-default-suggestions={JSON.stringify(defaultSuggestions)}
+    data-type-seeds={JSON.stringify(typeSeedTags)}
+  >
+    <SectionHeading eyebrow={siteConfig.guide.browseEyebrow} title={siteConfig.guide.placesHeading} />
 
     <div class="browse-layout" data-browse-layout>
-      <div class="browse-main">
-        <div class="controls-panel">
+      <div class="browse-main" data-browse-main>
+        <div class="controls-panel ui-control-panel">
           <div class="controls-grid" data-guide-controls>
-            <div class="control-group">
-              <label class="control-label" for="guide-search">Search</label>
-              <input
-                id="guide-search"
-                name="guide-search"
-                type="search"
-                placeholder="Search places, notes, categories, neighborhoods"
-                data-search-input
-              />
-            </div>
-
-            <div class="control-group">
-              <label class="control-label" for="guide-sort">Sort</label>
-              <select id="guide-sort" name="guide-sort" data-sort-select>
-                <option value="curated">Curated order</option>
-                <option value="name">Name</option>
-                <option value="neighborhood">Neighborhood</option>
-              </select>
+            <div class="control-group control-group-search" style="grid-column: 1 / -1;">
+              <div class="control-head">
+                <label class="control-label ui-control-label" for="guide-search">{siteConfig.guide.searchLabel}</label>
+                <span class="small-copy ui-copy ui-copy--sm search-hint">{siteConfig.guide.searchHint}</span>
+              </div>
+              <div class="search-shell">
+                <input
+                  class="ui-input"
+                  id="guide-search"
+                  name="guide-search"
+                  type="search"
+                  placeholder={siteConfig.guide.searchPlaceholder}
+                  data-search-input
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                />
+                <div class="tag-autocomplete" data-tag-autocomplete hidden></div>
+              </div>
+              <div class="selected-tag-row" data-selected-tags hidden></div>
             </div>
 
             {areaFilters.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
-                <span class="control-label">Area</span>
-                <div class="tag-row">
-                  <button class="tag-pill" type="button" data-area-filter data-area="" data-area-label="All areas">
-                    All
+                <span class="control-label ui-control-label">{siteConfig.guide.areaLabel}</span>
+                <div class="tag-row ui-tag-row tag-row-mobile-scroll">
+                  <button class="tag-pill ui-tag-pill" type="button" data-area-filter data-area="" data-area-label="All areas">
+                    {siteConfig.guide.allFilterLabel}
                   </button>
                   {areaFilters.map((area) => (
                     <button
-                      class="tag-pill"
+                      class="tag-pill ui-tag-pill"
                       type="button"
                       data-area-filter
                       data-area={area.value}
@@ -170,32 +314,33 @@ const placeTagGuideContext = {
               </div>
             )}
 
-            {guideVibeFilters.length > 0 && (
+            {browseTypes.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
-                <span class="control-label">Vibe</span>
-                <div class="tag-row">
-                  <button
-                    class="tag-pill"
-                    type="button"
-                    data-tag-filter
-                    data-tag=""
-                    data-tag-label="All"
-                    data-tag-count={visiblePlaces.length}
-                  >
-                    <span>All</span>
-                    <span class="tag-pill-count" data-tag-count-text>{visiblePlaces.length}</span>
+                <span class="control-label ui-control-label">{siteConfig.guide.typeLabel}</span>
+                <div class="tag-row ui-tag-row tag-row-mobile-scroll">
+                  <button class="tag-pill ui-tag-pill" type="button" data-type-filter data-type="">
+                    {siteConfig.guide.allFilterLabel}
                   </button>
-                  {guideVibeFilters.map((tag) => (
-                    <button
-                      class="tag-pill"
-                      type="button"
-                      data-tag-filter
-                      data-tag={tag}
-                      data-tag-label={formatVibeLabel(tag)}
-                      data-tag-count={guideVibeCounts.get(tag) ?? 0}
-                    >
-                      <span>{formatVibeLabel(tag)}</span>
-                      <span class="tag-pill-count" data-tag-count-text>{guideVibeCounts.get(tag) ?? 0}</span>
+                  {browseTypes.map((type) => (
+                    <button class="tag-pill ui-tag-pill" type="button" data-type-filter data-type={normalizeTagValue(type)}>
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {defaultSuggestions.length > 0 && (
+              <div class="control-group" style="grid-column: 1 / -1;">
+                <div class="control-head">
+                  <span class="control-label ui-control-label">{siteConfig.guide.popularTagsLabel}</span>
+                  <span class="small-copy ui-copy ui-copy--sm search-hint">{siteConfig.guide.popularTagsHint}</span>
+                </div>
+                <div class="tag-row ui-tag-row tag-row-mobile-scroll" data-suggestion-list>
+                  {defaultSuggestions.map((tag) => (
+                    <button class="tag-pill ui-tag-pill" type="button" data-suggestion-tag={tag}>
+                      #{tag}
+                      <span class="visually-hidden" data-tag-count-text></span>
                     </button>
                   ))}
                 </div>
@@ -204,15 +349,33 @@ const placeTagGuideContext = {
           </div>
         </div>
 
-        <div class="results-row">
-          <p class="small-copy" data-results-count>{visiblePlaces.length} places</p>
-          <button class="map-filter-reset" type="button" data-map-filter-reset hidden>Reset map</button>
+        <div class="results-row ui-results-row">
+          <p class="small-copy ui-copy ui-copy--sm" data-results-count>{visiblePlaces.length} places</p>
+          <div class="results-actions">
+            <label class="results-sort" for="guide-sort">
+              <span class="results-sort-label">{siteConfig.guide.resultsSortLabel}</span>
+              <span class="results-sort-shell">
+                <select class="ui-input" id="guide-sort" name="guide-sort" data-sort-select>
+                  <option value="curated">{siteConfig.guide.sortCuratedLabel}</option>
+                  <option value="rating">{siteConfig.guide.sortRatingLabel}</option>
+                  <option value="name">{siteConfig.guide.sortNameLabel}</option>
+                  <option value="neighborhood">{siteConfig.guide.sortNeighborhoodLabel}</option>
+                </select>
+                <span class="results-sort-icon" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M4.2 6.1 8 9.9l3.8-3.8 1.1 1.1L8 12.1 3.1 7.2z"></path>
+                  </svg>
+                </span>
+              </span>
+            </label>
+            <button class="map-filter-reset" type="button" data-map-filter-reset hidden>{siteConfig.guide.resetMapLabel}</button>
+          </div>
         </div>
-        <p class="map-filter-status small-copy" data-area-filter-status hidden></p>
-        <p class="map-filter-status small-copy" data-map-filter-status hidden>Filtered to the visible map area.</p>
-        <div class="empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
+        <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-area-filter-status hidden></p>
+        <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-map-filter-status hidden>{siteConfig.guide.mapFilteredText}</p>
+        <div class="empty-state ui-empty-state" data-empty-state>{siteConfig.guide.emptyStateText}</div>
 
-        <div class="card-grid" data-kind="places" data-place-list>
+        <div class="card-grid ui-card-grid" data-kind="places" data-place-list>
           {visiblePlaces.map((place) => (
             <PlaceCard place={place} guideContext={placeTagGuideContext} />
           ))}
@@ -223,5 +386,8 @@ const placeTagGuideContext = {
     </div>
   </section>
 
+  {guideAfterPlacesHtml && <div class="template-block rich-copy" set:html={guideAfterPlacesHtml} />}
+
   <script is:inline type="module" src="/scripts/guide-filters.js"></script>
+  <script is:inline type="module" src="/scripts/scroll-jump.js"></script>
 </Layout>
