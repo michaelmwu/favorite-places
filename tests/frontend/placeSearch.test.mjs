@@ -181,7 +181,7 @@ describe("place search", () => {
   });
 
   it("requires all meaningful terms in multi-word guide-local searches to match", () => {
-    const state = searchPlaces("har meow", {
+    const state = searchPlaces("har cafe", {
       index,
       scope: "guide",
       guideSlug: "tokyo-japan",

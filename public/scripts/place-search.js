@@ -279,7 +279,9 @@ function parseQuery(query, index, options) {
 function scoreEntry(entry, parsed) {
   const matchedSignals = [];
   let score = 0;
+  let matchedCategoryCount = 0;
   let matchedUnmatchedTermCount = 0;
+  let matchedVibeCount = 0;
   const entryTags = normalizedList(entry.tags);
   const entryVibes = normalizedList(entry.vibe_tags);
   const categoryText = normalizeText([entry.category, ...entryTags].join(" "));
@@ -289,6 +291,7 @@ function scoreEntry(entry, parsed) {
     const matchTerms = CATEGORY_MATCH_TERMS.get(category) || [category];
     if (matchTerms.some((term) => categoryText.includes(normalizeText(term)))) {
       score += 38;
+      matchedCategoryCount += 1;
       matchedSignals.push("category");
     }
   }
@@ -296,6 +299,7 @@ function scoreEntry(entry, parsed) {
   for (const vibe of parsed.vibes) {
     if (entryVibes.includes(vibe) || entryTags.includes(vibe)) {
       score += 34;
+      matchedVibeCount += 1;
       matchedSignals.push("vibe");
     }
   }
@@ -404,11 +408,18 @@ function scoreEntry(entry, parsed) {
     score = 1;
   }
 
-  if (
-    parsed.unmatchedTerms.length > 0 &&
-    matchedUnmatchedTermCount !== parsed.unmatchedTerms.length
-  ) {
-    score = 0;
+  const missingRequiredConstraint =
+    (parsed.categories.size > 0 && matchedCategoryCount !== parsed.categories.size) ||
+    (parsed.vibes.size > 0 && matchedVibeCount !== parsed.vibes.size) ||
+    (parsed.unmatchedTerms.length > 0 &&
+      matchedUnmatchedTermCount !== parsed.unmatchedTerms.length);
+
+  if (missingRequiredConstraint) {
+    return {
+      entry,
+      matchedSignals: [],
+      score: 0,
+    };
   }
 
   const hasNonLocationIntent =
