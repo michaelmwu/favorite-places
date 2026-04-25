@@ -81,7 +81,7 @@ describe("guide map interactions", () => {
     expect(placeCard).toContain("aria-label={`Open ${place.name} in Google Maps`}");
     expect(placeCard).toContain('<img src="/icons/google-maps.svg" alt="" width="18" height="26"');
     expect(placeCard).toContain('class="place-card-map-link-label"');
-    expect(placeCard).toContain(">Maps</span>");
+    expect(placeCard).toContain("{siteConfig.placeCard.mapsLabel}</span>");
     expect(placeCard).not.toContain(">Open in Google Maps<");
     expect(placeCard).toContain("set:html={markerSvg}");
     expectCssToContain(css, ".place-card-map-link");
@@ -101,7 +101,8 @@ describe("guide map interactions", () => {
     const placeCard = readSource("src/components/PlaceCard.astro");
     const css = readSource("src/styles/global.css");
 
-    expect(placeCard).toContain("const hasStats = ratingValue !== null || reviewCount !== null;");
+    expect(placeCard).toContain("(siteConfig.placeCard.showRating && ratingValue !== null)");
+    expect(placeCard).toContain("(siteConfig.placeCard.showReviewCount && reviewCount !== null)");
     expect(placeCard).toContain('class="place-card-meta-row"');
     expect(placeCard).toContain(
       'class="stats-row ui-meta-row place-card-stats place-card-meta-stats"',
@@ -218,9 +219,21 @@ describe("guide map interactions", () => {
     const homeBrowser = readSource("public/scripts/home-browser.js");
 
     expect(homePage).toContain("<HomeGuideMap guides={locationGuideCandidates} />");
+    expect(homePage).toContain(
+      'data-country-sections-visible={siteConfig.home.showCountrySections ? "true" : "false"}',
+    );
+    expect(homePage).toContain(
+      "{guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (",
+    );
     expect(homeMap).toContain("data-home-guide-map");
     expect(homeMap).toContain('data-guides={JSON.stringify(mapGuides).replace(/</g, "\\\\u003c")}');
     expect(homeBrowser).toContain('root.querySelector("[data-home-guide-map]")');
+    expect(homeBrowser).toContain(
+      'const countrySectionsVisible = root.dataset.countrySectionsVisible !== "false";',
+    );
+    expect(homeBrowser).toContain(
+      "block.hidden = !countrySectionsVisible || blockVisibleGuideCount === 0;",
+    );
     expect(homeBrowser).toContain('new CustomEvent("favorite-places:home-map-update"');
     expect(homeMap).toContain(
       'document.addEventListener(\n      "favorite-places:home-map-update"',

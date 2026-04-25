@@ -1,5 +1,7 @@
 ---
 
+import { siteConfig } from "../data/site";
+
 interface HomeMapGuide {
   slug: string;
   title: string;
@@ -20,8 +22,9 @@ interface Props {
 
 const { guides } = Astro.props;
 const configuredGoogleMapsApiKey = process.env.GOOGLE_MAPS_JS_API_KEY || "";
-const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
-const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
+const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || siteConfig.mapProvider).toLowerCase();
+const mapProvider =
+  requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
 const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
 const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.isFinite(guide.lng));
 ---

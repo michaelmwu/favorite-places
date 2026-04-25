@@ -52,6 +52,16 @@ jobs:
             content_or_data:
               - "data/raw/**"
               - "data/cache/**"
+              - "site/config.ts"
+              - "site/theme.css"
+              - "site/content/templates/**"
+              - "site/data/imports/**"
+              - "site/data/raw/**"
+              - "site/data/cache/**"
+              - "site/list_sources.json"
+              - "site/overrides/**"
+              - "site/public/**"
+              - "site.example/**"
               - "src/data/**"
               - "scripts/config/**"
             workflow:

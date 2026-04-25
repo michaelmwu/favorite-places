@@ -1,0 +1,50 @@
+{
+  "fetched_at": "2026-04-25T06:10:52.284000+00:00",
+  "refresh_after": "2026-05-07T22:11:59.284000+00:00",
+  "source_signature": "60a1d43bdd2c001777c528959c75d83c8ca9bcfc52beb3e40c1d095621c84da0",
+  "configured_source_type": "google_list_url",
+  "configured_source_url": "https://maps.app.goo.gl/oJYkP7QRYcV1Assy8",
+  "configured_source_path": null,
+  "source_url": "https://maps.app.goo.gl/oJYkP7QRYcV1Assy8",
+  "list_id": "iqXrdE39AnpXmzuvVP24Sg",
+  "title": "Tokyo, Japan (Example) 🇯🇵",
+  "description": null,
+  "places": [
+    {
+      "name": "Shinjuku Gyoen National Garden",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.685176299999995,
+      "lng": 139.71005169999998,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Shinjuku+Gyoen+National+Garden",
+      "cid": "6924439192396309311",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Henry's Burger Harajuku",
+      "address": null,
+      "note": null,
+      "is_favorite": false,
+      "lat": 35.6660596,
+      "lng": 139.7038517,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Henry%27s+Burger+Harajuku",
+      "cid": "6924439458418082721",
+      "google_id": null,
+      "maps_place_token": null
+    },
+    {
+      "name": "Tokyo Tower",
+      "address": null,
+      "note": "n",
+      "is_favorite": false,
+      "lat": 35.6585805,
+      "lng": 139.7454329,
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=Tokyo+Tower",
+      "cid": "6924438073363786761",
+      "google_id": null,
+      "maps_place_token": null
+    }
+  ]
+}

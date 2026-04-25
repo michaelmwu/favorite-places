@@ -6,7 +6,7 @@ import PlaceCard from "../../components/PlaceCard.astro";
 import SectionHeading from "../../components/ui/SectionHeading.astro";
 import { siteConfig } from "../../data/site";
 import { getGuides } from "../../lib/data";
-import { getGuideAsideHtml } from "../../lib/heroAsideContent";
+import { getGuideAsideHtml, getTemplateHtml } from "../../lib/heroAsideContent";
 import {
   getDisplayGuideTags,
   getDisplayPlaceTags,
@@ -168,6 +168,8 @@ const typeSeedTags = Object.fromEntries(
 );
 const guideDescriptionHtml = renderRichText(guide.description);
 const guideAsideHtml = getGuideAsideHtml(guide.slug);
+const guideBeforePlacesHtml = getTemplateHtml(`guide-before-places/${guide.slug}.html`) ?? getTemplateHtml("guide-before-places/default.html");
+const guideAfterPlacesHtml = getTemplateHtml(`guide-after-places/${guide.slug}.html`) ?? getTemplateHtml("guide-after-places/default.html");
 const guideSidebarFallback = siteConfig.guide.sidebarContent
   .map((content) => renderRichText(content))
   .filter((content): content is string => Boolean(content));
@@ -177,7 +179,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
   <section class="hero ui-hero">
     <div class="hero-grid ui-hero-grid">
       <div class="section-stack ui-stack">
-        <a class="utility-link ui-back-link" href="/">← Back to all guides</a>
+        <a class="utility-link ui-back-link" href="/">← {siteConfig.guide.backLinkLabel}</a>
         <p class="eyebrow ui-eyebrow">{guide.country_name}</p>
         <h1 class="ui-display">{guide.title}</h1>
         {
@@ -191,13 +193,15 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
           <span class="stat-pill ui-pill">{guide.place_count} places</span>
           {guide.source_url && (
             <a class="action-pill ui-pill ui-pill--brand" href={guide.source_url} target="_blank" rel="noreferrer">
-              View source list
+              {siteConfig.guide.sourceListLabel}
             </a>
           )}
         </div>
       </div>
 
-      {(guideAsideHtml || guideSidebarFallback.length > 0 || displayGuideTags.length > 0) && (
+      {(guideAsideHtml ||
+        guideSidebarFallback.length > 0 ||
+        (siteConfig.guide.showGuideTags && displayGuideTags.length > 0)) && (
         <div class="section-stack ui-stack">
           {guideAsideHtml ? (
             <div class="small-copy ui-copy ui-copy--sm rich-copy" set:html={guideAsideHtml} />
@@ -207,9 +211,9 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
             ))
           )}
 
-          {displayGuideTags.length > 0 && (
+          {siteConfig.guide.showGuideTags && displayGuideTags.length > 0 && (
             <>
-              <p class="eyebrow ui-eyebrow">List tags</p>
+              <p class="eyebrow ui-eyebrow">{siteConfig.guide.listTagsHeading}</p>
               <div class="tag-row ui-tag-row">
                 {displayGuideTags.map((tag) => (
                   <span class="tag-pill ui-tag-pill">#{tag}</span>
@@ -222,9 +226,9 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     </div>
   </section>
 
-  {topPicks.length > 0 && (
+  {siteConfig.guide.showTopPicks && topPicks.length > 0 && (
     <section class="section ui-section">
-      <SectionHeading eyebrow="DEM Flyers" title="Top suggestions" />
+      <SectionHeading eyebrow={siteConfig.guide.topPicksEyebrow} title={siteConfig.guide.topPicksHeading} />
 
       <div class="top-picks-grid ui-card-grid">
         {topPicks.map((place) => (
@@ -234,9 +238,13 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     </section>
   )}
 
-  {bestHits.length > 0 && (
+  {siteConfig.guide.showBestHits && bestHits.length > 0 && (
     <section class="section ui-section">
-      <SectionHeading eyebrow="Crowd signal" title="Best hits" copy={`${bestHitsDescription}.`} />
+      <SectionHeading
+        eyebrow={siteConfig.guide.bestHitsEyebrow}
+        title={siteConfig.guide.bestHitsHeading}
+        copy={`${bestHitsDescription}.`}
+      />
 
       <div class="top-picks-grid ui-card-grid">
         {bestHits.map((place) => (
@@ -246,6 +254,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     </section>
   )}
 
+  {guideBeforePlacesHtml && <div class="template-block rich-copy" set:html={guideBeforePlacesHtml} />}
+
   <section
     class="section ui-section browse-section"
     data-guide-root
@@ -254,7 +264,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
     data-default-suggestions={JSON.stringify(defaultSuggestions)}
     data-type-seeds={JSON.stringify(typeSeedTags)}
   >
-    <SectionHeading eyebrow="Browse" title="Places" />
+    <SectionHeading eyebrow={siteConfig.guide.browseEyebrow} title={siteConfig.guide.placesHeading} />
 
     <div class="browse-layout" data-browse-layout>
       <div class="browse-main" data-browse-main>
@@ -262,8 +272,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
           <div class="controls-grid" data-guide-controls>
             <div class="control-group control-group-search" style="grid-column: 1 / -1;">
               <div class="control-head">
-                <label class="control-label ui-control-label" for="guide-search">Search</label>
-                <span class="small-copy ui-copy ui-copy--sm search-hint">Type `#` to add a tag filter.</span>
+                <label class="control-label ui-control-label" for="guide-search">{siteConfig.guide.searchLabel}</label>
+                <span class="small-copy ui-copy ui-copy--sm search-hint">{siteConfig.guide.searchHint}</span>
               </div>
               <div class="search-shell">
                 <input
@@ -271,7 +281,7 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
                   id="guide-search"
                   name="guide-search"
                   type="search"
-                  placeholder="Search places, notes, neighborhoods, or type #tag"
+                  placeholder={siteConfig.guide.searchPlaceholder}
                   data-search-input
                   autocomplete="off"
                   autocapitalize="off"
@@ -284,10 +294,10 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
 
             {areaFilters.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
-                <span class="control-label ui-control-label">Area</span>
+                <span class="control-label ui-control-label">{siteConfig.guide.areaLabel}</span>
                 <div class="tag-row ui-tag-row tag-row-mobile-scroll">
                   <button class="tag-pill ui-tag-pill" type="button" data-area-filter data-area="" data-area-label="All areas">
-                    All
+                    {siteConfig.guide.allFilterLabel}
                   </button>
                   {areaFilters.map((area) => (
                     <button
@@ -306,10 +316,10 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
 
             {browseTypes.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
-                <span class="control-label ui-control-label">Type</span>
+                <span class="control-label ui-control-label">{siteConfig.guide.typeLabel}</span>
                 <div class="tag-row ui-tag-row tag-row-mobile-scroll">
                   <button class="tag-pill ui-tag-pill" type="button" data-type-filter data-type="">
-                    All
+                    {siteConfig.guide.allFilterLabel}
                   </button>
                   {browseTypes.map((type) => (
                     <button class="tag-pill ui-tag-pill" type="button" data-type-filter data-type={normalizeTagValue(type)}>
@@ -323,8 +333,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
             {defaultSuggestions.length > 0 && (
               <div class="control-group" style="grid-column: 1 / -1;">
                 <div class="control-head">
-                  <span class="control-label ui-control-label">Popular tags</span>
-                  <span class="small-copy ui-copy ui-copy--sm search-hint">Click to add, or type `#` to browse all tags.</span>
+                  <span class="control-label ui-control-label">{siteConfig.guide.popularTagsLabel}</span>
+                  <span class="small-copy ui-copy ui-copy--sm search-hint">{siteConfig.guide.popularTagsHint}</span>
                 </div>
                 <div class="tag-row ui-tag-row tag-row-mobile-scroll" data-suggestion-list>
                   {defaultSuggestions.map((tag) => (
@@ -343,13 +353,13 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
           <p class="small-copy ui-copy ui-copy--sm" data-results-count>{visiblePlaces.length} places</p>
           <div class="results-actions">
             <label class="results-sort" for="guide-sort">
-              <span class="results-sort-label">Sort</span>
+              <span class="results-sort-label">{siteConfig.guide.resultsSortLabel}</span>
               <span class="results-sort-shell">
                 <select class="ui-input" id="guide-sort" name="guide-sort" data-sort-select>
-                  <option value="curated">Curated</option>
-                  <option value="rating">Top rated</option>
-                  <option value="name">Name</option>
-                  <option value="neighborhood">Area</option>
+                  <option value="curated">{siteConfig.guide.sortCuratedLabel}</option>
+                  <option value="rating">{siteConfig.guide.sortRatingLabel}</option>
+                  <option value="name">{siteConfig.guide.sortNameLabel}</option>
+                  <option value="neighborhood">{siteConfig.guide.sortNeighborhoodLabel}</option>
                 </select>
                 <span class="results-sort-icon" aria-hidden="true">
                   <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
@@ -358,12 +368,12 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
                 </span>
               </span>
             </label>
-            <button class="map-filter-reset" type="button" data-map-filter-reset hidden>Reset map</button>
+            <button class="map-filter-reset" type="button" data-map-filter-reset hidden>{siteConfig.guide.resetMapLabel}</button>
           </div>
         </div>
         <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-area-filter-status hidden></p>
-        <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-map-filter-status hidden>Filtered to the visible map area.</p>
-        <div class="empty-state ui-empty-state" data-empty-state>No matches. Try a broader search or clear the tag filter.</div>
+        <p class="map-filter-status small-copy ui-copy ui-copy--sm" data-map-filter-status hidden>{siteConfig.guide.mapFilteredText}</p>
+        <div class="empty-state ui-empty-state" data-empty-state>{siteConfig.guide.emptyStateText}</div>
 
         <div class="card-grid ui-card-grid" data-kind="places" data-place-list>
           {visiblePlaces.map((place) => (
@@ -375,6 +385,8 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
       <GuideMap places={visiblePlaces} />
     </div>
   </section>
+
+  {guideAfterPlacesHtml && <div class="template-block rich-copy" set:html={guideAfterPlacesHtml} />}
 
   <script is:inline type="module" src="/scripts/guide-filters.js"></script>
   <script is:inline type="module" src="/scripts/scroll-jump.js"></script>

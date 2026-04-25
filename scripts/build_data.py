@@ -29,16 +29,35 @@ from pydantic import TypeAdapter
 from PIL import Image, ImageOps, UnidentifiedImageError, features
 
 ROOT = Path(__file__).resolve().parent.parent
-CONFIG_PATH = ROOT / "scripts" / "config" / "list_sources.json"
-RAW_DIR = ROOT / "data" / "raw"
-PLACES_CACHE_DIR = ROOT / "data" / "cache" / "google-places"
-PLACES_SQLITE_PATH = ROOT / "data" / "cache" / "places.sqlite"
+SITE_DIR_ENV = "FAVORITE_PLACES_SITE_DIR"
+
+
+def resolve_site_dir() -> Path:
+    configured_site_dir = os.environ.get(SITE_DIR_ENV)
+    if configured_site_dir:
+        path = Path(configured_site_dir).expanduser()
+        if not path.is_absolute():
+            path = ROOT / path
+        return path.resolve()
+
+    default_site_dir = ROOT / "site"
+    if default_site_dir.exists():
+        return default_site_dir
+
+    return ROOT / "site.example"
+
+
+SITE_DIR = resolve_site_dir()
+CONFIG_PATH = SITE_DIR / "list_sources.json"
+RAW_DIR = SITE_DIR / "data" / "raw"
+PLACES_CACHE_DIR = SITE_DIR / "data" / "cache" / "google-places"
+PLACES_SQLITE_PATH = SITE_DIR / "data" / "cache" / "places.sqlite"
 GENERATED_DIR = ROOT / "src" / "data" / "generated"
 GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 PUBLIC_DATA_DIR = ROOT / "public" / "data"
-PLACE_PHOTOS_DIR = ROOT / "public" / "place-photos"
-LIST_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "lists"
-PLACE_OVERRIDES_DIR = ROOT / "src" / "data" / "overrides" / "places"
+PLACE_PHOTOS_DIR = SITE_DIR / "public" / "place-photos"
+LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
+PLACE_OVERRIDES_DIR = SITE_DIR / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
 AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
@@ -1757,6 +1776,8 @@ def rebuild_generated_data(
     startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
 ) -> None:
     sync_local_csv_sources()
+    if GENERATED_LISTS_DIR.exists():
+        shutil.rmtree(GENERATED_LISTS_DIR)
     GENERATED_LISTS_DIR.mkdir(parents=True, exist_ok=True)
     PUBLIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
     PLACE_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -3623,7 +3644,9 @@ def configured_source_path(source: SourceConfig) -> Path:
         raise RuntimeError(f"Configured source {source.slug} is missing a path.")
     path = Path(source.path).expanduser()
     if not path.is_absolute():
-        path = ROOT / path
+        site_relative_path = SITE_DIR / path
+        root_relative_path = ROOT / path
+        path = root_relative_path if root_relative_path.exists() and not site_relative_path.exists() else site_relative_path
     return path
 
 
@@ -4925,7 +4948,11 @@ def public_asset_absolute_path(public_path: str | None) -> Path | None:
     normalized = as_string(public_path)
     if normalized is None:
         return None
-    return ROOT / "public" / normalized.lstrip("/")
+    relative_path = normalized.lstrip("/")
+    site_public_path = SITE_DIR / "public" / relative_path
+    if site_public_path.exists():
+        return site_public_path
+    return ROOT / "public" / relative_path
 
 
 def sha256_file(path: Path) -> str:

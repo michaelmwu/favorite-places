@@ -6,7 +6,7 @@
 
 - Frontend: Astro + TypeScript
 - Data pipeline: Python + `uv`
-- Source scraper: vendored git subtree at `vendor/gmaps-scraper/` from `https://github.com/michaelmwu/gmaps-scraper`
+- Source scraper: vendored git subtree at `vendor/gmaps-scraper/` from `https://github.com/508-dev/gmaps-scraper`
 - Hosting target: static deploys on Cloudflare Pages or GitHub Pages
 
 ## Working Rules
@@ -36,18 +36,19 @@ The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner.
 - `GOOGLE_PLACES_API_KEY` is the optional server/build-time fallback key for Places enrichment when Google Maps place-page scraping cannot recover enough data. Do not expose it to the browser.
 - `PUBLIC_MAP_PROVIDER=leaflet` forces the Leaflet/OpenStreetMap fallback even when `GOOGLE_MAPS_JS_API_KEY` is present.
 - `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/` and rotates them when they go stale or get blocked.
+- `FAVORITE_PLACES_SITE_DIR` points both Astro and the Python data pipeline at the site pack. It defaults to `./site`, with `./site.example` as the fresh-checkout fallback.
 
 ## Data Practices
 
 This repo deliberately avoids committing generated build artifacts.
 
-- `data/raw/` may be committed when you want reproducible scraped snapshots in git.
-- `data/cache/places.sqlite` is the canonical enrichment cache artifact when you want reproducible enrichment snapshots in git.
+- `site/data/raw/` may be committed when you want reproducible scraped snapshots in git.
+- `site/data/cache/places.sqlite` is the canonical enrichment cache artifact when you want reproducible enrichment snapshots in git.
 - `src/data/generated/` is local-only generated site input data.
 - `public/data/search-index.json` is local-only generated browser search data.
-- `src/data/overrides/` is the source-controlled layer for handwritten curation.
-- `scripts/config/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
-- In `scripts/config/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; explicit `type` is allowed but must match the configured `url` or `path`. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
+- `site/overrides/` is the source-controlled layer for handwritten curation.
+- `site/list_sources.json` is safe to commit if it only contains public list URLs you are comfortable sharing.
+- In `site/list_sources.json`, `slug` is required. `type` is inferred for supported Google Maps `url` sources and local CSV `path` sources; explicit `type` is allowed but must match the configured `url` or `path`. Google My Maps URLs are not supported yet. `google_export_csv` sources still require `title`; `title` is optional for Google Maps URL sources as a fallback if the source data cannot recover the real title.
 
 Merge precedence:
 
@@ -91,7 +92,7 @@ bun run build:data
 ```
 
 Use this when raw snapshots are already current and you only need to regenerate site inputs.
-Configured local CSV sources are auto-imported into `data/raw/<slug>.json` before rebuild. Public URL sources are not refreshed here.
+Configured local CSV sources are auto-imported into `site/data/raw/<slug>.json` before rebuild. Public URL sources are not refreshed here.
 
 Fill or refresh Google Places enrichment cache:
 

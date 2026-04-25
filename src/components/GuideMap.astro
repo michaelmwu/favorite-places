@@ -1,5 +1,6 @@
 ---
 
+import { siteConfig } from "../data/site";
 import type { Place } from "../lib/types";
 
 interface Props {
@@ -8,9 +9,10 @@ interface Props {
 
 const { places } = Astro.props;
 const configuredGoogleMapsApiKey = process.env.GOOGLE_MAPS_JS_API_KEY || "";
-const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || "").toLowerCase();
+const requestedMapProvider = (import.meta.env.PUBLIC_MAP_PROVIDER || siteConfig.mapProvider).toLowerCase();
 const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLowerCase() !== "off";
-const mapProvider = requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
+const mapProvider =
+  requestedMapProvider === "leaflet" ? "leaflet" : configuredGoogleMapsApiKey ? "google" : "leaflet";
 const googleMapsApiKey = mapProvider === "google" ? configuredGoogleMapsApiKey : "";
 const mapPlaces = places
   .filter((place) => place.lat !== null && place.lng !== null)

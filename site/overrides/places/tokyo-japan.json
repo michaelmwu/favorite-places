@@ -1,0 +1,24 @@
+{
+  "cid:6924437575605096209": {
+    "top_pick": true,
+    "manual_rank": 100,
+    "tags": ["coffee", "nakameguro", "breakfast"],
+    "neighborhood": "Nakameguro",
+    "primary_category": "Cafe",
+    "why_recommended": "A very easy first stop, strong coffee, low-friction start to a Tokyo day."
+  },
+  "cid:6924440279717478581": {
+    "manual_rank": 80,
+    "tags": ["shopping", "harajuku", "fashion"],
+    "neighborhood": "Harajuku",
+    "primary_category": "Boutique",
+    "why_recommended": "Feels more like a personal recommendation than a tourist checklist stop."
+  },
+  "cid:6924438284137214567": {
+    "manual_rank": 90,
+    "tags": ["favorite", "daikanyama", "fine-dining"],
+    "neighborhood": "Daikanyama",
+    "primary_category": "Restaurant",
+    "why_recommended": "A favorite-worthy dinner stop, so it should surface without extra manual curation."
+  }
+}

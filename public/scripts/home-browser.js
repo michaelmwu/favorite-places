@@ -9,6 +9,7 @@ const FLAG_SUFFIX_PATTERN = /(?:\s*[\u{1F1E6}-\u{1F1FF}]{2})+$/u;
 const root = document.querySelector("[data-home-browser-root]");
 
 if (root) {
+  const countrySectionsVisible = root.dataset.countrySectionsVisible !== "false";
   const searchInput = root.querySelector("[data-home-search-input]");
   const countryBlocks = Array.from(root.querySelectorAll("[data-country-block]"));
   const countryButtons = Array.from(root.querySelectorAll("[data-country-filter]"));
@@ -577,7 +578,7 @@ if (root) {
         }
       });
 
-      block.hidden = blockVisibleGuideCount === 0;
+      block.hidden = !countrySectionsVisible || blockVisibleGuideCount === 0;
 
       if (blockVisibleGuideCount > 0) {
         visibleCountryCount += 1;
@@ -631,7 +632,9 @@ if (root) {
       );
 
       button?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-      block?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (countrySectionsVisible) {
+        block?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 
@@ -653,7 +656,9 @@ if (root) {
         (candidate) => (candidate.dataset.country || "") === firstNearbyCountry,
       );
       locationButton?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
-      block?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (countrySectionsVisible) {
+        block?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 

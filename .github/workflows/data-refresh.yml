@@ -243,7 +243,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          git add -A -- data/raw data/cache/places.sqlite public/place-photos
+          git add -A -- \
+            site/data/raw \
+            site/data/cache \
+            site/public/place-photos
 
           if git diff --cached --quiet; then
             echo "changed=false" >> "${GITHUB_OUTPUT}"

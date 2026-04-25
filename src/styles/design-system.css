@@ -32,6 +32,10 @@
     @apply inline-flex items-center no-underline;
   }
 
+  .ui-site-title-text {
+    @apply font-display text-[1.75rem] font-bold text-white;
+  }
+
   .ui-site-title img {
     width: min(280px, 64vw);
     height: auto;
@@ -212,5 +216,9 @@
 
   .ui-country-block[data-location-match="true"] > .ui-section-head {
     @apply border-l-4 border-app-brand pl-3;
+  }
+
+  .template-block {
+    @apply my-8 min-w-0 md:my-12;
   }
 }
