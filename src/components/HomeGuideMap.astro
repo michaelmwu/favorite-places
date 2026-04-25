@@ -140,6 +140,20 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
 
   const MARKER_COLOR = "#c4312d";
   const HOME_MAP_COLLAPSED_KEY = "favoritePlacesHomeMapCollapsed";
+  const WORLD_MAP_MAX_LATITUDE = 85.05112878;
+  const WORLD_MAP_MIN_ZOOM = 0;
+  const WORLD_MAP_MIN_LONGITUDE = -180;
+  const WORLD_MAP_MAX_LONGITUDE = 180;
+  const WORLD_MAP_BOUNDS = {
+    east: WORLD_MAP_MAX_LONGITUDE,
+    north: WORLD_MAP_MAX_LATITUDE,
+    south: -WORLD_MAP_MAX_LATITUDE,
+    west: WORLD_MAP_MIN_LONGITUDE,
+  };
+  const LEAFLET_WORLD_BOUNDS = L.latLngBounds(
+    [-WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MIN_LONGITUDE],
+    [WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MAX_LONGITUDE],
+  );
   const favoritePlacesWindow = window as Window & {
     __favoritePlacesGoogleMapsInit?: () => void;
     __favoritePlacesGoogleMapsLoader?: Promise<unknown>;
@@ -290,10 +304,12 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   };
 
   const initLeafletRuntime = (element: HTMLElement, guides: HomeMapGuide[]): HomeMapRuntime => {
-    // Keep the overview map unconstrained so country-level fitBounds stays centered near world edges.
     const map = L.map(element, {
       dragging: true,
+      maxBounds: LEAFLET_WORLD_BOUNDS,
+      maxBoundsViscosity: 1,
       maxZoom: 12,
+      minZoom: WORLD_MAP_MIN_ZOOM,
       scrollWheelZoom: false,
       touchZoom: "center",
       zoomControl: true,
@@ -351,6 +367,11 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       disableDefaultUI: true,
       gestureHandling: "greedy",
       keyboardShortcuts: true,
+      minZoom: WORLD_MAP_MIN_ZOOM,
+      restriction: {
+        latLngBounds: WORLD_MAP_BOUNDS,
+        strictBounds: true,
+      },
       zoom: 4,
       zoomControl: true,
     });
