@@ -1230,7 +1230,7 @@ if (root) {
     currentLocation = normalizeUserLocationDetail(detail);
     refreshNearbyDistances();
 
-    if (currentLocation) {
+    if (currentLocation && currentLocationStatus !== "far") {
       setLocationSortMessage("");
       if (sortSelect?.value === LOCATION_SORT_VALUE) {
         update("location-sort");

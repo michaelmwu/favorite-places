@@ -1569,6 +1569,7 @@
   .map-panel[data-collapsed="true"] .guide-map,
   .map-panel[data-collapsed="true"] .map-fallback,
   .map-panel[data-collapsed="true"] .map-actions,
+  .map-panel[data-collapsed="true"] .map-feedback-slot,
   .map-panel[data-collapsed="true"] .map-stage {
     display: none;
   }

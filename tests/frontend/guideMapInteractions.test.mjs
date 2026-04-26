@@ -250,6 +250,7 @@ describe("guide map interactions", () => {
     );
     expect(filters).toContain("const requestCurrentLocationDirectly = () => {");
     expect(filters).toContain("const applySortSelection = (");
+    expect(filters).toContain('if (currentLocation && currentLocationStatus !== "far") {');
     expect(filters).toContain(
       'return "You\'re outside this guide area. Showing curated order instead.";',
     );
@@ -264,6 +265,7 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("pendingLocationSortRequest = true;");
     expect(guideMap).toContain("requestNearbySort();");
     expectCssToContain(css, ".map-feedback-slot");
+    expectCssToContain(css, '.map-panel[data-collapsed="true"] .map-feedback-slot');
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');
