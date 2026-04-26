@@ -23,10 +23,6 @@ class PlacesSettings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("GOOGLE_PLACES_API_KEY", "GOOGLE_MAPS_API_KEY"),
     )
-    google_places_enrichment_strategy: Literal["scrape", "api", "scrape_then_api"] = Field(
-        default="scrape_then_api",
-        validation_alias=AliasChoices("GOOGLE_PLACES_ENRICHMENT_STRATEGY"),
-    )
 
 
 class SourceConfig(PipelineModel):
@@ -218,7 +214,6 @@ class PlaceProvenance(PipelineModel):
     primary_category: PlaceField | None = None
     primary_category_localized: PlaceField | None = None
     tags: list[PlaceField] = Field(default_factory=list)
-    locality_path: PlaceField | None = None
     neighborhood: PlaceField | None = None
     note: PlaceField | None = None
     why_recommended: PlaceField | None = None
@@ -246,7 +241,6 @@ class NormalizedPlace(PipelineModel):
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
-    locality_path: list[str] = Field(default_factory=list)
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None
