@@ -3059,6 +3059,13 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
     return place
 
 
+def canonicalize_enrichment_cache_entry(entry: EnrichmentCacheEntry | None) -> EnrichmentCacheEntry | None:
+    if entry is None:
+        return None
+    canonicalize_enrichment_place(entry.place)
+    return entry
+
+
 def sanitize_place_photo_url(value: str | None) -> str | None:
     normalized = as_string(value)
     if normalized is None:
@@ -4468,6 +4475,9 @@ def preserve_existing_enrichment(
     existing_entry: EnrichmentCacheEntry | None,
     refreshed_entry: EnrichmentCacheEntry,
 ) -> tuple[EnrichmentCacheEntry, str | None]:
+    canonicalize_enrichment_cache_entry(existing_entry)
+    canonicalize_enrichment_cache_entry(refreshed_entry)
+
     if not cache_entry_has_publishable_enrichment(existing_entry):
         return refreshed_entry, None
 
@@ -4481,8 +4491,6 @@ def preserve_existing_enrichment(
 
     previous_place = existing_entry.place
     refreshed_place = refreshed_entry.place
-    canonicalize_enrichment_place(previous_place)
-    canonicalize_enrichment_place(refreshed_place)
     assert previous_place is not None
     assert refreshed_place is not None
 
@@ -4638,7 +4646,8 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
     for place_id, cache_json in rows:
         if not isinstance(place_id, str) or not isinstance(cache_json, str):
             continue
-        result[place_id] = EnrichmentCacheEntry.model_validate_json(cache_json)
+        entry = EnrichmentCacheEntry.model_validate_json(cache_json)
+        result[place_id] = canonicalize_enrichment_cache_entry(entry) or entry
     return result
 
 
@@ -4674,7 +4683,11 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                             entry.score,
                             entry.error,
                             entry.error_body,
-                            json.dumps(entry.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")),
+                            json.dumps(
+                                (canonicalize_enrichment_cache_entry(entry) or entry).model_dump(mode="json"),
+                                ensure_ascii=False,
+                                separators=(",", ":"),
+                            ),
                         )
                         for place_id, entry in sorted(payload.items())
                     ],
