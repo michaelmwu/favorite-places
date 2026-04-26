@@ -5,6 +5,8 @@ from typing import Any, Literal
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+type AddressParts = list[str | list[str]]
+
 
 class PipelineModel(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -147,6 +149,7 @@ class EnrichmentPlace(PipelineModel):
     website: str | None = None
     phone: str | None = None
     plus_code: str | None = None
+    address_parts: AddressParts | None = None
     description: str | None = None
     main_photo_url: str | None = None
     photo_url: str | None = None
@@ -215,6 +218,7 @@ class PlaceProvenance(PipelineModel):
     primary_category: PlaceField | None = None
     primary_category_localized: PlaceField | None = None
     tags: list[PlaceField] = Field(default_factory=list)
+    locality_path: PlaceField | None = None
     neighborhood: PlaceField | None = None
     note: PlaceField | None = None
     why_recommended: PlaceField | None = None
@@ -242,6 +246,7 @@ class NormalizedPlace(PipelineModel):
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
+    locality_path: list[str] = Field(default_factory=list)
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None

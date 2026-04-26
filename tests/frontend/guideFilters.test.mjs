@@ -20,6 +20,7 @@ const makeCard = ({
   category = "",
   lat = "",
   lng = "",
+  localityPath = "",
   name = "",
   neighborhood = "",
   placeId,
@@ -33,6 +34,7 @@ const makeCard = ({
     category,
     lat,
     lng,
+    localityPath,
     name,
     neighborhood,
     placeId,
@@ -280,6 +282,68 @@ describe("guide filters", () => {
     ).toBe(1);
   });
 
+  it("matches broader-area filters against any locality in the card path", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "Jingumae",
+        localityPath: JSON.stringify(["Jingumae", "Shibuya City"]),
+        search: "coffee",
+      }),
+      makeCard({
+        placeId: "2",
+        neighborhood: "Nishiazabu",
+        localityPath: JSON.stringify(["Nishiazabu", "Minato City"]),
+        search: "coffee",
+      }),
+    ];
+
+    expect(
+      countMatchingCards(cards, {
+        activeArea: "broader-shibuya",
+        normalizedQuery: "coffee",
+      }),
+    ).toBe(1);
+  });
+
+  it("matches primary areas across district suffix variants without collapsing broader levels", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "Zhongshan District",
+        localityPath: JSON.stringify(["Zhongshan District"]),
+        search: "dumplings",
+      }),
+      makeCard({
+        placeId: "2",
+        neighborhood: "Meguro",
+        localityPath: JSON.stringify(["Meguro", "Meguro City"]),
+        search: "coffee",
+      }),
+    ];
+
+    expect(
+      countMatchingCards(cards, {
+        activeArea: "zhongshan",
+        normalizedQuery: "dumplings",
+      }),
+    ).toBe(1);
+
+    expect(
+      countMatchingCards(cards, {
+        activeArea: "broader-meguro",
+        normalizedQuery: "coffee",
+      }),
+    ).toBe(1);
+
+    expect(
+      countMatchingCards(cards, {
+        activeArea: "meguro",
+        normalizedQuery: "coffee",
+      }),
+    ).toBe(1);
+  });
+
   it("counts area options against the current non-area filters", () => {
     const cards = [
       makeCard({
@@ -378,6 +442,20 @@ describe("guide filters", () => {
         { pinned: false, active: false, count: 5, originalIndex: 1, id: "five" },
       ]).map((option) => option.id),
     ).toEqual(["all", "five", "two", "zero"]);
+  });
+
+  it("keeps the original order within equal-count groups even when one option is active", () => {
+    expect(
+      sortFilterOptions([
+        { pinned: true, active: false, count: 11, originalIndex: 0, id: "all" },
+        { pinned: false, active: false, count: 2, originalIndex: 1, id: "da-an" },
+        { pinned: false, active: false, count: 2, originalIndex: 2, id: "taipei-city" },
+        { pinned: false, active: false, count: 2, originalIndex: 3, id: "zhongshan" },
+        { pinned: false, active: true, count: 1, originalIndex: 4, id: "datong" },
+        { pinned: false, active: false, count: 1, originalIndex: 5, id: "shilin" },
+        { pinned: false, active: false, count: 1, originalIndex: 6, id: "wenshan" },
+      ]).map((option) => option.id),
+    ).toEqual(["all", "da-an", "taipei-city", "zhongshan", "datong", "shilin", "wenshan"]);
   });
 
   it("sorts nearby cards by cached distance and keeps cards without coordinates last", () => {

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getDisplayGuideTags,
   getDisplayPlaceTags,
+  getGuideAreaFilterGroups,
   getGuideAreaFilters,
   getTagComparisonValue,
   normalizeTagValue,
@@ -39,7 +40,7 @@ describe("getDisplayPlaceTags", () => {
 });
 
 describe("getGuideAreaFilters", () => {
-  it("keeps repeated area filters and drops one-off or street-like labels", () => {
+  it("keeps singleton and repeated area filters while dropping street-like labels", () => {
     expect(
       getGuideAreaFilters(
         [
@@ -57,12 +58,13 @@ describe("getGuideAreaFilters", () => {
           { neighborhood: "C/ d'Aribau" },
           { neighborhood: "One-off" },
         ],
-        { limit: 3 },
+        { limit: 4 },
       ),
     ).toEqual([
       { label: "Ginza", value: "ginza", count: 3 },
       { label: "Juárez", value: "juarez", count: 3 },
       { label: "Shibuya", value: "shibuya", count: 3 },
+      { label: "One-off", value: "one-off", count: 1 },
     ]);
   });
 
@@ -91,6 +93,19 @@ describe("getGuideAreaFilters", () => {
     ]);
   });
 
+  it("treats same-level district suffix variants as one primary area bucket", () => {
+    expect(
+      getGuideAreaFilters([
+        { neighborhood: "Zhongshan" },
+        { neighborhood: "Zhongshan District" },
+        { neighborhood: "Da’an District" },
+      ]),
+    ).toEqual([
+      { label: "Zhongshan", value: "zhongshan", count: 2 },
+      { label: "Da’an District", value: "da-an", count: 1 },
+    ]);
+  });
+
   it("falls back to singleton neighborhoods when no repeated areas exist", () => {
     expect(
       getGuideAreaFilters(
@@ -106,6 +121,28 @@ describe("getGuideAreaFilters", () => {
       { label: "Bellavista", value: "bellavista", count: 1 },
       { label: "Lastarria", value: "lastarria", count: 1 },
     ]);
+  });
+
+  it("returns secondary broader-area filters from the locality path", () => {
+    expect(
+      getGuideAreaFilterGroups([
+        { neighborhood: "Jingumae", locality_path: ["Jingumae", "Shibuya City"] },
+        { neighborhood: "Jinnan", locality_path: ["Jinnan", "Shibuya City"] },
+        { neighborhood: "Shibakoen", locality_path: ["Shibakoen", "Minato City"] },
+        { neighborhood: "Nishiazabu", locality_path: ["Nishiazabu", "Minato City"] },
+      ]),
+    ).toEqual({
+      primary: [
+        { label: "Jingumae", value: "jingumae", count: 1 },
+        { label: "Jinnan", value: "jinnan", count: 1 },
+        { label: "Nishiazabu", value: "nishiazabu", count: 1 },
+        { label: "Shibakoen", value: "shibakoen", count: 1 },
+      ],
+      secondary: [
+        { label: "Minato City", value: "broader-minato", count: 2 },
+        { label: "Shibuya City", value: "broader-shibuya", count: 2 },
+      ],
+    });
   });
 });
 

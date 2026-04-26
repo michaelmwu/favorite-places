@@ -157,8 +157,21 @@ export function matchesCardSearch(card, { normalizedQuery = "", searchResultIds 
     : !normalizedQuery || (card.dataset.search || "").includes(normalizedQuery);
 }
 
-function getCardAreaComparisonValue(card) {
-  return getTagComparisonValue(card.dataset.neighborhood || "");
+function getCardAreaComparisonValues(card) {
+  const neighborhoodValue = getTagComparisonValue(card.dataset.neighborhood || "").replace(
+    /-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/,
+    "",
+  );
+  const localityPathValues = parseCardTagValues(card.dataset.localityPath);
+  const broaderLocalityValue = localityPathValues[1]
+    ? `broader-${localityPathValues[1].replace(/-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/, "")}`
+    : "";
+  return [
+    ...new Set([
+      ...(neighborhoodValue ? [neighborhoodValue] : []),
+      ...(broaderLocalityValue ? [broaderLocalityValue] : []),
+    ]),
+  ];
 }
 
 export function cardMatchesType(card, { activeTypeValue = "", activeTypeSeedValues = [] } = {}) {
@@ -185,7 +198,8 @@ export function cardMatchesFilters(
   } = {},
 ) {
   const matchesSearch = matchesCardSearch(card, { normalizedQuery, searchResultIds });
-  const matchesArea = !activeAreaValue || getCardAreaComparisonValue(card) === activeAreaValue;
+  const matchesArea =
+    !activeAreaValue || getCardAreaComparisonValues(card).includes(activeAreaValue);
   const matchesMapFrame = !mapFramePlaceIds || mapFramePlaceIds.has(card.dataset.placeId || "");
   const matchesSelectedTags = selectedTagValues.every((tag) => cardHasTag(card, tag));
   const matchesType = cardMatchesType(card, {
@@ -308,10 +322,6 @@ export function sortFilterOptions(options) {
 
     if (left.count !== right.count) {
       return right.count - left.count;
-    }
-
-    if (Boolean(left.active) !== Boolean(right.active)) {
-      return left.active ? -1 : 1;
     }
 
     return left.originalIndex - right.originalIndex;

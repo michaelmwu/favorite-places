@@ -22,6 +22,7 @@ const displayTags = getDisplayGuideTags(getDisplayPlaceTags(placeTags), guideCon
 const displayVibeTags = getDisplayPlaceTags(placeVibeTags);
 const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
 const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
+const localityPathTokens = JSON.stringify((place.locality_path ?? []).map(getTagComparisonValue));
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
 const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLowerCase() !== "off";
@@ -64,6 +65,7 @@ const markerSvg = buildMapMarkerSvg(
   data-name={place.name.toLowerCase()}
   data-tags={filterTagTokens}
   data-vibe-tags={filterVibeTagTokens}
+  data-locality-path={localityPathTokens}
   data-category={(place.primary_category ?? "").toLowerCase()}
   data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
   data-top-pick={place.top_pick ? "true" : "false"}
@@ -79,6 +81,7 @@ const markerSvg = buildMapMarkerSvg(
     place.why_recommended ?? "",
     place.primary_category ?? "",
     place.neighborhood ?? "",
+    (place.locality_path ?? []).join(" "),
     placeTags.join(" "),
     placeVibeTags.join(" "),
   ].join(" ").toLowerCase()}

@@ -440,6 +440,32 @@ class BuildDataTests(unittest.TestCase):
             ],
         )
 
+    def test_build_place_page_candidate_urls_replaces_name_only_search_urls_with_city_country_bias(self) -> None:
+        place = RawPlace(
+            name="Locale",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Locale",
+            cid="6924437521980544303",
+            lat=35.636208,
+            lng=139.709467,
+        )
+
+        self.assertEqual(
+            build_data.build_place_page_candidate_urls(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            ),
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
+                ),
+                "https://www.google.com/maps/search/?api=1&query=Locale&hl=en&gl=us",
+                "https://maps.google.com/?cid=6924437521980544303&hl=en&gl=us",
+            ],
+        )
+
     def test_localize_google_maps_scrape_url_forces_english_locale(self) -> None:
         self.assertEqual(
             build_data.localize_google_maps_scrape_url(
@@ -511,6 +537,66 @@ class BuildDataTests(unittest.TestCase):
         assert entry.place is not None
         self.assertEqual(entry.place.display_name, "Sister Midnight")
         self.assertEqual(entry.place.primary_type_display_name, "Cocktail bar")
+
+    def test_fetch_place_page_enrichment_uses_city_country_bias_for_name_only_search_urls(self) -> None:
+        place = RawPlace(
+            name="Locale",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Locale",
+            cid="6924437521980544303",
+            lat=35.636208,
+            lng=139.709467,
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url="https://www.google.com/maps/place/Locale/@35.636208,139.709467,17z",
+                name="Locale",
+                category="Cafe",
+                rating=4.4,
+                review_count=215,
+                address="1 Chome-19-14 Aobadai, Meguro City, Tokyo 153-0042, Japan",
+                located_in=None,
+                status=None,
+                website="https://locale.jp/",
+                phone="+81 3-1234-5678",
+                plus_code=None,
+                description=None,
+                lat=35.636208,
+                lng=139.709467,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            )
+
+        self.assertEqual(
+            called_urls,
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
+                )
+            ],
+        )
+        self.assertTrue(entry.matched)
+        self.assertIsNotNone(entry.place)
 
     def test_fetch_place_page_enrichment_falls_back_to_canonical_url_for_weak_search_match(self) -> None:
         place = RawPlace(
@@ -1494,6 +1580,7 @@ class BuildDataTests(unittest.TestCase):
             first_place.maps_url,
             "https://www.google.com/maps/search/?api=1&query=Coffee+House%2C+1+Shibuya%2C+Tokyo%2C+Japan",
         )
+        self.assertEqual(first_place.locality_path, ["Shibuya"])
         self.assertEqual(first_place.neighborhood, "Shibuya")
         self.assertTrue(first_place.top_pick)
         self.assertIn("local-favorite", first_place.vibe_tags)
@@ -1522,6 +1609,66 @@ class BuildDataTests(unittest.TestCase):
             },
         )
         self.assertTrue(hidden_place.hidden)
+
+    def test_normalize_guide_infers_neighborhood_from_enrichment_address_when_raw_address_missing(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="Museum of Contemporary Art Taipei",
+                    address=None,
+                    lat=25.0508047,
+                    lng=121.5189766,
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="1",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-01T00:00:00+00:00",
+                query="Museum of Contemporary Art Taipei, Taipei",
+                matched=True,
+                score=88,
+                place=EnrichmentPlace(
+                    google_maps_uri="https://maps.google.com/?cid=override",
+                    formatted_address="No. 39, Chang'an W Rd, Datong District, Taipei City, Taiwan 103",
+                    primary_type="modern_art_museum",
+                    primary_type_display_name="Modern art museum",
+                    business_status="OPERATIONAL",
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "taipei-taiwan",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        first_place = guide.places[0]
+
+        self.assertEqual(
+            first_place.address,
+            "No. 39, Chang'an W Rd, Datong District, Taipei City, Taiwan 103",
+        )
+        self.assertEqual(first_place.locality_path, ["Datong District"])
+        self.assertEqual(first_place.neighborhood, "Datong District")
+        self.assertEqual(first_place.provenance.address.source, "google_places")
+        self.assertEqual(first_place.provenance.locality_path.source, "google_places")
+        self.assertEqual(first_place.provenance.neighborhood.source, "google_places")
 
     def test_place_vibe_tags_can_be_manually_overridden(self) -> None:
         raw = RawSavedList(
@@ -1991,6 +2138,82 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertIsNone(place.description)
 
+    def test_normalize_place_page_enrichment_preserves_address_parts(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Elephant+Mountain",
+                resolved_url="https://www.google.com/maps/place/Elephant+Mountain",
+                name="象山",
+                category="Trailhead",
+                address="2HGG+M6",
+                address_parts=[
+                    "Trailhead",
+                    "Xinyi District, Taipei City",
+                    "Xinyi District, Taipei City",
+                    "Xinyi District",
+                    "110",
+                    "Taipei City",
+                    "TW",
+                    ["Taiwan"],
+                ],
+                limited_view=False,
+            )
+        )
+
+        self.assertEqual(
+            place.address_parts,
+            [
+                "Trailhead",
+                "Xinyi District, Taipei City",
+                "Xinyi District, Taipei City",
+                "Xinyi District",
+                "110",
+                "Taipei City",
+                "TW",
+                ["Taiwan"],
+            ],
+        )
+
+    def test_normalize_guide_uses_address_parts_for_locality_fallback(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="象山",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-26T00:00:00+00:00",
+                query="象山, Taipei, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    formatted_address="2HGG+M6",
+                    primary_type="trailhead",
+                    primary_type_display_name="Trailhead",
+                    address_parts=[
+                        "Trailhead",
+                        "Xinyi District, Taipei City",
+                        "Xinyi District, Taipei City",
+                        "Xinyi District",
+                        "110",
+                        "Taipei City",
+                        "TW",
+                        ["Taiwan"],
+                    ],
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("taipei-taiwan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertEqual(guide.places[0].neighborhood, "Xinyi District")
+        self.assertIn("Xinyi District", guide.places[0].locality_path)
+
     def test_normalize_guide_keeps_english_primary_category_and_stores_localized_variant(self) -> None:
         raw = RawSavedList(
             title="Fukuoka",
@@ -2044,6 +2267,54 @@ class BuildDataTests(unittest.TestCase):
             place.types,
             ["restaurant", "japanese_restaurant", "udon_noodle_restaurant"],
         )
+
+    def test_normalize_enrichment_match_drops_generic_item_category(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "test-id",
+                "name": "places/test-id",
+                "displayName": {"text": "Elephant Mountain"},
+                "formattedAddress": "Taipei",
+                "googleMapsUri": "https://maps.google.com/?cid=1",
+                "primaryType": "item",
+                "primaryTypeDisplayName": {"text": "Item"},
+                "types": ["establishment", "point_of_interest", "item"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertEqual(place.types, [])
+
+    def test_normalize_guide_ignores_generic_item_primary_type(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="象山",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-26T00:00:00+00:00",
+                query="象山, Taipei, Taiwan",
+                matched=True,
+                score=40,
+                place=EnrichmentPlace(
+                    primary_type="item",
+                    primary_type_display_name=None,
+                    types=["item"],
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("taipei-taiwan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertIsNone(guide.places[0].primary_category)
 
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [
@@ -2533,6 +2804,20 @@ class BuildDataTests(unittest.TestCase):
                 {"soho", "london"},
                 {"oxford-st", "united-kingdom"},
                 "Soho",
+            ),
+            (
+                "104, Taiwan, Taipei City, Zhongshan District, Section 1, Nanjing E Rd, 9號3F",
+                "Taipei",
+                {"taipei", "zhongshan-district"},
+                {"nanjing-e-rd"},
+                "Zhongshan District",
+            ),
+            (
+                "108, Taiwan, Taipei City, Wanhua District, Huaxi St, 17之4號攤位153號",
+                "Taipei",
+                {"taipei", "wanhua-district"},
+                {"huaxi-st"},
+                "Wanhua District",
             ),
         ]
 
@@ -3120,7 +3405,12 @@ class BuildDataTests(unittest.TestCase):
         ):
             entry = build_data.fetch_places_enrichment(place, api_key="test-key")
 
-        page_fetch.assert_called_once_with(place)
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
         api_fetch.assert_not_called()
         self.assertIs(entry, page_entry)
 
@@ -3219,6 +3509,32 @@ class BuildDataTests(unittest.TestCase):
         self.assertTrue(entry.matched)
         self.assertEqual(entry.place.display_name, "Cantina OK!")
 
+    def test_build_place_page_candidate_urls_prefers_query_place_id_when_available(self) -> None:
+        place = RawPlace(
+            name="Locale",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Locale",
+            cid="6924437521980544303",
+            lat=35.636208,
+            lng=139.709467,
+        )
+
+        self.assertEqual(
+            build_data.build_place_page_candidate_urls(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+                google_place_id="ChIJ1234567890example",
+            ),
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Locale%2C+Tokyo%2C+Japan"
+                    "&query_place_id=ChIJ1234567890example&hl=en&gl=us"
+                )
+            ],
+        )
+
     def test_fetch_places_enrichment_falls_back_to_api_when_page_is_limited(self) -> None:
         place = RawPlace(
             name="Jimbocho Den",
@@ -3262,7 +3578,12 @@ class BuildDataTests(unittest.TestCase):
         ):
             entry = build_data.fetch_places_enrichment(place, api_key="test-key")
 
-        page_fetch.assert_called_once_with(place)
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
         api_fetch.assert_called_once_with(place, api_key="test-key")
         self.assertIs(entry, api_entry)
 
@@ -3302,7 +3623,12 @@ class BuildDataTests(unittest.TestCase):
         ):
             entry = build_data.fetch_places_enrichment(place, api_key="test-key")
 
-        page_fetch.assert_called_once_with(place)
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
         api_fetch.assert_called_once_with(place, api_key="test-key")
         self.assertIs(entry, page_entry)
 

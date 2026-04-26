@@ -10,7 +10,7 @@ import { getGuideAsideHtml, getTemplateHtml } from "../../lib/heroAsideContent";
 import {
   getDisplayGuideTags,
   getDisplayPlaceTags,
-  getGuideAreaFilters,
+  getGuideAreaFilterGroups,
   normalizeTagValue,
 } from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
@@ -115,7 +115,9 @@ const visiblePlacesById = new Map(visiblePlaces.map((place) => [place.id, place]
 const bestHits = (guide.best_hit_place_ids ?? [])
   .map((placeId) => visiblePlacesById.get(placeId))
   .filter((place): place is Place => Boolean(place));
-const areaFilters = getGuideAreaFilters(visiblePlaces);
+const areaFilterGroups = getGuideAreaFilterGroups(visiblePlaces);
+const areaFilters = areaFilterGroups.primary;
+const broaderAreaFilters = areaFilterGroups.secondary;
 const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
 const reviewCountFormatter = new Intl.NumberFormat("en-US");
 const bestHitsDescription = [
@@ -349,6 +351,26 @@ const hasMappablePlaces = visiblePlaces.some((place) => place.lat !== null && pl
                     <span class="tag-pill-count" data-filter-count>{visiblePlaces.length}</span>
                   </button>
                   {areaFilters.map((area) => (
+                    <button
+                      class="tag-pill ui-tag-pill"
+                      type="button"
+                      data-area-filter
+                      data-area={area.value}
+                      data-area-label={area.label}
+                    >
+                      <span>{area.label}</span>
+                      <span class="tag-pill-count" data-filter-count>{area.count}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {broaderAreaFilters.length > 0 && (
+              <div class="control-group" style="grid-column: 1 / -1;">
+                <span class="control-label ui-control-label">{siteConfig.guide.broaderAreaLabel}</span>
+                <div class="tag-row ui-tag-row tag-row-mobile-scroll">
+                  {broaderAreaFilters.map((area) => (
                     <button
                       class="tag-pill ui-tag-pill"
                       type="button"

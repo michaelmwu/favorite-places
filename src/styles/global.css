@@ -1973,7 +1973,17 @@
     }
   }
 
-  @media (min-width: 980px) {
+  @media (min-width: 980px) and (max-width: 1279px) {
+    .browse-layout > .map-panel {
+      order: -1;
+    }
+
+    .card-grid[data-kind="places"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
     .hero-grid {
       grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
     }
@@ -2012,7 +2022,7 @@
     }
 
     .browse-layout {
-      grid-template-columns: minmax(0, 1fr) minmax(30rem, 46vw);
+      grid-template-columns: minmax(0, 1.35fr) minmax(26rem, 34rem);
       align-items: start;
       transition: grid-template-columns 180ms ease;
     }
@@ -2077,6 +2087,12 @@
     .browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"] {
       grid-template-columns: repeat(auto-fit, minmax(23rem, 28rem));
       justify-content: start;
+    }
+  }
+
+  @media (min-width: 1480px) {
+    .card-grid[data-kind="places"] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 }

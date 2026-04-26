@@ -8,7 +8,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any, cast
 from urllib.parse import parse_qs, unquote, urlparse
 
-from gmaps_scraper.models import PlaceDetails
+from gmaps_scraper.models import AddressParts, PlaceDetails
 from gmaps_scraper.scraper import (
     _HTTP_IMPERSONATE,
     BrowserSessionConfig,
@@ -492,6 +492,7 @@ def _build_place_details(
     return PlaceDetails(
         source_url=source_url,
         resolved_url=resolved_url,
+        google_place_id=_normalize_google_place_id(snapshot.get("google_place_id")),
         name=name,
         secondary_name=_clean_name_text(snapshot.get("secondary_name"))
         or _extract_secondary_name(combined_lines, name=name),
@@ -507,6 +508,7 @@ def _build_place_details(
         or _extract_phone_from_lines(combined_lines),
         plus_code=_clean_address_text(snapshot.get("plus_code"))
         or _extract_plus_code_from_lines(combined_lines),
+        address_parts=_extract_address_parts(snapshot.get("address_parts")),
         description=_extract_description(snapshot, combined_lines),
         main_photo_url=_normalize_photo_url(snapshot.get("main_photo_url")),
         photo_url=_normalize_photo_url(snapshot.get("photo_url")),
@@ -629,6 +631,10 @@ def _extract_preview_place_enrichment(payload_text: str) -> dict[str, object]:
     if plus_code is not None:
         enrichment["plus_code"] = plus_code
 
+    address_parts = _extract_preview_address_parts(root)
+    if address_parts is not None:
+        enrichment["address_parts"] = address_parts
+
     address = _extract_preview_address(strings)
     if address is not None:
         enrichment["address"] = address
@@ -645,6 +651,10 @@ def _extract_preview_place_enrichment(payload_text: str) -> dict[str, object]:
     if coordinates is not None:
         enrichment["lat"] = coordinates[0]
         enrichment["lng"] = coordinates[1]
+
+    google_place_id = _extract_preview_google_place_id(root)
+    if google_place_id is not None:
+        enrichment["google_place_id"] = google_place_id
 
     return enrichment
 
@@ -932,6 +942,97 @@ def _normalize_photo_url(value: object) -> str | None:
     if "streetviewpixels-pa.googleapis.com" in host:
         return None
     return normalized
+
+
+def _normalize_google_place_id(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    return normalized if _GOOGLE_PLACE_ID_PATTERN.fullmatch(normalized) else None
+
+
+_GOOGLE_PLACE_ID_PATTERN = re.compile(r"\bChIJ[0-9A-Za-z_-]{10,}\b")
+_MAPS_ENTITY_TOKEN_PATTERN = re.compile(r"0x[0-9a-fA-F]+:0x[0-9a-fA-F]+")
+_KNOWLEDGE_GRAPH_MID_PATTERN = re.compile(r"^/m/[A-Za-z0-9_-]+$")
+
+
+def _extract_preview_google_place_id(root: list[object]) -> str | None:
+    unique_place_ids: list[str] = []
+    seen_place_ids: set[str] = set()
+
+    for node in _iter_preview_lists(root):
+        strings = [value for value in node if isinstance(value, str)]
+        if not strings:
+            continue
+
+        place_ids = [value for value in strings if _GOOGLE_PLACE_ID_PATTERN.fullmatch(value)]
+        if not place_ids:
+            continue
+
+        for place_id in place_ids:
+            if place_id not in seen_place_ids:
+                unique_place_ids.append(place_id)
+                seen_place_ids.add(place_id)
+
+        if any(_MAPS_ENTITY_TOKEN_PATTERN.fullmatch(value) for value in strings) or any(
+            _KNOWLEDGE_GRAPH_MID_PATTERN.fullmatch(value) for value in strings
+        ):
+            return place_ids[0]
+
+    if len(unique_place_ids) == 1:
+        return unique_place_ids[0]
+    return None
+
+
+def _iter_preview_lists(value: object) -> Iterable[list[object]]:
+    if isinstance(value, list):
+        yield value
+        for item in value:
+            yield from _iter_preview_lists(item)
+
+
+def _extract_address_parts(value: object) -> AddressParts | None:
+    if not isinstance(value, list):
+        return None
+    return _normalize_address_parts(value)
+
+
+def _normalize_address_parts(value: list[object]) -> AddressParts | None:
+    if len(value) < 7 or len(value) > 8:
+        return None
+    if not all(isinstance(item, str) for item in value[:7]):
+        return None
+    normalized: AddressParts = [cast(str, item) for item in value[:7]]
+    if len(value) == 8:
+        extra = value[7]
+        if not isinstance(extra, list) or not all(isinstance(item, str) for item in extra):
+            return None
+        normalized.append([cast(str, item) for item in extra])
+    return normalized
+
+
+def _extract_preview_address_parts(root: list[object]) -> AddressParts | None:
+    for node in _iter_lists(root):
+        if len(node) < 2:
+            continue
+        raw_parts = node[0]
+        raw_plus_code = node[1]
+        if not isinstance(raw_parts, list) or not isinstance(raw_plus_code, list):
+            continue
+        normalized_parts = _normalize_address_parts(raw_parts)
+        if normalized_parts is None:
+            continue
+        if not any(
+            isinstance(value, list)
+            and any(
+                isinstance(item, str) and _PLUS_CODE_PATTERN.search(item) is not None
+                for item in value
+            )
+            for value in raw_plus_code
+        ):
+            continue
+        return normalized_parts
+    return None
 
 
 def _extract_preview_phone(strings: list[str]) -> str | None:

@@ -67,6 +67,7 @@ export interface SiteConfig {
     searchHint: string;
     searchPlaceholder: string;
     areaLabel: string;
+    broaderAreaLabel: string;
     typeLabel: string;
     popularTagsLabel: string;
     popularTagsHint: string;
@@ -179,6 +180,7 @@ const defaultSiteConfig: SiteConfig = {
     searchHint: "Type `#` to add a tag filter.",
     searchPlaceholder: "Search places, notes, neighborhoods, or type #tag",
     areaLabel: "Area",
+    broaderAreaLabel: "Ward / district",
     typeLabel: "Type",
     popularTagsLabel: "Popular tags",
     popularTagsHint: "Click to add, or type `#` to browse all tags.",
