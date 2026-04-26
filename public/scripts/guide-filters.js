@@ -139,6 +139,16 @@ export function resolveLocationSortState({
   };
 }
 
+function locationFallbackMessage(status, fallbackMessage) {
+  if (status === "denied") {
+    return "Location permission was denied. Showing curated order instead.";
+  }
+  if (status === "far") {
+    return "You're outside this guide area. Showing curated order instead.";
+  }
+  return fallbackMessage;
+}
+
 export function cardHasTag(card, tag) {
   const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
@@ -1140,7 +1150,7 @@ if (root) {
     clearDirectLocationFallbackTimer();
     const detail = event.detail || {};
     const coordinates = detail.coordinates;
-    currentLocation =
+    const normalizedLocation =
       coordinates &&
       Number.isFinite(Number(coordinates.lat)) &&
       Number.isFinite(Number(coordinates.lng))
@@ -1150,6 +1160,7 @@ if (root) {
           }
         : null;
     currentLocationStatus = detail.status || "idle";
+    currentLocation = detail.nearGuide === false ? null : normalizedLocation;
     refreshNearbyDistances();
 
     if (currentLocation) {
@@ -1161,7 +1172,7 @@ if (root) {
     }
 
     const nextLocationSortState = resolveLocationSortState({
-      fallbackMessage: locationSortFallbackText,
+      fallbackMessage: locationFallbackMessage(currentLocationStatus, locationSortFallbackText),
       fallbackSortValue: LOCATION_SORT_FALLBACK,
       currentLocation,
       currentLocationStatus,

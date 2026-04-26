@@ -727,6 +727,20 @@ if (root) {
               return;
             }
 
+            if (!nearbyGuides.isNearMatch) {
+              nearbyGuideState = null;
+              locationMatchCountry = "";
+              setLocationButtonActive(false);
+              setLocationStatus(
+                `No guides are close to you yet. The nearest guide is ${formatDistanceKm(
+                  nearbyGuides.nearestGuide.distance,
+                )} away.`,
+                "error",
+              );
+              update();
+              return;
+            }
+
             selectNearbyGuides(nearbyGuides, { scroll: true });
             setLocationStatus(
               `Showing ${pluralize(nearbyGuides.guides.length, "guide")} within ${formatDistanceKm(
