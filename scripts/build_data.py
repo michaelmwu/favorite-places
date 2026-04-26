@@ -14,9 +14,11 @@ import sqlite3
 import time
 import unicodedata
 from collections import Counter
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from statistics import median
 from typing import Any, Literal
@@ -320,6 +322,12 @@ class PendingPhotoJob:
     place_id: str
     place_name: str
     photo_url: str
+
+
+@dataclass(frozen=True)
+class PlacePhotoFlatIndex:
+    exact_by_stem: dict[str, str]
+    latest_by_place_prefix: dict[str, str]
 
 
 @dataclass(frozen=True)
@@ -1855,6 +1863,101 @@ def rebuild_generated_data(
     write_json(PUBLIC_DATA_DIR / "search-index.json", search_index, compact=True)
 
 
+def refresh_generated_guide_photos(
+    *,
+    photo_workers: int = DEFAULT_REFRESH_WORKERS,
+    startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+) -> bool:
+    if not GENERATED_LISTS_DIR.exists():
+        return False
+
+    guide_paths = sorted(GENERATED_LISTS_DIR.glob("*.json"))
+    if not guide_paths:
+        return False
+
+    raw_paths = sorted(RAW_DIR.glob("*.json"))
+    generated_slugs = {path.stem for path in guide_paths}
+    raw_slugs = {path.stem for path in raw_paths}
+    if generated_slugs != raw_slugs:
+        print(
+            "WARNING: Generated and raw guide sets differ; falling back to a full rebuild.",
+            flush=True,
+        )
+        return False
+
+    PUBLIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    PLACE_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
+
+    guides: list[Guide] = []
+    raw_lists: dict[str, RawSavedList] = {}
+    enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]] = {}
+    original_photo_paths: dict[str, tuple[str | None, ...]] = {}
+    original_generated_at: dict[str, str] = {}
+
+    for guide_path in guide_paths:
+        guide = Guide.model_validate_json(guide_path.read_text(encoding="utf-8"))
+        raw_path = RAW_DIR / f"{guide.slug}.json"
+        if not raw_path.exists():
+            print(
+                f"WARNING: Missing raw data for {guide.slug}; falling back to a full rebuild.",
+                flush=True,
+            )
+            return False
+
+        guides.append(guide)
+        original_photo_paths[guide.slug] = tuple(place.main_photo_path for place in guide.places)
+        original_generated_at[guide.slug] = guide.generated_at
+        raw_lists[guide.slug] = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+        enrichment_caches[guide.slug] = load_places_cache(guide.slug)
+
+    hydrate_shared_enrichment_photo_urls(enrichment_caches)
+    populate_place_photos_for_guides(
+        guides,
+        enrichment_caches=enrichment_caches,
+        refresh_photos=True,
+        photo_workers=photo_workers,
+        startup_jitter_seconds=startup_jitter_seconds,
+    )
+
+    changed = False
+    for guide in guides:
+        guide.generated_at = stable_generated_at(
+            raw_lists[guide.slug],
+            enrichment_caches.get(guide.slug, {}),
+            photo_paths=[place.main_photo_path for place in guide.places],
+        )
+        current_photo_paths = tuple(place.main_photo_path for place in guide.places)
+        if (
+            current_photo_paths != original_photo_paths.get(guide.slug)
+            or guide.generated_at != original_generated_at.get(guide.slug)
+        ):
+            changed = True
+
+    if not changed:
+        print("Place photos already current; skipped generated artifact rewrite.", flush=True)
+        return True
+
+    for guide in guides:
+        write_json(GENERATED_LISTS_DIR / f"{guide.slug}.json", guide)
+
+    rebuild_places_sqlite(
+        raw_lists=raw_lists,
+        guides=guides,
+        enrichment_caches=enrichment_caches,
+    )
+
+    sorted_guides = sorted(
+        guides,
+        key=lambda guide: (guide.country_name, guide.city_name, guide.title),
+    )
+    manifests = [summarize_guide(guide) for guide in sorted_guides]
+    search_index = build_search_index(sorted_guides)
+    write_json(GENERATED_DIR / "manifests.json", manifests)
+    write_json(GENERATED_DIR / "search-index.json", search_index)
+    write_json(PUBLIC_DATA_DIR / "search-index.json", search_index, compact=True)
+    return True
+
+
 def sync_local_csv_sources() -> None:
     for source in load_sources():
         if source.type != "google_export_csv":
@@ -2403,7 +2506,7 @@ def place_is_visible_in_ui(place: NormalizedPlace) -> bool:
     return not place.hidden and not place_is_permanently_closed(place)
 
 
-def percentile(values: list[int], rank: float) -> float | None:
+def percentile(values: Sequence[float | int], rank: float) -> float | None:
     if not values:
         return None
 
@@ -2596,15 +2699,11 @@ def summarize_guide(guide: Guide) -> GuideManifest:
 
 
 def guide_location_center(places: list[NormalizedPlace]) -> tuple[float | None, float | None]:
-    coordinates = [
-        (place.lat, place.lng)
-        for place in places
-        if place.lat is not None and place.lng is not None
-    ]
+    coordinates = guide_place_coordinates(places)
     if not coordinates:
         return (None, None)
 
-    inlier_coordinates = guide_location_inliers(coordinates)
+    inlier_coordinates = guide_location_inlier_coordinates(coordinates)
     lat = sum(latitude for latitude, _longitude in inlier_coordinates) / len(inlier_coordinates)
     lng = sum(longitude for _latitude, longitude in inlier_coordinates) / len(inlier_coordinates)
     return (lat, lng)
@@ -2679,24 +2778,16 @@ def guide_map_pin_warning_distance_meters(
     if center_lat is None or center_lng is None:
         return None
 
-    coordinates = [
-        (place.lat, place.lng)
-        for place in places
-        if place.lat is not None and place.lng is not None
-    ]
+    coordinates = guide_place_coordinates(places)
     if not coordinates:
         return None
     if len(coordinates) < 4:
         return MAP_PIN_DISTANCE_WARNING_MIN_METERS
 
-    inlier_coordinates = guide_location_inliers(coordinates)
-    inlier_radius_meters = max(
-        haversine_meters(center_lat, center_lng, latitude, longitude)
-        for latitude, longitude in inlier_coordinates
-    )
-    return max(
-        MAP_PIN_DISTANCE_WARNING_MIN_METERS,
-        inlier_radius_meters + MAP_PIN_DISTANCE_WARNING_BUFFER_METERS,
+    return _guide_map_pin_warning_distance_meters_cached(
+        coordinates,
+        center_lat,
+        center_lng,
     )
 
 
@@ -2714,6 +2805,44 @@ def guide_map_pin_suppression_distance_meters(
 
 
 def guide_location_inliers(coordinates: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    return list(guide_location_inlier_coordinates(tuple(coordinates)))
+
+
+def guide_place_coordinates(places: list[NormalizedPlace]) -> tuple[tuple[float, float], ...]:
+    return tuple(
+        (place.lat, place.lng)
+        for place in places
+        if place.lat is not None and place.lng is not None
+    )
+
+
+def guide_location_inlier_coordinates(
+    coordinates: tuple[tuple[float, float], ...],
+) -> tuple[tuple[float, float], ...]:
+    return _guide_location_inliers_cached(coordinates)
+
+
+@lru_cache(maxsize=None)
+def _guide_map_pin_warning_distance_meters_cached(
+    coordinates: tuple[tuple[float, float], ...],
+    center_lat: float,
+    center_lng: float,
+) -> float:
+    inlier_coordinates = guide_location_inlier_coordinates(coordinates)
+    inlier_radius_meters = max(
+        haversine_meters(center_lat, center_lng, latitude, longitude)
+        for latitude, longitude in inlier_coordinates
+    )
+    return max(
+        MAP_PIN_DISTANCE_WARNING_MIN_METERS,
+        inlier_radius_meters + MAP_PIN_DISTANCE_WARNING_BUFFER_METERS,
+    )
+
+
+@lru_cache(maxsize=None)
+def _guide_location_inliers_cached(
+    coordinates: tuple[tuple[float, float], ...],
+) -> tuple[tuple[float, float], ...]:
     if len(coordinates) < 4:
         return coordinates
 
@@ -2737,7 +2866,7 @@ def guide_location_inliers(coordinates: list[tuple[float, float]]) -> list[tuple
         for coordinate, distance in zip(coordinates, distances, strict=True)
         if distance <= outlier_threshold
     ]
-    return inliers or coordinates
+    return tuple(inliers) or coordinates
 
 
 def enrich_raw_sources(
@@ -3179,19 +3308,26 @@ def expanded_parent_type_tags(tag: str) -> list[str]:
 def infer_display_name_type_tags(value: str | None) -> list[str]:
     if not value:
         return []
+    return list(_infer_display_name_type_tags_cached(value))
+
+
+@lru_cache(maxsize=None)
+def _infer_display_name_type_tags_cached(value: str) -> tuple[str, ...]:
     tags: list[str] = []
     for tag, aliases in DISPLAY_NAME_TYPE_TAG_RULES:
         if any(type_alias_matches(value, alias) for alias in aliases):
             append_unique_tag(tags, tag)
-    return tags
+    return tuple(tags)
 
 
+@lru_cache(maxsize=None)
 def type_alias_matches(label: str, alias: str) -> bool:
     if any(ord(char) > 127 for char in alias):
         return normalize_type_lookup_text(alias) in normalize_type_lookup_text(label)
     return slug_phrase_matches(slugify(label.replace("_", "-")), alias)
 
 
+@lru_cache(maxsize=None)
 def normalize_type_lookup_text(value: str) -> str:
     return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ").lower()).strip()
 
@@ -3294,10 +3430,12 @@ def derive_vibe_tags(
     return sorted(vibes)
 
 
+@lru_cache(maxsize=None)
 def normalize_vibe_lookup_text(value: str) -> str:
     return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ").lower()).strip()
 
 
+@lru_cache(maxsize=None)
 def slug_phrase_matches(candidate_slug: str, phrase: str) -> bool:
     normalized_phrase = slugify(phrase.replace("_", "-"))
     if not candidate_slug or not normalized_phrase:
@@ -3311,11 +3449,19 @@ def slug_phrase_matches(candidate_slug: str, phrase: str) -> bool:
 
 
 def vibe_keyword_matches(lookup_text: str, keyword: str) -> bool:
+    pattern = vibe_keyword_pattern(keyword)
+    if pattern is None:
+        return False
+    return pattern.search(lookup_text) is not None
+
+
+@lru_cache(maxsize=None)
+def vibe_keyword_pattern(keyword: str) -> re.Pattern[str] | None:
     normalized_keyword = normalize_vibe_lookup_text(keyword)
     if not normalized_keyword:
-        return False
+        return None
     pattern = r"(?<![a-z0-9])" + re.escape(normalized_keyword).replace(r"\ ", r"\s+") + r"(?![a-z0-9])"
-    return re.search(pattern, lookup_text) is not None
+    return re.compile(pattern)
 
 
 def build_search_index(guides: list[Guide]) -> dict[str, Any]:
@@ -3606,7 +3752,11 @@ def infer_address_parts_localities(
 def infer_address_localities(address: str | None, *, city_name: str | None = None) -> list[str]:
     if address is None:
         return []
+    return list(_infer_address_localities_cached(address, city_name))
 
+
+@lru_cache(maxsize=None)
+def _infer_address_localities_cached(address: str, city_name: str | None) -> tuple[str, ...]:
     city_key = normalize_locality_key(city_name)
     city_equivalence_key = normalize_locality_equivalence_key(city_name)
     neighborhoods: list[str] = []
@@ -3627,9 +3777,10 @@ def infer_address_localities(address: str | None, *, city_name: str | None = Non
         else:
             append_unique_locality(neighborhoods, candidate)
 
-    return [*neighborhoods, *subcities]
+    return tuple([*neighborhoods, *subcities])
 
 
+@lru_cache(maxsize=None)
 def normalize_address_locality_part(part: str) -> str | None:
     candidate = part.strip()
     if not candidate:
@@ -3846,6 +3997,7 @@ def normalize_tag_slug(value: str) -> str:
     return BROKEN_TAG_NORMALIZATION_MAP.get(slug, slug)
 
 
+@lru_cache(maxsize=None)
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.lower()).strip("-")
     return slug or "item"
@@ -5427,6 +5579,7 @@ def populate_place_photos_for_guides(
     photo_workers: int,
     startup_jitter_seconds: float,
 ) -> None:
+    flat_index = build_place_photo_flat_index()
     if not refresh_photos:
         for guide in guides:
             enrichment_cache = enrichment_caches.get(guide.slug, {})
@@ -5437,6 +5590,7 @@ def populate_place_photos_for_guides(
                     place.id,
                     photo_url=photo_url,
                     allow_stale_place_id_fallback=True,
+                    flat_index=flat_index,
                 )
                 if fallback_reason == "missing-photo-url":
                     print(
@@ -5463,6 +5617,7 @@ def populate_place_photos_for_guides(
                 guide.slug,
                 place.id,
                 photo_url=photo_url,
+                flat_index=flat_index,
             )
             if existing_path is not None:
                 place.main_photo_path = existing_path
@@ -5550,13 +5705,20 @@ def resolve_existing_place_photo_path(
     *,
     photo_url: str | None,
     allow_stale_place_id_fallback: bool = False,
+    flat_index: PlacePhotoFlatIndex | None = None,
 ) -> tuple[str | None, str | None]:
     if photo_url:
         filename_glob = canonical_place_photo_glob(place_id, photo_url)
-        canonical_matches = sorted(PLACE_PHOTOS_DIR.glob(filename_glob))
-        if canonical_matches:
-            remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
-            return public_photo_path(canonical_matches[0].name), None
+        if flat_index is not None:
+            canonical_match = flat_index.exact_by_stem.get(canonical_place_photo_stem(place_id, photo_url))
+            if canonical_match:
+                remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
+                return public_photo_path(canonical_match), None
+        else:
+            canonical_matches = sorted(PLACE_PHOTOS_DIR.glob(filename_glob))
+            if canonical_matches:
+                remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
+                return public_photo_path(canonical_matches[0].name), None
 
         legacy_matches = sorted((PLACE_PHOTOS_DIR / slug).glob(filename_glob))
         if legacy_matches:
@@ -5571,18 +5733,24 @@ def resolve_existing_place_photo_path(
         return None, None
 
     place_prefix = f"{safe_place_photo_stem(place_id)}-"
-    fallback_matches = sorted(
-        (
-            path
-            for path in PLACE_PHOTOS_DIR.glob(f"{place_prefix}*.*")
-            if path.is_file() and not path.name.startswith(".")
-        ),
-        key=lambda path: (path.stat().st_mtime, path.name),
-        reverse=True,
-    )
-    if fallback_matches:
-        fallback_reason = "stale-photo-url" if photo_url else "missing-photo-url"
-        return public_photo_path(fallback_matches[0].name), fallback_reason
+    if flat_index is not None:
+        fallback_match = flat_index.latest_by_place_prefix.get(place_prefix)
+        if fallback_match:
+            fallback_reason = "stale-photo-url" if photo_url else "missing-photo-url"
+            return public_photo_path(fallback_match), fallback_reason
+    else:
+        fallback_matches = sorted(
+            (
+                path
+                for path in PLACE_PHOTOS_DIR.glob(f"{place_prefix}*.*")
+                if path.is_file() and not path.name.startswith(".")
+            ),
+            key=lambda path: (path.stat().st_mtime, path.name),
+            reverse=True,
+        )
+        if fallback_matches:
+            fallback_reason = "stale-photo-url" if photo_url else "missing-photo-url"
+            return public_photo_path(fallback_matches[0].name), fallback_reason
 
     legacy_dir = PLACE_PHOTOS_DIR / slug
     legacy_fallback_matches = sorted(
@@ -5612,14 +5780,55 @@ def existing_place_photo_path(
     *,
     photo_url: str | None,
     allow_stale_place_id_fallback: bool = False,
+    flat_index: PlacePhotoFlatIndex | None = None,
 ) -> str | None:
     path, _fallback_reason = resolve_existing_place_photo_path(
         slug,
         place_id,
         photo_url=photo_url,
         allow_stale_place_id_fallback=allow_stale_place_id_fallback,
+        flat_index=flat_index,
     )
     return path
+
+
+def build_place_photo_flat_index() -> PlacePhotoFlatIndex:
+    exact_by_stem: dict[str, str] = {}
+    latest_by_place_prefix: dict[str, tuple[float, str]] = {}
+    if not PLACE_PHOTOS_DIR.exists():
+        return PlacePhotoFlatIndex(exact_by_stem={}, latest_by_place_prefix={})
+
+    for path in PLACE_PHOTOS_DIR.iterdir():
+        if not path.is_file() or path.name.startswith("."):
+            continue
+
+        current_name = exact_by_stem.get(path.stem)
+        if current_name is None or path.name < current_name:
+            exact_by_stem[path.stem] = path.name
+
+        place_prefix = place_photo_prefix_from_stem(path.stem)
+        if place_prefix is None:
+            continue
+
+        candidate = (path.stat().st_mtime, path.name)
+        existing = latest_by_place_prefix.get(place_prefix)
+        if existing is None or candidate > existing:
+            latest_by_place_prefix[place_prefix] = candidate
+
+    return PlacePhotoFlatIndex(
+        exact_by_stem=exact_by_stem,
+        latest_by_place_prefix={
+            place_prefix: filename
+            for place_prefix, (_mtime, filename) in latest_by_place_prefix.items()
+        },
+    )
+
+
+def place_photo_prefix_from_stem(stem: str) -> str | None:
+    match = re.match(r"^(.+)-[0-9a-f]{12}$", stem)
+    if match is None:
+        return None
+    return f"{match.group(1)}-"
 
 
 def sync_place_photo(
@@ -6680,6 +6889,22 @@ def main() -> int:
         print(f"Exported JSON cache debug files for {exported_guides} guide(s).")
 
     build_started_at = time.perf_counter()
+    photo_only_refresh = (
+        args.refresh_photos
+        and not args.refresh
+        and not args.enrich
+        and not args.enrich_missing
+        and not args.refresh_enrichment
+        and not args.export_cache_json
+    )
+    if photo_only_refresh and refresh_generated_guide_photos(
+        photo_workers=args.refresh_workers,
+        startup_jitter_seconds=args.refresh_startup_jitter_seconds,
+    ):
+        build_duration = time.perf_counter() - build_started_at
+        print(f"Refreshed place photos in {format_duration_seconds(build_duration)}.")
+        return 0
+
     rebuild_generated_data(
         refresh_photos=args.refresh_photos,
         photo_workers=args.refresh_workers,
