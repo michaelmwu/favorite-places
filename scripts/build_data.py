@@ -20,13 +20,29 @@ from dataclasses import dataclass
 from pathlib import Path
 from statistics import median
 from typing import Any, Literal
-from urllib.parse import parse_qsl, quote_plus, unquote, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 import pycountry
 from pydantic import TypeAdapter
 from PIL import Image, ImageOps, UnidentifiedImageError, features
+
+from scripts.pipeline_models import (
+    AddressParts,
+    EnrichmentCacheEntry,
+    EnrichmentPlace,
+    Guide,
+    GuideManifest,
+    MarkerIcon,
+    NormalizedPlace,
+    PlacesSettings,
+    PlaceField,
+    PlaceProvenance,
+    RawPlace,
+    RawSavedList,
+    SourceConfig,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_DIR_ENV = "FAVORITE_PLACES_SITE_DIR"
@@ -1055,39 +1071,6 @@ MARKER_ICON_TEXT_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
         ),
     ),
 )
-
-try:
-    from pipeline_models import (
-        AddressParts,
-        EnrichmentCacheEntry,
-        EnrichmentPlace,
-        Guide,
-        GuideManifest,
-        MarkerIcon,
-        NormalizedPlace,
-        PlacesSettings,
-        PlaceField,
-        PlaceProvenance,
-        RawPlace,
-        RawSavedList,
-        SourceConfig,
-    )
-except ModuleNotFoundError:
-    from scripts.pipeline_models import (
-        AddressParts,
-        EnrichmentCacheEntry,
-        EnrichmentPlace,
-        Guide,
-        GuideManifest,
-        MarkerIcon,
-        NormalizedPlace,
-        PlacesSettings,
-        PlaceField,
-        PlaceProvenance,
-        RawPlace,
-        RawSavedList,
-        SourceConfig,
-    )
 
 try:
     from gmaps_scraper import (
@@ -2736,21 +2719,6 @@ def guide_location_inliers(coordinates: list[tuple[float, float]]) -> list[tuple
         if distance <= outlier_threshold
     ]
     return inliers or coordinates
-
-
-def percentile(sorted_values: list[float], fraction: float) -> float:
-    if not sorted_values:
-        raise ValueError("Cannot calculate percentile for an empty list.")
-
-    position = (len(sorted_values) - 1) * fraction
-    lower_index = math.floor(position)
-    upper_index = math.ceil(position)
-    if lower_index == upper_index:
-        return sorted_values[lower_index]
-
-    lower_value = sorted_values[lower_index]
-    upper_value = sorted_values[upper_index]
-    return lower_value + (upper_value - lower_value) * (position - lower_index)
 
 
 def enrich_raw_sources(
@@ -4690,13 +4658,11 @@ def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int,
         cache_changed = False
         updated_places: list[RawPlace] = []
 
-        cache_payload = load_places_cache_json(slug)
-        if not cache_payload:
-            cache_payload = load_places_cache_from_sqlite(slug) or {}
-        cache_migration_index = build_cache_migration_index(cache_payload)
+        cache_payload = load_places_cache(slug)
 
         for place in raw.places:
             updated_place = place
+            prior_place_id = stable_place_id(place, source_type=raw.configured_source_type)
             if rewrite_raw_maps_urls:
                 public_maps_url = build_public_google_maps_url(
                     name=place.name,
@@ -4711,17 +4677,15 @@ def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int,
                     raw_places_rewritten += 1
 
             place_id = stable_place_id(updated_place, source_type=raw.configured_source_type)
-            cache_entry, migrated = migrate_cache_entry_for_place(
-                cache_payload,
-                cache_migration_index,
-                place=updated_place,
-                place_id=place_id,
-            )
-            if migrated:
+            cache_entry = cache_payload.get(place_id)
+            if cache_entry is None and prior_place_id != place_id:
+                cache_entry = cache_payload.pop(prior_place_id, None)
+            if cache_entry is not None and place_id not in cache_payload:
+                cache_payload[place_id] = cache_entry
                 cache_changed = True
                 cache_entries_rewritten += 1
             if cache_entry is not None:
-                normalized_entry = migrate_cache_entry(cache_entry, updated_place)
+                normalized_entry = cache_entry.model_copy()
                 if normalized_entry.model_dump(mode="json") != cache_entry.model_dump(mode="json"):
                     cache_payload[place_id] = normalized_entry
                     cache_changed = True
@@ -5840,13 +5804,6 @@ def fetch_place_page_enrichment(
         place,
         city_name=city_name,
         country_name=country_name,
-    )
-    place_url = build_public_google_maps_url(
-        name=place.name,
-        address=place.address,
-        lat=place.lat,
-        lng=place.lng,
-        raw_maps_url=place.maps_url,
     )
     if scrape_place is None:
         return build_cache_entry(

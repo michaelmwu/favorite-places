@@ -3,10 +3,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 
-try:
-    from scripts import build_data
-except ModuleNotFoundError:
-    import build_data
+from scripts import build_data
 
 
 @dataclass(frozen=True)

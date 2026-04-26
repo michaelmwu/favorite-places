@@ -1,0 +1,23 @@
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "biome-check"
+name = "Biome check"
+language = "system"
+entry = "bun run check:biome:files --"
+files = "\\.(astro|css|json|[cm]?[jt]sx?)$"
+
+[[repos.hooks]]
+id = "ruff-check"
+name = "Ruff check"
+language = "system"
+entry = "uv run ruff check --force-exclude"
+files = "^(scripts|tests/python)/.*\\.py$"
+
+[[repos.hooks]]
+id = "mypy-check"
+name = "mypy"
+language = "system"
+entry = "uv run mypy --config-file pyproject.toml"
+files = "^scripts/(pipeline_models|refresh_profiles|refresh_summary)\\.py$"
