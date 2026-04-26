@@ -78,17 +78,6 @@ _ADDRESS_KEYWORD_PATTERN = re.compile(
     r"court|ct|square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
     re.IGNORECASE,
 )
-_ADDRESS_REJECT_SUBSTRINGS = (
-    "about this data",
-    "faviconv2",
-    "imagery ©",
-    "map data ©",
-    "send product feedback",
-    "street view",
-    "termsprivacy",
-)
-_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
-_ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 _PLACE_JS_EXTRACTOR = r"""
 () => {
   const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
@@ -135,14 +124,29 @@ _PLACE_JS_EXTRACTOR = r"""
     return null;
   };
 
+  const isReviewScoped = (element) => {
+    if (!element) {
+      return false;
+    }
+    if (element.closest("[data-review-id]")) {
+      return true;
+    }
+    const label = element.getAttribute?.("aria-label") || "";
+    return /(^|\W)reviews?(\W|$)/i.test(label);
+  };
+
   const firstImageUrl = (selectors, root = panel) => {
     for (const selector of selectors) {
-      const element = root.querySelector(selector);
-      const value = element?.currentSrc
-        || element?.getAttribute("src")?.trim()
-        || element?.getAttribute("data-src")?.trim();
-      if (value) {
-        return value;
+      for (const element of root.querySelectorAll(selector)) {
+        if (isReviewScoped(element)) {
+          continue;
+        }
+        const value = element?.currentSrc
+          || element?.getAttribute("src")?.trim()
+          || element?.getAttribute("data-src")?.trim();
+        if (value) {
+          return value;
+        }
       }
     }
     return null;
@@ -150,14 +154,15 @@ _PLACE_JS_EXTRACTOR = r"""
 
   const firstBackgroundImageUrl = (selectors, root = panel) => {
     for (const selector of selectors) {
-      const element = root.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const style = getComputedStyle(element).backgroundImage || "";
-      const match = style.match(/url\((['"]?)(.*?)\1\)/);
-      if (match?.[2]) {
-        return match[2].trim();
+      for (const element of root.querySelectorAll(selector)) {
+        if (isReviewScoped(element)) {
+          continue;
+        }
+        const style = getComputedStyle(element).backgroundImage || "";
+        const match = style.match(/url\((['"]?)(.*?)\1\)/);
+        if (match?.[2]) {
+          return match[2].trim();
+        }
       }
     }
     return null;
@@ -258,10 +263,6 @@ _PLACE_JS_EXTRACTOR = r"""
     "button[jsaction*='image'] img",
     "button[jsaction*='photo'] img",
     "[data-photo-index] img",
-    "img[src*='googleusercontent.com']",
-    "img[src*='ggpht.com']",
-    "img[data-src*='googleusercontent.com']",
-    "img[data-src*='ggpht.com']",
   ], document)
     || firstBackgroundImageUrl([
       "button[jsaction*='image']",
@@ -499,14 +500,13 @@ def _build_place_details(
         category=category,
         rating=_parse_rating(snapshot.get("rating")),
         review_count=_parse_review_count(snapshot.get("review_count")),
-        address=_clean_address_text(snapshot.get("address"))
-        or _extract_address_from_lines(combined_lines),
+        address=_clean_text(snapshot.get("address")) or _extract_address_from_lines(combined_lines),
         located_in=_clean_text(snapshot.get("located_in")),
         status=_clean_text(snapshot.get("status")) or _extract_status_from_lines(combined_lines),
         website=_normalize_website(snapshot.get("website")),
         phone=_normalize_phone_candidate(snapshot.get("phone"))
         or _extract_phone_from_lines(combined_lines),
-        plus_code=_clean_address_text(snapshot.get("plus_code"))
+        plus_code=_clean_text(snapshot.get("plus_code"))
         or _extract_plus_code_from_lines(combined_lines),
         address_parts=_extract_address_parts(snapshot.get("address_parts")),
         description=_extract_description(snapshot, combined_lines),
@@ -678,40 +678,6 @@ def _clean_text(value: object) -> str | None:
     return normalized
 
 
-def _clean_address_text(value: object) -> str | None:
-    normalized = _clean_text(value)
-    if normalized is None:
-        return None
-
-    lowered = normalized.lower()
-    if lowered.startswith(("http://", "https://", "www.")):
-        return None
-    if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
-        return None
-    if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
-        return None
-    if _ADDRESS_ENTITY_TOKEN_PATTERN.fullmatch(normalized):
-        return None
-    if any(keyword in lowered for keyword in _REVIEW_LABEL_KEYWORDS) and any(
-        character.isdigit() for character in normalized
-    ):
-        return None
-    if normalized.endswith(".") and _PLUS_CODE_PATTERN.search(normalized) is None:
-        return None
-
-    if "·" in normalized:
-        segments = [segment.strip() for segment in normalized.split("·") if segment.strip()]
-        for candidate in reversed(segments):
-            if candidate == normalized:
-                continue
-            if _looks_like_address_line(candidate):
-                return candidate
-
-    if _looks_like_address_line(normalized):
-        return normalized
-    return None
-
-
 def _clean_name_text(value: object) -> str | None:
     normalized = _clean_text(value)
     if normalized is None:
@@ -798,45 +764,33 @@ def _extract_category_from_lines(lines: list[str]) -> str | None:
 
 def _extract_address_from_lines(lines: list[str]) -> str | None:
     for line in lines:
-        normalized = _clean_address_text(line)
-        if normalized is not None:
-            return normalized
+        if _looks_like_address_line(line):
+            return line
     return None
 
 
 def _looks_like_address_line(line: str) -> bool:
-    normalized = _clean_text(line)
-    if normalized is None:
-        return False
-    lowered = normalized.lower()
+    lowered = line.lower()
     if lowered.startswith(("http://", "https://", "www.")):
         return False
     if _looks_like_status_text(line):
         return False
-    if _PHONE_PATTERN.match(normalized):
+    if _PHONE_PATTERN.match(line):
         return False
-    if _ADDRESS_ENTITY_TOKEN_PATTERN.fullmatch(normalized):
+    if _PLUS_CODE_PATTERN.search(line):
         return False
-    if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
-        return False
-    if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
-        return False
-    if _parse_rating(normalized) is not None and "★" not in normalized and "star" not in lowered:
-        if re.fullmatch(r"[0-9]+(?:[.,][0-9]+)?", normalized.strip()):
+    if _parse_rating(line) is not None and "★" not in line and "star" not in lowered:
+        if re.fullmatch(r"[0-9]+(?:[.,][0-9]+)?", line.strip()):
             return False
-    if "〒" in normalized or normalized.startswith("Japan, "):
+    if "〒" in line or line.startswith("Japan, "):
         return True
-    if _PLUS_CODE_PATTERN.search(normalized):
+    if _POSTAL_CODE_PATTERN.search(line) and any(character.isalpha() for character in line):
         return True
-    if _POSTAL_CODE_PATTERN.search(normalized) and any(character.isalpha() for character in normalized):
-        return True
-    if re.search(r"\d", normalized) is None:
+    if re.search(r"\d", line) is None:
         return False
-    if "," in normalized and any(character.isalpha() for character in normalized):
+    if "," in line and any(character.isalpha() for character in line):
         return True
-    if " - " in normalized and any(character.isalpha() for character in normalized):
-        return True
-    return _ADDRESS_KEYWORD_PATTERN.search(normalized) is not None
+    return _ADDRESS_KEYWORD_PATTERN.search(line) is not None
 
 
 def _extract_status_from_lines(lines: list[str]) -> str | None:
@@ -941,6 +895,10 @@ def _normalize_photo_url(value: object) -> str | None:
         return None
     if "streetviewpixels-pa.googleapis.com" in host:
         return None
+    if (
+        "googleusercontent.com" in host or host.endswith("ggpht.com")
+    ) and path.startswith(("/a-", "/a/")):
+        return None
     return normalized
 
 
@@ -951,7 +909,7 @@ def _normalize_google_place_id(value: object) -> str | None:
     return normalized if _GOOGLE_PLACE_ID_PATTERN.fullmatch(normalized) else None
 
 
-_GOOGLE_PLACE_ID_PATTERN = re.compile(r"\bChIJ[0-9A-Za-z_-]{10,}\b")
+_GOOGLE_PLACE_ID_PATTERN = re.compile(r"ChIJ[0-9A-Za-z_-]{10,}")
 _MAPS_ENTITY_TOKEN_PATTERN = re.compile(r"0x[0-9a-fA-F]+:0x[0-9a-fA-F]+")
 _KNOWLEDGE_GRAPH_MID_PATTERN = re.compile(r"^/m/[A-Za-z0-9_-]+$")
 
@@ -960,7 +918,7 @@ def _extract_preview_google_place_id(root: list[object]) -> str | None:
     unique_place_ids: list[str] = []
     seen_place_ids: set[str] = set()
 
-    for node in _iter_preview_lists(root):
+    for node in _iter_lists(root):
         strings = [value for value in node if isinstance(value, str)]
         if not strings:
             continue
@@ -984,13 +942,6 @@ def _extract_preview_google_place_id(root: list[object]) -> str | None:
     return None
 
 
-def _iter_preview_lists(value: object) -> Iterable[list[object]]:
-    if isinstance(value, list):
-        yield value
-        for item in value:
-            yield from _iter_preview_lists(item)
-
-
 def _extract_address_parts(value: object) -> AddressParts | None:
     if not isinstance(value, list):
         return None
@@ -1009,30 +960,6 @@ def _normalize_address_parts(value: list[object]) -> AddressParts | None:
             return None
         normalized.append([cast(str, item) for item in extra])
     return normalized
-
-
-def _extract_preview_address_parts(root: list[object]) -> AddressParts | None:
-    for node in _iter_lists(root):
-        if len(node) < 2:
-            continue
-        raw_parts = node[0]
-        raw_plus_code = node[1]
-        if not isinstance(raw_parts, list) or not isinstance(raw_plus_code, list):
-            continue
-        normalized_parts = _normalize_address_parts(raw_parts)
-        if normalized_parts is None:
-            continue
-        if not any(
-            isinstance(value, list)
-            and any(
-                isinstance(item, str) and _PLUS_CODE_PATTERN.search(item) is not None
-                for item in value
-            )
-            for value in raw_plus_code
-        ):
-            continue
-        return normalized_parts
-    return None
 
 
 def _extract_preview_phone(strings: list[str]) -> str | None:
@@ -1061,15 +988,40 @@ def _extract_preview_plus_code(strings: list[str]) -> str | None:
     return compound_match
 
 
+def _extract_preview_address_parts(root: list[object]) -> AddressParts | None:
+    for node in _iter_lists(root):
+        if len(node) < 2:
+            continue
+        raw_parts = node[0]
+        raw_plus_code = node[1]
+        if not isinstance(raw_parts, list) or not isinstance(raw_plus_code, list):
+            continue
+        normalized_parts = _normalize_address_parts(raw_parts)
+        if normalized_parts is None:
+            continue
+        if not any(
+            isinstance(value, list)
+            and any(
+                isinstance(item, str) and _PLUS_CODE_PATTERN.search(item) is not None
+                for item in value
+            )
+            for value in raw_plus_code
+        ):
+            continue
+        return normalized_parts
+    return None
+
+
 def _extract_preview_address(strings: list[str]) -> str | None:
     candidates: list[str] = []
     for value in strings:
-        normalized = _clean_text(value)
-        if normalized is None:
-            continue
+        normalized = value.strip()
         if "maps/preview/place" in normalized or normalized.startswith("/g/"):
             continue
-        if _clean_address_text(normalized) is not None:
+        if "〒" in normalized or normalized.startswith("Japan, "):
+            candidates.append(normalized)
+            continue
+        if normalized.count(",") >= 2 and re.search(r"\d", normalized):
             candidates.append(normalized)
     if not candidates:
         return None
@@ -1132,8 +1084,6 @@ def _normalize_phone_candidate(value: object) -> str | None:
         return None
     digit_count = sum(character.isdigit() for character in normalized)
     if digit_count < 8 or digit_count > 15:
-        return None
-    if normalized.isdigit() and digit_count == 13 and normalized.startswith("17"):
         return None
     return normalized
 

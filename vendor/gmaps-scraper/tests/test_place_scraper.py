@@ -4,8 +4,8 @@ import json
 import unittest
 
 from gmaps_scraper.place_scraper import (
+    _PLACE_JS_EXTRACTOR,
     _build_place_details,
-    _clean_address_text,
     _clean_category_text,
     _clean_name_text,
     _extract_address_from_lines,
@@ -15,7 +15,9 @@ from gmaps_scraper.place_scraper import (
     _extract_preview_place_enrichment,
     _extract_secondary_name,
     _merge_place_sources,
+    _normalize_google_place_id,
     _normalize_phone_candidate,
+    _normalize_photo_url,
     _normalize_preview_website,
     _parse_review_count,
     _seed_google_consent_cookies,
@@ -23,15 +25,17 @@ from gmaps_scraper.place_scraper import (
 
 
 class PlaceScraperTests(unittest.TestCase):
+    def test_place_js_extractor_skips_review_scoped_photo_nodes(self) -> None:
+        self.assertIn('element.closest("[data-review-id]")', _PLACE_JS_EXTRACTOR)
+        self.assertIn("root.querySelectorAll(selector)", _PLACE_JS_EXTRACTOR)
+        self.assertIn(r"return /(^|\W)reviews?(\W|$)/i.test(label);", _PLACE_JS_EXTRACTOR)
+
     def test_parse_review_count_handles_suffixes(self) -> None:
         self.assertEqual(_parse_review_count("324"), 324)
         self.assertEqual(_parse_review_count("1,296"), 1296)
         self.assertEqual(_parse_review_count("1.296"), 1296)
         self.assertEqual(_parse_review_count("3.6K"), 3600)
         self.assertEqual(_parse_review_count("9.4万"), 94000)
-
-    def test_normalize_phone_candidate_rejects_plain_numeric_ids(self) -> None:
-        self.assertIsNone(_normalize_phone_candidate("1777026232472"))
 
     def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
         details = _build_place_details(
@@ -112,57 +116,6 @@ class PlaceScraperTests(unittest.TestCase):
             "1600 Amphitheatre Parkway, Mountain View, CA 94043",
         )
 
-    def test_extract_address_from_lines_supports_plus_code_addresses(self) -> None:
-        self.assertEqual(
-            _extract_address_from_lines(
-                [
-                    "Tourist attraction",
-                    "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
-                ]
-            ),
-            "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
-        )
-
-    def test_clean_address_text_rejects_page_chrome_and_entity_tokens(self) -> None:
-        self.assertIsNone(
-            _clean_address_text(
-                "Imagery ©2026 , Map data ©2026 United StatesTermsPrivacySend Product Feedback"
-            )
-        )
-        self.assertIsNone(_clean_address_text("/m/0cnyfm6"))
-        self.assertIsNone(
-            _clean_address_text("https://encrypted-tbn3.gstatic.com/faviconV2?foo=bar")
-        )
-        self.assertIsNone(_clean_address_text("Street View & 360°"))
-        self.assertIsNone(_clean_address_text("1,558 reviews"))
-        self.assertIsNone(
-            _clean_address_text(
-                "Unique, 150-m-tall building resembling a picture frame, with historic displays & panoramic views."
-            )
-        )
-
-    def test_clean_address_text_strips_ui_prefixes(self) -> None:
-        self.assertEqual(
-            _clean_address_text("企業のオフィス ·  · Exit 37 - Sheikh Mohammed Bin Zayed Rd"),
-            "Exit 37 - Sheikh Mohammed Bin Zayed Rd",
-        )
-
-    def test_build_place_details_drops_page_chrome_address(self) -> None:
-        details = _build_place_details(
-            "https://www.google.com/maps/place/Dubai+Frame",
-            resolved_url="https://www.google.com/maps/place/Dubai+Frame",
-            snapshot={
-                "name": "Dubai Frame",
-                "category": "Tourist attraction",
-                "address": (
-                    "Imagery ©2026 , Map data ©2026 United StatesTermsPrivacySend Product Feedback"
-                ),
-                "body_text": "Dubai Frame\nTourist attraction",
-            },
-        )
-
-        self.assertIsNone(details.address)
-
     def test_clean_name_text_preserves_names_that_start_with_open_or_closed(self) -> None:
         self.assertEqual(_clean_name_text("Open Kitchen"), "Open Kitchen")
         self.assertEqual(_clean_name_text("Closed Loop Coffee"), "Closed Loop Coffee")
@@ -213,6 +166,15 @@ class PlaceScraperTests(unittest.TestCase):
                 None,
                 None,
                 None,
+                [
+                    [
+                        "0x60188c981788132b:0x6ef132909b155a88",
+                        None,
+                        None,
+                        "/m/0131whcb",
+                        "ChIJ8T36HxCLGGARvpARPDyaKLA",
+                    ]
+                ],
                 None,
                 None,
                 None,
@@ -308,6 +270,19 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(enrichment["phone"], "+81 3-6455-5433")
         self.assertEqual(enrichment["plus_code"], "MPF7+73 Shibuya, Tokyo, Japan")
         self.assertEqual(
+            enrichment["address_parts"],
+            [
+                "2 Chome Jingumae",
+                "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                "Shibuya",
+                "150-0001",
+                "Tokyo",
+                "JP",
+                ["Floor 1"],
+            ],
+        )
+        self.assertEqual(
             enrichment["address"],
             "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 Den, 建築家会館ＪＩＡ館",
         )
@@ -315,49 +290,7 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(enrichment["description"], "Modern setting for fine dining menus")
         self.assertEqual(enrichment["lat"], 35.6731762)
         self.assertEqual(enrichment["lng"], 139.7127216)
-
-    def test_extract_preview_place_enrichment_preserves_google_place_id_and_address_parts(self) -> None:
-        payload_data = [
-            [
-                [
-                    [
-                        [
-                            [
-                                "Trailhead",
-                                "Xinyi District, Taipei City",
-                                "Xinyi District, Taipei City",
-                                "Xinyi District",
-                                "110",
-                                "Taipei City",
-                                "TW",
-                                ["Taiwan"],
-                            ],
-                            [["2HGG+M6 Taipei City, Taiwan"]],
-                        ]
-                    ]
-                ],
-                ["ChIJ8T36HxCLGGARvpARPDyaKLA", "0x3442c8:0xa82c9a3c3c1090be", "/m/0k64r8"],
-                [[None, None, 25.0272, 121.5705]],
-            ]
-        ]
-        payload = ")]}'\n" + json.dumps(payload_data, ensure_ascii=False)
-
-        enrichment = _extract_preview_place_enrichment(payload)
-
         self.assertEqual(enrichment["google_place_id"], "ChIJ8T36HxCLGGARvpARPDyaKLA")
-        self.assertEqual(
-            enrichment["address_parts"],
-            [
-                "Trailhead",
-                "Xinyi District, Taipei City",
-                "Xinyi District, Taipei City",
-                "Xinyi District",
-                "110",
-                "Taipei City",
-                "TW",
-                ["Taiwan"],
-            ],
-        )
 
     def test_extract_preview_description_preserves_text_starting_with_open(self) -> None:
         description = _extract_preview_description(
@@ -382,6 +315,29 @@ class PlaceScraperTests(unittest.TestCase):
         )
 
         self.assertEqual(description, "Open now for lunch and dinner service.")
+
+    def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
+        payload_data = [
+            [
+                [
+                    [
+                        "2 Chome Jingumae",
+                        "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                        "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                        "Shibuya",
+                        "150-0001",
+                        "Tokyo",
+                        "JP",
+                        ["Floor 1", 3],
+                    ],
+                    ["0ahUKE", "8Q7XMPF7+73", ["MPF7+73 Shibuya, Tokyo, Japan"], 3],
+                ]
+            ]
+        ]
+        payload = ")]}'\n" + json.dumps(payload_data, ensure_ascii=False)
+        enrichment = _extract_preview_place_enrichment(payload)
+
+        self.assertNotIn("address_parts", enrichment)
 
     def test_extract_preview_coordinates_ignores_short_integer_pairs(self) -> None:
         root = [
@@ -519,25 +475,24 @@ class PlaceScraperTests(unittest.TestCase):
             "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
         )
 
-    def test_build_place_details_preserves_google_place_id_and_address_parts(self) -> None:
+    def test_build_place_details_preserves_google_place_id(self) -> None:
         details = _build_place_details(
-            "https://www.google.com/maps/place/Elephant+Mountain",
-            resolved_url="https://www.google.com/maps/place/Elephant+Mountain",
+            "https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z",
             snapshot={
-                "name": "象山",
+                "name": "Den",
                 "google_place_id": "ChIJ8T36HxCLGGARvpARPDyaKLA",
-                "address": "2HGG+M6",
                 "address_parts": [
-                    "Trailhead",
-                    "Xinyi District, Taipei City",
-                    "Xinyi District, Taipei City",
-                    "Xinyi District",
-                    "110",
-                    "Taipei City",
-                    "TW",
-                    ["Taiwan"],
+                    "2 Chome Jingumae",
+                    "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                    "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                    "Shibuya",
+                    "150-0001",
+                    "Tokyo",
+                    "JP",
+                    ["Floor 1"],
                 ],
-                "body_text": "象山",
+                "body_text": "Den\nJapanese restaurant",
             },
         )
 
@@ -545,15 +500,43 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(
             details.address_parts,
             [
-                "Trailhead",
-                "Xinyi District, Taipei City",
-                "Xinyi District, Taipei City",
-                "Xinyi District",
-                "110",
-                "Taipei City",
-                "TW",
-                ["Taiwan"],
+                "2 Chome Jingumae",
+                "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                "Shibuya",
+                "150-0001",
+                "Tokyo",
+                "JP",
+                ["Floor 1"],
             ],
+        )
+
+    def test_build_place_details_rejects_invalid_address_parts(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z",
+            snapshot={
+                "name": "Den",
+                "address_parts": [
+                    "2 Chome Jingumae",
+                    "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                    "Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+                    "Shibuya",
+                    "150-0001",
+                    "Tokyo",
+                    "JP",
+                    ["Floor 1", 3],
+                ],
+                "body_text": "Den\nJapanese restaurant",
+            },
+        )
+
+        self.assertIsNone(details.address_parts)
+
+    def test_normalize_google_place_id_accepts_trailing_hyphen(self) -> None:
+        self.assertEqual(
+            _normalize_google_place_id("ChIJabcdefghij-"),
+            "ChIJabcdefghij-",
         )
 
     def test_build_place_details_rejects_street_view_as_photo(self) -> None:
@@ -575,12 +558,37 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIsNone(details.main_photo_url)
         self.assertIsNone(details.photo_url)
 
+    def test_build_place_details_rejects_google_avatar_as_photo(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Fa+Burger",
+            resolved_url="https://www.google.com/maps/place/Fa+Burger",
+            snapshot={
+                "name": "Fa Burger",
+                "main_photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjW_avatar",
+                "photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjW_avatar",
+                "body_text": "Fa Burger",
+            },
+        )
+
+        self.assertIsNone(details.main_photo_url)
+        self.assertIsNone(details.photo_url)
+
     def test_extract_secondary_name_aborts_when_rating_line_follows_name(self) -> None:
         self.assertIsNone(
             _extract_secondary_name(
                 ["Den", "4.4", "傳"],
                 name="Den",
             )
+        )
+
+    def test_normalize_photo_url_rejects_google_avatar_urls(self) -> None:
+        self.assertIsNone(
+            _normalize_photo_url("https://lh3.googleusercontent.com/a-/ALV-UjW_avatar")
+        )
+        self.assertIsNone(_normalize_photo_url("https://lh5.ggpht.com/a/example-avatar"))
+        self.assertEqual(
+            _normalize_photo_url("https://lh3.googleusercontent.com/p/example=s680-w680-h510"),
+            "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
         )
 
     def test_normalize_preview_website_rejects_streetview_thumbnail_urls(self) -> None:
