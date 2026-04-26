@@ -28,21 +28,38 @@ import pycountry
 from pydantic import TypeAdapter
 from PIL import Image, ImageOps, UnidentifiedImageError, features
 
-from scripts.pipeline_models import (
-    AddressParts,
-    EnrichmentCacheEntry,
-    EnrichmentPlace,
-    Guide,
-    GuideManifest,
-    MarkerIcon,
-    NormalizedPlace,
-    PlacesSettings,
-    PlaceField,
-    PlaceProvenance,
-    RawPlace,
-    RawSavedList,
-    SourceConfig,
-)
+try:
+    from scripts.pipeline_models import (
+        AddressParts,
+        EnrichmentCacheEntry,
+        EnrichmentPlace,
+        Guide,
+        GuideManifest,
+        MarkerIcon,
+        NormalizedPlace,
+        PlacesSettings,
+        PlaceField,
+        PlaceProvenance,
+        RawPlace,
+        RawSavedList,
+        SourceConfig,
+    )
+except ModuleNotFoundError:
+    from pipeline_models import (
+        AddressParts,
+        EnrichmentCacheEntry,
+        EnrichmentPlace,
+        Guide,
+        GuideManifest,
+        MarkerIcon,
+        NormalizedPlace,
+        PlacesSettings,
+        PlaceField,
+        PlaceProvenance,
+        RawPlace,
+        RawSavedList,
+        SourceConfig,
+    )
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_DIR_ENV = "FAVORITE_PLACES_SITE_DIR"
@@ -4684,12 +4701,6 @@ def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int,
                 cache_payload[place_id] = cache_entry
                 cache_changed = True
                 cache_entries_rewritten += 1
-            if cache_entry is not None:
-                normalized_entry = cache_entry.model_copy()
-                if normalized_entry.model_dump(mode="json") != cache_entry.model_dump(mode="json"):
-                    cache_payload[place_id] = normalized_entry
-                    cache_changed = True
-                    cache_entries_rewritten += 1
 
             updated_places.append(updated_place)
 

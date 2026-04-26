@@ -2,8 +2,15 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from scripts import build_data
+if TYPE_CHECKING:
+    from scripts import build_data as build_data
+else:
+    try:
+        from scripts import build_data as build_data
+    except ImportError:
+        import build_data as build_data
 
 
 @dataclass(frozen=True)
