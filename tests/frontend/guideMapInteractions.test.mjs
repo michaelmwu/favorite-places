@@ -208,8 +208,11 @@ describe("guide map interactions", () => {
       'const hasMappablePlaces = root.dataset.hasMappablePlaces === "true";',
     );
     expect(filters).toContain("const requestCurrentLocationDirectly = () => {");
+    expect(filters).toContain("const applySortSelection = (");
+    expect(filters).toContain('root.addEventListener("guide:sort-request"');
     expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
     expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");
+    expect(guideMap).toContain('new CustomEvent("guide:sort-request"');
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');

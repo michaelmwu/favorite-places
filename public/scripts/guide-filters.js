@@ -774,6 +774,24 @@ if (root) {
     nearbyDistanceByPlaceId = buildNearbyDistanceMap(cards, currentLocation);
   };
 
+  const applySortSelection = (
+    sortValue,
+    { requestLocationIfNeeded = false, source = "list-filter" } = {},
+  ) => {
+    if (!sortSelect) {
+      return;
+    }
+
+    sortSelect.value = sortValue;
+    setLocationSortMessage("");
+
+    if (sortValue === LOCATION_SORT_VALUE && requestLocationIfNeeded && !currentLocation) {
+      requestCurrentLocation();
+    }
+
+    update(source);
+  };
+
   const update = (source = "list-filter") => {
     const query = searchInput ? getSanitizedQuery(searchInput.value) : "";
     const normalizedQuery = query.toLowerCase();
@@ -1014,16 +1032,10 @@ if (root) {
   });
 
   sortSelect?.addEventListener("change", () => {
-    if (sortSelect.value === LOCATION_SORT_VALUE) {
-      setLocationSortMessage("");
-      if (!currentLocation) {
-        requestCurrentLocation();
-      }
-    } else {
-      setLocationSortMessage("");
-    }
-
-    update();
+    applySortSelection(sortSelect.value, {
+      requestLocationIfNeeded: true,
+      source: "sort-change",
+    });
   });
 
   typeButtons.forEach((button) => {
@@ -1111,6 +1123,17 @@ if (root) {
   });
 
   root.addEventListener("guide:map-frame-reset-request", clearMapFrameFilter);
+
+  root.addEventListener("guide:sort-request", (event) => {
+    const sortValue = event.detail?.sortValue || "";
+    if (sortValue !== LOCATION_SORT_VALUE) {
+      return;
+    }
+
+    applySortSelection(sortValue, {
+      source: "map-sort-request",
+    });
+  });
 
   root.addEventListener("guide:user-location", (event) => {
     hasHandledLocationRequest = true;

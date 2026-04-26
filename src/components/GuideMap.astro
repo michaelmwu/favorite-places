@@ -1148,6 +1148,14 @@ const mapPlaces = places
     };
 
     const centerOnCurrentLocation = () => {
+      root?.dispatchEvent(
+        new CustomEvent("guide:sort-request", {
+          bubbles: true,
+          detail: {
+            sortValue: "nearby",
+          },
+        }),
+      );
       pendingLocationCenter = true;
       startLocationAvailabilityWatch();
       if (!runtime || !currentLocation || !locationIsNearGuide(currentLocation)) return;
