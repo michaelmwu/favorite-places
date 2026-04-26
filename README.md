@@ -21,6 +21,16 @@ bun install
 uv sync
 ```
 
+Optional local pre-commit hook setup:
+
+```bash
+uv tool install prek
+prek install
+prek run --all-files
+```
+
+This installs a `prek`-managed pre-commit hook that runs Biome checks on staged frontend files, `ruff` on staged Python files under `scripts/` and `tests/python/`, and `mypy` on the typed pipeline helper modules under `scripts/`.
+
 Preview the committed example site pack:
 
 ```bash

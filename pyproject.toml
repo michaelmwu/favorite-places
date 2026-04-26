@@ -12,5 +12,29 @@ dependencies = [
   "pydantic-settings>=2.10.0,<3.0.0",
 ]
 
+[dependency-groups]
+dev = [
+  "mypy>=1.18.2,<2.0.0",
+  "ruff>=0.14.1,<0.15.0",
+]
+
 [tool.uv.sources]
 gmaps-scraper = { path = "vendor/gmaps-scraper" }
+
+[tool.ruff]
+target-version = "py314"
+extend-exclude = ["vendor"]
+
+[tool.mypy]
+python_version = "3.14"
+files = [
+  "scripts/pipeline_models.py",
+  "scripts/refresh_profiles.py",
+  "scripts/refresh_summary.py",
+]
+exclude = ["^vendor/"]
+check_untyped_defs = true
+follow_imports = "silent"
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_unused_ignores = true

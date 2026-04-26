@@ -14,6 +14,7 @@ import sqlite3
 import time
 import unicodedata
 from collections import Counter
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
@@ -21,13 +22,46 @@ from functools import lru_cache
 from pathlib import Path
 from statistics import median
 from typing import Any, Literal
-from urllib.parse import parse_qsl, quote_plus, unquote, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 import pycountry
 from pydantic import TypeAdapter
 from PIL import Image, ImageOps, UnidentifiedImageError, features
+
+try:
+    from scripts.pipeline_models import (
+        AddressParts,
+        EnrichmentCacheEntry,
+        EnrichmentPlace,
+        Guide,
+        GuideManifest,
+        MarkerIcon,
+        NormalizedPlace,
+        PlacesSettings,
+        PlaceField,
+        PlaceProvenance,
+        RawPlace,
+        RawSavedList,
+        SourceConfig,
+    )
+except ModuleNotFoundError:
+    from pipeline_models import (
+        AddressParts,
+        EnrichmentCacheEntry,
+        EnrichmentPlace,
+        Guide,
+        GuideManifest,
+        MarkerIcon,
+        NormalizedPlace,
+        PlacesSettings,
+        PlaceField,
+        PlaceProvenance,
+        RawPlace,
+        RawSavedList,
+        SourceConfig,
+    )
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_DIR_ENV = "FAVORITE_PLACES_SITE_DIR"
@@ -94,6 +128,8 @@ PHOTO_DOWNLOAD_TIMEOUT_SECONDS = 20
 PHOTO_CARD_WIDTH = 800
 PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
+MIN_PLACE_PHOTO_SOURCE_DIMENSION = 200
+PLACE_PHOTO_SOURCE_DIMENSION_RE = re.compile(r"w(?P<width>\d+)-h(?P<height>\d+)")
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
 PLACES_SQLITE_SIGNATURE_VERSION = 3
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
@@ -1064,39 +1100,6 @@ MARKER_ICON_TEXT_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 try:
-    from pipeline_models import (
-        AddressParts,
-        EnrichmentCacheEntry,
-        EnrichmentPlace,
-        Guide,
-        GuideManifest,
-        MarkerIcon,
-        NormalizedPlace,
-        PlacesSettings,
-        PlaceField,
-        PlaceProvenance,
-        RawPlace,
-        RawSavedList,
-        SourceConfig,
-    )
-except ModuleNotFoundError:
-    from scripts.pipeline_models import (
-        AddressParts,
-        EnrichmentCacheEntry,
-        EnrichmentPlace,
-        Guide,
-        GuideManifest,
-        MarkerIcon,
-        NormalizedPlace,
-        PlacesSettings,
-        PlaceField,
-        PlaceProvenance,
-        RawPlace,
-        RawSavedList,
-        SourceConfig,
-    )
-
-try:
     from gmaps_scraper import (
         BrowserSessionConfig,
         HttpSessionConfig,
@@ -1872,6 +1875,16 @@ def refresh_generated_guide_photos(
     if not guide_paths:
         return False
 
+    raw_paths = sorted(RAW_DIR.glob("*.json"))
+    generated_slugs = {path.stem for path in guide_paths}
+    raw_slugs = {path.stem for path in raw_paths}
+    if generated_slugs != raw_slugs:
+        print(
+            "WARNING: Generated and raw guide sets differ; falling back to a full rebuild.",
+            flush=True,
+        )
+        return False
+
     PUBLIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
     PLACE_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -2493,7 +2506,7 @@ def place_is_visible_in_ui(place: NormalizedPlace) -> bool:
     return not place.hidden and not place_is_permanently_closed(place)
 
 
-def percentile(values: list[int], rank: float) -> float | None:
+def percentile(values: Sequence[float | int], rank: float) -> float | None:
     if not values:
         return None
 
@@ -2856,21 +2869,6 @@ def _guide_location_inliers_cached(
     return tuple(inliers) or coordinates
 
 
-def percentile(sorted_values: list[float], fraction: float) -> float:
-    if not sorted_values:
-        raise ValueError("Cannot calculate percentile for an empty list.")
-
-    position = (len(sorted_values) - 1) * fraction
-    lower_index = math.floor(position)
-    upper_index = math.ceil(position)
-    if lower_index == upper_index:
-        return sorted_values[lower_index]
-
-    lower_value = sorted_values[lower_index]
-    upper_value = sorted_values[upper_index]
-    return lower_value + (upper_value - lower_value) * (position - lower_index)
-
-
 def enrich_raw_sources(
     *,
     force_refresh: bool,
@@ -3185,7 +3183,62 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
+    place.photo_url = sanitize_place_photo_url(place.photo_url)
     return place
+
+
+def canonicalize_enrichment_cache_entry(entry: EnrichmentCacheEntry | None) -> EnrichmentCacheEntry | None:
+    if entry is None:
+        return None
+    canonicalize_enrichment_place(entry.place)
+    return entry
+
+
+def canonicalized_enrichment_cache_entry_copy(entry: EnrichmentCacheEntry | None) -> EnrichmentCacheEntry | None:
+    if entry is None:
+        return None
+    return entry.model_copy(
+        update={
+            "place": canonicalize_enrichment_place(entry.place.model_copy()) if entry.place is not None else None
+        }
+    )
+
+
+def sanitize_place_photo_url(value: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+
+    url_parts = urlsplit(normalized)
+    host = (url_parts.hostname or "").lower()
+    path = url_parts.path.lower()
+    if "staticmap" in path:
+        return None
+    if (
+        (host.endswith("googleusercontent.com") or host.endswith("ggpht.com"))
+        and path.startswith(("/a-", "/a/"))
+    ):
+        return None
+
+    dimensions = extract_place_photo_source_dimensions(normalized)
+    if (
+        dimensions is not None
+        and (
+            dimensions[0] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+            or dimensions[1] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+        )
+    ):
+        return None
+
+    return normalized
+
+
+def extract_place_photo_source_dimensions(value: str) -> tuple[int, int] | None:
+    match = PLACE_PHOTO_SOURCE_DIMENSION_RE.search(value)
+    if match is None:
+        return None
+    return int(match.group("width")), int(match.group("height"))
 
 
 def normalized_enrichment_type_ids(
@@ -4586,6 +4639,9 @@ def preserve_existing_enrichment(
     existing_entry: EnrichmentCacheEntry | None,
     refreshed_entry: EnrichmentCacheEntry,
 ) -> tuple[EnrichmentCacheEntry, str | None]:
+    canonicalize_enrichment_cache_entry(existing_entry)
+    canonicalize_enrichment_cache_entry(refreshed_entry)
+
     if not cache_entry_has_publishable_enrichment(existing_entry):
         return refreshed_entry, None
 
@@ -4599,8 +4655,6 @@ def preserve_existing_enrichment(
 
     previous_place = existing_entry.place
     refreshed_place = refreshed_entry.place
-    canonicalize_enrichment_place(previous_place)
-    canonicalize_enrichment_place(refreshed_place)
     assert previous_place is not None
     assert refreshed_place is not None
 
@@ -4756,7 +4810,10 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
     for place_id, cache_json in rows:
         if not isinstance(place_id, str) or not isinstance(cache_json, str):
             continue
-        result[place_id] = EnrichmentCacheEntry.model_validate_json(cache_json)
+        entry = EnrichmentCacheEntry.model_validate_json(cache_json)
+        canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+        assert canonicalized_entry is not None
+        result[place_id] = canonicalized_entry
     return result
 
 
@@ -4771,14 +4828,11 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                 (slug,),
             )
             if payload:
-                connection.executemany(
-                    """
-                    INSERT INTO guide_enrichment_cache (
-                        guide_slug, place_id, fetched_at, last_verified_at, refresh_after, source,
-                        query, input_signature, matched, score, error, error_body, cache_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    [
+                serialized_rows = []
+                for place_id, entry in sorted(payload.items()):
+                    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+                    assert canonicalized_entry is not None
+                    serialized_rows.append(
                         (
                             slug,
                             place_id,
@@ -4792,10 +4846,21 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                             entry.score,
                             entry.error,
                             entry.error_body,
-                            json.dumps(entry.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")),
+                            json.dumps(
+                                canonicalized_entry.model_dump(mode="json"),
+                                ensure_ascii=False,
+                                separators=(",", ":"),
+                            ),
                         )
-                        for place_id, entry in sorted(payload.items())
-                    ],
+                    )
+                connection.executemany(
+                    """
+                    INSERT INTO guide_enrichment_cache (
+                        guide_slug, place_id, fetched_at, last_verified_at, refresh_after, source,
+                        query, input_signature, matched, score, error, error_body, cache_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    serialized_rows,
                 )
     finally:
         connection.close()
@@ -4832,13 +4897,11 @@ def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int,
         cache_changed = False
         updated_places: list[RawPlace] = []
 
-        cache_payload = load_places_cache_json(slug)
-        if not cache_payload:
-            cache_payload = load_places_cache_from_sqlite(slug) or {}
-        cache_migration_index = build_cache_migration_index(cache_payload)
+        cache_payload = load_places_cache(slug)
 
         for place in raw.places:
             updated_place = place
+            prior_place_id = stable_place_id(place, source_type=raw.configured_source_type)
             if rewrite_raw_maps_urls:
                 public_maps_url = build_public_google_maps_url(
                     name=place.name,
@@ -4853,21 +4916,13 @@ def migrate_cache_to_sqlite(*, rewrite_raw_maps_urls: bool = True) -> tuple[int,
                     raw_places_rewritten += 1
 
             place_id = stable_place_id(updated_place, source_type=raw.configured_source_type)
-            cache_entry, migrated = migrate_cache_entry_for_place(
-                cache_payload,
-                cache_migration_index,
-                place=updated_place,
-                place_id=place_id,
-            )
-            if migrated:
+            cache_entry = cache_payload.get(place_id)
+            if cache_entry is None and prior_place_id != place_id:
+                cache_entry = cache_payload.pop(prior_place_id, None)
+            if cache_entry is not None and place_id not in cache_payload:
+                cache_payload[place_id] = cache_entry
                 cache_changed = True
                 cache_entries_rewritten += 1
-            if cache_entry is not None:
-                normalized_entry = migrate_cache_entry(cache_entry, updated_place)
-                if normalized_entry.model_dump(mode="json") != cache_entry.model_dump(mode="json"):
-                    cache_payload[place_id] = normalized_entry
-                    cache_changed = True
-                    cache_entries_rewritten += 1
 
             updated_places.append(updated_place)
 
@@ -5673,10 +5728,12 @@ def resolve_existing_place_photo_path(
         if flat_index is not None:
             canonical_match = flat_index.exact_by_stem.get(canonical_place_photo_stem(place_id, photo_url))
             if canonical_match:
+                remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
                 return public_photo_path(canonical_match), None
         else:
             canonical_matches = sorted(PLACE_PHOTOS_DIR.glob(filename_glob))
             if canonical_matches:
+                remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
                 return public_photo_path(canonical_matches[0].name), None
 
         legacy_matches = sorted((PLACE_PHOTOS_DIR / slug).glob(filename_glob))
@@ -6037,13 +6094,6 @@ def fetch_place_page_enrichment(
         place,
         city_name=city_name,
         country_name=country_name,
-    )
-    place_url = build_public_google_maps_url(
-        name=place.name,
-        address=place.address,
-        lat=place.lat,
-        lng=place.lng,
-        raw_maps_url=place.maps_url,
     )
     if scrape_place is None:
         return build_cache_entry(
@@ -6459,8 +6509,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         if description_address is not None:
             formatted_address = description_address
             description = None
-    main_photo_url = as_string(getattr(details, "main_photo_url", None))
-    photo_url = as_string(getattr(details, "photo_url", None))
+    main_photo_url = sanitize_place_photo_url(getattr(details, "main_photo_url", None))
+    photo_url = sanitize_place_photo_url(getattr(details, "photo_url", None))
     if from_search_url:
         description = None
     limited_view = bool(getattr(details, "limited_view", False))
