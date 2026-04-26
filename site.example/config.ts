@@ -41,7 +41,6 @@ export const siteConfig = {
     showTags: true,
     maxTags: 4,
     showPlaceCount: true,
-    showTopCategory: true,
   },
   placeCard: {
     showPhoto: true,
