@@ -212,7 +212,11 @@ describe("guide map interactions", () => {
     expect(filters).toContain('root.addEventListener("guide:sort-request"');
     expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
     expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");
-    expect(guideMap).toContain('new CustomEvent("guide:sort-request"');
+    expect(guideMap).toContain("let pendingLocationSortRequest = false;");
+    expect(guideMap).toContain("const requestNearbySort = () => {");
+    expect(guideMap).toContain("if (locationNearGuide && pendingLocationSortRequest) {");
+    expect(guideMap).toContain("pendingLocationSortRequest = true;");
+    expect(guideMap).toContain("requestNearbySort();");
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');

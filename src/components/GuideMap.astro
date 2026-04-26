@@ -902,6 +902,7 @@ const mapPlaces = places
     let hoveredPlaceId = "";
     let currentLocation: Coordinates | null = null;
     let pendingLocationCenter = false;
+    let pendingLocationSortRequest = false;
     let locationWatchStarted = false;
     let locationWatchId: number | null = null;
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
@@ -923,6 +924,17 @@ const mapPlaces = places
             coordinates: currentLocation,
             nearGuide: currentLocation ? locationIsNearGuide(currentLocation) : false,
             status,
+          },
+        }),
+      );
+    };
+
+    const requestNearbySort = () => {
+      root?.dispatchEvent(
+        new CustomEvent("guide:sort-request", {
+          bubbles: true,
+          detail: {
+            sortValue: "nearby",
           },
         }),
       );
@@ -1095,8 +1107,9 @@ const mapPlaces = places
     const updateLocationFromPosition = (position: GeolocationPosition) => {
       currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
       runtime?.setUserLocation(currentLocation);
+      const locationNearGuide = locationIsNearGuide(currentLocation);
 
-      if (locationIsNearGuide(currentLocation)) {
+      if (locationNearGuide) {
         setLocationButtonState("near", "Center map on current location");
         if (pendingLocationCenter && runtime) {
           pendingLocationCenter = false;
@@ -1104,10 +1117,16 @@ const mapPlaces = places
         }
       } else {
         pendingLocationCenter = false;
+        pendingLocationSortRequest = false;
         setLocationButtonState("far", "Current location is too far from this guide");
       }
 
       dispatchUserLocation("available");
+
+      if (locationNearGuide && pendingLocationSortRequest) {
+        pendingLocationSortRequest = false;
+        requestNearbySort();
+      }
     };
 
     const startLocationAvailabilityWatch = () => {
@@ -1117,6 +1136,8 @@ const mapPlaces = places
       if (!navigator.geolocation) {
         setLocationButtonState("unavailable", "Current location is not available");
         currentLocation = null;
+        pendingLocationCenter = false;
+        pendingLocationSortRequest = false;
         runtime?.setUserLocation(null);
         dispatchUserLocation("unavailable");
         return;
@@ -1129,6 +1150,7 @@ const mapPlaces = places
         updateLocationFromPosition,
         (error) => {
           pendingLocationCenter = false;
+          pendingLocationSortRequest = false;
           if (locationWatchId !== null) {
             navigator.geolocation.clearWatch(locationWatchId);
             locationWatchId = null;
@@ -1148,19 +1170,23 @@ const mapPlaces = places
     };
 
     const centerOnCurrentLocation = () => {
-      root?.dispatchEvent(
-        new CustomEvent("guide:sort-request", {
-          bubbles: true,
-          detail: {
-            sortValue: "nearby",
-          },
-        }),
-      );
+      if (runtime && currentLocation) {
+        if (!locationIsNearGuide(currentLocation)) {
+          pendingLocationCenter = false;
+          pendingLocationSortRequest = false;
+          return;
+        }
+
+        pendingLocationCenter = false;
+        pendingLocationSortRequest = false;
+        requestNearbySort();
+        runtime.setView(currentLocation, 15);
+        return;
+      }
+
       pendingLocationCenter = true;
+      pendingLocationSortRequest = true;
       startLocationAvailabilityWatch();
-      if (!runtime || !currentLocation || !locationIsNearGuide(currentLocation)) return;
-      pendingLocationCenter = false;
-      runtime.setView(currentLocation, 15);
     };
 
     const resetToFullArea = () => {
