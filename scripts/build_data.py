@@ -155,6 +155,7 @@ CREATE TABLE canonical_places (
     normalized_primary_category_localized TEXT,
     normalized_tags_json TEXT NOT NULL,
     normalized_vibe_tags_json TEXT NOT NULL,
+    normalized_locality_path_json TEXT NOT NULL,
     normalized_neighborhood TEXT,
     normalized_note TEXT,
     normalized_why_recommended TEXT,
@@ -218,6 +219,7 @@ CREATE TABLE guide_places (
     is_featured INTEGER NOT NULL,
     is_best_hit INTEGER NOT NULL,
     place_name TEXT NOT NULL,
+    locality_path_json TEXT NOT NULL,
     neighborhood TEXT,
     primary_category TEXT,
     primary_category_localized TEXT,
@@ -1040,6 +1042,7 @@ MARKER_ICON_TEXT_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 try:
     from pipeline_models import (
+        AddressParts,
         EnrichmentCacheEntry,
         EnrichmentPlace,
         Guide,
@@ -1055,6 +1058,7 @@ try:
     )
 except ModuleNotFoundError:
     from scripts.pipeline_models import (
+        AddressParts,
         EnrichmentCacheEntry,
         EnrichmentPlace,
         Guide,
@@ -1993,10 +1997,21 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
-        neighborhood = as_string(override.get("neighborhood")) or infer_neighborhood(
-            place.address,
-            city_name=city_name,
+        normalized_address = place.address or enrichment.formatted_address
+        neighborhood_uses_enrichment_address = (
+            not as_string(override.get("neighborhood")) and not place.address and bool(enrichment.formatted_address)
         )
+        locality_path = merge_inferred_localities(
+            infer_address_localities(
+                normalized_address,
+                city_name=city_name,
+            ),
+            infer_address_parts_localities(
+                enrichment.address_parts,
+                city_name=city_name,
+            ),
+        )
+        neighborhood = as_string(override.get("neighborhood")) or (locality_path[0] if locality_path else None)
         hidden = bool(override.get("hidden", False))
         top_pick_override = as_bool(override.get("top_pick"))
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
@@ -2032,7 +2047,6 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         if prefer_enrichment_names and enrichment.display_name:
             preferred_name = enrichment.display_name
         normalized_name = as_string(override.get("name")) or preferred_name
-        normalized_address = place.address or enrichment.formatted_address
         maps_url = build_public_google_maps_url(
             name=normalized_name,
             address=normalized_address,
@@ -2061,6 +2075,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             marker_icon=marker_icon,
             tags=tags,
             vibe_tags=vibe_tags,
+            locality_path=locality_path,
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
@@ -2084,6 +2099,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             top_pick_override=top_pick_override,
             status=status,
             prefer_enrichment_names=prefer_enrichment_names,
+            neighborhood_uses_enrichment_address=neighborhood_uses_enrichment_address,
         )
         normalized_places.append(normalized)
         if primary_category and not place_is_permanently_closed(normalized):
@@ -2158,6 +2174,7 @@ def build_place_provenance(
     top_pick_override: bool | None,
     status: str,
     prefer_enrichment_names: bool,
+    neighborhood_uses_enrichment_address: bool,
 ) -> PlaceProvenance:
     manual_name = as_string(override.get("name"))
     manual_category = as_string(override.get("primary_category"))
@@ -2223,10 +2240,18 @@ def build_place_provenance(
         city_name=city_name,
         tags=tags,
     )
+    if normalized.locality_path:
+        provenance.locality_path = (
+            google_places_field(normalized.locality_path, enrichment_cache_entry)
+            if neighborhood_uses_enrichment_address
+            else google_list_field(normalized.locality_path, raw)
+        )
     if normalized.neighborhood:
         provenance.neighborhood = (
             manual_place_field(normalized.neighborhood)
             if manual_neighborhood
+            else google_places_field(normalized.neighborhood, enrichment_cache_entry)
+            if neighborhood_uses_enrichment_address
             else google_list_field(normalized.neighborhood, raw)
         )
     if normalized.note:
@@ -2768,8 +2793,8 @@ def enrich_place_job(
     refresh_reason: str,
     place_payload: dict[str, Any],
     *,
-    city_name: str | None,
-    country_name: str | None,
+    city_name: str | None = None,
+    country_name: str | None = None,
     api_key: str | None,
     strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
     refresh_startup_jitter_seconds: float,
@@ -3262,6 +3287,7 @@ def search_index_place_entry(guide: Guide, place: NormalizedPlace) -> dict[str, 
         "country_code": guide.country_code,
         "name": place.name,
         "category": place.primary_category,
+        "locality_path": place.locality_path,
         "neighborhood": place.neighborhood,
         "tags": place.tags,
         "vibe_tags": place.vibe_tags,
@@ -3281,6 +3307,7 @@ def search_index_place_entry(guide: Guide, place: NormalizedPlace) -> dict[str, 
                 place.why_recommended,
                 place.primary_category,
                 place.neighborhood,
+                " ".join(place.locality_path),
                 " ".join(place.tags),
                 " ".join(place.vibe_tags),
                 guide.title,
@@ -3435,11 +3462,63 @@ def infer_neighborhood(address: str | None, *, city_name: str | None = None) -> 
     return None
 
 
+def merge_inferred_localities(*locality_lists: list[str]) -> list[str]:
+    merged: list[str] = []
+    for locality_list in locality_lists:
+        for locality in locality_list:
+            append_unique_locality(merged, locality)
+    return merged
+
+
+def infer_address_parts_localities(
+    address_parts: AddressParts | None,
+    *,
+    city_name: str | None = None,
+) -> list[str]:
+    if not address_parts:
+        return []
+
+    candidates: list[str] = []
+    for index in (1, 2, 3, 5):
+        if index >= len(address_parts):
+            continue
+        value = address_parts[index]
+        if isinstance(value, str) and value.strip():
+            candidates.append(value.strip())
+
+    if len(address_parts) >= 8 and isinstance(address_parts[7], list):
+        candidates.extend(value.strip() for value in address_parts[7] if isinstance(value, str) and value.strip())
+
+    localities: list[str] = []
+    for candidate in candidates:
+        localities = merge_inferred_localities(
+            localities,
+            infer_address_localities(candidate, city_name=city_name),
+        )
+        normalized_candidate = normalize_address_locality_part(candidate)
+        if normalized_candidate is None:
+            continue
+        candidate_key = normalize_locality_key(normalized_candidate)
+        city_key = normalize_locality_key(city_name)
+        city_equivalence_key = normalize_locality_equivalence_key(city_name)
+        candidate_equivalence_key = normalize_locality_equivalence_key(normalized_candidate)
+        if (
+            not candidate_key
+            or candidate_key == city_key
+            or (city_equivalence_key and candidate_equivalence_key == city_equivalence_key)
+        ):
+            continue
+        append_unique_locality(localities, normalized_candidate)
+
+    return localities
+
+
 def infer_address_localities(address: str | None, *, city_name: str | None = None) -> list[str]:
     if address is None:
         return []
 
     city_key = normalize_locality_key(city_name)
+    city_equivalence_key = normalize_locality_equivalence_key(city_name)
     neighborhoods: list[str] = []
     subcities: list[str] = []
 
@@ -3448,7 +3527,8 @@ def infer_address_localities(address: str | None, *, city_name: str | None = Non
         if candidate is None:
             continue
         key = normalize_locality_key(candidate)
-        if not key or key == city_key:
+        equivalent_key = normalize_locality_equivalence_key(candidate)
+        if not key or key == city_key or (city_equivalence_key and equivalent_key == city_equivalence_key):
             continue
         if is_subcity_locality(candidate):
             append_unique_locality(subcities, candidate)
@@ -3571,6 +3651,13 @@ def normalize_locality_key(value: str | None) -> str:
         return ""
     cleaned = re.sub(r"[^\w\s-]", " ", value.strip().lower())
     return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def normalize_locality_equivalence_key(value: str | None) -> str:
+    key = normalize_locality_key(value)
+    if not key:
+        return ""
+    return re.sub(r"\s+(?:city|ward|district|borough|county|prefecture|province|gu|ku)$", "", key).strip()
 
 
 def split_title_parts(title: str) -> list[str]:
@@ -4667,6 +4754,7 @@ def build_places_sqlite_rows(
                     sqlite_bool(place.id in featured_ids),
                     sqlite_bool(place.id in best_hit_ids),
                     place.name,
+                    sqlite_json(place.locality_path),
                     place.neighborhood,
                     place.primary_category,
                     place.primary_category_localized,
@@ -4762,7 +4850,8 @@ def write_places_sqlite(
             normalized_google_id, normalized_google_place_id, normalized_google_place_resource_name,
             normalized_rating, normalized_user_rating_count, normalized_primary_category,
             normalized_primary_category_localized,
-            normalized_tags_json, normalized_vibe_tags_json, normalized_neighborhood, normalized_note,
+            normalized_tags_json, normalized_vibe_tags_json, normalized_locality_path_json,
+            normalized_neighborhood, normalized_note,
             normalized_why_recommended, normalized_main_photo_path, normalized_top_pick,
             normalized_hidden, normalized_manual_rank, normalized_status, cache_fetched_at,
             cache_last_verified_at, cache_refresh_after, cache_source, cache_query, cache_input_signature,
@@ -4813,9 +4902,9 @@ def write_places_sqlite(
                 """
                 INSERT INTO guide_places (
                     guide_slug, sort_order, place_id, is_featured, is_best_hit, place_name,
-                    neighborhood, primary_category, primary_category_localized, rating, user_rating_count,
+                    locality_path_json, neighborhood, primary_category, primary_category_localized, rating, user_rating_count,
                     status, top_pick, hidden, manual_rank, note, why_recommended, main_photo_path, maps_url
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 rows.guide_place_rows,
             )
@@ -4916,6 +5005,7 @@ def canonical_place_row(
         place.primary_category_localized,
         sqlite_json(place.tags),
         sqlite_json(place.vibe_tags),
+        sqlite_json(place.locality_path),
         place.neighborhood,
         place.note,
         place.why_recommended,
@@ -5701,7 +5791,8 @@ def build_place_page_candidate_urls(
         localized_maps_url=localized_maps_url,
         search_url=search_url,
     ):
-        return [search_url] if search_url is not None else []
+        candidates = [search_url, localized_maps_url, cid_url]
+        return dedupe_urls([url for url in candidates if url is not None])
 
     candidates: list[str] = []
     if should_prefer_search_place_url(maps_url) and search_url is not None:
@@ -5786,6 +5877,27 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
     return normalized
 
 
+def coerce_enrichment_address_parts(value: Any) -> AddressParts | None:
+    if not isinstance(value, list):
+        return None
+    if len(value) < 7 or len(value) > 8:
+        return None
+    if not all(isinstance(item, str) for item in value[:7]):
+        return None
+
+    normalized: AddressParts = [str(item).strip() for item in value[:7]]
+    if any(not item for item in normalized[:7]):
+        return None
+
+    if len(value) == 8:
+        extra = value[7]
+        if not isinstance(extra, list) or not all(isinstance(item, str) for item in extra):
+            return None
+        normalized.append([str(item).strip() for item in extra if str(item).strip()])
+
+    return normalized
+
+
 def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     raw_category = sanitize_enrichment_primary_category(as_string(getattr(details, "category", None)))
     primary_type = None
@@ -5861,6 +5973,7 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         website=website,
         phone=phone,
         plus_code=plus_code,
+        address_parts=coerce_enrichment_address_parts(getattr(details, "address_parts", None)),
         description=description,
         main_photo_url=main_photo_url,
         photo_url=photo_url,

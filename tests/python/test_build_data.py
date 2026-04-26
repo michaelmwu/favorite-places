@@ -461,6 +461,8 @@ class BuildDataTests(unittest.TestCase):
                     "https://www.google.com/maps/search/?api=1"
                     "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
                 ),
+                "https://www.google.com/maps/search/?api=1&query=Locale&hl=en&gl=us",
+                "https://maps.google.com/?cid=6924437521980544303&hl=en&gl=us",
             ],
         )
 
@@ -1578,6 +1580,7 @@ class BuildDataTests(unittest.TestCase):
             first_place.maps_url,
             "https://www.google.com/maps/search/?api=1&query=Coffee+House%2C+1+Shibuya%2C+Tokyo%2C+Japan",
         )
+        self.assertEqual(first_place.locality_path, ["Shibuya"])
         self.assertEqual(first_place.neighborhood, "Shibuya")
         self.assertTrue(first_place.top_pick)
         self.assertIn("local-favorite", first_place.vibe_tags)
@@ -1606,6 +1609,66 @@ class BuildDataTests(unittest.TestCase):
             },
         )
         self.assertTrue(hidden_place.hidden)
+
+    def test_normalize_guide_infers_neighborhood_from_enrichment_address_when_raw_address_missing(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="Museum of Contemporary Art Taipei",
+                    address=None,
+                    lat=25.0508047,
+                    lng=121.5189766,
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="1",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-01T00:00:00+00:00",
+                query="Museum of Contemporary Art Taipei, Taipei",
+                matched=True,
+                score=88,
+                place=EnrichmentPlace(
+                    google_maps_uri="https://maps.google.com/?cid=override",
+                    formatted_address="No. 39, Chang'an W Rd, Datong District, Taipei City, Taiwan 103",
+                    primary_type="modern_art_museum",
+                    primary_type_display_name="Modern art museum",
+                    business_status="OPERATIONAL",
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "taipei-taiwan",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        first_place = guide.places[0]
+
+        self.assertEqual(
+            first_place.address,
+            "No. 39, Chang'an W Rd, Datong District, Taipei City, Taiwan 103",
+        )
+        self.assertEqual(first_place.locality_path, ["Datong District"])
+        self.assertEqual(first_place.neighborhood, "Datong District")
+        self.assertEqual(first_place.provenance.address.source, "google_places")
+        self.assertEqual(first_place.provenance.locality_path.source, "google_places")
+        self.assertEqual(first_place.provenance.neighborhood.source, "google_places")
 
     def test_place_vibe_tags_can_be_manually_overridden(self) -> None:
         raw = RawSavedList(
@@ -2074,6 +2137,82 @@ class BuildDataTests(unittest.TestCase):
             "Jumeirah Beach - Jumeirah - Jumeira Third - Dubai - United Arab Emirates",
         )
         self.assertIsNone(place.description)
+
+    def test_normalize_place_page_enrichment_preserves_address_parts(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Elephant+Mountain",
+                resolved_url="https://www.google.com/maps/place/Elephant+Mountain",
+                name="象山",
+                category="Trailhead",
+                address="2HGG+M6",
+                address_parts=[
+                    "Trailhead",
+                    "Xinyi District, Taipei City",
+                    "Xinyi District, Taipei City",
+                    "Xinyi District",
+                    "110",
+                    "Taipei City",
+                    "TW",
+                    ["Taiwan"],
+                ],
+                limited_view=False,
+            )
+        )
+
+        self.assertEqual(
+            place.address_parts,
+            [
+                "Trailhead",
+                "Xinyi District, Taipei City",
+                "Xinyi District, Taipei City",
+                "Xinyi District",
+                "110",
+                "Taipei City",
+                "TW",
+                ["Taiwan"],
+            ],
+        )
+
+    def test_normalize_guide_uses_address_parts_for_locality_fallback(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="象山",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-26T00:00:00+00:00",
+                query="象山, Taipei, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    formatted_address="2HGG+M6",
+                    primary_type="trailhead",
+                    primary_type_display_name="Trailhead",
+                    address_parts=[
+                        "Trailhead",
+                        "Xinyi District, Taipei City",
+                        "Xinyi District, Taipei City",
+                        "Xinyi District",
+                        "110",
+                        "Taipei City",
+                        "TW",
+                        ["Taiwan"],
+                    ],
+                ),
+            )
+        }
+
+        guide = build_data.normalize_guide("taipei-taiwan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertEqual(guide.places[0].neighborhood, "Xinyi District")
+        self.assertIn("Xinyi District", guide.places[0].locality_path)
 
     def test_normalize_guide_keeps_english_primary_category_and_stores_localized_variant(self) -> None:
         raw = RawSavedList(
@@ -2665,6 +2804,20 @@ class BuildDataTests(unittest.TestCase):
                 {"soho", "london"},
                 {"oxford-st", "united-kingdom"},
                 "Soho",
+            ),
+            (
+                "104, Taiwan, Taipei City, Zhongshan District, Section 1, Nanjing E Rd, 9號3F",
+                "Taipei",
+                {"taipei", "zhongshan-district"},
+                {"nanjing-e-rd"},
+                "Zhongshan District",
+            ),
+            (
+                "108, Taiwan, Taipei City, Wanhua District, Huaxi St, 17之4號攤位153號",
+                "Taipei",
+                {"taipei", "wanhua-district"},
+                {"huaxi-st"},
+                "Wanhua District",
             ),
         ]
 
