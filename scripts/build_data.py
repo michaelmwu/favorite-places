@@ -126,6 +126,8 @@ PHOTO_DOWNLOAD_TIMEOUT_SECONDS = 20
 PHOTO_CARD_WIDTH = 800
 PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
+MIN_PLACE_PHOTO_SOURCE_DIMENSION = 200
+PLACE_PHOTO_SOURCE_DIMENSION_RE = re.compile(r"w(?P<width>\d+)-h(?P<height>\d+)")
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
 PLACES_SQLITE_SIGNATURE_VERSION = 3
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
@@ -3052,7 +3054,43 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
+    place.photo_url = sanitize_place_photo_url(place.photo_url)
     return place
+
+
+def sanitize_place_photo_url(value: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+
+    url_parts = urlsplit(normalized)
+    host = url_parts.netloc.lower()
+    path = url_parts.path.lower()
+    if "staticmap" in path:
+        return None
+    if (
+        ("googleusercontent.com" in host or host.endswith("ggpht.com"))
+        and path.startswith(("/a-", "/a/"))
+    ):
+        return None
+
+    dimensions = extract_place_photo_source_dimensions(normalized)
+    if (
+        dimensions is not None
+        and dimensions[0] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+        and dimensions[1] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+    ):
+        return None
+
+    return normalized
+
+
+def extract_place_photo_source_dimensions(value: str) -> tuple[int, int] | None:
+    match = PLACE_PHOTO_SOURCE_DIMENSION_RE.search(value)
+    if match is None:
+        return None
+    return int(match.group("width")), int(match.group("height"))
 
 
 def normalized_enrichment_type_ids(
@@ -6231,8 +6269,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         if description_address is not None:
             formatted_address = description_address
             description = None
-    main_photo_url = as_string(getattr(details, "main_photo_url", None))
-    photo_url = as_string(getattr(details, "photo_url", None))
+    main_photo_url = sanitize_place_photo_url(as_string(getattr(details, "main_photo_url", None)))
+    photo_url = sanitize_place_photo_url(as_string(getattr(details, "photo_url", None)))
     if from_search_url:
         description = None
     limited_view = bool(getattr(details, "limited_view", False))
