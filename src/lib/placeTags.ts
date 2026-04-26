@@ -7,7 +7,7 @@ const ADDRESS_TAG_PATTERNS = [
 ];
 
 const STREET_AREA_PATTERN =
-  /^(p\.|d\.|ng\.|c\/|c\.|carrer\b|rda\.|calle\b|av\b|av\.|jl\.|jalan\b|ngo\b|duong\b)/;
+  /^(p\.|d\.|ng\.|c\/|c\.|carrer\b|rda\.|calle\b|av\b|av\.|ctra\.|carretera\b|jl\.|jalan\b|ngo\b|duong\b)/;
 const DEFAULT_AREA_FILTER_LIMIT = 12;
 const GUIDE_LOCATION_PART_SPLIT_PATTERN = /\s*(?:&|\/|\+|\band\b)\s*/i;
 const LOCATION_TAG_ALIASES: Record<string, string[]> = {
@@ -22,7 +22,6 @@ const LOCATION_TAG_ALIASES: Record<string, string[]> = {
 
 interface AreaFilterPlace {
   neighborhood: string | null;
-  locality_path?: string[] | null;
 }
 
 export interface AreaFilter {
@@ -30,16 +29,6 @@ export interface AreaFilter {
   value: string;
   count: number;
 }
-
-export interface AreaFilterGroups {
-  primary: AreaFilter[];
-  secondary: AreaFilter[];
-}
-
-const AREA_LEVEL_KEY_PREFIX = {
-  primary: "",
-  secondary: "broader-",
-} as const;
 
 interface GuideTagContext {
   cityName?: string | null;
@@ -53,28 +42,6 @@ function normalizeAreaText(area: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .toLowerCase();
-}
-
-function normalizeAreaEquivalenceKey(area: string): string {
-  return normalizeAreaText(area).replace(
-    /\s+(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/,
-    "",
-  );
-}
-
-function preferAreaLabel(currentLabel: string, candidateLabel: string): string {
-  const currentKey = normalizeAreaEquivalenceKey(currentLabel);
-  const candidateKey = normalizeAreaEquivalenceKey(candidateLabel);
-
-  if (currentKey !== candidateKey) {
-    return currentLabel;
-  }
-
-  if (candidateLabel.length < currentLabel.length) {
-    return candidateLabel;
-  }
-
-  return currentLabel;
 }
 
 export function normalizeTagValue(value: string): string {
@@ -141,64 +108,42 @@ export function getDisplayGuideTags(tags: string[], context: GuideTagContext = {
   });
 }
 
-function buildAreaFilters(
+export function getGuideAreaFilters(
   places: AreaFilterPlace[],
-  resolveLabel: (place: AreaFilterPlace) => string | null | undefined,
-  level: keyof typeof AREA_LEVEL_KEY_PREFIX,
   { limit = DEFAULT_AREA_FILTER_LIMIT }: { limit?: number } = {},
 ): AreaFilter[] {
   const totalPlaces = places.length;
+  const minimumCount = totalPlaces >= 20 ? 3 : 2;
   const areaCounts = new Map<string, AreaFilter>();
 
   places.forEach((place) => {
-    const label = resolveLabel(place)?.trim();
+    const label = place.neighborhood?.trim();
     if (!label) return;
 
-    const normalizedValue = normalizeAreaEquivalenceKey(label);
+    const normalizedValue = normalizeAreaText(label);
     if (!normalizedValue || STREET_AREA_PATTERN.test(normalizedValue)) return;
 
     const current = areaCounts.get(normalizedValue);
     if (current) {
       current.count += 1;
-      current.label = preferAreaLabel(current.label, label);
       return;
     }
 
     areaCounts.set(normalizedValue, {
       label,
-      value: `${AREA_LEVEL_KEY_PREFIX[level]}${getTagComparisonValue(normalizedValue)}`,
+      value: getTagComparisonValue(label),
       count: 1,
     });
   });
 
-  return [...areaCounts.values()]
+  const sortedAreas = [...areaCounts.values()]
     .filter((area) => area.count < totalPlaces)
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label))
-    .slice(0, limit);
-}
+    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));
 
-export function getGuideAreaFilters(
-  places: AreaFilterPlace[],
-  { limit = DEFAULT_AREA_FILTER_LIMIT }: { limit?: number } = {},
-): AreaFilter[] {
-  return buildAreaFilters(
-    places,
-    (place) => place.neighborhood ?? place.locality_path?.[0],
-    "primary",
-    {
-      limit,
-    },
-  );
-}
+  const repeatedAreas = sortedAreas.filter((area) => area.count >= minimumCount);
+  if (repeatedAreas.length >= limit) {
+    return repeatedAreas.slice(0, limit);
+  }
 
-export function getGuideAreaFilterGroups(
-  places: AreaFilterPlace[],
-  { limit = DEFAULT_AREA_FILTER_LIMIT }: { limit?: number } = {},
-): AreaFilterGroups {
-  return {
-    primary: getGuideAreaFilters(places, { limit }),
-    secondary: buildAreaFilters(places, (place) => place.locality_path?.[1], "secondary", {
-      limit,
-    }),
-  };
+  return sortedAreas.slice(0, limit);
 }
