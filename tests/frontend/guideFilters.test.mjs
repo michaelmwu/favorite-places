@@ -588,9 +588,25 @@ describe("guide filters", () => {
       shouldFallback: true,
       sortValue: "curated",
     });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: { lat: 25.033, lng: 121.5654 },
+        currentLocationStatus: "far",
+        fallbackMessage: locationFallbackMessage(
+          "far",
+          "Location unavailable. Showing curated order instead.",
+        ),
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "You're outside this guide area. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
   });
 
-  it("keeps direct geolocation fallback coordinates unless the location is explicitly too far", () => {
+  it("keeps direct geolocation coordinates even when the user is outside the guide area", () => {
     expect(
       normalizeUserLocationDetail({
         coordinates: { lat: "35.6812", lng: "139.7671" },
@@ -608,7 +624,10 @@ describe("guide filters", () => {
         nearGuide: false,
         status: "far",
       }),
-    ).toBeNull();
+    ).toEqual({
+      lat: 35.6812,
+      lng: 139.7671,
+    });
   });
 
   it("does not reset nearby sorting while location is still idle, checking, or already available", () => {

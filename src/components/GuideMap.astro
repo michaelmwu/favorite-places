@@ -1200,9 +1200,10 @@ const mapPlaces = places
         return;
       }
 
+      const isCenteredOnCurrentLocation = mapIsCenteredOnCurrentLocation();
       setLocationButtonState(
-        mapIsCenteredOnCurrentLocation() ? "near" : "located",
-        mapIsCenteredOnCurrentLocation()
+        isCenteredOnCurrentLocation ? "near" : "located",
+        isCenteredOnCurrentLocation
           ? "Center map on current location"
           : "Recenter on current location",
       );

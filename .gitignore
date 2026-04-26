@@ -15,3 +15,4 @@ data/cache/google-places/
 site/data/cache/google-places/
 site.example/data/cache/*
 !site.example/data/cache/.gitkeep
+!site.example/data/cache/places.sqlite
