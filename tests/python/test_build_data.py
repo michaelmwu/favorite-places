@@ -891,6 +891,68 @@ class BuildDataTests(unittest.TestCase):
             "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
         )
 
+    def test_normalize_place_page_enrichment_drops_suspicious_photo_urls(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Open+Kitchen",
+                resolved_url="https://www.google.com/maps/place/Open+Kitchen",
+                name="Open Kitchen",
+                category="Restaurant",
+                address="1 Example St, Tokyo",
+                main_photo_url=(
+                    "https://maps.google.com/maps/api/staticmap?center=35.0%2C139.0"
+                    "&zoom=17&size=900x900"
+                ),
+                photo_url="https://lh3.googleusercontent.com/a-/ALV-UjW_avatar=w36-h36-p-rp-mo-br100",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(enrichment.main_photo_url)
+        self.assertIsNone(enrichment.photo_url)
+
+    def test_normalize_place_page_enrichment_drops_tiny_photo_urls(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Open+Kitchen",
+                resolved_url="https://www.google.com/maps/place/Open+Kitchen",
+                name="Open Kitchen",
+                category="Restaurant",
+                address="1 Example St, Tokyo",
+                photo_url="https://lh3.googleusercontent.com/gps-cs-s/example=w122-h92-k-no",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(enrichment.photo_url)
+
+    def test_sanitize_place_photo_url_drops_any_tiny_source_dimension(self) -> None:
+        for photo_url in (
+            "https://lh3.googleusercontent.com/p/example=s680-w120-h800",
+            "https://lh3.googleusercontent.com/p/example=s680-w800-h120",
+        ):
+            with self.subTest(photo_url=photo_url):
+                self.assertIsNone(build_data.sanitize_place_photo_url(photo_url))
+
+        self.assertEqual(
+            build_data.sanitize_place_photo_url(
+                "https://lh3.googleusercontent.com/p/example=s680-w800-h600"
+            ),
+            "https://lh3.googleusercontent.com/p/example=s680-w800-h600",
+        )
+
+    def test_sanitize_place_photo_url_uses_hostname_suffix_for_avatar_hosts(self) -> None:
+        self.assertEqual(
+            build_data.sanitize_place_photo_url(
+                "https://evil-googleusercontent.com.example/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100"
+            ),
+            "https://evil-googleusercontent.com.example/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100",
+        )
+        self.assertIsNone(
+            build_data.sanitize_place_photo_url(
+                "https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100"
+            )
+        )
     def test_normalize_place_page_enrichment_preserves_google_place_id_and_address_parts(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -5214,6 +5276,50 @@ class BuildDataTests(unittest.TestCase):
             "because refresh returned degraded result (http_403).",
         )
 
+    def test_enrich_place_job_scrubs_suspicious_photo_when_refresh_degrades(self) -> None:
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="First Place",
+                rating=4.7,
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
+                google_place_id="place123",
+                photo_url="https://lh3.googleusercontent.com/a-/ALV-UjW_avatar=w36-h36-p-rp-mo-br100",
+            ),
+        )
+        degraded_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-23T00:00:00+00:00",
+            query="First Place, Tokyo",
+            source="google_places_api",
+            error="http_403",
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data, "fetch_places_enrichment", return_value=degraded_entry),
+            patch("builtins.print"),
+        ):
+            result = build_data.enrich_place_job(
+                "tokyo-japan",
+                "cid:111",
+                "First Place",
+                "refresh-window-expired",
+                {
+                    "name": "First Place",
+                    "address": "1 Example St, Tokyo",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key="test-key",
+                refresh_startup_jitter_seconds=0,
+                existing_entry=previous_entry,
+            )
+
+        self.assertIs(result, previous_entry)
+        self.assertIsNone(result.place.photo_url)
+
     def test_enrich_place_job_preserves_previous_fields_when_refresh_loses_metadata(self) -> None:
         previous_entry = EnrichmentCacheEntry(
             fetched_at="2026-04-20T00:00:00+00:00",
@@ -5279,6 +5385,60 @@ class BuildDataTests(unittest.TestCase):
             print_mock.call_args_list[1].args[0],
             "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
             "rating, user_rating_count, primary_category, status, maps_url, photo_url.",
+        )
+
+    def test_enrich_place_job_does_not_preserve_suspicious_old_photo_urls(self) -> None:
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="First Place",
+                rating=4.7,
+                user_rating_count=321,
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
+                google_place_id="place123",
+                photo_url="https://lh3.googleusercontent.com/a-/ALV-UjW_avatar=w36-h36-p-rp-mo-br100",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-23T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="First Place",
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=First+Place",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data, "fetch_places_enrichment", return_value=refreshed_entry),
+            patch("builtins.print") as print_mock,
+        ):
+            result = build_data.enrich_place_job(
+                "tokyo-japan",
+                "cid:111",
+                "First Place",
+                "refresh-window-expired",
+                {
+                    "name": "First Place",
+                    "address": "1 Example St, Tokyo",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key=None,
+                refresh_startup_jitter_seconds=0,
+                existing_entry=previous_entry,
+            )
+
+        self.assertIs(result, refreshed_entry)
+        self.assertIsNone(result.place.photo_url)
+        self.assertEqual(print_mock.call_count, 2)
+        self.assertEqual(
+            print_mock.call_args_list[1].args[0],
+            "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
+            "rating, user_rating_count, maps_url.",
         )
 
     def test_refresh_retries_transient_parse_failure(self) -> None:

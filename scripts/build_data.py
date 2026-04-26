@@ -126,6 +126,8 @@ PHOTO_DOWNLOAD_TIMEOUT_SECONDS = 20
 PHOTO_CARD_WIDTH = 800
 PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
+MIN_PLACE_PHOTO_SOURCE_DIMENSION = 200
+PLACE_PHOTO_SOURCE_DIMENSION_RE = re.compile(r"w(?P<width>\d+)-h(?P<height>\d+)")
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
 PLACES_SQLITE_SIGNATURE_VERSION = 3
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
@@ -3052,7 +3054,52 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
+    place.photo_url = sanitize_place_photo_url(place.photo_url)
     return place
+
+
+def canonicalize_enrichment_cache_entry(entry: EnrichmentCacheEntry | None) -> EnrichmentCacheEntry | None:
+    if entry is None:
+        return None
+    canonicalize_enrichment_place(entry.place)
+    return entry
+
+
+def sanitize_place_photo_url(value: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+
+    url_parts = urlsplit(normalized)
+    host = (url_parts.hostname or "").lower()
+    path = url_parts.path.lower()
+    if "staticmap" in path:
+        return None
+    if (
+        (host.endswith("googleusercontent.com") or host.endswith("ggpht.com"))
+        and path.startswith(("/a-", "/a/"))
+    ):
+        return None
+
+    dimensions = extract_place_photo_source_dimensions(normalized)
+    if (
+        dimensions is not None
+        and (
+            dimensions[0] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+            or dimensions[1] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+        )
+    ):
+        return None
+
+    return normalized
+
+
+def extract_place_photo_source_dimensions(value: str) -> tuple[int, int] | None:
+    match = PLACE_PHOTO_SOURCE_DIMENSION_RE.search(value)
+    if match is None:
+        return None
+    return int(match.group("width")), int(match.group("height"))
 
 
 def normalized_enrichment_type_ids(
@@ -4430,6 +4477,9 @@ def preserve_existing_enrichment(
     existing_entry: EnrichmentCacheEntry | None,
     refreshed_entry: EnrichmentCacheEntry,
 ) -> tuple[EnrichmentCacheEntry, str | None]:
+    canonicalize_enrichment_cache_entry(existing_entry)
+    canonicalize_enrichment_cache_entry(refreshed_entry)
+
     if not cache_entry_has_publishable_enrichment(existing_entry):
         return refreshed_entry, None
 
@@ -4443,8 +4493,6 @@ def preserve_existing_enrichment(
 
     previous_place = existing_entry.place
     refreshed_place = refreshed_entry.place
-    canonicalize_enrichment_place(previous_place)
-    canonicalize_enrichment_place(refreshed_place)
     assert previous_place is not None
     assert refreshed_place is not None
 
@@ -4600,7 +4648,8 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
     for place_id, cache_json in rows:
         if not isinstance(place_id, str) or not isinstance(cache_json, str):
             continue
-        result[place_id] = EnrichmentCacheEntry.model_validate_json(cache_json)
+        entry = EnrichmentCacheEntry.model_validate_json(cache_json)
+        result[place_id] = canonicalize_enrichment_cache_entry(entry) or entry
     return result
 
 
@@ -4636,7 +4685,11 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                             entry.score,
                             entry.error,
                             entry.error_body,
-                            json.dumps(entry.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")),
+                            json.dumps(
+                                (canonicalize_enrichment_cache_entry(entry) or entry).model_dump(mode="json"),
+                                ensure_ascii=False,
+                                separators=(",", ":"),
+                            ),
                         )
                         for place_id, entry in sorted(payload.items())
                     ],
@@ -6231,8 +6284,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         if description_address is not None:
             formatted_address = description_address
             description = None
-    main_photo_url = as_string(getattr(details, "main_photo_url", None))
-    photo_url = as_string(getattr(details, "photo_url", None))
+    main_photo_url = sanitize_place_photo_url(as_string(getattr(details, "main_photo_url", None)))
+    photo_url = sanitize_place_photo_url(as_string(getattr(details, "photo_url", None)))
     if from_search_url:
         description = None
     limited_view = bool(getattr(details, "limited_view", False))
