@@ -3,6 +3,7 @@ const MAX_NEARBY_RADIUS_KM = 900;
 const MAX_NEARBY_GUIDES = 8;
 const TARGET_NEARBY_GUIDE_COUNT = 4;
 const NEARBY_RADIUS_BUFFER_KM = 40;
+const MAX_NEARBY_MATCH_DISTANCE_KM = MIN_NEARBY_RADIUS_KM;
 
 const toRadians = (degrees) => (degrees * Math.PI) / 180;
 
@@ -47,6 +48,7 @@ export const nearbyGuidesForLocation = (guideLocations, latitude, longitude) => 
   return {
     guideSlugs: new Set(guides.map((guide) => guide.slug)),
     guides,
+    isNearMatch: nearestGuide.distance <= MAX_NEARBY_MATCH_DISTANCE_KM,
     nearestGuide,
     radiusKm: guides.at(-1)?.distance ?? nearestGuide.distance,
   };
@@ -54,6 +56,7 @@ export const nearbyGuidesForLocation = (guideLocations, latitude, longitude) => 
 
 export const nearbyGuideConfig = {
   MAX_NEARBY_GUIDES,
+  MAX_NEARBY_MATCH_DISTANCE_KM,
   MAX_NEARBY_RADIUS_KM,
   MIN_NEARBY_RADIUS_KM,
   NEARBY_RADIUS_BUFFER_KM,

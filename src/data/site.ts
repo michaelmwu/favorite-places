@@ -89,7 +89,6 @@ export interface SiteConfig {
     showTags: boolean;
     maxTags: number;
     showPlaceCount: boolean;
-    showTopCategory: boolean;
     trimCountryFromTitle: boolean;
   };
   placeCard: {
@@ -105,6 +104,7 @@ export interface SiteConfig {
     showAddress: boolean;
     showTags: boolean;
     showStatus: boolean;
+    bestHitLabel: string;
     topPickLabel: string;
     mapsLabel: string;
     savedPlaceLabel: string;
@@ -202,7 +202,6 @@ const defaultSiteConfig: SiteConfig = {
     showTags: true,
     maxTags: 4,
     showPlaceCount: true,
-    showTopCategory: true,
     trimCountryFromTitle: true,
   },
   placeCard: {
@@ -218,6 +217,7 @@ const defaultSiteConfig: SiteConfig = {
     showAddress: true,
     showTags: true,
     showStatus: true,
+    bestHitLabel: "Popular",
     topPickLabel: "Top pick",
     mapsLabel: "Maps",
     savedPlaceLabel: "Saved place",

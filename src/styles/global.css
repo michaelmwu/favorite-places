@@ -604,6 +604,10 @@
     z-index: 2;
   }
 
+  .guide-card .guide-card-tag-link {
+    position: relative;
+    z-index: 2;
+  }
   .guide-card h3,
   .place-card h3 {
     margin: 0;
@@ -919,6 +923,13 @@
     flex: 1 1 auto;
   }
 
+  .place-card-badges {
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
   .place-card-name-row {
     width: 100%;
     display: flex;
@@ -1033,6 +1044,10 @@
     letter-spacing: 0.08em;
   }
 
+  .badge--best-hit {
+    background: rgba(39, 47, 56, 0.08);
+    color: var(--ink);
+  }
   .controls-panel {
     padding: 1rem;
     background: var(--surface-strong);
@@ -1107,6 +1122,25 @@
     font-weight: 700;
   }
 
+  .map-feedback-slot {
+    min-height: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-top: 0.45rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .map-location-status {
+    position: static;
+    max-width: min(24rem, 100%);
+    margin: 0;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid rgba(39, 47, 56, 0.12);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 6px 18px rgba(31, 26, 22, 0.12);
+  }
   .country-block[data-location-match="true"] > .section-head {
     padding-left: 0.85rem;
     border-left: 4px solid var(--accent);
@@ -1172,6 +1206,14 @@
     gap: 0.55rem;
   }
 
+  .tag-row-mobile-scroll {
+    max-height: min(14rem, 28svh);
+    overflow-y: auto;
+    align-content: flex-start;
+    padding-right: 0.2rem;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
   .selected-tag-chip {
     display: inline-flex;
     align-items: center;
@@ -1343,6 +1385,11 @@
     gap: 0.75rem;
   }
 
+  .map-stage {
+    position: relative;
+    min-width: 0;
+  }
+
   .guide-map {
     width: 100%;
     min-height: 16rem;
@@ -1441,6 +1488,25 @@
     filter: none;
   }
 
+  .map-icon-button[data-location-state="near"] {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--surface);
+  }
+
+  .map-icon-button[data-location-state="located"] {
+    border-color: var(--accent);
+    background: var(--surface);
+    color: var(--accent);
+  }
+
+  .map-icon-button[data-location-state="far"],
+  .map-icon-button[data-location-state="unavailable"] {
+    border-color: var(--line);
+    background: var(--surface-strong);
+    color: var(--muted);
+    opacity: 0.58;
+  }
   .map-icon-button[data-busy="true"] svg {
     animation: location-target-spin 900ms linear infinite;
   }
@@ -1496,7 +1562,9 @@
 
   .map-panel[data-collapsed="true"] .guide-map,
   .map-panel[data-collapsed="true"] .map-fallback,
-  .map-panel[data-collapsed="true"] .map-actions {
+  .map-panel[data-collapsed="true"] .map-actions,
+  .map-panel[data-collapsed="true"] .map-feedback-slot,
+  .map-panel[data-collapsed="true"] .map-stage {
     display: none;
   }
 
@@ -1846,12 +1914,7 @@
     }
 
     .tag-row-mobile-scroll {
-      max-height: min(14rem, 28svh);
-      overflow-y: auto;
-      align-content: flex-start;
-      padding-right: 0.2rem;
-      overscroll-behavior: contain;
-      scrollbar-gutter: stable;
+      max-height: min(16rem, 34svh);
     }
 
     .card-grid,
@@ -1920,6 +1983,21 @@
       gap: 0.5rem;
     }
 
+    .tag-row-mobile-scroll {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-height: none;
+      padding-right: 0;
+      padding-bottom: 0.2rem;
+      align-content: normal;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-gutter: auto;
+    }
+
+    .tag-row-mobile-scroll > * {
+      flex: 0 0 auto;
+    }
     .stat-pill,
     .action-pill,
     .tag-pill {

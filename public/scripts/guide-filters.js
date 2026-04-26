@@ -77,6 +77,12 @@ export function buildNearbyDistanceMap(cards, currentLocation) {
 }
 
 export function compareCardsByCurated(left, right) {
+  const leftFeatured = left.dataset.featured === "true" ? 1 : 0;
+  const rightFeatured = right.dataset.featured === "true" ? 1 : 0;
+  if (leftFeatured !== rightFeatured) return rightFeatured - leftFeatured;
+  const leftBestHit = left.dataset.bestHit === "true" ? 1 : 0;
+  const rightBestHit = right.dataset.bestHit === "true" ? 1 : 0;
+  if (leftBestHit !== rightBestHit) return rightBestHit - leftBestHit;
   const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
   const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
   if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
@@ -120,9 +126,10 @@ export function resolveLocationSortState({
 } = {}) {
   const shouldFallback =
     sortValue === "nearby" &&
-    !currentLocation &&
-    currentLocationStatus !== "idle" &&
-    currentLocationStatus !== "checking";
+    (currentLocationStatus === "far" ||
+      (!currentLocation &&
+        currentLocationStatus !== "idle" &&
+        currentLocationStatus !== "checking"));
 
   if (!shouldFallback) {
     return {
@@ -139,6 +146,29 @@ export function resolveLocationSortState({
   };
 }
 
+export function locationFallbackMessage(status, fallbackMessage) {
+  if (status === "denied") {
+    return "Location permission was denied. Showing curated order instead.";
+  }
+  if (status === "far") {
+    return "You're outside this guide area. Showing curated order instead.";
+  }
+  return fallbackMessage;
+}
+
+export function normalizeUserLocationDetail({ coordinates = null } = {}) {
+  const normalizedLocation =
+    coordinates &&
+    Number.isFinite(Number(coordinates.lat)) &&
+    Number.isFinite(Number(coordinates.lng))
+      ? {
+          lat: Number(coordinates.lat),
+          lng: Number(coordinates.lng),
+        }
+      : null;
+
+  return normalizedLocation;
+}
 export function cardHasTag(card, tag) {
   const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
@@ -328,12 +358,42 @@ export function sortFilterOptions(options) {
   });
 }
 
-export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, overflowCount }) {
-  if (!activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
+export function buildAreaFilterStatusMessage({
+  activeAreaLabel,
+  hasAdditionalFilters = false,
+  visibleCount,
+  overflowCount,
+}) {
+  if (!hasAdditionalFilters || !activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
     return "";
   }
 
   return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match${overflowCount === 1 ? "" : "es"} elsewhere in this guide.`;
+}
+
+export function getInitialSelectedTags({ allTags = [], params = new URLSearchParams() } = {}) {
+  const allowedTags = new Set(
+    allTags.map((tag) => getTagComparisonValue(String(tag || ""))).filter(Boolean),
+  );
+  const selectedTags = [];
+  const seen = new Set();
+
+  const rawTags = params
+    .getAll("tag")
+    .flatMap((value) => String(value || "").split(","))
+    .map((value) => getTagComparisonValue(value))
+    .filter(Boolean);
+
+  for (const tag of rawTags) {
+    if (!allowedTags.has(tag) || seen.has(tag)) {
+      continue;
+    }
+
+    seen.add(tag);
+    selectedTags.push(tag);
+  }
+
+  return selectedTags;
 }
 
 export function buildEmptyStateMessage({ activeAreaLabel = "", overflowCount = 0, query = "" }) {
@@ -696,16 +756,21 @@ if (root) {
     }
   };
 
-  const dispatchUserLocation = ({ coordinates = null, source = "filters", status }) => {
+  const dispatchUserLocation = ({ coordinates = null, nearGuide, source = "filters", status }) => {
+    const detail = {
+      coordinates,
+      source,
+      status,
+    };
+
+    if (typeof nearGuide === "boolean") {
+      detail.nearGuide = nearGuide;
+    }
+
     root.dispatchEvent(
       new CustomEvent("guide:user-location", {
         bubbles: true,
-        detail: {
-          coordinates,
-          nearGuide: false,
-          source,
-          status,
-        },
+        detail,
       }),
     );
   };
@@ -772,6 +837,39 @@ if (root) {
 
   const refreshNearbyDistances = () => {
     nearbyDistanceByPlaceId = buildNearbyDistanceMap(cards, currentLocation);
+  };
+
+  const applySortSelection = (
+    sortValue,
+    { requestLocationIfNeeded = false, source = "list-filter" } = {},
+  ) => {
+    if (!sortSelect) {
+      return;
+    }
+
+    sortSelect.value = sortValue;
+    setLocationSortMessage("");
+
+    if (sortValue === LOCATION_SORT_VALUE) {
+      if (requestLocationIfNeeded && (!currentLocation || currentLocationStatus === "far")) {
+        requestCurrentLocation();
+      }
+
+      const nextLocationSortState = resolveLocationSortState({
+        fallbackMessage: locationFallbackMessage(currentLocationStatus, locationSortFallbackText),
+        fallbackSortValue: LOCATION_SORT_FALLBACK,
+        currentLocation,
+        currentLocationStatus,
+        sortValue,
+      });
+
+      if (nextLocationSortState.shouldFallback) {
+        sortSelect.value = nextLocationSortState.sortValue;
+        setLocationSortMessage(nextLocationSortState.message);
+      }
+    }
+
+    update(source);
   };
 
   const update = (source = "list-filter") => {
@@ -845,6 +943,11 @@ if (root) {
       ? countAreaOptionCards(cards, areaCountFilters, activeArea)
       : visibleCards.length;
     const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
+    const hasAdditionalFilters =
+      Boolean(normalizedQuery) ||
+      Boolean(activeType) ||
+      selectedTags.length > 0 ||
+      Boolean(mapFramePlaceIds);
 
     const areaOptions = areaButtons.map((button, index) => {
       const areaValue = normalizeTag(button.dataset.area || "");
@@ -943,6 +1046,7 @@ if (root) {
     if (areaFilterStatus) {
       const message = buildAreaFilterStatusMessage({
         activeAreaLabel,
+        hasAdditionalFilters,
         visibleCount: visibleCards.length,
         overflowCount: areaOverflowCount,
       });
@@ -1014,16 +1118,10 @@ if (root) {
   });
 
   sortSelect?.addEventListener("change", () => {
-    if (sortSelect.value === LOCATION_SORT_VALUE) {
-      setLocationSortMessage("");
-      if (!currentLocation) {
-        requestCurrentLocation();
-      }
-    } else {
-      setLocationSortMessage("");
-    }
-
-    update();
+    applySortSelection(sortSelect.value, {
+      requestLocationIfNeeded: true,
+      source: "sort-change",
+    });
   });
 
   typeButtons.forEach((button) => {
@@ -1112,24 +1210,25 @@ if (root) {
 
   root.addEventListener("guide:map-frame-reset-request", clearMapFrameFilter);
 
+  root.addEventListener("guide:sort-request", (event) => {
+    const sortValue = event.detail?.sortValue || "";
+    if (sortValue !== LOCATION_SORT_VALUE) {
+      return;
+    }
+
+    applySortSelection(sortValue, {
+      source: "map-sort-request",
+    });
+  });
   root.addEventListener("guide:user-location", (event) => {
     hasHandledLocationRequest = true;
     clearDirectLocationFallbackTimer();
     const detail = event.detail || {};
-    const coordinates = detail.coordinates;
-    currentLocation =
-      coordinates &&
-      Number.isFinite(Number(coordinates.lat)) &&
-      Number.isFinite(Number(coordinates.lng))
-        ? {
-            lat: Number(coordinates.lat),
-            lng: Number(coordinates.lng),
-          }
-        : null;
     currentLocationStatus = detail.status || "idle";
+    currentLocation = normalizeUserLocationDetail(detail);
     refreshNearbyDistances();
 
-    if (currentLocation) {
+    if (currentLocation && currentLocationStatus !== "far") {
       setLocationSortMessage("");
       if (sortSelect?.value === LOCATION_SORT_VALUE) {
         update("location-sort");
@@ -1138,7 +1237,7 @@ if (root) {
     }
 
     const nextLocationSortState = resolveLocationSortState({
-      fallbackMessage: locationSortFallbackText,
+      fallbackMessage: locationFallbackMessage(currentLocationStatus, locationSortFallbackText),
       fallbackSortValue: LOCATION_SORT_FALLBACK,
       currentLocation,
       currentLocationStatus,
@@ -1161,6 +1260,11 @@ if (root) {
     if (initialQuery && searchInput) {
       searchInput.value = initialQuery;
     }
+
+    getInitialSelectedTags({
+      allTags,
+      params: initialParams,
+    }).forEach((tag) => addTag(tag));
   };
 
   const scrollToHighlightedPlace = () => {

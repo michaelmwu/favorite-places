@@ -1,7 +1,7 @@
 ---
 
 import { siteConfig } from "../data/site";
-import { getDisplayGuideTags } from "../lib/placeTags";
+import { getDisplayGuideTags, normalizeTagValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 import type { GuideManifest } from "../lib/types";
 
@@ -86,18 +86,21 @@ const guideDisplayTitle = trimCountryFromTitle(guide.title);
   {siteConfig.guideCard.showTags && displayGuideTags.length > 0 && (
     <div class="tag-row ui-tag-row">
       {displayGuideTags.slice(0, siteConfig.guideCard.maxTags).map((tag) => (
-        <span class="tag-pill ui-tag-pill">#{tag}</span>
+        <a
+          class="tag-pill ui-tag-pill guide-card-tag-link"
+          href={`/guides/${guide.slug}/?tag=${encodeURIComponent(normalizeTagValue(tag))}`}
+          aria-label={`Open ${guideDisplayTitle} filtered by #${tag}`}
+        >
+          #{tag}
+        </a>
       ))}
     </div>
   )}
 
-  {(siteConfig.guideCard.showPlaceCount || siteConfig.guideCard.showTopCategory) && (
+  {siteConfig.guideCard.showPlaceCount && (
     <div class="guide-card-footer ui-card-footer">
       <div class="stats-row ui-meta-row">
         {siteConfig.guideCard.showPlaceCount && <span class="stat-pill ui-pill">{guide.place_count} places</span>}
-        {siteConfig.guideCard.showTopCategory && guide.top_categories[0] && (
-          <span class="stat-pill ui-pill">{guide.top_categories[0]}</span>
-        )}
       </div>
     </div>
   )}

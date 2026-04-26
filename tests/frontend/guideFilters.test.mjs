@@ -12,12 +12,17 @@ import {
   countMatchingCards,
   countTagOptionCards,
   countTypeOptionCards,
+  getInitialSelectedTags,
+  locationFallbackMessage,
+  normalizeUserLocationDetail,
   resolveLocationSortState,
   sortFilterOptions,
 } from "../../public/scripts/guide-filters.js";
 
 const makeCard = ({
+  bestHit = "false",
   category = "",
+  featured = "false",
   lat = "",
   lng = "",
   localityPath = "",
@@ -31,7 +36,9 @@ const makeCard = ({
   vibeTags = "",
 } = {}) => ({
   dataset: {
+    bestHit,
     category,
+    featured,
     lat,
     lng,
     localityPath,
@@ -113,6 +120,7 @@ describe("guide filters", () => {
     expect(
       buildAreaFilterStatusMessage({
         activeAreaLabel: "South Brisbane",
+        hasAdditionalFilters: true,
         visibleCount: 1,
         overflowCount: 3,
       }),
@@ -143,6 +151,7 @@ describe("guide filters", () => {
     expect(
       buildAreaFilterStatusMessage({
         activeAreaLabel: "South Brisbane",
+        hasAdditionalFilters: true,
         visibleCount: 1,
         overflowCount: 1,
       }),
@@ -163,10 +172,31 @@ describe("guide filters", () => {
     expect(
       buildAreaFilterStatusMessage({
         activeAreaLabel: "South Brisbane",
+        hasAdditionalFilters: true,
         visibleCount: 0,
         overflowCount: 2,
       }),
     ).toBe("");
+  });
+
+  it("suppresses the area status line when area is the only active filter", () => {
+    expect(
+      buildAreaFilterStatusMessage({
+        activeAreaLabel: "Zhongshan",
+        hasAdditionalFilters: false,
+        visibleCount: 3,
+        overflowCount: 8,
+      }),
+    ).toBe("");
+  });
+
+  it("hydrates initial selected tags from repeated tag params", () => {
+    expect(
+      getInitialSelectedTags({
+        allTags: ["seafood", "date-night", "quiet"],
+        params: new URLSearchParams("tag=seafood&tag=date-night&tag=unknown&tag=seafood"),
+      }),
+    ).toEqual(["seafood", "date-night"]);
   });
 
   it("keeps the area label in query empty-state copy even with no overflow matches", () => {
@@ -498,6 +528,21 @@ describe("guide filters", () => {
     );
   });
 
+  it("prioritizes featured and best-hit cards in curated sorting", () => {
+    const cards = [
+      makeCard({ placeId: "rank-10", name: "Bravo", rank: "10" }),
+      makeCard({ placeId: "best-hit", name: "Alpha", rank: "1", bestHit: "true" }),
+      makeCard({ placeId: "top-pick", name: "Cafe", rank: "99", topPick: "true" }),
+      makeCard({ placeId: "featured", name: "Delta", rank: "0", featured: "true" }),
+    ];
+
+    expect([...cards].sort(compareCardsByCurated).map((card) => card.dataset.placeId)).toEqual([
+      "featured",
+      "best-hit",
+      "top-pick",
+      "rank-10",
+    ]);
+  });
   it("resets nearby sorting to curated when location is denied or unavailable", () => {
     expect(
       resolveLocationSortState({
@@ -526,6 +571,63 @@ describe("guide filters", () => {
     });
   });
 
+  it("uses the guide-area fallback copy when the user is outside the guide area", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "far",
+        fallbackMessage: locationFallbackMessage(
+          "far",
+          "Location unavailable. Showing curated order instead.",
+        ),
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "You're outside this guide area. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: { lat: 25.033, lng: 121.5654 },
+        currentLocationStatus: "far",
+        fallbackMessage: locationFallbackMessage(
+          "far",
+          "Location unavailable. Showing curated order instead.",
+        ),
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "You're outside this guide area. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+  });
+
+  it("keeps direct geolocation coordinates even when the user is outside the guide area", () => {
+    expect(
+      normalizeUserLocationDetail({
+        coordinates: { lat: "35.6812", lng: "139.7671" },
+        nearGuide: false,
+        status: "available",
+      }),
+    ).toEqual({
+      lat: 35.6812,
+      lng: 139.7671,
+    });
+
+    expect(
+      normalizeUserLocationDetail({
+        coordinates: { lat: "35.6812", lng: "139.7671" },
+        nearGuide: false,
+        status: "far",
+      }),
+    ).toEqual({
+      lat: 35.6812,
+      lng: 139.7671,
+    });
+  });
   it("does not reset nearby sorting while location is still idle, checking, or already available", () => {
     expect(
       resolveLocationSortState({

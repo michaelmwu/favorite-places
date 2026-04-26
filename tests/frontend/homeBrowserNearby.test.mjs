@@ -26,9 +26,13 @@ describe("home browser nearby guide selection", () => {
 
     expect(result?.guides.map((guide) => guide.slug)).toEqual(["far-away"]);
     expect(result?.guideSlugs.has("far-away")).toBe(true);
+    expect(result?.isNearMatch).toBe(false);
     expect(result?.radiusKm).toBeCloseTo(result?.nearestGuide.distance ?? 0, 6);
     expect(result?.nearestGuide.distance ?? 0).toBeGreaterThan(
       nearbyGuideConfig.MAX_NEARBY_RADIUS_KM,
+    );
+    expect(result?.nearestGuide.distance ?? 0).toBeGreaterThan(
+      nearbyGuideConfig.MAX_NEARBY_MATCH_DISTANCE_KM,
     );
   });
 
@@ -55,6 +59,7 @@ describe("home browser nearby guide selection", () => {
     const result = nearbyGuidesForLocation(guides, 35.68, 139.76);
 
     expect([...result.guideSlugs]).toEqual(result.guides.map((guide) => guide.slug));
+    expect(result?.isNearMatch).toBe(true);
     expect(result.guideSlugs.has("tokyo")).toBe(true);
     expect(result.guideSlugs.has("sydney")).toBe(false);
   });
