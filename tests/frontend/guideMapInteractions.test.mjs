@@ -184,6 +184,7 @@ describe("guide map interactions", () => {
     const css = readSource("src/styles/global.css");
 
     expect(guideMap).toContain('class="map-icon-button"');
+    expect(guideMap).toContain('class="map-feedback-slot"');
     expect(guideMap).toContain('class="map-stage"');
     expect(guideMap).toContain('data-location-state="idle"');
     expect(guideMap).toContain("data-map-location-status");
@@ -198,12 +199,16 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("runtime.onViewportChange?.(syncLocationButtonToViewport);");
     expect(guideMap).toContain('"Recenter on current location"');
     expect(guideMap).toContain("const commitPendingLocationActions = () => {");
+    expect(guideMap).toContain("const scheduleLocationCenter = () => {");
     expect(guideMap).toContain("const flushPendingLocationActions = () => {");
     expect(guideMap).toContain("runtime.setUserLocation(currentLocation);");
     expect(guideMap).toContain("const shouldCenter = pendingLocationCenter;");
     expect(guideMap).toContain("const shouldSort = pendingLocationSortRequest;");
+    expect(guideMap).toContain("let pendingLocationCenterAfterPlacesUpdate = false;");
     expect(guideMap).toContain("if (shouldSort) {");
-    expect(guideMap).toContain("if (shouldCenter) {");
+    expect(guideMap).toContain("pendingLocationCenterAfterPlacesUpdate = shouldCenter;");
+    expect(guideMap).toContain("if (!shouldSort && shouldCenter) {");
+    expect(guideMap).toContain("scheduleLocationCenter();");
     expect(guideMap).toContain("flushPendingLocationActions();");
     expect(guideMap).toContain("(sorted.length - 1) * percentileValue");
     expect(guideMap).not.toContain("Math.ceil(sorted.length * percentileValue) - 1");
@@ -255,6 +260,7 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("if (locationNearGuide && pendingLocationSortRequest) {");
     expect(guideMap).toContain("pendingLocationSortRequest = true;");
     expect(guideMap).toContain("requestNearbySort();");
+    expectCssToContain(css, ".map-feedback-slot");
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');

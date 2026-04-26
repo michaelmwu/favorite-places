@@ -60,7 +60,7 @@ const mapPlaces = places
           </button>
         </div>
       </div>
-      <div class="map-stage">
+      <div class="map-feedback-slot">
         <p
           class="map-location-status location-status ui-copy ui-copy--sm"
           data-map-location-status
@@ -68,7 +68,8 @@ const mapPlaces = places
           aria-live="polite"
           hidden
         ></p>
-
+      </div>
+      <div class="map-stage">
         <div
           class="guide-map"
           data-guide-map
@@ -955,6 +956,7 @@ const mapPlaces = places
     let hoveredPlaceId = "";
     let currentLocation: Coordinates | null = null;
     let pendingLocationCenter = false;
+    let pendingLocationCenterAfterPlacesUpdate = false;
     let pendingLocationSortRequest = false;
     let locationWatchStarted = false;
     let locationWatchId: number | null = null;
@@ -1004,8 +1006,15 @@ const mapPlaces = places
       runtime.setVisiblePlaces(currentVisiblePlaceIds);
       updateActiveMarker(false);
 
+      const shouldRecenterAfterUpdate = pendingLocationCenterAfterPlacesUpdate;
+      pendingLocationCenterAfterPlacesUpdate = false;
+
       if (!detail.mapFrameActive) {
         runtime.fitPlaces(currentPlaces);
+      }
+
+      if (shouldRecenterAfterUpdate) {
+        scheduleLocationCenter();
       }
     };
 
@@ -1199,6 +1208,23 @@ const mapPlaces = places
       );
     };
 
+    const scheduleLocationCenter = () => {
+      if (!runtime || !currentLocation || !locationIsNearGuide(currentLocation)) {
+        return;
+      }
+
+      window.requestAnimationFrame(() => {
+        if (!runtime || !currentLocation || !locationIsNearGuide(currentLocation)) {
+          return;
+        }
+
+        runtime.setView(currentLocation, 15);
+        window.requestAnimationFrame(() => {
+          syncLocationButtonToViewport();
+        });
+      });
+    };
+
     const commitPendingLocationActions = () => {
       if (!runtime || !currentLocation || !locationIsNearGuide(currentLocation)) {
         return;
@@ -1210,11 +1236,12 @@ const mapPlaces = places
       pendingLocationSortRequest = false;
 
       if (shouldSort) {
+        pendingLocationCenterAfterPlacesUpdate = shouldCenter;
         requestNearbySort();
       }
 
-      if (shouldCenter) {
-        runtime.setView(currentLocation, 15);
+      if (!shouldSort && shouldCenter) {
+        scheduleLocationCenter();
       }
     };
 
@@ -1302,8 +1329,8 @@ const mapPlaces = places
 
         pendingLocationCenter = false;
         pendingLocationSortRequest = false;
+        pendingLocationCenterAfterPlacesUpdate = true;
         requestNearbySort();
-        runtime.setView(currentLocation, 15);
         setLocationStatus("");
         return;
       }

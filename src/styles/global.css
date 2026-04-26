@@ -1125,20 +1125,24 @@
     font-weight: 700;
   }
 
+  .map-feedback-slot {
+    min-height: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-top: 0.45rem;
+    margin-bottom: 0.45rem;
+  }
+
   .map-location-status {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    z-index: 1200;
-    max-width: min(24rem, calc(100% - 1.5rem));
+    position: static;
+    max-width: min(24rem, 100%);
     margin: 0;
     padding: 0.5rem 0.65rem;
     border: 1px solid rgba(39, 47, 56, 0.12);
     border-radius: var(--radius-sm);
     background: rgba(255, 255, 255, 0.94);
     box-shadow: 0 6px 18px rgba(31, 26, 22, 0.12);
-    backdrop-filter: blur(8px);
-    pointer-events: none;
   }
 
   .country-block[data-location-match="true"] > .section-head {
@@ -1388,7 +1392,6 @@
 
   .map-stage {
     position: relative;
-    isolation: isolate;
     min-width: 0;
   }
 
