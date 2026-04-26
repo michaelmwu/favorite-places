@@ -117,6 +117,7 @@ describe("guide filters", () => {
     expect(
       buildAreaFilterStatusMessage({
         activeAreaLabel: "South Brisbane",
+        hasAdditionalFilters: true,
         visibleCount: 1,
         overflowCount: 3,
       }),
@@ -147,6 +148,7 @@ describe("guide filters", () => {
     expect(
       buildAreaFilterStatusMessage({
         activeAreaLabel: "South Brisbane",
+        hasAdditionalFilters: true,
         visibleCount: 1,
         overflowCount: 1,
       }),
@@ -167,8 +169,20 @@ describe("guide filters", () => {
     expect(
       buildAreaFilterStatusMessage({
         activeAreaLabel: "South Brisbane",
+        hasAdditionalFilters: true,
         visibleCount: 0,
         overflowCount: 2,
+      }),
+    ).toBe("");
+  });
+
+  it("suppresses the area status line when area is the only active filter", () => {
+    expect(
+      buildAreaFilterStatusMessage({
+        activeAreaLabel: "Zhongshan",
+        hasAdditionalFilters: false,
+        visibleCount: 3,
+        overflowCount: 8,
       }),
     ).toBe("");
   });

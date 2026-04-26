@@ -334,8 +334,13 @@ export function sortFilterOptions(options) {
   });
 }
 
-export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, overflowCount }) {
-  if (!activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
+export function buildAreaFilterStatusMessage({
+  activeAreaLabel,
+  hasAdditionalFilters = false,
+  visibleCount,
+  overflowCount,
+}) {
+  if (!hasAdditionalFilters || !activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
     return "";
   }
 
@@ -851,6 +856,11 @@ if (root) {
       ? countAreaOptionCards(cards, areaCountFilters, activeArea)
       : visibleCards.length;
     const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
+    const hasAdditionalFilters =
+      Boolean(normalizedQuery) ||
+      Boolean(activeType) ||
+      selectedTags.length > 0 ||
+      Boolean(mapFramePlaceIds);
 
     const areaOptions = areaButtons.map((button, index) => {
       const areaValue = normalizeTag(button.dataset.area || "");
@@ -949,6 +959,7 @@ if (root) {
     if (areaFilterStatus) {
       const message = buildAreaFilterStatusMessage({
         activeAreaLabel,
+        hasAdditionalFilters,
         visibleCount: visibleCards.length,
         overflowCount: areaOverflowCount,
       });

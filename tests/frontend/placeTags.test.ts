@@ -118,6 +118,21 @@ describe("getGuideAreaFilters", () => {
       { label: "Pinheiros", value: "pinheiros", count: 2 },
     ]);
   });
+
+  it("normalizes district suffix variants to the same canonical area value", () => {
+    expect(
+      getGuideAreaFilters([
+        { neighborhood: "Da’an District" },
+        { neighborhood: "Da'an District" },
+        { neighborhood: "Da’an" },
+        { neighborhood: "Zhongshan District" },
+        { neighborhood: "Zhongshan" },
+      ]),
+    ).toEqual([
+      { label: "Da’an", value: "da-an", count: 3 },
+      { label: "Zhongshan", value: "zhongshan", count: 2 },
+    ]);
+  });
 });
 
 describe("getGuideAreaFilterGroups", () => {
