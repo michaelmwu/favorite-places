@@ -13,6 +13,8 @@ import {
   countTagOptionCards,
   countTypeOptionCards,
   getInitialSelectedTags,
+  locationFallbackMessage,
+  normalizeUserLocationDetail,
   resolveLocationSortState,
   sortFilterOptions,
 } from "../../public/scripts/guide-filters.js";
@@ -567,6 +569,64 @@ describe("guide filters", () => {
       message: "Location denied.",
       shouldFallback: true,
       sortValue: "rating",
+    });
+  });
+
+  it("uses the guide-area fallback copy when the user is outside the guide area", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "far",
+        fallbackMessage: locationFallbackMessage(
+          "far",
+          "Location unavailable. Showing curated order instead.",
+        ),
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "You're outside this guide area. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+
+    expect(
+      resolveLocationSortState({
+        currentLocation: { lat: 25.033, lng: 121.5654 },
+        currentLocationStatus: "far",
+        fallbackMessage: locationFallbackMessage(
+          "far",
+          "Location unavailable. Showing curated order instead.",
+        ),
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "You're outside this guide area. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+  });
+
+  it("keeps direct geolocation coordinates even when the user is outside the guide area", () => {
+    expect(
+      normalizeUserLocationDetail({
+        coordinates: { lat: "35.6812", lng: "139.7671" },
+        nearGuide: false,
+        status: "available",
+      }),
+    ).toEqual({
+      lat: 35.6812,
+      lng: 139.7671,
+    });
+
+    expect(
+      normalizeUserLocationDetail({
+        coordinates: { lat: "35.6812", lng: "139.7671" },
+        nearGuide: false,
+        status: "far",
+      }),
+    ).toEqual({
+      lat: 35.6812,
+      lng: 139.7671,
     });
   });
 

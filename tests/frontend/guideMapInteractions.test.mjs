@@ -184,25 +184,62 @@ describe("guide map interactions", () => {
     const css = readSource("src/styles/global.css");
 
     expect(guideMap).toContain('class="map-icon-button"');
+    expect(guideMap).toContain('class="map-feedback-slot"');
+    expect(guideMap).toContain('class="map-stage"');
     expect(guideMap).toContain('data-location-state="idle"');
+    expect(guideMap).toContain("data-map-location-status");
     expect(guideMap).toContain('aria-label="Use current location"');
     expect(guideMap).toContain('aria-disabled="false"');
     expect(guideMap).not.toContain(">Near me</button>");
     expect(guideMap).toContain("locationBoundsForPlaces");
     expect(guideMap).toContain("guideLocationInliers");
     expect(guideMap).toContain("guideLocationBounds");
+    expect(guideMap).toContain("const mapIsCenteredOnCurrentLocation = () => {");
+    expect(guideMap).toContain("const syncLocationButtonToViewport = () => {");
+    expect(guideMap).toContain("runtime.onViewportChange?.(syncLocationButtonToViewport);");
+    expect(guideMap).toContain('"Recenter on current location"');
+    expect(guideMap).toContain("const commitPendingLocationActions = () => {");
+    expect(guideMap).toContain("const scheduleLocationCenter = () => {");
+    expect(guideMap).toContain("const flushPendingLocationActions = () => {");
+    expect(guideMap).toContain("runtime.setUserLocation(currentLocation);");
+    expect(guideMap).toContain("const shouldCenter = pendingLocationCenter;");
+    expect(guideMap).toContain("const shouldSort = pendingLocationSortRequest;");
+    expect(guideMap).toContain("let pendingLocationCenterAfterPlacesUpdate = false;");
+    expect(guideMap).toContain("if (shouldSort) {");
+    expect(guideMap).toContain("pendingLocationCenterAfterPlacesUpdate = shouldCenter;");
+    expect(guideMap).toContain("if (!shouldSort && shouldCenter) {");
+    expect(guideMap).toContain("scheduleLocationCenter();");
+    expect(guideMap).toContain("flushPendingLocationActions();");
     expect(guideMap).toContain("(sorted.length - 1) * percentileValue");
     expect(guideMap).not.toContain("Math.ceil(sorted.length * percentileValue) - 1");
     expect(guideMap).toContain("distanceFromGuideCenter <= guideLocationBounds.maxDistanceKm");
     expect(guideMap).toContain("Current location is too far from this guide");
+    expect(guideMap).toContain('setLocationStatus("Locating you...")');
+    expect(guideMap).toContain(
+      "You're outside this guide area, so Near me won't recenter the map.",
+    );
+    expect(guideMap).toContain('dispatchUserLocation("available")');
+    expect(guideMap).toContain('dispatchUserLocation("far")');
     expect(guideMap).toContain('setLocationButtonState("checking", "Checking current location")');
-    expect(guideMap).toContain('setLocationButtonState("near", "Center map on current location")');
+    expect(guideMap).toContain(
+      "const isCenteredOnCurrentLocation = mapIsCenteredOnCurrentLocation();",
+    );
+    expect(guideMap).toContain('isCenteredOnCurrentLocation ? "near" : "located"');
     expect(guideMap).toContain("watchPosition");
     expect(
       guideMap.indexOf(
         'root?.addEventListener("guide:user-location-request", handleUserLocationRequest)',
       ),
     ).toBeLessThan(guideMap.indexOf("await initGoogleRuntime"));
+    expect(
+      guideMap.indexOf(
+        "mapElement.guideLocationBounds = locationBoundsForPlaces(places) ?? undefined;",
+      ),
+    ).toBeLessThan(
+      guideMap.indexOf(
+        'root?.addEventListener("guide:user-location-request", handleUserLocationRequest)',
+      ),
+    );
     expect(guidePage).toContain("const hasMappablePlaces = visiblePlaces.some");
     expect(guidePage).toContain('data-has-mappable-places={hasMappablePlaces ? "true" : "false"}');
     expect(guidePage).toContain(
@@ -213,6 +250,12 @@ describe("guide map interactions", () => {
     );
     expect(filters).toContain("const requestCurrentLocationDirectly = () => {");
     expect(filters).toContain("const applySortSelection = (");
+    expect(filters).toContain('if (currentLocation && currentLocationStatus !== "far") {');
+    expect(filters).toContain(
+      'return "You\'re outside this guide area. Showing curated order instead.";',
+    );
+    expect(filters).toContain("export function normalizeUserLocationDetail(");
+    expect(filters).toContain("return normalizedLocation;");
     expect(filters).toContain('root.addEventListener("guide:sort-request"');
     expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
     expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");
@@ -221,9 +264,15 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("if (locationNearGuide && pendingLocationSortRequest) {");
     expect(guideMap).toContain("pendingLocationSortRequest = true;");
     expect(guideMap).toContain("requestNearbySort();");
+    expectCssToContain(css, ".map-feedback-slot");
+    expectCssToContain(css, '.map-panel[data-collapsed="true"] .map-feedback-slot');
     expectCssToContain(css, ".map-icon-button");
     expectCssToContain(css, '.map-icon-button[aria-disabled="true"]');
     expectCssToContain(css, '.map-icon-button[data-location-state="checking"]');
+    expectCssToContain(css, '.map-icon-button[data-location-state="located"]');
+    expectCssToContain(css, '.map-icon-button[data-location-state="far"]');
+    expectCssToContain(css, ".map-stage");
+    expectCssToContain(css, ".map-location-status");
     expectCssToContain(css, '.map-icon-button[data-busy="true"] svg');
   });
 
@@ -271,6 +320,8 @@ describe("guide map interactions", () => {
     expect(homeMap).toContain("runtime?.setVisibleGuides(currentVisibleGuideSlugs)");
     expect(homeMap).toContain("runtime?.fitGuides(currentVisibleGuides)");
     expect(homeMap).toContain("applyVisibility(\n      pendingState.visibleGuideSlugs,");
+    expect(homeBrowser).toContain("if (!nearbyGuides.isNearMatch) {");
+    expect(homeBrowser).toContain("No guides are close to you yet.");
   });
 
   it("constrains map panning before the world scrolls into grey tile space", () => {

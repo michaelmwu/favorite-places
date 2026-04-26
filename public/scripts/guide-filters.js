@@ -126,9 +126,10 @@ export function resolveLocationSortState({
 } = {}) {
   const shouldFallback =
     sortValue === "nearby" &&
-    !currentLocation &&
-    currentLocationStatus !== "idle" &&
-    currentLocationStatus !== "checking";
+    (currentLocationStatus === "far" ||
+      (!currentLocation &&
+        currentLocationStatus !== "idle" &&
+        currentLocationStatus !== "checking"));
 
   if (!shouldFallback) {
     return {
@@ -143,6 +144,30 @@ export function resolveLocationSortState({
     shouldFallback: true,
     sortValue: fallbackSortValue,
   };
+}
+
+export function locationFallbackMessage(status, fallbackMessage) {
+  if (status === "denied") {
+    return "Location permission was denied. Showing curated order instead.";
+  }
+  if (status === "far") {
+    return "You're outside this guide area. Showing curated order instead.";
+  }
+  return fallbackMessage;
+}
+
+export function normalizeUserLocationDetail({ coordinates = null } = {}) {
+  const normalizedLocation =
+    coordinates &&
+    Number.isFinite(Number(coordinates.lat)) &&
+    Number.isFinite(Number(coordinates.lng))
+      ? {
+          lat: Number(coordinates.lat),
+          lng: Number(coordinates.lng),
+        }
+      : null;
+
+  return normalizedLocation;
 }
 
 export function cardHasTag(card, tag) {
@@ -732,16 +757,21 @@ if (root) {
     }
   };
 
-  const dispatchUserLocation = ({ coordinates = null, source = "filters", status }) => {
+  const dispatchUserLocation = ({ coordinates = null, nearGuide, source = "filters", status }) => {
+    const detail = {
+      coordinates,
+      source,
+      status,
+    };
+
+    if (typeof nearGuide === "boolean") {
+      detail.nearGuide = nearGuide;
+    }
+
     root.dispatchEvent(
       new CustomEvent("guide:user-location", {
         bubbles: true,
-        detail: {
-          coordinates,
-          nearGuide: false,
-          source,
-          status,
-        },
+        detail,
       }),
     );
   };
@@ -821,8 +851,23 @@ if (root) {
     sortSelect.value = sortValue;
     setLocationSortMessage("");
 
-    if (sortValue === LOCATION_SORT_VALUE && requestLocationIfNeeded && !currentLocation) {
-      requestCurrentLocation();
+    if (sortValue === LOCATION_SORT_VALUE) {
+      if (requestLocationIfNeeded && (!currentLocation || currentLocationStatus === "far")) {
+        requestCurrentLocation();
+      }
+
+      const nextLocationSortState = resolveLocationSortState({
+        fallbackMessage: locationFallbackMessage(currentLocationStatus, locationSortFallbackText),
+        fallbackSortValue: LOCATION_SORT_FALLBACK,
+        currentLocation,
+        currentLocationStatus,
+        sortValue,
+      });
+
+      if (nextLocationSortState.shouldFallback) {
+        sortSelect.value = nextLocationSortState.sortValue;
+        setLocationSortMessage(nextLocationSortState.message);
+      }
     }
 
     update(source);
@@ -1181,20 +1226,11 @@ if (root) {
     hasHandledLocationRequest = true;
     clearDirectLocationFallbackTimer();
     const detail = event.detail || {};
-    const coordinates = detail.coordinates;
-    currentLocation =
-      coordinates &&
-      Number.isFinite(Number(coordinates.lat)) &&
-      Number.isFinite(Number(coordinates.lng))
-        ? {
-            lat: Number(coordinates.lat),
-            lng: Number(coordinates.lng),
-          }
-        : null;
     currentLocationStatus = detail.status || "idle";
+    currentLocation = normalizeUserLocationDetail(detail);
     refreshNearbyDistances();
 
-    if (currentLocation) {
+    if (currentLocation && currentLocationStatus !== "far") {
       setLocationSortMessage("");
       if (sortSelect?.value === LOCATION_SORT_VALUE) {
         update("location-sort");
@@ -1203,7 +1239,7 @@ if (root) {
     }
 
     const nextLocationSortState = resolveLocationSortState({
-      fallbackMessage: locationSortFallbackText,
+      fallbackMessage: locationFallbackMessage(currentLocationStatus, locationSortFallbackText),
       fallbackSortValue: LOCATION_SORT_FALLBACK,
       currentLocation,
       currentLocationStatus,
