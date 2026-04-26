@@ -926,6 +926,33 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertIsNone(enrichment.photo_url)
 
+    def test_sanitize_place_photo_url_drops_any_tiny_source_dimension(self) -> None:
+        for photo_url in (
+            "https://lh3.googleusercontent.com/p/example=s680-w120-h800",
+            "https://lh3.googleusercontent.com/p/example=s680-w800-h120",
+        ):
+            with self.subTest(photo_url=photo_url):
+                self.assertIsNone(build_data.sanitize_place_photo_url(photo_url))
+
+        self.assertEqual(
+            build_data.sanitize_place_photo_url(
+                "https://lh3.googleusercontent.com/p/example=s680-w800-h600"
+            ),
+            "https://lh3.googleusercontent.com/p/example=s680-w800-h600",
+        )
+
+    def test_sanitize_place_photo_url_uses_hostname_suffix_for_avatar_hosts(self) -> None:
+        self.assertEqual(
+            build_data.sanitize_place_photo_url(
+                "https://evil-googleusercontent.com.example/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100"
+            ),
+            "https://evil-googleusercontent.com.example/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100",
+        )
+        self.assertIsNone(
+            build_data.sanitize_place_photo_url(
+                "https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100"
+            )
+        )
     def test_normalize_place_page_enrichment_preserves_google_place_id_and_address_parts(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
             SimpleNamespace(

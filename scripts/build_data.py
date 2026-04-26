@@ -3072,12 +3072,12 @@ def sanitize_place_photo_url(value: str | None) -> str | None:
         return None
 
     url_parts = urlsplit(normalized)
-    host = url_parts.netloc.lower()
+    host = (url_parts.hostname or "").lower()
     path = url_parts.path.lower()
     if "staticmap" in path:
         return None
     if (
-        ("googleusercontent.com" in host or host.endswith("ggpht.com"))
+        (host.endswith("googleusercontent.com") or host.endswith("ggpht.com"))
         and path.startswith(("/a-", "/a/"))
     ):
         return None
@@ -3085,8 +3085,10 @@ def sanitize_place_photo_url(value: str | None) -> str | None:
     dimensions = extract_place_photo_source_dimensions(normalized)
     if (
         dimensions is not None
-        and dimensions[0] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
-        and dimensions[1] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+        and (
+            dimensions[0] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+            or dimensions[1] < MIN_PLACE_PHOTO_SOURCE_DIMENSION
+        )
     ):
         return None
 
