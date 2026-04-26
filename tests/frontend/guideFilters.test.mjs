@@ -8,11 +8,13 @@ import {
   cardMatchesType,
   compareCardsByCurated,
   compareCardsByNearby,
+  compareCardsByNeighborhood,
   countAreaOptionCards,
   countMatchingCards,
   countTagOptionCards,
   countTypeOptionCards,
   getInitialSelectedTags,
+  hasAdditionalGuideFilters,
   locationFallbackMessage,
   normalizeUserLocationDetail,
   resolveLocationSortState,
@@ -28,6 +30,7 @@ const makeCard = ({
   localityPath = "",
   name = "",
   neighborhood = "",
+  neighborhoodToken = "",
   placeId,
   rank = "0",
   search = "",
@@ -44,6 +47,7 @@ const makeCard = ({
     localityPath,
     name,
     neighborhood,
+    neighborhoodToken,
     placeId,
     rank,
     search,
@@ -190,6 +194,42 @@ describe("guide filters", () => {
     ).toBe("");
   });
 
+  it("treats a full-map frame as no additional guide filter", () => {
+    expect(
+      hasAdditionalGuideFilters({
+        mapFramePlaceIds: new Set(["1", "2", "3"]),
+        totalCardCount: 3,
+      }),
+    ).toBe(false);
+  });
+
+  it("treats a narrowed map frame as an additional guide filter", () => {
+    expect(
+      hasAdditionalGuideFilters({
+        mapFramePlaceIds: new Set(["1", "2"]),
+        totalCardCount: 3,
+      }),
+    ).toBe(true);
+  });
+
+  it("treats an empty active map frame as an additional guide filter", () => {
+    expect(
+      hasAdditionalGuideFilters({
+        mapFramePlaceIds: new Set(),
+        totalCardCount: 3,
+      }),
+    ).toBe(true);
+  });
+
+  it("accepts the module's active filter argument names", () => {
+    expect(
+      hasAdditionalGuideFilters({
+        activeTypeValue: "restaurant",
+        selectedTagValues: ["date-night"],
+      }),
+    ).toBe(true);
+  });
+
   it("hydrates initial selected tags from repeated tag params", () => {
     expect(
       getInitialSelectedTags({
@@ -310,6 +350,45 @@ describe("guide filters", () => {
         tag: "date-night",
       }),
     ).toBe(1);
+  });
+
+  it("matches normalized neighborhood dataset values against district-style area filters", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        neighborhood: "Da’an District",
+        neighborhoodToken: "da-an-district",
+        search: "dessert",
+      }),
+    ];
+
+    expect(
+      countMatchingCards(cards, {
+        activeArea: "da-an",
+        normalizedQuery: "dessert",
+      }),
+    ).toBe(1);
+  });
+
+  it("keeps neighborhood sorting on the human-readable label", () => {
+    const cards = [
+      makeCard({
+        placeId: "1",
+        name: "Cafe B",
+        neighborhood: "Évora",
+        neighborhoodToken: "evora",
+      }),
+      makeCard({
+        placeId: "2",
+        name: "Cafe A",
+        neighborhood: "Zurich",
+        neighborhoodToken: "zurich",
+      }),
+    ];
+
+    expect([...cards].sort(compareCardsByNeighborhood).map((card) => card.dataset.placeId)).toEqual(
+      ["1", "2"],
+    );
   });
 
   it("matches broader-area filters against any locality in the card path", () => {
@@ -543,7 +622,6 @@ describe("guide filters", () => {
       "rank-10",
     ]);
   });
-
   it("resets nearby sorting to curated when location is denied or unavailable", () => {
     expect(
       resolveLocationSortState({
@@ -629,7 +707,6 @@ describe("guide filters", () => {
       lng: 139.7671,
     });
   });
-
   it("does not reset nearby sorting while location is still idle, checking, or already available", () => {
     expect(
       resolveLocationSortState({

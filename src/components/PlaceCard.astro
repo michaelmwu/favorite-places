@@ -25,6 +25,7 @@ const displayVibeTags = getDisplayPlaceTags(placeVibeTags);
 const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
 const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
 const localityPathTokens = JSON.stringify((place.locality_path ?? []).map(getTagComparisonValue));
+const neighborhoodToken = getTagComparisonValue(place.neighborhood ?? "");
 const whyRecommendedHtml = renderRichText(place.why_recommended);
 const noteHtml = renderRichText(place.note);
 const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLowerCase() !== "off";
@@ -76,7 +77,8 @@ const badges = [
   data-vibe-tags={filterVibeTagTokens}
   data-locality-path={localityPathTokens}
   data-category={(place.primary_category ?? "").toLowerCase()}
-  data-neighborhood={(place.neighborhood ?? "").toLowerCase()}
+  data-neighborhood={place.neighborhood ?? ""}
+  data-neighborhood-token={neighborhoodToken}
   data-top-pick={place.top_pick ? "true" : "false"}
   data-rating={ratingValue !== null ? String(ratingValue) : ""}
   data-rating-count={reviewCount !== null ? String(reviewCount) : ""}

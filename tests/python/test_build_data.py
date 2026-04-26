@@ -2917,6 +2917,13 @@ class BuildDataTests(unittest.TestCase):
                 "Da’an District",
             ),
             (
+                "No, No. 60, Section 2, Hankou St, Wanhua District, Taipei City, 108",
+                "Taipei",
+                {"wanhua-district", "taipei"},
+                {"no", "taipei-city", "hankou-st"},
+                "Wanhua District",
+            ),
+            (
                 "Japan, 044-0081 Hokkaido, Abuta District, Kutchan, Yamada, 132-26",
                 "Niseko",
                 {"kutchan", "yamada", "niseko"},

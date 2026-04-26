@@ -117,6 +117,13 @@ export function compareCardsByNearby(
   return leftDistance - rightDistance || compareCardsByCurated(left, right);
 }
 
+export function compareCardsByNeighborhood(left, right) {
+  return (
+    (left.dataset.neighborhood || "").localeCompare(right.dataset.neighborhood || "") ||
+    (left.dataset.name || "").localeCompare(right.dataset.name || "")
+  );
+}
+
 export function resolveLocationSortState({
   fallbackMessage = "Location unavailable. Showing curated order instead.",
   fallbackSortValue = "curated",
@@ -169,7 +176,6 @@ export function normalizeUserLocationDetail({ coordinates = null } = {}) {
 
   return normalizedLocation;
 }
-
 export function cardHasTag(card, tag) {
   const normalizedTag = getTagComparisonValue(tag);
   if (!normalizedTag) {
@@ -189,10 +195,9 @@ export function matchesCardSearch(card, { normalizedQuery = "", searchResultIds 
 }
 
 function getCardAreaComparisonValues(card) {
-  const neighborhoodValue = getTagComparisonValue(card.dataset.neighborhood || "").replace(
-    /-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/,
-    "",
-  );
+  const neighborhoodValue = (
+    card.dataset.neighborhoodToken || getTagComparisonValue(card.dataset.neighborhood || "")
+  ).replace(/-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/, "");
   const localityPathValues = parseCardTagValues(card.dataset.localityPath);
   const broaderLocalityValue = localityPathValues[1]
     ? `broader-${localityPathValues[1].replace(/-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/, "")}`
@@ -370,6 +375,27 @@ export function buildAreaFilterStatusMessage({
   }
 
   return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match${overflowCount === 1 ? "" : "es"} elsewhere in this guide.`;
+}
+
+export function hasAdditionalGuideFilters({
+  activeType = "",
+  activeTypeValue = "",
+  mapFramePlaceIds = null,
+  normalizedQuery = "",
+  selectedTags = [],
+  selectedTagValues = [],
+  totalCardCount = 0,
+} = {}) {
+  const nextActiveType = activeTypeValue || activeType;
+  const nextSelectedTags = selectedTagValues.length > 0 ? selectedTagValues : selectedTags;
+
+  if (Boolean(normalizedQuery) || Boolean(nextActiveType) || nextSelectedTags.length > 0) {
+    return true;
+  }
+
+  return Boolean(
+    mapFramePlaceIds && (totalCardCount <= 0 || mapFramePlaceIds.size !== totalCardCount),
+  );
 }
 
 export function getInitialSelectedTags({ allTags = [], params = new URLSearchParams() } = {}) {
@@ -685,9 +711,7 @@ if (root) {
       Number(right.dataset.ratingCount || 0) - Number(left.dataset.ratingCount || 0) ||
       sorters.curated(left, right),
     name: (left, right) => (left.dataset.name || "").localeCompare(right.dataset.name || ""),
-    neighborhood: (left, right) =>
-      (left.dataset.neighborhood || "").localeCompare(right.dataset.neighborhood || "") ||
-      (left.dataset.name || "").localeCompare(right.dataset.name || ""),
+    neighborhood: compareCardsByNeighborhood,
   };
   const setFilterCount = (button, count) => {
     const countLabel = button.querySelector("[data-filter-count]");
@@ -944,11 +968,13 @@ if (root) {
       ? countAreaOptionCards(cards, areaCountFilters, activeArea)
       : visibleCards.length;
     const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
-    const hasAdditionalFilters =
-      Boolean(normalizedQuery) ||
-      Boolean(activeType) ||
-      selectedTags.length > 0 ||
-      Boolean(mapFramePlaceIds);
+    const hasAdditionalFilters = hasAdditionalGuideFilters({
+      activeTypeValue: activeType,
+      mapFramePlaceIds,
+      normalizedQuery,
+      selectedTagValues: selectedTags,
+      totalCardCount: cards.length,
+    });
 
     const areaOptions = areaButtons.map((button, index) => {
       const areaValue = normalizeTag(button.dataset.area || "");
@@ -1221,7 +1247,6 @@ if (root) {
       source: "map-sort-request",
     });
   });
-
   root.addEventListener("guide:user-location", (event) => {
     hasHandledLocationRequest = true;
     clearDirectLocationFallbackTimer();
