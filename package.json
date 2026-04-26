@@ -12,6 +12,7 @@
     "check": "bun run check:astro && bun run check:biome",
     "check:astro": "astro check",
     "check:biome": "biome check .",
+    "check:biome:files": "biome check --files-ignore-unknown=true --no-errors-on-unmatched",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "test": "bun run test:frontend && bun run test:python",
