@@ -12,6 +12,8 @@ import {
   countMatchingCards,
   countTagOptionCards,
   countTypeOptionCards,
+  locationFallbackMessage,
+  normalizeUserLocationDetail,
   resolveLocationSortState,
   sortFilterOptions,
 } from "../../public/scripts/guide-filters.js";
@@ -524,6 +526,45 @@ describe("guide filters", () => {
       shouldFallback: true,
       sortValue: "rating",
     });
+  });
+
+  it("uses the guide-area fallback copy when the user is outside the guide area", () => {
+    expect(
+      resolveLocationSortState({
+        currentLocation: null,
+        currentLocationStatus: "far",
+        fallbackMessage: locationFallbackMessage(
+          "far",
+          "Location unavailable. Showing curated order instead.",
+        ),
+        sortValue: "nearby",
+      }),
+    ).toEqual({
+      message: "You're outside this guide area. Showing curated order instead.",
+      shouldFallback: true,
+      sortValue: "curated",
+    });
+  });
+
+  it("keeps direct geolocation fallback coordinates unless the location is explicitly too far", () => {
+    expect(
+      normalizeUserLocationDetail({
+        coordinates: { lat: "35.6812", lng: "139.7671" },
+        nearGuide: false,
+        status: "available",
+      }),
+    ).toEqual({
+      lat: 35.6812,
+      lng: 139.7671,
+    });
+
+    expect(
+      normalizeUserLocationDetail({
+        coordinates: { lat: "35.6812", lng: "139.7671" },
+        nearGuide: false,
+        status: "far",
+      }),
+    ).toBeNull();
   });
 
   it("does not reset nearby sorting while location is still idle, checking, or already available", () => {

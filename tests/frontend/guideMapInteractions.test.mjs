@@ -240,9 +240,8 @@ describe("guide map interactions", () => {
     expect(filters).toContain(
       'return "You\'re outside this guide area. Showing curated order instead.";',
     );
-    expect(filters).toContain(
-      "currentLocation = detail.nearGuide === false ? null : normalizedLocation;",
-    );
+    expect(filters).toContain("export function normalizeUserLocationDetail(");
+    expect(filters).toContain("return status === \"far\" ? null : normalizedLocation;");
     expect(filters).toContain('root.addEventListener("guide:sort-request"');
     expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
     expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");

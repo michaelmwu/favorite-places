@@ -139,7 +139,7 @@ export function resolveLocationSortState({
   };
 }
 
-function locationFallbackMessage(status, fallbackMessage) {
+export function locationFallbackMessage(status, fallbackMessage) {
   if (status === "denied") {
     return "Location permission was denied. Showing curated order instead.";
   }
@@ -147,6 +147,20 @@ function locationFallbackMessage(status, fallbackMessage) {
     return "You're outside this guide area. Showing curated order instead.";
   }
   return fallbackMessage;
+}
+
+export function normalizeUserLocationDetail({ coordinates = null, status = "idle" } = {}) {
+  const normalizedLocation =
+    coordinates &&
+    Number.isFinite(Number(coordinates.lat)) &&
+    Number.isFinite(Number(coordinates.lng))
+      ? {
+          lat: Number(coordinates.lat),
+          lng: Number(coordinates.lng),
+        }
+      : null;
+
+  return status === "far" ? null : normalizedLocation;
 }
 
 export function cardHasTag(card, tag) {
@@ -706,16 +720,21 @@ if (root) {
     }
   };
 
-  const dispatchUserLocation = ({ coordinates = null, source = "filters", status }) => {
+  const dispatchUserLocation = ({ coordinates = null, nearGuide, source = "filters", status }) => {
+    const detail = {
+      coordinates,
+      source,
+      status,
+    };
+
+    if (typeof nearGuide === "boolean") {
+      detail.nearGuide = nearGuide;
+    }
+
     root.dispatchEvent(
       new CustomEvent("guide:user-location", {
         bubbles: true,
-        detail: {
-          coordinates,
-          nearGuide: false,
-          source,
-          status,
-        },
+        detail,
       }),
     );
   };
@@ -1149,18 +1168,8 @@ if (root) {
     hasHandledLocationRequest = true;
     clearDirectLocationFallbackTimer();
     const detail = event.detail || {};
-    const coordinates = detail.coordinates;
-    const normalizedLocation =
-      coordinates &&
-      Number.isFinite(Number(coordinates.lat)) &&
-      Number.isFinite(Number(coordinates.lng))
-        ? {
-            lat: Number(coordinates.lat),
-            lng: Number(coordinates.lng),
-          }
-        : null;
     currentLocationStatus = detail.status || "idle";
-    currentLocation = detail.nearGuide === false ? null : normalizedLocation;
+    currentLocation = normalizeUserLocationDetail(detail);
     refreshNearbyDistances();
 
     if (currentLocation) {
