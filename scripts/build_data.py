@@ -14,6 +14,7 @@ import sqlite3
 import time
 import unicodedata
 from collections import Counter
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
@@ -1872,6 +1873,16 @@ def refresh_generated_guide_photos(
     if not guide_paths:
         return False
 
+    raw_paths = sorted(RAW_DIR.glob("*.json"))
+    generated_slugs = {path.stem for path in guide_paths}
+    raw_slugs = {path.stem for path in raw_paths}
+    if generated_slugs != raw_slugs:
+        print(
+            "WARNING: Generated and raw guide sets differ; falling back to a full rebuild.",
+            flush=True,
+        )
+        return False
+
     PUBLIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
     PLACE_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -2493,7 +2504,7 @@ def place_is_visible_in_ui(place: NormalizedPlace) -> bool:
     return not place.hidden and not place_is_permanently_closed(place)
 
 
-def percentile(values: list[int], rank: float) -> float | None:
+def percentile(values: Sequence[float | int], rank: float) -> float | None:
     if not values:
         return None
 
@@ -2854,21 +2865,6 @@ def _guide_location_inliers_cached(
         if distance <= outlier_threshold
     ]
     return tuple(inliers) or coordinates
-
-
-def percentile(sorted_values: list[float], fraction: float) -> float:
-    if not sorted_values:
-        raise ValueError("Cannot calculate percentile for an empty list.")
-
-    position = (len(sorted_values) - 1) * fraction
-    lower_index = math.floor(position)
-    upper_index = math.ceil(position)
-    if lower_index == upper_index:
-        return sorted_values[lower_index]
-
-    lower_value = sorted_values[lower_index]
-    upper_value = sorted_values[upper_index]
-    return lower_value + (upper_value - lower_value) * (position - lower_index)
 
 
 def enrich_raw_sources(
@@ -5663,10 +5659,12 @@ def resolve_existing_place_photo_path(
         if flat_index is not None:
             canonical_match = flat_index.exact_by_stem.get(canonical_place_photo_stem(place_id, photo_url))
             if canonical_match:
+                remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
                 return public_photo_path(canonical_match), None
         else:
             canonical_matches = sorted(PLACE_PHOTOS_DIR.glob(filename_glob))
             if canonical_matches:
+                remove_legacy_place_photo_matches(slug, filename_glob=filename_glob)
                 return public_photo_path(canonical_matches[0].name), None
 
         legacy_matches = sorted((PLACE_PHOTOS_DIR / slug).glob(filename_glob))

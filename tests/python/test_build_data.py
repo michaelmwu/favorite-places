@@ -35,6 +35,16 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(build_data.format_duration_seconds(68.25), "1m 08.3s")
         self.assertEqual(build_data.format_duration_seconds(59.95), "1m 00.0s")
 
+    def test_percentile_sorts_float_values_and_clamps_rank(self) -> None:
+        percentile_value = build_data.percentile([4.8, 4.2, 4.5], 0.8)
+        self.assertIsNotNone(percentile_value)
+        self.assertAlmostEqual(percentile_value, 4.68)
+        self.assertEqual(build_data.percentile([10.0, 20.0], -1.0), 10.0)
+        self.assertEqual(build_data.percentile([10.0, 20.0], 2.0), 20.0)
+
+    def test_percentile_returns_none_for_empty_values(self) -> None:
+        self.assertIsNone(build_data.percentile([], 0.5))
+
     def test_default_refresh_workers_scales_down_to_cpu_count(self) -> None:
         with patch.object(build_data.os, "cpu_count", return_value=2):
             self.assertEqual(build_data.default_refresh_workers(), 2)
@@ -142,6 +152,80 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertTrue(result)
         rebuild_places_sqlite.assert_not_called()
+
+    def test_refresh_generated_guide_photos_falls_back_when_raw_and_generated_slugs_diverge(self) -> None:
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo, Japan",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at=build_data.STABLE_GENERATED_AT_FALLBACK,
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id="cid:123",
+                    name="Open Kitchen",
+                    maps_url="https://maps.google.com/?cid=123",
+                    main_photo_path="/place-photos/cid-123-existing.webp",
+                    status="active",
+                )
+            ],
+        )
+        raw_tokyo = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Open Kitchen",
+                    maps_url="https://maps.google.com/?cid=123",
+                    cid="123",
+                )
+            ],
+        )
+        raw_osaka = RawSavedList(
+            title="Osaka, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee Shop",
+                    maps_url="https://maps.google.com/?cid=456",
+                    cid="456",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            generated_lists_dir = root / "generated" / "lists"
+            raw_dir = root / "raw"
+            generated_dir = root / "generated"
+            public_data_dir = root / "public-data"
+            place_photos_dir = root / "place-photos"
+            generated_lists_dir.mkdir(parents=True, exist_ok=True)
+            raw_dir.mkdir(parents=True, exist_ok=True)
+
+            build_data.write_json(generated_lists_dir / "tokyo-japan.json", guide)
+            build_data.write_json(raw_dir / "tokyo-japan.json", raw_tokyo)
+            build_data.write_json(raw_dir / "osaka-japan.json", raw_osaka)
+
+            with (
+                patch("builtins.print") as print_mock,
+                patch.object(build_data, "GENERATED_LISTS_DIR", generated_lists_dir),
+                patch.object(build_data, "GENERATED_DIR", generated_dir),
+                patch.object(build_data, "PUBLIC_DATA_DIR", public_data_dir),
+                patch.object(build_data, "PLACE_PHOTOS_DIR", place_photos_dir),
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "populate_place_photos_for_guides") as populate_place_photos,
+            ):
+                result = build_data.refresh_generated_guide_photos(
+                    photo_workers=1,
+                    startup_jitter_seconds=0,
+                )
+
+        self.assertFalse(result)
+        populate_place_photos.assert_not_called()
+        print_mock.assert_called_once_with(
+            "WARNING: Generated and raw guide sets differ; falling back to a full rebuild.",
+            flush=True,
+        )
 
     def test_parser_rejects_negative_refresh_retry_values(self) -> None:
         invalid_args = [
@@ -1107,8 +1191,11 @@ class BuildDataTests(unittest.TestCase):
         with TemporaryDirectory() as tmpdir:
             photo_dir = Path(tmpdir)
             existing_path = photo_dir / f"cid-123-{photo_hash}.jpg"
+            legacy_path = photo_dir / "tokyo-japan" / existing_path.name
             existing_path.parent.mkdir(parents=True, exist_ok=True)
+            legacy_path.parent.mkdir(parents=True, exist_ok=True)
             existing_path.write_bytes(b"existing-image")
+            legacy_path.write_bytes(b"stale-legacy-image")
 
             with (
                 patch.object(build_data, "PLACE_PHOTOS_DIR", photo_dir),
@@ -1124,6 +1211,8 @@ class BuildDataTests(unittest.TestCase):
             result,
             f"/place-photos/cid-123-{photo_hash}.jpg",
         )
+        self.assertFalse(legacy_path.exists())
+        self.assertFalse(legacy_path.parent.exists())
 
     def test_sync_place_photo_migrates_legacy_guide_scoped_file_to_flat_storage(self) -> None:
         photo_url = "https://lh3.googleusercontent.com/p/example=s680-w680-h510"
@@ -1149,6 +1238,34 @@ class BuildDataTests(unittest.TestCase):
             self.assertEqual(result, f"/place-photos/cid-123-{photo_hash}.jpg")
             self.assertTrue(canonical_path.exists())
             self.assertFalse(legacy_path.exists())
+
+    def test_resolve_existing_place_photo_path_with_flat_index_cleans_legacy_duplicate(self) -> None:
+        photo_url = "https://lh3.googleusercontent.com/p/example=s680-w680-h510"
+        photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
+        filename = f"cid-123-{photo_hash}.jpg"
+
+        with TemporaryDirectory() as tmpdir:
+            photo_dir = Path(tmpdir)
+            canonical_path = photo_dir / filename
+            legacy_path = photo_dir / "tokyo-japan" / filename
+            canonical_path.parent.mkdir(parents=True, exist_ok=True)
+            legacy_path.parent.mkdir(parents=True, exist_ok=True)
+            canonical_path.write_bytes(b"canonical-image")
+            legacy_path.write_bytes(b"stale-legacy-image")
+
+            with patch.object(build_data, "PLACE_PHOTOS_DIR", photo_dir):
+                path, fallback_reason = build_data.resolve_existing_place_photo_path(
+                    "tokyo-japan",
+                    "cid:123",
+                    photo_url=photo_url,
+                    flat_index=build_data.build_place_photo_flat_index(),
+                )
+
+            self.assertEqual(path, f"/place-photos/{filename}")
+            self.assertIsNone(fallback_reason)
+            self.assertTrue(canonical_path.exists())
+            self.assertFalse(legacy_path.exists())
+            self.assertFalse(legacy_path.parent.exists())
 
     def test_populate_place_photos_for_guides_parallelizes_refresh_jobs(self) -> None:
         guide = Guide(
