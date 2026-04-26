@@ -3195,6 +3195,16 @@ def canonicalize_enrichment_cache_entry(entry: EnrichmentCacheEntry | None) -> E
     return entry
 
 
+def canonicalized_enrichment_cache_entry_copy(entry: EnrichmentCacheEntry | None) -> EnrichmentCacheEntry | None:
+    if entry is None:
+        return None
+    return entry.model_copy(
+        update={
+            "place": canonicalize_enrichment_place(entry.place.model_copy()) if entry.place is not None else None
+        }
+    )
+
+
 def sanitize_place_photo_url(value: str | None) -> str | None:
     normalized = as_string(value)
     if normalized is None:
@@ -4801,7 +4811,9 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
         if not isinstance(place_id, str) or not isinstance(cache_json, str):
             continue
         entry = EnrichmentCacheEntry.model_validate_json(cache_json)
-        result[place_id] = canonicalize_enrichment_cache_entry(entry) or entry
+        canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+        assert canonicalized_entry is not None
+        result[place_id] = canonicalized_entry
     return result
 
 
@@ -4816,14 +4828,11 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                 (slug,),
             )
             if payload:
-                connection.executemany(
-                    """
-                    INSERT INTO guide_enrichment_cache (
-                        guide_slug, place_id, fetched_at, last_verified_at, refresh_after, source,
-                        query, input_signature, matched, score, error, error_body, cache_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    [
+                serialized_rows = []
+                for place_id, entry in sorted(payload.items()):
+                    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+                    assert canonicalized_entry is not None
+                    serialized_rows.append(
                         (
                             slug,
                             place_id,
@@ -4838,13 +4847,20 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                             entry.error,
                             entry.error_body,
                             json.dumps(
-                                (canonicalize_enrichment_cache_entry(entry) or entry).model_dump(mode="json"),
+                                canonicalized_entry.model_dump(mode="json"),
                                 ensure_ascii=False,
                                 separators=(",", ":"),
                             ),
                         )
-                        for place_id, entry in sorted(payload.items())
-                    ],
+                    )
+                connection.executemany(
+                    """
+                    INSERT INTO guide_enrichment_cache (
+                        guide_slug, place_id, fetched_at, last_verified_at, refresh_after, source,
+                        query, input_signature, matched, score, error, error_body, cache_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    serialized_rows,
                 )
     finally:
         connection.close()
@@ -6493,8 +6509,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         if description_address is not None:
             formatted_address = description_address
             description = None
-    main_photo_url = sanitize_place_photo_url(as_string(getattr(details, "main_photo_url", None)))
-    photo_url = sanitize_place_photo_url(as_string(getattr(details, "photo_url", None)))
+    main_photo_url = sanitize_place_photo_url(getattr(details, "main_photo_url", None))
+    photo_url = sanitize_place_photo_url(getattr(details, "photo_url", None))
     if from_search_url:
         description = None
     limited_view = bool(getattr(details, "limited_view", False))
