@@ -209,7 +209,8 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain(
       "You're outside this guide area, so Near me won't recenter the map.",
     );
-    expect(guideMap).toContain('dispatchUserLocation(locationNearGuide ? "available" : "far")');
+    expect(guideMap).toContain('dispatchUserLocation("available")');
+    expect(guideMap).toContain('dispatchUserLocation("far")');
     expect(guideMap).toContain('setLocationButtonState("checking", "Checking current location")');
     expect(guideMap).toContain('mapIsCenteredOnCurrentLocation() ? "near" : "located"');
     expect(guideMap).toContain("watchPosition");
@@ -241,7 +242,7 @@ describe("guide map interactions", () => {
       'return "You\'re outside this guide area. Showing curated order instead.";',
     );
     expect(filters).toContain("export function normalizeUserLocationDetail(");
-    expect(filters).toContain("return status === \"far\" ? null : normalizedLocation;");
+    expect(filters).toContain('return status === "far" ? null : normalizedLocation;');
     expect(filters).toContain('root.addEventListener("guide:sort-request"');
     expect(filters).toContain("navigator.geolocation.getCurrentPosition(");
     expect(filters).toContain("directLocationFallbackTimer = window.setTimeout(() => {");

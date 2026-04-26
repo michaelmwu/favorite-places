@@ -1225,6 +1225,7 @@ const mapPlaces = places
 
       if (locationNearGuide) {
         setLocationStatus("");
+        dispatchUserLocation("available");
         commitPendingLocationActions();
         syncLocationButtonToViewport();
       } else {
@@ -1232,9 +1233,8 @@ const mapPlaces = places
         pendingLocationSortRequest = false;
         setLocationButtonState("far", "Current location is too far from this guide");
         setLocationStatus("You're outside this guide area, so Near me won't recenter the map.", "error");
+        dispatchUserLocation("far");
       }
-
-      dispatchUserLocation(locationNearGuide ? "available" : "far");
 
       if (locationNearGuide && pendingLocationSortRequest) {
         pendingLocationSortRequest = false;
