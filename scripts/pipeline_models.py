@@ -218,7 +218,6 @@ class PlaceProvenance(PipelineModel):
     primary_category: PlaceField | None = None
     primary_category_localized: PlaceField | None = None
     tags: list[PlaceField] = Field(default_factory=list)
-    locality_path: PlaceField | None = None
     neighborhood: PlaceField | None = None
     note: PlaceField | None = None
     why_recommended: PlaceField | None = None
@@ -246,7 +245,6 @@ class NormalizedPlace(PipelineModel):
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
-    locality_path: list[str] = Field(default_factory=list)
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None
