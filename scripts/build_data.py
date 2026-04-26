@@ -3740,6 +3740,7 @@ def is_building_or_unit_part(candidate: str) -> bool:
                 r"\b(?:bldg|building|tower|plaza|terrace|floor|mall|hotel|mansion|palace|garden|stream|works|"
                 r"center|centre|place|v-city|gratteciel|gems|bis|sn)\b"
                 r"|^(?:s/n|sn)$"
+                r"|^(?:no|no\.)$"
                 r"|^dentro\s+del\b"
                 r"|ビル|階|号|館"
             ),
