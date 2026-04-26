@@ -604,6 +604,11 @@
     z-index: 2;
   }
 
+  .guide-card .guide-card-tag-link {
+    position: relative;
+    z-index: 2;
+  }
+
   .guide-card h3,
   .place-card h3 {
     margin: 0;
@@ -919,6 +924,14 @@
     flex: 1 1 auto;
   }
 
+  .place-card-badges {
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
   .place-card-name-row {
     width: 100%;
     display: flex;
@@ -1031,6 +1044,11 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+  }
+
+  .badge--best-hit {
+    background: rgba(39, 47, 56, 0.08);
+    color: var(--ink);
   }
 
   .controls-panel {
@@ -1170,6 +1188,15 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.55rem;
+  }
+
+  .tag-row-mobile-scroll {
+    max-height: min(14rem, 28svh);
+    overflow-y: auto;
+    align-content: flex-start;
+    padding-right: 0.2rem;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
 
   .selected-tag-chip {
@@ -1846,12 +1873,7 @@
     }
 
     .tag-row-mobile-scroll {
-      max-height: min(14rem, 28svh);
-      overflow-y: auto;
-      align-content: flex-start;
-      padding-right: 0.2rem;
-      overscroll-behavior: contain;
-      scrollbar-gutter: stable;
+      max-height: min(16rem, 34svh);
     }
 
     .card-grid,
@@ -1918,6 +1940,22 @@
     .tag-row,
     .stats-row {
       gap: 0.5rem;
+    }
+
+    .tag-row-mobile-scroll {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-height: none;
+      padding-right: 0;
+      padding-bottom: 0.2rem;
+      align-content: normal;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-gutter: auto;
+    }
+
+    .tag-row-mobile-scroll > * {
+      flex: 0 0 auto;
     }
 
     .stat-pill,

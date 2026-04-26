@@ -7,6 +7,8 @@ import { renderRichText } from "../lib/renderRichText";
 import type { Place } from "../lib/types";
 
 interface Props {
+  bestHit?: boolean;
+  featured?: boolean;
   guideContext?: {
     cityName?: string | null;
     countryCode?: string | null;
@@ -15,7 +17,7 @@ interface Props {
   place: Place;
 }
 
-const { guideContext = {}, place } = Astro.props;
+const { bestHit = false, featured = false, guideContext = {}, place } = Astro.props;
 const placeTags = place.tags ?? [];
 const placeVibeTags = place.vibe_tags ?? [];
 const displayTags = getDisplayGuideTags(getDisplayPlaceTags(placeTags), guideContext);
@@ -52,14 +54,21 @@ const metaParts = [
 ].filter(Boolean);
 const markerSvg = buildMapMarkerSvg(
   place.marker_icon,
-  getMapMarkerColors(place.marker_icon, { topPick: place.top_pick }),
+  getMapMarkerColors(place.marker_icon, { topPick: featured || place.top_pick }),
 );
+const showTopPickBadge = siteConfig.placeCard.showTopPickBadge && (featured || place.top_pick);
+const badges = [
+  ...(showTopPickBadge ? [{ className: "badge", label: siteConfig.placeCard.topPickLabel }] : []),
+  ...(bestHit ? [{ className: "badge badge--best-hit", label: siteConfig.placeCard.bestHitLabel }] : []),
+];
 ---
 
 <article
   class="place-card ui-card"
   tabindex="0"
   data-place-card
+  data-best-hit={bestHit ? "true" : "false"}
+  data-featured={featured ? "true" : "false"}
   data-place-id={place.id}
   data-has-photo={hasPhoto ? "true" : "false"}
   data-name={place.name.toLowerCase()}
@@ -149,7 +158,13 @@ const markerSvg = buildMapMarkerSvg(
         )}
       </div>
     </div>
-    {siteConfig.placeCard.showTopPickBadge && place.top_pick && <span class="badge">{siteConfig.placeCard.topPickLabel}</span>}
+    {badges.length > 0 && (
+      <div class="place-card-badges">
+        {badges.map((badge) => (
+          <span class={badge.className}>{badge.label}</span>
+        ))}
+      </div>
+    )}
   </div>
 
   {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && <p class="rich-copy ui-copy" set:html={whyRecommendedHtml} />}

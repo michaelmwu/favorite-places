@@ -110,25 +110,11 @@ const placeTagGuideContext = {
   countryName: guide.country_name,
 };
 const featuredPlaceIds = new Set(guide.featured_place_ids ?? []);
-const topPicks = visiblePlaces.filter((place) => featuredPlaceIds.has(place.id)).slice(0, 3);
-const visiblePlacesById = new Map(visiblePlaces.map((place) => [place.id, place] as const));
-const bestHits = (guide.best_hit_place_ids ?? [])
-  .map((placeId) => visiblePlacesById.get(placeId))
-  .filter((place): place is Place => Boolean(place));
+const bestHitPlaceIds = new Set(guide.best_hit_place_ids ?? []);
 const areaFilterGroups = getGuideAreaFilterGroups(visiblePlaces);
 const areaFilters = areaFilterGroups.primary;
 const broaderAreaFilters = areaFilterGroups.secondary;
 const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
-const reviewCountFormatter = new Intl.NumberFormat("en-US");
-const bestHitsDescription = [
-  "Highly rated Google Maps standouts",
-  typeof guide.best_hit_min_rating === "number" ? `at ${guide.best_hit_min_rating.toFixed(1)}+ stars` : null,
-  typeof guide.best_hit_min_reviews === "number"
-    ? `with at least ${reviewCountFormatter.format(guide.best_hit_min_reviews)} reviews for this guide`
-    : null,
-]
-  .filter(Boolean)
-  .join(" ");
 const explicitTypes = [
   ...visiblePlaces.reduce((typeCounts, place) => {
     if (place.primary_category) {
@@ -273,34 +259,6 @@ const hasMappablePlaces = visiblePlaces.some((place) => place.lat !== null && pl
       )}
     </div>
   </section>
-
-  {siteConfig.guide.showTopPicks && topPicks.length > 0 && (
-    <section class="section ui-section">
-      <SectionHeading eyebrow={siteConfig.guide.topPicksEyebrow} title={siteConfig.guide.topPicksHeading} />
-
-      <div class="top-picks-grid ui-card-grid">
-        {topPicks.map((place) => (
-          <PlaceCard place={place} guideContext={placeTagGuideContext} />
-        ))}
-      </div>
-    </section>
-  )}
-
-  {siteConfig.guide.showBestHits && bestHits.length > 0 && (
-    <section class="section ui-section">
-      <SectionHeading
-        eyebrow={siteConfig.guide.bestHitsEyebrow}
-        title={siteConfig.guide.bestHitsHeading}
-        copy={`${bestHitsDescription}.`}
-      />
-
-      <div class="top-picks-grid ui-card-grid">
-        {bestHits.map((place) => (
-          <PlaceCard place={place} guideContext={placeTagGuideContext} />
-        ))}
-      </div>
-    </section>
-  )}
 
   {guideBeforePlacesHtml && <div class="template-block rich-copy" set:html={guideBeforePlacesHtml} />}
 
@@ -453,7 +411,12 @@ const hasMappablePlaces = visiblePlaces.some((place) => place.lat !== null && pl
 
         <div class="card-grid ui-card-grid" data-kind="places" data-place-list>
           {visiblePlaces.map((place) => (
-            <PlaceCard place={place} guideContext={placeTagGuideContext} />
+            <PlaceCard
+              place={place}
+              guideContext={placeTagGuideContext}
+              featured={featuredPlaceIds.has(place.id)}
+              bestHit={bestHitPlaceIds.has(place.id)}
+            />
           ))}
         </div>
       </div>

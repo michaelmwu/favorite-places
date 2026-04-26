@@ -56,7 +56,8 @@ function normalizeAreaText(area: string): string {
 }
 
 function normalizeAreaEquivalenceKey(area: string): string {
-  return normalizeAreaText(area).replace(
+  const normalizedText = normalizeAreaText(area);
+  return (normalizeTagValue(normalizedText) || normalizedText).replace(
     /-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/,
     "",
   );
@@ -153,8 +154,11 @@ function collectAreaFilters(
     const label = resolveLabel(place)?.trim();
     if (!label) return;
 
+    const normalizedText = normalizeAreaText(label);
+    if (!normalizedText || STREET_AREA_PATTERN.test(normalizedText)) return;
+
     const normalizedValue = normalizeAreaEquivalenceKey(label);
-    if (!normalizedValue || STREET_AREA_PATTERN.test(normalizedValue)) return;
+    if (!normalizedValue) return;
 
     const current = areaCounts.get(normalizedValue);
     if (current) {

@@ -77,6 +77,12 @@ export function buildNearbyDistanceMap(cards, currentLocation) {
 }
 
 export function compareCardsByCurated(left, right) {
+  const leftFeatured = left.dataset.featured === "true" ? 1 : 0;
+  const rightFeatured = right.dataset.featured === "true" ? 1 : 0;
+  if (leftFeatured !== rightFeatured) return rightFeatured - leftFeatured;
+  const leftBestHit = left.dataset.bestHit === "true" ? 1 : 0;
+  const rightBestHit = right.dataset.bestHit === "true" ? 1 : 0;
+  if (leftBestHit !== rightBestHit) return rightBestHit - leftBestHit;
   const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
   const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
   if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;
@@ -328,12 +334,42 @@ export function sortFilterOptions(options) {
   });
 }
 
-export function buildAreaFilterStatusMessage({ activeAreaLabel, visibleCount, overflowCount }) {
-  if (!activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
+export function buildAreaFilterStatusMessage({
+  activeAreaLabel,
+  hasAdditionalFilters = false,
+  visibleCount,
+  overflowCount,
+}) {
+  if (!hasAdditionalFilters || !activeAreaLabel || overflowCount <= 0 || visibleCount <= 0) {
     return "";
   }
 
   return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match${overflowCount === 1 ? "" : "es"} elsewhere in this guide.`;
+}
+
+export function getInitialSelectedTags({ allTags = [], params = new URLSearchParams() } = {}) {
+  const allowedTags = new Set(
+    allTags.map((tag) => getTagComparisonValue(String(tag || ""))).filter(Boolean),
+  );
+  const selectedTags = [];
+  const seen = new Set();
+
+  const rawTags = params
+    .getAll("tag")
+    .flatMap((value) => String(value || "").split(","))
+    .map((value) => getTagComparisonValue(value))
+    .filter(Boolean);
+
+  for (const tag of rawTags) {
+    if (!allowedTags.has(tag) || seen.has(tag)) {
+      continue;
+    }
+
+    seen.add(tag);
+    selectedTags.push(tag);
+  }
+
+  return selectedTags;
 }
 
 export function buildEmptyStateMessage({ activeAreaLabel = "", overflowCount = 0, query = "" }) {
@@ -863,6 +899,11 @@ if (root) {
       ? countAreaOptionCards(cards, areaCountFilters, activeArea)
       : visibleCards.length;
     const areaOverflowCount = activeArea ? Math.max(0, broaderAreaCount - areaMatchCount) : 0;
+    const hasAdditionalFilters =
+      Boolean(normalizedQuery) ||
+      Boolean(activeType) ||
+      selectedTags.length > 0 ||
+      Boolean(mapFramePlaceIds);
 
     const areaOptions = areaButtons.map((button, index) => {
       const areaValue = normalizeTag(button.dataset.area || "");
@@ -961,6 +1002,7 @@ if (root) {
     if (areaFilterStatus) {
       const message = buildAreaFilterStatusMessage({
         activeAreaLabel,
+        hasAdditionalFilters,
         visibleCount: visibleCards.length,
         overflowCount: areaOverflowCount,
       });
@@ -1184,6 +1226,11 @@ if (root) {
     if (initialQuery && searchInput) {
       searchInput.value = initialQuery;
     }
+
+    getInitialSelectedTags({
+      allTags,
+      params: initialParams,
+    }).forEach((tag) => addTag(tag));
   };
 
   const scrollToHighlightedPlace = () => {
