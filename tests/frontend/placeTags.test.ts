@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getDisplayGuideTags,
   getDisplayPlaceTags,
+  getGuideAreaFilterGroups,
   getGuideAreaFilters,
   getTagComparisonValue,
   normalizeTagValue,
@@ -66,6 +67,33 @@ describe("getGuideAreaFilters", () => {
     ]);
   });
 
+  it("backfills with valid one-off areas when repeated neighborhoods are sparse", () => {
+    expect(
+      getGuideAreaFilters(
+        [
+          { neighborhood: "Ciutat Vella" },
+          { neighborhood: "Ciutat Vella" },
+          { neighborhood: "Ciutat Vella" },
+          { neighborhood: "Eixample" },
+          { neighborhood: "Eixample" },
+          { neighborhood: "Eixample" },
+          { neighborhood: "Gràcia" },
+          { neighborhood: "Port Vell" },
+          { neighborhood: "Les Corts" },
+          { neighborhood: "C/ d'Aribau" },
+          { neighborhood: "Ctra. de Miramar" },
+        ],
+        { limit: 5 },
+      ),
+    ).toEqual([
+      { label: "Ciutat Vella", value: "ciutat-vella", count: 3 },
+      { label: "Eixample", value: "eixample", count: 3 },
+      { label: "Gràcia", value: "gracia", count: 1 },
+      { label: "Les Corts", value: "les-corts", count: 1 },
+      { label: "Port Vell", value: "port-vell", count: 1 },
+    ]);
+  });
+
   it("drops no-op areas that would match every place", () => {
     expect(
       getGuideAreaFilters([
@@ -89,6 +117,28 @@ describe("getGuideAreaFilters", () => {
       { label: "São Paulo", value: "sao-paulo", count: 3 },
       { label: "Pinheiros", value: "pinheiros", count: 2 },
     ]);
+  });
+});
+
+describe("getGuideAreaFilterGroups", () => {
+  it("builds broader locality filters with the expected prefix", () => {
+    expect(
+      getGuideAreaFilterGroups([
+        { neighborhood: "Shibuya", locality_path: ["shibuya", "tokyo-ward"] },
+        { neighborhood: "Harajuku", locality_path: ["shibuya", "tokyo-ward"] },
+        { neighborhood: "Ginza", locality_path: ["chuo", "osaka-city"] },
+      ]),
+    ).toEqual({
+      primary: [
+        { label: "Ginza", value: "ginza", count: 1 },
+        { label: "Harajuku", value: "harajuku", count: 1 },
+        { label: "Shibuya", value: "shibuya", count: 1 },
+      ],
+      secondary: [
+        { label: "tokyo-ward", value: "broader-tokyo", count: 2 },
+        { label: "osaka-city", value: "broader-osaka", count: 1 },
+      ],
+    });
   });
 });
 

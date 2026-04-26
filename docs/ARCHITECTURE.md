@@ -239,7 +239,8 @@ Why:
 Common variables:
 
 - `GOOGLE_MAPS_JS_API_KEY`: browser Google Maps display key, read by Astro during render/build and embedded only when the Google map provider is active
-- `GOOGLE_PLACES_API_KEY`: server/build-time fallback key for enrichment
+- `GOOGLE_PLACES_API_KEY`: server/build-time key for API-based enrichment
+- `GOOGLE_PLACES_ENRICHMENT_STRATEGY`: choose `scrape`, `api`, or `scrape_then_api` for place enrichment
 - `PUBLIC_MAP_PROVIDER=leaflet`: force Leaflet/OpenStreetMap rendering
 - `PUBLIC_PLACE_PHOTOS=off`: hide place photos in the UI
 - `FAVORITE_PLACES_SITE_DIR`: point the app and Python pipeline at a non-default site pack
@@ -268,7 +269,7 @@ Manual overrides always win over machine-enriched fields.
 
 ## Google Places Enrichment
 
-Enrichment is optional and cached. A normal build never calls Google.
+Enrichment is optional and cached. A normal build can run without enrichment, but the resulting guides are intentionally sparse: they mostly reflect the raw saved-list data plus manual overrides. Running enrichment is recommended when you want stable categories, Maps links, status, ratings, and photos.
 
 - `bun run enrich:data`: normal incremental enrichment; missing places go first, then stale entries
 - `bun run fill:enrichment`: only places with no cache entry
@@ -276,7 +277,17 @@ Enrichment is optional and cached. A normal build never calls Google.
 - `bun run refresh:enrichment`: force-refresh every entry
 - `bun run export:cache:json`: optional debug export of per-guide cache JSON from SQLite
 
-The current enrichment pass uses Google Places Text Search with a narrow field mask and location bias around scraped coordinates. It fills useful metadata such as category, Maps URI, rating, business status, and photos without making the site build a runtime dependency on Google.
+`GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls source selection:
+
+- `scrape`: Google Maps place-page scraping only
+- `api`: Google Places Text Search only
+- `scrape_then_api`: Google Maps place-page scraping first, then Google Places Text Search when the scraped result is blocked, limited, unmatched, or too sparse to trust
+
+The default strategy is `scrape_then_api`. The scraper path does not require a Places API key. `api` mode and the fallback leg of `scrape_then_api` require `GOOGLE_PLACES_API_KEY`.
+
+The API path uses Google Places Text Search with a narrow field mask and location bias around scraped coordinates.
+
+Enrichment fills useful metadata such as category, Maps URI, rating, business status, and photos without making the rendered site depend on live Google calls.
 
 Cache invalidation is field-aware: raw input changes force refresh, operational places refresh more slowly, and volatile states like ratings, closures, unmatched results, and API errors refresh sooner.
 

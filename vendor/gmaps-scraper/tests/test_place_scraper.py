@@ -316,6 +316,49 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(enrichment["lat"], 35.6731762)
         self.assertEqual(enrichment["lng"], 139.7127216)
 
+    def test_extract_preview_place_enrichment_preserves_google_place_id_and_address_parts(self) -> None:
+        payload_data = [
+            [
+                [
+                    [
+                        [
+                            [
+                                "Trailhead",
+                                "Xinyi District, Taipei City",
+                                "Xinyi District, Taipei City",
+                                "Xinyi District",
+                                "110",
+                                "Taipei City",
+                                "TW",
+                                ["Taiwan"],
+                            ],
+                            [["2HGG+M6 Taipei City, Taiwan"]],
+                        ]
+                    ]
+                ],
+                ["ChIJ8T36HxCLGGARvpARPDyaKLA", "0x3442c8:0xa82c9a3c3c1090be", "/m/0k64r8"],
+                [[None, None, 25.0272, 121.5705]],
+            ]
+        ]
+        payload = ")]}'\n" + json.dumps(payload_data, ensure_ascii=False)
+
+        enrichment = _extract_preview_place_enrichment(payload)
+
+        self.assertEqual(enrichment["google_place_id"], "ChIJ8T36HxCLGGARvpARPDyaKLA")
+        self.assertEqual(
+            enrichment["address_parts"],
+            [
+                "Trailhead",
+                "Xinyi District, Taipei City",
+                "Xinyi District, Taipei City",
+                "Xinyi District",
+                "110",
+                "Taipei City",
+                "TW",
+                ["Taiwan"],
+            ],
+        )
+
     def test_extract_preview_description_preserves_text_starting_with_open(self) -> None:
         description = _extract_preview_description(
             [
@@ -474,6 +517,43 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(
             details.photo_url,
             "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
+        )
+
+    def test_build_place_details_preserves_google_place_id_and_address_parts(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Elephant+Mountain",
+            resolved_url="https://www.google.com/maps/place/Elephant+Mountain",
+            snapshot={
+                "name": "象山",
+                "google_place_id": "ChIJ8T36HxCLGGARvpARPDyaKLA",
+                "address": "2HGG+M6",
+                "address_parts": [
+                    "Trailhead",
+                    "Xinyi District, Taipei City",
+                    "Xinyi District, Taipei City",
+                    "Xinyi District",
+                    "110",
+                    "Taipei City",
+                    "TW",
+                    ["Taiwan"],
+                ],
+                "body_text": "象山",
+            },
+        )
+
+        self.assertEqual(details.google_place_id, "ChIJ8T36HxCLGGARvpARPDyaKLA")
+        self.assertEqual(
+            details.address_parts,
+            [
+                "Trailhead",
+                "Xinyi District, Taipei City",
+                "Xinyi District, Taipei City",
+                "Xinyi District",
+                "110",
+                "Taipei City",
+                "TW",
+                ["Taiwan"],
+            ],
         )
 
     def test_build_place_details_rejects_street_view_as_photo(self) -> None:

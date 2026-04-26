@@ -105,19 +105,28 @@ bun run build
 
 ## Optional Enrichment
 
-The site works without Google Places enrichment. If you want richer metadata, add a server/build-time key in `.env`:
+The site works without enrichment, and normal builds never call Google. When you run an enrichment command, the pipeline first tries to scrape each place's Google Maps page from the saved-list URL. If that page scrape is blocked, limited, unmatched, or too sparse to trust, the pipeline can optionally fall back to the Google Places API.
+
+Add a server/build-time Places key only if you want that API fallback:
 
 ```bash
 GOOGLE_PLACES_API_KEY=...
 ```
 
-Then run one of:
+Then run one of the enrichment commands:
 
 ```bash
 bun run fill:gaps
 bun run enrich:data
 bun run refresh:enrichment
 ```
+
+The behavior is configurable in a few places:
+
+- `GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls enrichment source selection. Use `scrape` for scraper-only, `api` for API-only, or `scrape_then_api` for scraper first with API fallback. The default is `scrape_then_api`.
+- `GOOGLE_PLACES_API_KEY` enables API-based enrichment. It is required for `api` mode and for the fallback leg of `scrape_then_api`.
+- `GMAPS_SCRAPER_PROXY` routes Google Maps list and place-page scraping through a proxy.
+- The command controls refresh scope: `fill:gaps` fills missing enrichment and photos, `enrich:data` fills missing or stale cache entries, and `refresh:enrichment` refreshes every entry.
 
 Manual overrides always win over machine-enriched fields.
 
@@ -127,8 +136,14 @@ Manual overrides always win over machine-enriched fields.
 # Browser Google Maps display key.
 GOOGLE_MAPS_JS_API_KEY=...
 
-# Server/build-time enrichment fallback.
+# Server/build-time key for API-based enrichment.
 GOOGLE_PLACES_API_KEY=...
+
+# Enrichment source strategy: scrape, api, or scrape_then_api.
+GOOGLE_PLACES_ENRICHMENT_STRATEGY=scrape_then_api
+
+# Optional proxy for Google Maps list and place-page scraping.
+GMAPS_SCRAPER_PROXY=...
 
 # Force Leaflet/OpenStreetMap rendering.
 PUBLIC_MAP_PROVIDER=leaflet

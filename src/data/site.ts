@@ -67,15 +67,18 @@ export interface SiteConfig {
     searchHint: string;
     searchPlaceholder: string;
     areaLabel: string;
+    broaderAreaLabel: string;
     typeLabel: string;
     popularTagsLabel: string;
     popularTagsHint: string;
     allFilterLabel: string;
     resultsSortLabel: string;
     sortCuratedLabel: string;
+    sortNearMeLabel: string;
     sortRatingLabel: string;
     sortNameLabel: string;
     sortNeighborhoodLabel: string;
+    locationSortFallbackText: string;
     resetMapLabel: string;
     mapFilteredText: string;
     emptyStateText: string;
@@ -177,15 +180,18 @@ const defaultSiteConfig: SiteConfig = {
     searchHint: "Type `#` to add a tag filter.",
     searchPlaceholder: "Search places, notes, neighborhoods, or type #tag",
     areaLabel: "Area",
+    broaderAreaLabel: "Ward / district",
     typeLabel: "Type",
     popularTagsLabel: "Popular tags",
     popularTagsHint: "Click to add, or type `#` to browse all tags.",
     allFilterLabel: "All",
     resultsSortLabel: "Sort",
     sortCuratedLabel: "Curated",
+    sortNearMeLabel: "Near me",
     sortRatingLabel: "Top rated",
     sortNameLabel: "Name",
     sortNeighborhoodLabel: "Area",
+    locationSortFallbackText: "Location unavailable. Showing curated order instead.",
     resetMapLabel: "Reset map",
     mapFilteredText: "Filtered to the visible map area.",
     emptyStateText: "No matches. Try a broader search or clear the tag filter.",

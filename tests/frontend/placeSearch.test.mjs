@@ -70,6 +70,24 @@ const index = prepareSearchIndex({
       search_text: "quiet coffee shop wifi shibuya tokyo japan",
     },
     {
+      id: "tokyo-burger",
+      guide_slug: "tokyo-japan",
+      guide_title: "Tokyo, Japan",
+      city: "Tokyo",
+      country: "Japan",
+      name: "Henry's Burger Harajuku",
+      category: "Burger restaurant",
+      neighborhood: "Harajuku",
+      tags: ["burger", "harajuku"],
+      vibe_tags: ["casual", "quick-stop"],
+      note: "Compact burger spot.",
+      top_pick: false,
+      manual_rank: 0,
+      maps_url: "https://maps.example/tokyo-burger",
+      url: "/guides/tokyo-japan/?place=tokyo-burger",
+      search_text: "henrys burger harajuku casual quick stop tokyo japan",
+    },
+    {
       id: "sf-dinner",
       guide_slug: "san-francisco-california-usa",
       guide_title: "San Francisco, California, USA",
@@ -141,6 +159,17 @@ describe("place search", () => {
     expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-coffee"]);
   });
 
+  it("supports two-character prefix matches in guide-local search", () => {
+    const state = searchPlaces("ha", {
+      index,
+      scope: "guide",
+      guideSlug: "tokyo-japan",
+      activeFilters: { tag: "casual" },
+    });
+
+    expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-burger"]);
+  });
+
   it("filters unmatched guide-local queries after the index loads", () => {
     const state = searchPlaces("volcanic bookstore", {
       index,
@@ -149,6 +178,29 @@ describe("place search", () => {
     });
 
     expect(state.results).toEqual([]);
+  });
+
+  it("requires all meaningful terms in multi-word guide-local searches to match", () => {
+    const state = searchPlaces("har cafe", {
+      index,
+      scope: "guide",
+      guideSlug: "tokyo-japan",
+    });
+
+    expect(state.results).toEqual([]);
+  });
+
+  it("treats shared vibe aliases as alternatives instead of requiring every mapped vibe", () => {
+    const state = searchPlaces("good vibes", {
+      index,
+      scope: "guide",
+      guideSlug: "tokyo-japan",
+    });
+
+    expect(state.results.map((result) => result.entry.id)).toEqual(["tokyo-coffee"]);
+    expect(state.parsed.vibes).toEqual(
+      expect.arrayContaining(["cozy", "design-forward", "lively", "local-favorite"]),
+    );
   });
 
   it("ignores cross-guide location aliases in guide-scoped searches", () => {

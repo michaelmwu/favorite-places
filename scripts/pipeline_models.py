@@ -5,6 +5,8 @@ from typing import Any, Literal
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+type AddressParts = list[str | list[str]]
+
 
 class PipelineModel(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -20,6 +22,10 @@ class PlacesSettings(BaseSettings):
     google_places_api_key: str | None = Field(
         default=None,
         validation_alias=AliasChoices("GOOGLE_PLACES_API_KEY", "GOOGLE_MAPS_API_KEY"),
+    )
+    google_places_enrichment_strategy: Literal["scrape", "api", "scrape_then_api"] = Field(
+        default="scrape_then_api",
+        validation_alias=AliasChoices("GOOGLE_PLACES_ENRICHMENT_STRATEGY"),
     )
 
 
@@ -143,6 +149,7 @@ class EnrichmentPlace(PipelineModel):
     website: str | None = None
     phone: str | None = None
     plus_code: str | None = None
+    address_parts: AddressParts | None = None
     description: str | None = None
     main_photo_url: str | None = None
     photo_url: str | None = None
