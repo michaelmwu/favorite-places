@@ -54,13 +54,11 @@ const metaParts = [
 ].filter(Boolean);
 const markerSvg = buildMapMarkerSvg(
   place.marker_icon,
-  getMapMarkerColors(place.marker_icon, { topPick: place.top_pick }),
+  getMapMarkerColors(place.marker_icon, { topPick: featured || place.top_pick }),
 );
 const showTopPickBadge = siteConfig.placeCard.showTopPickBadge && (featured || place.top_pick);
 const badges = [
-  ...(showTopPickBadge
-    ? [{ className: "badge badge--featured", label: siteConfig.placeCard.topPickLabel }]
-    : []),
+  ...(showTopPickBadge ? [{ className: "badge", label: siteConfig.placeCard.topPickLabel }] : []),
   ...(bestHit ? [{ className: "badge badge--best-hit", label: siteConfig.placeCard.bestHitLabel }] : []),
 ];
 ---

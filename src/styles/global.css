@@ -604,6 +604,11 @@
     z-index: 2;
   }
 
+  .guide-card .guide-card-tag-link {
+    position: relative;
+    z-index: 2;
+  }
+
   .guide-card h3,
   .place-card h3 {
     margin: 0;

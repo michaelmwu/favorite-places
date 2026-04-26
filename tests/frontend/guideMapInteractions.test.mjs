@@ -75,6 +75,9 @@ describe("guide map interactions", () => {
     expect(placeCard).toContain(
       'import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";',
     );
+    expect(placeCard).toContain(
+      "getMapMarkerColors(place.marker_icon, { topPick: featured || place.top_pick })",
+    );
     expect(placeCard).toContain('class="place-card-name-row"');
     expect(placeCard).toContain('class="place-card-marker"');
     expect(placeCard).toContain('class="place-card-map-link"');
@@ -82,6 +85,7 @@ describe("guide map interactions", () => {
     expect(placeCard).toContain('<img src="/icons/google-maps.svg" alt="" width="18" height="26"');
     expect(placeCard).toContain('class="place-card-map-link-label"');
     expect(placeCard).toContain("{siteConfig.placeCard.mapsLabel}</span>");
+    expect(placeCard).not.toContain("badge badge--featured");
     expect(placeCard).not.toContain(">Open in Google Maps<");
     expect(placeCard).toContain("set:html={markerSvg}");
     expectCssToContain(css, ".place-card-map-link");

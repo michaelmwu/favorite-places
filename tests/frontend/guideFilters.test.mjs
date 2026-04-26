@@ -12,6 +12,7 @@ import {
   countMatchingCards,
   countTagOptionCards,
   countTypeOptionCards,
+  getInitialSelectedTags,
   resolveLocationSortState,
   sortFilterOptions,
 } from "../../public/scripts/guide-filters.js";
@@ -185,6 +186,15 @@ describe("guide filters", () => {
         overflowCount: 8,
       }),
     ).toBe("");
+  });
+
+  it("hydrates initial selected tags from repeated tag params", () => {
+    expect(
+      getInitialSelectedTags({
+        allTags: ["seafood", "date-night", "quiet"],
+        params: new URLSearchParams("tag=seafood&tag=date-night&tag=unknown&tag=seafood"),
+      }),
+    ).toEqual(["seafood", "date-night"]);
   });
 
   it("keeps the area label in query empty-state copy even with no overflow matches", () => {

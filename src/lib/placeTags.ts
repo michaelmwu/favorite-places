@@ -56,7 +56,8 @@ function normalizeAreaText(area: string): string {
 }
 
 function normalizeAreaEquivalenceKey(area: string): string {
-  return normalizeTagValue(normalizeAreaText(area)).replace(
+  const normalizedText = normalizeAreaText(area);
+  return (normalizeTagValue(normalizedText) || normalizedText).replace(
     /-(?:city|ward|district|borough|county|prefecture|province|gu|ku)$/,
     "",
   );

@@ -89,7 +89,6 @@ export interface SiteConfig {
     showTags: boolean;
     maxTags: number;
     showPlaceCount: boolean;
-    showTopCategory: boolean;
     trimCountryFromTitle: boolean;
   };
   placeCard: {
@@ -203,7 +202,6 @@ const defaultSiteConfig: SiteConfig = {
     showTags: true,
     maxTags: 4,
     showPlaceCount: true,
-    showTopCategory: true,
     trimCountryFromTitle: true,
   },
   placeCard: {

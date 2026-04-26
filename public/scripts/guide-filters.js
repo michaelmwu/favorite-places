@@ -347,6 +347,31 @@ export function buildAreaFilterStatusMessage({
   return `Showing ${visibleCount} place${visibleCount === 1 ? "" : "s"} in ${activeAreaLabel}. ${overflowCount} more match${overflowCount === 1 ? "" : "es"} elsewhere in this guide.`;
 }
 
+export function getInitialSelectedTags({ allTags = [], params = new URLSearchParams() } = {}) {
+  const allowedTags = new Set(
+    allTags.map((tag) => getTagComparisonValue(String(tag || ""))).filter(Boolean),
+  );
+  const selectedTags = [];
+  const seen = new Set();
+
+  const rawTags = params
+    .getAll("tag")
+    .flatMap((value) => String(value || "").split(","))
+    .map((value) => getTagComparisonValue(value))
+    .filter(Boolean);
+
+  for (const tag of rawTags) {
+    if (!allowedTags.has(tag) || seen.has(tag)) {
+      continue;
+    }
+
+    seen.add(tag);
+    selectedTags.push(tag);
+  }
+
+  return selectedTags;
+}
+
 export function buildEmptyStateMessage({ activeAreaLabel = "", overflowCount = 0, query = "" }) {
   const matchWord = overflowCount === 1 ? "match" : "matches";
 
@@ -1178,6 +1203,11 @@ if (root) {
     if (initialQuery && searchInput) {
       searchInput.value = initialQuery;
     }
+
+    getInitialSelectedTags({
+      allTags,
+      params: initialParams,
+    }).forEach((tag) => addTag(tag));
   };
 
   const scrollToHighlightedPlace = () => {
