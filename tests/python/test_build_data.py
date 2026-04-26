@@ -1109,15 +1109,39 @@ class BuildDataTests(unittest.TestCase):
         for photo_url in (
             "https://lh3.googleusercontent.com/p/example=s680-w120-h800",
             "https://lh3.googleusercontent.com/p/example=s680-w800-h120",
+            "https://lh3.googleusercontent.com/p/example=s680-w199-h400",
         ):
             with self.subTest(photo_url=photo_url):
                 self.assertIsNone(build_data.sanitize_place_photo_url(photo_url))
 
         self.assertEqual(
             build_data.sanitize_place_photo_url(
+                "https://lh3.googleusercontent.com/p/example=s680-w200-h200"
+            ),
+            "https://lh3.googleusercontent.com/p/example=s680-w200-h200",
+        )
+        self.assertEqual(
+            build_data.sanitize_place_photo_url(
                 "https://lh3.googleusercontent.com/p/example=s680-w800-h600"
             ),
             "https://lh3.googleusercontent.com/p/example=s680-w800-h600",
+        )
+
+    def test_sanitize_place_photo_url_rejects_static_map_and_avatar_path_variants(self) -> None:
+        self.assertIsNone(
+            build_data.sanitize_place_photo_url(
+                "https://maps.google.com/maps/api/staticmap?center=35.0%2C139.0&zoom=17&size=900x900"
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_place_photo_url(
+                "https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100"
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_place_photo_url(
+                "https://lh5.ggpht.com:443/a/example-avatar=w680-h680-p-rp-mo-br100"
+            )
         )
 
     def test_sanitize_place_photo_url_uses_hostname_suffix_for_avatar_hosts(self) -> None:
@@ -1132,6 +1156,7 @@ class BuildDataTests(unittest.TestCase):
                 "https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100"
             )
         )
+
     def test_normalize_place_page_enrichment_preserves_google_place_id_and_address_parts(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -5303,6 +5328,45 @@ class BuildDataTests(unittest.TestCase):
 
             self.assertEqual(loaded_payload["cid:111"].query, cache_entry.query)
             self.assertTrue(loaded_payload["cid:111"].matched)
+
+    def test_save_places_cache_to_sqlite_canonicalizes_without_mutating_payload(self) -> None:
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Open Kitchen",
+            matched=True,
+            place=EnrichmentPlace(
+                primary_type="restaurant",
+                primary_type_display_name="Restaurant",
+                primary_type_display_name_localized="レストラン",
+                photo_url="https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100",
+            ),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "places.sqlite"
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                build_data.save_places_cache_to_sqlite("tokyo-japan", {"cid:111": cache_entry})
+                loaded_payload = build_data.load_places_cache("tokyo-japan")
+
+        assert cache_entry.place is not None
+        self.assertEqual(
+            cache_entry.place.primary_type_display_name,
+            "Restaurant",
+        )
+        self.assertEqual(
+            cache_entry.place.primary_type_display_name_localized,
+            "レストラン",
+        )
+        self.assertEqual(
+            cache_entry.place.photo_url,
+            "https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar=w680-h680-p-rp-mo-br100",
+        )
+        assert loaded_payload["cid:111"].place is not None
+        self.assertEqual(loaded_payload["cid:111"].place.primary_type_display_name, "Restaurant")
+        self.assertEqual(loaded_payload["cid:111"].place.primary_type_display_name_localized, "レストラン")
+        self.assertIsNone(loaded_payload["cid:111"].place.photo_url)
 
     def test_export_places_cache_json_writes_debug_output(self) -> None:
         cache_entry = EnrichmentCacheEntry(
