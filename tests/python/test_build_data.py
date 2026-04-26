@@ -466,6 +466,33 @@ class BuildDataTests(unittest.TestCase):
             ],
         )
 
+    def test_build_place_page_candidate_urls_keeps_fallbacks_when_google_place_id_is_present(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            maps_url="https://maps.google.com/?cid=7715422616180689913",
+            cid="7715422616180689913",
+        )
+
+        self.assertEqual(
+            build_data.build_place_page_candidate_urls(
+                place,
+                google_place_id="ChIJGcmcg7ZC1moRAOacd3HoEwM",
+            ),
+            [
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Cantina+OK%21%2C+Council+Pl%2C+Sydney+NSW+2000%2C+Australia"
+                    "&query_place_id=ChIJGcmcg7ZC1moRAOacd3HoEwM&hl=en&gl=us"
+                ),
+                (
+                    "https://www.google.com/maps/search/?api=1"
+                    "&query=Cantina+OK%21%2C+Council+Pl%2C+Sydney+NSW+2000%2C+Australia&hl=en&gl=us"
+                ),
+                "https://maps.google.com/?cid=7715422616180689913&hl=en&gl=us",
+            ],
+        )
+
     def test_localize_google_maps_scrape_url_forces_english_locale(self) -> None:
         self.assertEqual(
             build_data.localize_google_maps_scrape_url(
@@ -611,7 +638,7 @@ class BuildDataTests(unittest.TestCase):
         captured_request_body: dict[str, object] = {}
 
         class FakeResponse:
-            def __enter__(self) -> "BuildDataTests.test_fetch_places_api_enrichment_uses_city_country_bias_for_name_only_search_urls.<locals>.FakeResponse":
+            def __enter__(self) -> "FakeResponse":
                 return self
 
             def __exit__(self, exc_type, exc, tb) -> None:
@@ -2637,6 +2664,44 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNotNone(places[-1].lng)
         print_mock.assert_not_called()
 
+    def test_suppress_far_map_pins_skips_sparse_guides(self) -> None:
+        places = [
+            NormalizedPlace(
+                id="tokyo-1",
+                name="Tokyo 1",
+                lat=35.66,
+                lng=139.7,
+                maps_url="https://maps.example/tokyo-1",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="tokyo-2",
+                name="Tokyo 2",
+                lat=35.67,
+                lng=139.71,
+                maps_url="https://maps.example/tokyo-2",
+                status="active",
+            ),
+            NormalizedPlace(
+                id="bad-import",
+                name="Bad import",
+                lat=48.86,
+                lng=2.35,
+                maps_url="https://maps.example/bad-import",
+                status="active",
+            ),
+        ]
+
+        with patch("builtins.print") as print_mock:
+            build_data.suppress_far_map_pins(
+                "tokyo-japan",
+                places,
+                build_data.guide_location_center(places),
+            )
+
+        self.assertEqual((places[-1].lat, places[-1].lng), (48.86, 2.35))
+        print_mock.assert_not_called()
+
     def test_guide_map_pin_warning_distance_uses_inlier_radius_plus_buffer(self) -> None:
         places = [
             NormalizedPlace(
@@ -3132,6 +3197,47 @@ class BuildDataTests(unittest.TestCase):
             ),
         )
 
+    def test_normalize_guide_recomputes_center_after_pin_suppression(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Tokyo 1",
+                    address="1 Shibuya, Tokyo, Japan",
+                    lat=35.66,
+                    lng=139.70,
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="1",
+                ),
+                RawPlace(
+                    name="Tokyo 2",
+                    address="2 Shibuya, Tokyo, Japan",
+                    lat=35.67,
+                    lng=139.71,
+                    maps_url="https://maps.google.com/?cid=2",
+                    cid="2",
+                ),
+            ],
+        )
+
+        def suppress_and_mutate(
+            _slug: str,
+            places: list[NormalizedPlace],
+            _center: tuple[float | None, float | None],
+        ) -> None:
+            places[-1].lat = None
+            places[-1].lng = None
+
+        with (
+            patch.object(build_data, "suppress_far_map_pins", side_effect=suppress_and_mutate),
+            patch.object(build_data, "warn_far_map_pins") as warn_mock,
+        ):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        self.assertAlmostEqual(guide.center_lat or 0, 35.66, places=3)
+        self.assertAlmostEqual(guide.center_lng or 0, 139.70, places=3)
+        self.assertEqual(warn_mock.call_args.args[2], (guide.center_lat, guide.center_lng))
+
     def test_resolve_refresh_sources_matches_csv_path_selector(self) -> None:
         sources = [
             SourceConfig(
@@ -3494,7 +3600,11 @@ class BuildDataTests(unittest.TestCase):
         )
 
         with patch.object(build_data, "scrape_place", return_value=details) as scrape:
-            entry = build_data.fetch_places_enrichment(place, api_key=None)
+            entry = build_data.fetch_places_enrichment(
+                place,
+                api_key=None,
+                strategy="scrape_then_api",
+            )
 
         scrape.assert_called_once()
         self.assertEqual(entry.source, "google_maps_page")
@@ -3548,6 +3658,108 @@ class BuildDataTests(unittest.TestCase):
         self.assertTrue(entry.matched)
         self.assertEqual(entry.place.display_name, "Cantina OK!")
 
+    def test_fetch_places_enrichment_uses_scrape_strategy_without_api_fallback(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+        page_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-16T00:00:00+00:00",
+            refresh_after="2026-04-19T00:00:00+00:00",
+            source="google_maps_page",
+            query="Jimbocho Den, Tokyo, Japan",
+            matched=True,
+            score=45,
+            place=EnrichmentPlace(
+                display_name="Jimbocho Den",
+                formatted_address="Tokyo, Japan",
+                google_maps_uri=place.maps_url,
+                limited_view=True,
+            ),
+        )
+
+        with (
+            patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment") as api_fetch,
+        ):
+            entry = build_data.fetch_places_enrichment(
+                place,
+                api_key="test-key",
+                strategy="scrape",
+            )
+
+        page_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            google_place_id=None,
+        )
+        api_fetch.assert_not_called()
+        self.assertIs(entry, page_entry)
+
+    def test_fetch_places_enrichment_uses_api_strategy_without_scraping(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+        api_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-16T00:00:00+00:00",
+            refresh_after="2026-04-23T00:00:00+00:00",
+            source="google_places_api",
+            query="Jimbocho Den, Tokyo, Japan",
+            matched=True,
+            score=88,
+            place=EnrichmentPlace(
+                display_name="Jimbocho Den",
+                formatted_address="Tokyo, Japan",
+                google_maps_uri="https://maps.google.com/?cid=1",
+                primary_type="restaurant",
+                primary_type_display_name="Restaurant",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "fetch_place_page_enrichment") as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
+        ):
+            entry = build_data.fetch_places_enrichment(
+                place,
+                api_key="test-key",
+                strategy="api",
+            )
+
+        page_fetch.assert_not_called()
+        api_fetch.assert_called_once_with(
+            place,
+            city_name=None,
+            country_name=None,
+            api_key="test-key",
+        )
+        self.assertIs(entry, api_entry)
+
+    def test_fetch_places_enrichment_fails_for_api_strategy_without_key(self) -> None:
+        place = RawPlace(
+            name="Jimbocho Den",
+            address="Tokyo, Japan",
+            maps_url="https://www.google.com/maps/place/Jimbocho+Den",
+        )
+
+        with (
+            patch.object(build_data, "fetch_place_page_enrichment") as page_fetch,
+            patch.object(build_data, "fetch_places_api_enrichment") as api_fetch,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "GOOGLE_PLACES_API_KEY is required"):
+                build_data.fetch_places_enrichment(
+                    place,
+                    api_key=None,
+                    strategy="api",
+                )
+
+        page_fetch.assert_not_called()
+        api_fetch.assert_not_called()
+
     def test_fetch_places_enrichment_falls_back_to_api_when_page_is_limited(self) -> None:
         place = RawPlace(
             name="Jimbocho Den",
@@ -3588,7 +3800,11 @@ class BuildDataTests(unittest.TestCase):
             patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
             patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
         ):
-            entry = build_data.fetch_places_enrichment(place, api_key="test-key")
+            entry = build_data.fetch_places_enrichment(
+                place,
+                api_key="test-key",
+                strategy="scrape_then_api",
+            )
 
         page_fetch.assert_called_once_with(
             place,
@@ -3637,7 +3853,11 @@ class BuildDataTests(unittest.TestCase):
             patch.object(build_data, "fetch_place_page_enrichment", return_value=page_entry) as page_fetch,
             patch.object(build_data, "fetch_places_api_enrichment", return_value=api_entry) as api_fetch,
         ):
-            entry = build_data.fetch_places_enrichment(place, api_key="test-key")
+            entry = build_data.fetch_places_enrichment(
+                place,
+                api_key="test-key",
+                strategy="scrape_then_api",
+            )
 
         page_fetch.assert_called_once_with(
             place,

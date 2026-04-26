@@ -23,6 +23,10 @@ class PlacesSettings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("GOOGLE_PLACES_API_KEY", "GOOGLE_MAPS_API_KEY"),
     )
+    google_places_enrichment_strategy: Literal["scrape", "api", "scrape_then_api"] = Field(
+        default="scrape_then_api",
+        validation_alias=AliasChoices("GOOGLE_PLACES_ENRICHMENT_STRATEGY"),
+    )
 
 
 class SourceConfig(PipelineModel):

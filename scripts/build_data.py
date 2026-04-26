@@ -19,7 +19,7 @@ from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import median
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import parse_qsl, quote_plus, unquote, urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -2171,6 +2171,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
     generated_at = stable_generated_at(raw, enrichment_cache)
     guide_center = guide_location_center(display_places)
     suppress_far_map_pins(slug, display_places, guide_center)
+    guide_center = guide_location_center(display_places)
     warn_far_map_pins(slug, display_places, guide_center)
 
     return Guide(
@@ -2607,6 +2608,10 @@ def guide_location_center(places: list[NormalizedPlace]) -> tuple[float | None, 
     return (lat, lng)
 
 
+def guide_geocoded_coordinate_count(places: list[NormalizedPlace]) -> int:
+    return sum(1 for place in places if place.lat is not None and place.lng is not None)
+
+
 def warn_far_map_pins(
     slug: str,
     places: list[NormalizedPlace],
@@ -2638,6 +2643,9 @@ def suppress_far_map_pins(
     places: list[NormalizedPlace],
     center: tuple[float | None, float | None],
 ) -> None:
+    if guide_geocoded_coordinate_count(places) < 4:
+        return
+
     suppression_distance_meters = guide_map_pin_suppression_distance_meters(places, center)
     center_lat, center_lng = center
     if center_lat is None or center_lng is None or suppression_distance_meters is None:
@@ -3883,6 +3891,10 @@ def coerce_string_list(value: Any) -> list[str]:
 
 def google_places_api_key() -> str | None:
     return PlacesSettings().google_places_api_key
+
+
+def google_places_enrichment_strategy() -> Literal["scrape", "api", "scrape_then_api"]:
+    return PlacesSettings().google_places_enrichment_strategy
 
 
 def configured_source_path(source: SourceConfig) -> Path:
@@ -5764,7 +5776,31 @@ def fetch_places_enrichment(
     country_name: str | None = None,
     google_place_id: str | None = None,
     api_key: str | None,
+    strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
 ) -> EnrichmentCacheEntry:
+    if strategy is None:
+        strategy = google_places_enrichment_strategy()
+
+    if strategy == "scrape":
+        return fetch_place_page_enrichment(
+            place,
+            city_name=city_name,
+            country_name=country_name,
+            google_place_id=google_place_id,
+        )
+
+    if strategy == "api":
+        if api_key is None:
+            raise RuntimeError(
+                "GOOGLE_PLACES_API_KEY is required when GOOGLE_PLACES_ENRICHMENT_STRATEGY=api."
+            )
+        return fetch_places_api_enrichment(
+            place,
+            city_name=city_name,
+            country_name=country_name,
+            api_key=api_key,
+        )
+
     page_entry = fetch_place_page_enrichment(
         place,
         city_name=city_name,
@@ -6036,9 +6072,7 @@ def build_place_page_candidate_urls(
     localized_maps_url = localize_google_maps_scrape_url(maps_url)
     cid = as_string(place.cid) or extract_maps_cid(maps_url)
     cid_url = localize_google_maps_scrape_url(f"https://maps.google.com/?cid={cid}") if cid else None
-
-    if place_id_search_url is not None:
-        return [place_id_search_url]
+    priority_candidates = [place_id_search_url] if place_id_search_url is not None else []
 
     if should_replace_raw_search_candidates_with_locality_bias(
         place,
@@ -6046,7 +6080,7 @@ def build_place_page_candidate_urls(
         search_url=search_url,
     ):
         candidates = [search_url, localized_maps_url, cid_url]
-        return dedupe_urls([url for url in candidates if url is not None])
+        return dedupe_urls([*priority_candidates, *[url for url in candidates if url is not None]])
 
     candidates: list[str] = []
     if should_prefer_search_place_url(maps_url) and search_url is not None:
@@ -6056,7 +6090,7 @@ def build_place_page_candidate_urls(
         candidates.append(cid_url)
     if not should_prefer_search_place_url(maps_url) and search_url is not None:
         candidates.append(search_url)
-    return dedupe_urls(candidates)
+    return dedupe_urls([*priority_candidates, *candidates])
 
 
 def localize_google_maps_scrape_url(url: str) -> str:
