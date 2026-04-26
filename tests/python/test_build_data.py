@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import sys
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import UTC, datetime, timedelta
@@ -47,6 +48,100 @@ class BuildDataTests(unittest.TestCase):
         args = parser.parse_args([])
 
         self.assertEqual(args.refresh_workers, build_data.DEFAULT_REFRESH_WORKERS)
+
+    def test_main_uses_photo_only_fast_path_for_refresh_photos(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--refresh-photos"]),
+            patch.object(build_data, "refresh_generated_guide_photos", return_value=True) as refresh_photos,
+            patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_photos.assert_called_once_with(
+            photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+        rebuild_generated_data.assert_not_called()
+
+    def test_main_falls_back_to_full_rebuild_when_photo_only_fast_path_is_unavailable(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--refresh-photos"]),
+            patch.object(build_data, "refresh_generated_guide_photos", return_value=False) as refresh_photos,
+            patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_photos.assert_called_once_with(
+            photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+        rebuild_generated_data.assert_called_once_with(
+            refresh_photos=True,
+            photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+
+    def test_refresh_generated_guide_photos_skips_artifact_rewrite_when_photo_state_is_unchanged(self) -> None:
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo, Japan",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at=build_data.STABLE_GENERATED_AT_FALLBACK,
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id="cid:123",
+                    name="Open Kitchen",
+                    maps_url="https://maps.google.com/?cid=123",
+                    main_photo_path="/place-photos/cid-123-existing.webp",
+                    status="active",
+                )
+            ],
+        )
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Open Kitchen",
+                    maps_url="https://maps.google.com/?cid=123",
+                    cid="123",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            generated_lists_dir = root / "generated" / "lists"
+            raw_dir = root / "raw"
+            generated_dir = root / "generated"
+            public_data_dir = root / "public-data"
+            place_photos_dir = root / "place-photos"
+            generated_lists_dir.mkdir(parents=True, exist_ok=True)
+            raw_dir.mkdir(parents=True, exist_ok=True)
+
+            build_data.write_json(generated_lists_dir / "tokyo-japan.json", guide)
+            build_data.write_json(raw_dir / "tokyo-japan.json", raw)
+
+            with (
+                patch.object(build_data, "GENERATED_LISTS_DIR", generated_lists_dir),
+                patch.object(build_data, "GENERATED_DIR", generated_dir),
+                patch.object(build_data, "PUBLIC_DATA_DIR", public_data_dir),
+                patch.object(build_data, "PLACE_PHOTOS_DIR", place_photos_dir),
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "load_places_cache", return_value={}),
+                patch.object(build_data, "populate_place_photos_for_guides"),
+                patch.object(build_data, "rebuild_places_sqlite") as rebuild_places_sqlite,
+            ):
+                result = build_data.refresh_generated_guide_photos(
+                    photo_workers=1,
+                    startup_jitter_seconds=0,
+                )
+
+        self.assertTrue(result)
+        rebuild_places_sqlite.assert_not_called()
 
     def test_parser_rejects_negative_refresh_retry_values(self) -> None:
         invalid_args = [
