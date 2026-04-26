@@ -17,7 +17,9 @@ import {
 } from "../../public/scripts/guide-filters.js";
 
 const makeCard = ({
+  bestHit = "false",
   category = "",
+  featured = "false",
   lat = "",
   lng = "",
   localityPath = "",
@@ -31,7 +33,9 @@ const makeCard = ({
   vibeTags = "",
 } = {}) => ({
   dataset: {
+    bestHit,
     category,
+    featured,
     lat,
     lng,
     localityPath,
@@ -496,6 +500,22 @@ describe("guide filters", () => {
     expect(nearbySorted.map((card) => card.dataset.placeId)).toEqual(
       curatedSorted.map((card) => card.dataset.placeId),
     );
+  });
+
+  it("prioritizes featured and best-hit cards in curated sorting", () => {
+    const cards = [
+      makeCard({ placeId: "rank-10", name: "Bravo", rank: "10" }),
+      makeCard({ placeId: "best-hit", name: "Alpha", rank: "1", bestHit: "true" }),
+      makeCard({ placeId: "top-pick", name: "Cafe", rank: "99", topPick: "true" }),
+      makeCard({ placeId: "featured", name: "Delta", rank: "0", featured: "true" }),
+    ];
+
+    expect([...cards].sort(compareCardsByCurated).map((card) => card.dataset.placeId)).toEqual([
+      "featured",
+      "best-hit",
+      "top-pick",
+      "rank-10",
+    ]);
   });
 
   it("resets nearby sorting to curated when location is denied or unavailable", () => {

@@ -77,6 +77,12 @@ export function buildNearbyDistanceMap(cards, currentLocation) {
 }
 
 export function compareCardsByCurated(left, right) {
+  const leftFeatured = left.dataset.featured === "true" ? 1 : 0;
+  const rightFeatured = right.dataset.featured === "true" ? 1 : 0;
+  if (leftFeatured !== rightFeatured) return rightFeatured - leftFeatured;
+  const leftBestHit = left.dataset.bestHit === "true" ? 1 : 0;
+  const rightBestHit = right.dataset.bestHit === "true" ? 1 : 0;
+  if (leftBestHit !== rightBestHit) return rightBestHit - leftBestHit;
   const leftTopPick = left.dataset.topPick === "true" ? 1 : 0;
   const rightTopPick = right.dataset.topPick === "true" ? 1 : 0;
   if (leftTopPick !== rightTopPick) return rightTopPick - leftTopPick;

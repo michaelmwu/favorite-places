@@ -105,6 +105,7 @@ export interface SiteConfig {
     showAddress: boolean;
     showTags: boolean;
     showStatus: boolean;
+    bestHitLabel: string;
     topPickLabel: string;
     mapsLabel: string;
     savedPlaceLabel: string;
@@ -218,6 +219,7 @@ const defaultSiteConfig: SiteConfig = {
     showAddress: true,
     showTags: true,
     showStatus: true,
+    bestHitLabel: "Popular",
     topPickLabel: "Top pick",
     mapsLabel: "Maps",
     savedPlaceLabel: "Saved place",
