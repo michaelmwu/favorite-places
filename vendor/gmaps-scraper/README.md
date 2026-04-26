@@ -17,7 +17,7 @@ panel, and returns structured JSON.
 This project is intended to be consumed directly from source rather than from PyPI.
 
 ```bash
-uv add git+https://github.com/508-dev/gmaps-scraper.git
+uv add git+https://github.com/michaelmwu/gmaps-scraper.git
 ```
 
 If you vendor the package, also add the runtime dependency:

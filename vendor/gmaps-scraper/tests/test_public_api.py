@@ -118,6 +118,7 @@ class PublicApiTests(unittest.TestCase):
         place = PlaceDetails(
             source_url="https://www.google.com/maps/place/Den",
             resolved_url="https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z",
+            google_place_id="ChIJ8T36HxCLGGARvpARPDyaKLA",
             name="Den",
             secondary_name="傳",
             category="Japanese restaurant",
@@ -152,6 +153,7 @@ class PublicApiTests(unittest.TestCase):
                 "resolved_url": (
                     "https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z"
                 ),
+                "google_place_id": "ChIJ8T36HxCLGGARvpARPDyaKLA",
                 "name": "Den",
                 "category": "Japanese restaurant",
                 "rating": 4.4,
