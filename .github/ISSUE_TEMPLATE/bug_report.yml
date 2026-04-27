@@ -7,9 +7,12 @@ body:
     attributes:
       label: Provide environment information
       description: |
-        Run this command in your project root and paste the results in a code block:
+        Run these commands in your project root and paste the results in a code block:
         ```bash
         npx envinfo --system --binaries
+        bun --version
+        python3 --version
+        uv --version
         ```
     validations:
       required: true
