@@ -9,7 +9,8 @@ body:
       description: |
         Run these commands in your project root and paste the results in a code block:
         ```bash
-        npx envinfo --system --binaries
+        bunx envinfo --system --binaries
+        # If bunx is unavailable, use: npx envinfo --system --binaries
         bun --version
         python3 --version
         uv --version
