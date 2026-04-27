@@ -1,0 +1,67 @@
+name: Convert TODOs to Issues
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  todo-to-issue:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Convert TODOs to issues
+        uses: alstr/todo-to-issue-action@v5
+        with:
+          IDENTIFIERS: '[{"name": "BUG", "labels": []}, {"name": "FIXME", "labels": []}, {"name": "TODO", "labels": []}]'
+          INSERT_ISSUE_URLS: "true"
+
+      - name: Configure Git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push inserted issue links
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          stashed="false"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git stash push --include-untracked --message "todo-to-issue"
+            stashed="true"
+          fi
+
+          git pull --rebase origin main
+
+          if [[ "${stashed}" == "true" ]]; then
+            git stash pop || {
+              echo "Stash pop failed. Skipping push."
+              exit 0
+            }
+          fi
+
+          git add -A
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git commit -m "Automatically added GitHub issue links to TODOs"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
