@@ -188,6 +188,14 @@ jobs:
       - name: Install Python dependencies
         run: uv sync --frozen
 
+      - name: Configure Git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Prepare refresh branch
         shell: bash
         run: |
@@ -253,8 +261,6 @@ jobs:
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh place data (${PROFILE})"
           git push origin "${REFRESH_BRANCH}"
 
