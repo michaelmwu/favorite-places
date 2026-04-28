@@ -4,6 +4,8 @@ import type { Guide, GuideManifest, Place } from "./types";
 export type SeoJsonLd = Record<string, unknown>;
 
 const DEFAULT_DESCRIPTION_LENGTH = 160;
+const HOME_JSON_LD_GUIDE_LIMIT = 24;
+const GUIDE_JSON_LD_PLACE_LIMIT = 25;
 
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -53,6 +55,10 @@ export function toPlainText(value: string | null | undefined): string | null {
 
   const normalized = normalizeWhitespace(stripMarkdownLinks(value));
   return normalized || null;
+}
+
+export function serializeJsonLdForHtml(value: SeoJsonLd): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
 export function buildHomeMetaDescription({
@@ -137,6 +143,18 @@ export function buildHomeJsonLd({
   description: string;
   guides: GuideManifest[];
 }): SeoJsonLd {
+  const itemListElement = guides.slice(0, HOME_JSON_LD_GUIDE_LIMIT).map((guide, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: new URL(`/guides/${guide.slug}/`, siteUrl).toString(),
+    name: guide.title,
+    description:
+      toPlainText(guide.description) ??
+      truncateDescription(
+        `${guide.place_count} saved places in ${[guide.city_name, guide.country_name].filter(Boolean).join(", ")}.`,
+      ),
+  }));
+
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -149,18 +167,8 @@ export function buildHomeJsonLd({
     },
     mainEntity: {
       "@type": "ItemList",
-      numberOfItems: guides.length,
-      itemListElement: guides.slice(0, 24).map((guide, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        url: new URL(`/guides/${guide.slug}/`, siteUrl).toString(),
-        name: guide.title,
-        description:
-          toPlainText(guide.description) ??
-          truncateDescription(
-            `${guide.place_count} saved places in ${[guide.city_name, guide.country_name].filter(Boolean).join(", ")}.`,
-          ),
-      })),
+      numberOfItems: itemListElement.length,
+      itemListElement,
     },
   };
 }
@@ -201,6 +209,12 @@ export function buildGuideJsonLd({
   countryName: string;
   visiblePlaces: Place[];
 }): SeoJsonLd[] {
+  const itemListElement = visiblePlaces.slice(0, GUIDE_JSON_LD_PLACE_LIMIT).map((place, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    item: buildPlaceEntity(place),
+  }));
+
   return [
     {
       "@context": "https://schema.org",
@@ -245,12 +259,8 @@ export function buildGuideJsonLd({
         : {}),
       mainEntity: {
         "@type": "ItemList",
-        numberOfItems: visiblePlaces.length,
-        itemListElement: visiblePlaces.slice(0, 25).map((place, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          item: buildPlaceEntity(place),
-        })),
+        numberOfItems: itemListElement.length,
+        itemListElement,
       },
     },
   ];

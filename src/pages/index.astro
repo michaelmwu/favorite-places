@@ -137,7 +137,6 @@ const homeHighlights = siteConfig.home.highlights
 const homeBeforeGuidesHtml = getTemplateHtml("home-before-guides.html");
 const homeAfterGuidesHtml = getTemplateHtml("home-after-guides.html");
 const siteUrl = new URL("/", Astro.site ?? Astro.url).toString();
-const pageUrl = new URL("/", Astro.site ?? Astro.url).toString();
 const homeMetaDescription = buildHomeMetaDescription({
   intro: siteConfig.home.intro,
   guideCount: guides.length,
@@ -148,7 +147,7 @@ const homeJsonLd = [
   buildWebsiteJsonLd(siteUrl),
   buildHomeJsonLd({
     siteUrl,
-    pageUrl,
+    pageUrl: siteUrl,
     description: homeMetaDescription,
     guides,
   }),

@@ -3,6 +3,7 @@
 import "../styles/global.css";
 import "favorite-places:site-theme";
 import { siteConfig } from "../data/site";
+import { serializeJsonLdForHtml } from "../lib/seo";
 
 interface Props {
   title: string;
@@ -45,7 +46,11 @@ const jsonLdEntries = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).
     {metaImage && <meta property="og:image" content={metaImage} />}
     {metaImage && <meta name="twitter:image" content={metaImage} />}
     {jsonLdEntries.map((entry) => (
-      <script is:inline type="application/ld+json" set:html={JSON.stringify(entry)} />
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={serializeJsonLdForHtml(entry)}
+      ></script>
     ))}
     {siteConfig.favicon && (
       <link
