@@ -7,10 +7,21 @@ import { siteConfig } from "../data/site";
 interface Props {
   title: string;
   description?: string;
+  canonicalPath?: string;
+  image?: string | null;
+  openGraphType?: "website" | "article";
+  robots?: string;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-const { title, description } = Astro.props;
+const { title, description, canonicalPath, image, openGraphType, robots, jsonLd } = Astro.props;
 const metaDescription = description ?? siteConfig.siteDescription;
+const siteUrl = Astro.site ?? new URL("/", Astro.url);
+const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, siteUrl).toString();
+const resolveAbsoluteUrl = (value: string | null | undefined) =>
+  value ? new URL(value, siteUrl).toString() : undefined;
+const metaImage = resolveAbsoluteUrl(image ?? siteConfig.defaultSeoImage);
+const jsonLdEntries = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).filter(Boolean);
 ---
 
 <!doctype html>
@@ -21,10 +32,21 @@ const metaDescription = description ?? siteConfig.siteDescription;
     <title>{title}</title>
     <meta name="description" content={metaDescription} />
     <meta name="author" content={siteConfig.ownerName} />
+    <meta name="robots" content={robots ?? "index,follow"} />
+    <link rel="canonical" href={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:site_name" content={siteConfig.siteName} />
-    {siteConfig.defaultSeoImage && <meta property="og:image" content={siteConfig.defaultSeoImage} />}
+    <meta property="og:type" content={openGraphType ?? "website"} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta name="twitter:card" content={metaImage ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    {metaImage && <meta property="og:image" content={metaImage} />}
+    {metaImage && <meta name="twitter:image" content={metaImage} />}
+    {jsonLdEntries.map((entry) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(entry)} />
+    ))}
     {siteConfig.favicon && (
       <link
         rel="icon"

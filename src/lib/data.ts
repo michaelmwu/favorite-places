@@ -24,7 +24,7 @@ const countryNameBySlug: Record<string, string> = {
   seychelles: "Seychelles",
 };
 
-function getDisplayCountryName(guide: Guide): string {
+export function getDisplayCountryName(guide: Guide): string {
   if (guide.slug in countryNameBySlug) {
     return countryNameBySlug[guide.slug];
   }
