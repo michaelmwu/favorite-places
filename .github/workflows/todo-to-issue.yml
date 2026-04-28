@@ -7,6 +7,10 @@ on:
     types:
       - closed
 
+concurrency:
+  group: todo-to-issue
+  cancel-in-progress: false
+
 jobs:
   todo-to-issue:
     if: github.event.pull_request.merged == true
@@ -19,13 +23,13 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
           ref: main
 
       - name: Convert TODOs to issues
-        uses: alstr/todo-to-issue-action@v5
+        uses: alstr/todo-to-issue-action@64aca8fda7023259aada83ba44ad988c4c443657 # v5
         with:
           IDENTIFIERS: '[{"name": "BUG", "labels": []}, {"name": "FIXME", "labels": []}, {"name": "TODO", "labels": []}]'
           INSERT_ISSUE_URLS: "true"
@@ -43,25 +47,25 @@ jobs:
         run: |
           set -euo pipefail
 
-          stashed="false"
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git stash push --include-untracked --message "todo-to-issue"
-            stashed="true"
-          fi
-
-          git pull --rebase origin main
-
-          if [[ "${stashed}" == "true" ]]; then
-            git stash pop || {
-              echo "Stash pop failed. Skipping push."
-              exit 0
-            }
-          fi
-
           git add -A
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -m "Automatically added GitHub issue links to TODOs"
-            git push origin main
-          else
+          if [[ -z "$(git status --porcelain)" ]]; then
             echo "No changes to commit"
+            exit 0
           fi
+
+          git commit -m "Automatically added GitHub issue links to TODOs"
+
+          max_attempts=3
+          for attempt in $(seq 1 "${max_attempts}"); do
+            if git pull --rebase origin main && git push origin main; then
+              exit 0
+            fi
+
+            if [[ "${attempt}" -eq "${max_attempts}" ]]; then
+              echo "Failed to rebase and push TODO link updates after ${max_attempts} attempts."
+              exit 1
+            fi
+
+            echo "Push attempt ${attempt} failed. Retrying after backoff."
+            sleep $((attempt * 5))
+          done
