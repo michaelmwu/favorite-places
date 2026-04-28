@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   todo-to-issue:
-    if: github.event.head_commit.message != 'Automatically added GitHub issue links to TODOs'
+    if: github.actor != 'github-actions[bot]' || github.event.head_commit.message != 'Automatically added GitHub issue links to TODOs'
     runs-on: ubuntu-latest
 
     permissions:
