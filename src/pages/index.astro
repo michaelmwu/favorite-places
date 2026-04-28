@@ -8,6 +8,7 @@ import { siteConfig } from "../data/site";
 import { getGuideManifests } from "../lib/data";
 import { getHomeAsideHtml, getTemplateHtml } from "../lib/heroAsideContent";
 import { renderRichText } from "../lib/renderRichText";
+import { buildHomeJsonLd, buildHomeMetaDescription, buildWebsiteJsonLd } from "../lib/seo";
 
 const guides = getGuideManifests();
 const countryEntries = Object.entries(
@@ -135,11 +136,30 @@ const homeHighlights = siteConfig.home.highlights
   .filter((highlight): highlight is string => Boolean(highlight));
 const homeBeforeGuidesHtml = getTemplateHtml("home-before-guides.html");
 const homeAfterGuidesHtml = getTemplateHtml("home-after-guides.html");
+const siteUrl = new URL("/", Astro.site ?? Astro.url).toString();
+const homeMetaDescription = buildHomeMetaDescription({
+  intro: siteConfig.home.intro,
+  guideCount: guides.length,
+  countryCount,
+  placeCount,
+});
+const homeJsonLd = [
+  buildWebsiteJsonLd(siteUrl),
+  buildHomeJsonLd({
+    siteUrl,
+    pageUrl: siteUrl,
+    description: homeMetaDescription,
+    guides,
+  }),
+];
 ---
 
 <Layout
   title={siteConfig.siteName}
-  description={siteConfig.siteDescription}
+  description={homeMetaDescription}
+  canonicalPath="/"
+  openGraphType="website"
+  jsonLd={homeJsonLd}
 >
   {siteConfig.home.showHero && (
     <section class="hero ui-hero">

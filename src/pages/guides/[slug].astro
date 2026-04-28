@@ -5,7 +5,7 @@ import Layout from "../../components/Layout.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import SectionHeading from "../../components/ui/SectionHeading.astro";
 import { siteConfig } from "../../data/site";
-import { getGuides } from "../../lib/data";
+import { getDisplayCountryName, getGuides } from "../../lib/data";
 import { getGuideAsideHtml, getTemplateHtml } from "../../lib/heroAsideContent";
 import {
   getDisplayGuideTags,
@@ -14,6 +14,7 @@ import {
   normalizeTagValue,
 } from "../../lib/placeTags";
 import { renderRichText } from "../../lib/renderRichText";
+import { buildGuideJsonLd, buildGuideMetaDescription, buildWebsiteJsonLd } from "../../lib/seo";
 import type { Place } from "../../lib/types";
 
 const DEFAULT_SUGGESTION_PRIORITY = [
@@ -115,6 +116,7 @@ const areaFilterGroups = getGuideAreaFilterGroups(visiblePlaces);
 const areaFilters = areaFilterGroups.primary;
 const broaderAreaFilters = areaFilterGroups.secondary;
 const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
+const displayCountryName = getDisplayCountryName(guide);
 const explicitTypes = [
   ...visiblePlaces.reduce((typeCounts, place) => {
     if (place.primary_category) {
@@ -207,9 +209,37 @@ const guideSidebarFallback = siteConfig.guide.sidebarContent
   .map((content) => renderRichText(content))
   .filter((content): content is string => Boolean(content));
 const hasMappablePlaces = visiblePlaces.some((place) => place.lat !== null && place.lng !== null);
+const featuredPlaceNames = visiblePlaces
+  .filter((place) => featuredPlaceIds.has(place.id))
+  .map((place) => place.name)
+  .slice(0, 3);
+const guideMetaDescription = buildGuideMetaDescription({
+  guide,
+  countryName: displayCountryName,
+  featuredPlaceNames,
+});
+const siteUrl = new URL("/", Astro.site ?? Astro.url).toString();
+const pageUrl = new URL(`/guides/${guide.slug}/`, Astro.site ?? Astro.url).toString();
+const guideJsonLd = [
+  buildWebsiteJsonLd(siteUrl),
+  ...buildGuideJsonLd({
+    siteUrl,
+    pageUrl,
+    description: guideMetaDescription,
+    guide,
+    countryName: displayCountryName,
+    visiblePlaces,
+  }),
+];
 ---
 
-<Layout title={`${guide.title} · ${siteConfig.siteName}`} description={guide.description ?? undefined}>
+<Layout
+  title={`${guide.title} · ${siteConfig.siteName}`}
+  description={guideMetaDescription}
+  canonicalPath={`/guides/${guide.slug}/`}
+  openGraphType="article"
+  jsonLd={guideJsonLd}
+>
   <section class="hero ui-hero">
     <div class="hero-grid ui-hero-grid">
       <div class="section-stack ui-stack">
