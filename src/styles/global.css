@@ -415,7 +415,7 @@
   .search-country-item:hover,
   .search-country-item:focus-visible {
     border-color: var(--accent);
-    background-color: #fffdfd;
+    background-color: var(--surface);
   }
 
   .search-country-item:focus-visible {
@@ -425,7 +425,7 @@
 
   .search-country-item-title {
     color: var(--ink);
-    font-family: "Avenir Next", "Segoe UI", sans-serif;
+    font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 800;
     line-height: 1.35;
@@ -584,7 +584,7 @@
 
   .guide-card:hover {
     border-color: var(--accent);
-    background: #fffdfd;
+    background: var(--surface);
   }
 
   .guide-card-link {
@@ -715,7 +715,7 @@
   .social-card-link:hover,
   .social-card-link:focus-visible {
     border-color: rgba(196, 49, 45, 0.35);
-    background: #fffdfd;
+    background: var(--surface);
     transform: translateY(-1px);
     box-shadow: 0 10px 20px rgba(39, 47, 56, 0.08);
   }
@@ -816,7 +816,7 @@
   .place-card:focus-visible,
   .place-card[data-map-active="true"] {
     border-color: var(--accent);
-    background: #fffdfd;
+    background: var(--surface);
   }
 
   .place-card[data-search-highlight="true"] {
@@ -1374,9 +1374,7 @@
     background: rgba(255, 250, 241, 0.96);
     box-shadow: 0 6px 18px rgba(31, 26, 22, 0.16);
     color: var(--ink);
-    font-family:
-      "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Avenir Next", "Segoe UI",
-      sans-serif;
+    font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 800;
     line-height: 1;
@@ -1584,7 +1582,7 @@
 
   .guide-map .leaflet-control-attribution,
   .guide-map .leaflet-control-zoom a {
-    font-family: "Avenir Next", "Segoe UI", sans-serif;
+    font-family: var(--font-display);
   }
 
   .guide-map-marker {
