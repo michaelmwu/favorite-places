@@ -5,6 +5,7 @@
     font-family: var(--font-sans);
     font-size: 17px;
     line-height: 1.65;
+    color-scheme: light;
   }
 
   body {
