@@ -584,7 +584,7 @@
 
   .guide-card:hover {
     border-color: var(--accent);
-    background: var(--surface);
+    background: var(--accent-soft);
   }
 
   .guide-card-link {
@@ -816,7 +816,7 @@
   .place-card:focus-visible,
   .place-card[data-map-active="true"] {
     border-color: var(--accent);
-    background: var(--surface);
+    background: var(--accent-soft);
   }
 
   .place-card[data-search-highlight="true"] {
