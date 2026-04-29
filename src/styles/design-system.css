@@ -48,6 +48,7 @@
 
   .ui-site-nav a {
     @apply text-white no-underline transition-colors;
+
     padding-block: 12px;
   }
 
