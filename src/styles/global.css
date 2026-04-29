@@ -415,7 +415,7 @@
   .search-country-item:hover,
   .search-country-item:focus-visible {
     border-color: var(--accent);
-    background-color: var(--surface);
+    background-color: var(--accent-soft);
   }
 
   .search-country-item:focus-visible {
@@ -714,8 +714,8 @@
 
   .social-card-link:hover,
   .social-card-link:focus-visible {
-    border-color: rgba(196, 49, 45, 0.35);
-    background: var(--surface);
+    border-color: var(--accent-soft);
+    background: var(--accent-soft);
     transform: translateY(-1px);
     box-shadow: 0 10px 20px rgba(39, 47, 56, 0.08);
   }
@@ -1374,7 +1374,7 @@
     background: rgba(255, 250, 241, 0.96);
     box-shadow: 0 6px 18px rgba(31, 26, 22, 0.16);
     color: var(--ink);
-    font-family: var(--font-display);
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", var(--font-display);
     font-size: 1rem;
     font-weight: 800;
     line-height: 1;

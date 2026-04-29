@@ -158,7 +158,7 @@
 
   .ui-card:hover {
     border-color: var(--color-app-brand);
-    background: var(--color-app-panel);
+    background: var(--color-app-brand-soft);
   }
 
   .ui-card-link {
