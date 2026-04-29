@@ -1,4 +1,4 @@
-@layer theme, base, components, legacy, utilities;
+@layer theme, base, legacy, components, utilities;
 
 @import "tailwindcss";
 @import "./theme.css";

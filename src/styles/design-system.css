@@ -200,6 +200,22 @@
     @apply block;
   }
 
+  .ui-empty-page {
+    @apply flex flex-col items-center py-16 text-center;
+  }
+
+  .ui-empty-page .ui-display {
+    @apply my-4;
+  }
+
+  .ui-empty-page .ui-lede {
+    @apply mx-auto;
+  }
+
+  .ui-empty-page .ui-meta-row {
+    @apply mt-8 justify-center;
+  }
+
   .ui-search-results {
     @apply my-4 border-t border-app-line pt-4;
   }
