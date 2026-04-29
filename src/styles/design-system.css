@@ -26,7 +26,7 @@
 @layer components {
   .ui-site-header {
     width: min(calc(100% - 1rem), var(--page-width));
-    @apply mx-auto flex flex-wrap items-end justify-between gap-6 py-8;
+    @apply mx-auto flex flex-wrap items-end justify-between gap-6 py-6;
   }
 
   .ui-site-title {
@@ -47,19 +47,19 @@
   }
 
   .ui-site-nav a {
-    @apply text-white no-underline transition-colors;
+    @apply inline-flex min-h-[2.35rem] items-center rounded-pill border border-white/15 px-3 text-white no-underline transition-colors;
 
-    padding-block: 12px;
+    padding-block: 0;
   }
 
   .ui-site-nav a:hover,
   .ui-site-nav a:focus-visible {
-    @apply text-app-brand;
+    @apply border-white/30 bg-white/10 text-white;
   }
 
   .ui-page-shell {
     width: min(calc(100% - 1rem), var(--page-width));
-    @apply mx-auto mb-12 bg-app-panel px-4 py-4 sm:px-6 lg:px-8;
+    @apply mx-auto mb-12 rounded-card border border-black/10 bg-app-panel px-4 py-4 shadow-card sm:px-6 lg:px-8;
   }
 
   .ui-hero {
@@ -180,7 +180,7 @@
   }
 
   .ui-control-panel {
-    @apply rounded-card border border-app-line bg-app-panel-muted p-4;
+    @apply rounded-card border border-app-line bg-app-panel-muted p-4 shadow-card;
   }
 
   .ui-control-label {

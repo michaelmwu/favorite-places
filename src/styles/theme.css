@@ -17,6 +17,6 @@
   --radius-control: var(--radius-md);
   --radius-pill: var(--radius-sm);
 
-  --shadow-card: 0 18px 42px rgba(39, 47, 56, 0.1);
-  --shadow-floating: 0 12px 28px rgba(39, 47, 56, 0.12);
+  --shadow-card: 0 18px 42px rgba(31, 37, 34, 0.1);
+  --shadow-floating: 0 12px 28px rgba(31, 37, 34, 0.12);
 }
