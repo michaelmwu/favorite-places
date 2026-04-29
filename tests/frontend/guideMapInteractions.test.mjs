@@ -96,7 +96,7 @@ describe("guide map interactions", () => {
     expectCssToContain(css, "width: 1.8rem;");
     expectCssToContain(css, "display: inline-flex;");
     expectCssToContain(css, "padding: 0.32rem 0.62rem 0.32rem 0.42rem;");
-    expectCssToContain(css, "background: rgba(255, 255, 255, 0.96);");
+    expectCssToContain(css, "background: color-mix(in srgb, var(--surface) 92%, white);");
     expectCssToContain(css, "color: #18457a;");
     expectCssToContain(css, "border-radius: 999px;");
   });
