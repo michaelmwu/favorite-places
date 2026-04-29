@@ -136,7 +136,7 @@
   }
 
   .ui-section-title {
-    @apply m-0 text-[clamp(1.4rem,2.5vw,1.85rem)] font-bold leading-[1.12] text-app-ink;
+    @apply m-0 text-[clamp(1.4rem,2.5vw,1.85rem)] font-black leading-[1.12] text-app-ink;
     text-wrap: balance;
   }
 
