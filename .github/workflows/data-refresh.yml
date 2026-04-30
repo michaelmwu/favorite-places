@@ -193,6 +193,9 @@ jobs:
         run: |
           set -euo pipefail
 
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git fetch origin main
           if git ls-remote --exit-code --heads origin "${REFRESH_BRANCH}" >/dev/null 2>&1; then
             git fetch origin "${REFRESH_BRANCH}:${REFRESH_BRANCH}"
