@@ -192,8 +192,6 @@ jobs:
 
       - name: Configure Git identity
         shell: bash
-        env:
-          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
         run: |
           set -euo pipefail
 
@@ -202,10 +200,15 @@ jobs:
 
       - name: Prepare refresh branch
         shell: bash
+        env:
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
         run: |
           set -euo pipefail
 
           git fetch origin main
+          if git ls-remote --exit-code --heads origin "${REFRESH_BRANCH}" >/dev/null 2>&1; then
+            git fetch origin "${REFRESH_BRANCH}:refs/remotes/origin/${REFRESH_BRANCH}"
+          fi
           # Treat the refresh branch as disposable. Each run starts from the
           # current main tip so old generated artifacts cannot conflict.
           git switch -C "${REFRESH_BRANCH}" origin/main
