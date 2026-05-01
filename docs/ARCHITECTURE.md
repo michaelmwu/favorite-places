@@ -180,7 +180,7 @@ Required repo secrets:
 
 - `GOOGLE_PLACES_API_KEY`, optional for enrichment
 - `GMAPS_SCRAPER_PROXY`, optional for scraper traffic
-- `GH_AUTOMATION_TOKEN`, optional but recommended for pushing `automation/data-refresh` and opening/updating PRs
+- `GH_AUTOMATION_TOKEN`, optional but recommended for pushing `automation/data-refresh-*` branches and opening/updating PRs
 
 Minimum `GH_AUTOMATION_TOKEN` permissions:
 
