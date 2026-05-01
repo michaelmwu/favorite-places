@@ -55,7 +55,7 @@ jobs:
       - Linux
     timeout-minutes: 180
     env:
-      REFRESH_BRANCH: automation/data-refresh
+      REFRESH_BRANCH_PREFIX: automation/data-refresh
       GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
       GMAPS_SCRAPER_PROXY: ${{ secrets.GMAPS_SCRAPER_PROXY }}
 
@@ -154,8 +154,10 @@ jobs:
           fi
 
           refresh_date="$(date -u +%Y-%m-%d)"
+          refresh_branch="${REFRESH_BRANCH_PREFIX}-${profile}"
 
           echo "profile=${profile}" >> "${GITHUB_OUTPUT}"
+          echo "refresh_branch=${refresh_branch}" >> "${GITHUB_OUTPUT}"
           echo "refresh_list=${refresh_list}" >> "${GITHUB_OUTPUT}"
           echo "refresh_force=${refresh_force}" >> "${GITHUB_OUTPUT}"
           echo "skip_photos=${skip_photos}" >> "${GITHUB_OUTPUT}"
@@ -190,6 +192,8 @@ jobs:
 
       - name: Configure Git identity
         shell: bash
+        env:
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
         run: |
           set -euo pipefail
 
@@ -202,16 +206,9 @@ jobs:
           set -euo pipefail
 
           git fetch origin main
-          if git ls-remote --exit-code --heads origin "${REFRESH_BRANCH}" >/dev/null 2>&1; then
-            git fetch origin "${REFRESH_BRANCH}:${REFRESH_BRANCH}"
-            git switch "${REFRESH_BRANCH}"
-            git merge --no-edit origin/main
-          elif git show-ref --verify --quiet "refs/heads/${REFRESH_BRANCH}"; then
-            git branch -f "${REFRESH_BRANCH}" origin/main
-            git switch "${REFRESH_BRANCH}"
-          else
-            git switch --create "${REFRESH_BRANCH}" origin/main
-          fi
+          # Treat the refresh branch as disposable. Each run starts from the
+          # current main tip so old generated artifacts cannot conflict.
+          git switch -C "${REFRESH_BRANCH}" origin/main
 
       - name: Run self-hosted refresh
         shell: bash
@@ -248,6 +245,7 @@ jobs:
         shell: bash
         env:
           PROFILE: ${{ steps.settings.outputs.profile }}
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
         run: |
           set -euo pipefail
 
@@ -262,7 +260,7 @@ jobs:
           fi
 
           git commit -m "Refresh place data (${PROFILE})"
-          git push origin "${REFRESH_BRANCH}"
+          git push --force-with-lease origin "${REFRESH_BRANCH}"
 
           echo "changed=true" >> "${GITHUB_OUTPUT}"
 
@@ -271,6 +269,7 @@ jobs:
         uses: actions/github-script@v8
         env:
           PROFILE: ${{ steps.settings.outputs.profile }}
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
           REFRESH_DATE: ${{ steps.settings.outputs.refresh_date }}
           REFRESH_LIST: ${{ steps.settings.outputs.refresh_list }}
           REFRESH_FORCE: ${{ steps.settings.outputs.refresh_force }}
@@ -345,13 +344,62 @@ jobs:
             });
             core.info(`Created PR #${pull.number}`);
 
+      - name: Close stale pull request
+        if: steps.commit.outputs.changed != 'true'
+        uses: actions/github-script@v8
+        env:
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
+        with:
+          github-token: ${{ secrets.GH_AUTOMATION_TOKEN != '' && secrets.GH_AUTOMATION_TOKEN || github.token }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:${process.env.REFRESH_BRANCH}`;
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: "open",
+              head,
+              base: "main",
+            });
+
+            if (pulls.length === 0) {
+              core.info(`No open PR found for ${head}`);
+              return;
+            }
+
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: pulls[0].number,
+              state: "closed",
+            });
+            core.info(`Closed PR #${pulls[0].number}`);
+
+      - name: Delete stale remote branch
+        if: steps.commit.outputs.changed != 'true'
+        shell: bash
+        env:
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
+        run: |
+          set -euo pipefail
+
+          if git ls-remote --exit-code --heads origin "${REFRESH_BRANCH}" >/dev/null 2>&1; then
+            git push origin --delete "${REFRESH_BRANCH}"
+            echo "Deleted remote branch ${REFRESH_BRANCH}."
+          else
+            echo "No remote branch to delete for ${REFRESH_BRANCH}."
+          fi
+
       - name: Summarize result
         shell: bash
+        env:
+          REFRESH_BRANCH: ${{ steps.settings.outputs.refresh_branch }}
         run: |
           set -euo pipefail
 
           if [[ "${{ steps.commit.outputs.changed }}" == "true" ]]; then
             echo "Opened or updated a PR from ${REFRESH_BRANCH}."
           else
-            echo "No tracked data changes detected."
+            echo "No tracked data changes detected; closed any matching PR and removed ${REFRESH_BRANCH}."
           fi
