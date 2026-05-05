@@ -2740,8 +2740,11 @@ class BuildDataTests(unittest.TestCase):
         for address in (
             "Dine-in, Takeout, Delivery",
             "Dine-in, Takeout, Delivery.",
+            "Dine-in, Takeout, Reservations",
             "Takeout, Delivery, Curbside pickup",
+            "Wheelchair accessible entrance, Dine-in, Takeout",
             "Museum, Art gallery",
+            "good food, friendly owner",
             "Friendly staff, good coffee.",
             "Great food at St. James, highly recommend.",
         ):
@@ -2766,6 +2769,8 @@ class BuildDataTests(unittest.TestCase):
             "St. Louis, MO",
             "St. John's, NL",
             "Washington, D.C.",
+            "Bar, Montenegro",
+            "Port of Spain, Trinidad & Tobago",
             "Jumeirah Beach - Jumeirah - Jumeira Third - Dubai - United Arab Emirates",
         ):
             with self.subTest(address=address):
@@ -4854,7 +4859,11 @@ class BuildDataTests(unittest.TestCase):
             title="Tokyo",
             places=[
                 RawPlace(name="First Place", maps_url="https://maps.google.com/?cid=111"),
-                RawPlace(name="Second Place", maps_url="https://maps.google.com/?cid=222"),
+                RawPlace(
+                    name="Second Place",
+                    google_id="/g/second",
+                    maps_url="https://maps.google.com/?cid=222",
+                ),
             ],
         )
 
@@ -4891,6 +4900,62 @@ class BuildDataTests(unittest.TestCase):
                 build_data.enrich_raw_sources(
                     force_refresh=True,
                     place_selectors=["cid:222"],
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            self.assertEqual(seen_places, ["Second Place"])
+
+    def test_enrich_raw_sources_matches_maps_place_token_derived_from_maps_url(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(
+                    name="First Place",
+                    google_id="/g/first",
+                    maps_url="https://maps.google.com/?q=0x111:0xaaa",
+                ),
+                RawPlace(
+                    name="Second Place",
+                    google_id="/g/second",
+                    maps_url="https://maps.google.com/?q=0x222:0xbbb",
+                ),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            seen_places: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, place_name, _refresh_reason, _place_payload, **_kwargs):
+                seen_places.append(place_name)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query=place_name,
+                    matched=True,
+                    place=EnrichmentPlace(display_name=place_name),
+                )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=True,
+                    place_selectors=["gms:0x222:0xbbb"],
                     refresh_workers=1,
                     refresh_startup_jitter_seconds=0,
                 )

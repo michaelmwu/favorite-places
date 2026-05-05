@@ -356,6 +356,7 @@ COUNTRY_LOCALITY_ALIASES = (
     "Taiwan",
     "台灣",
     "台湾",
+    "Trinidad & Tobago",
     "Spain",
     "España",
     "Espanya",
@@ -6545,6 +6546,7 @@ PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
     "museum",
     "no-contact delivery",
     "outdoor seating",
+    "reservations",
     "restaurant",
     "shop",
     "shopping mall",
@@ -6552,10 +6554,11 @@ PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
     "takeaway",
     "takeout",
     "tourist attraction",
+    "wheelchair accessible entrance",
 }
 PLACE_PAGE_PROSE_TERM_RE = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
     re.IGNORECASE,
 )
 PLACE_PAGE_PLUS_CODE_RE = re.compile(
@@ -6624,6 +6627,8 @@ def looks_like_place_page_review_snippet(value: str) -> bool:
         return True
     terms = PLACE_PAGE_PROSE_TERM_RE.findall(value)
     word_count = len(value.split())
+    if "," in value and len(terms) >= 2:
+        return True
     if word_count >= 10 and len(terms) >= 2:
         return True
     if word_count >= 10 and re.search(r"[.!?]", value) and terms:
@@ -6690,7 +6695,11 @@ def looks_like_place_page_locality_address(value: str) -> bool:
         return False
     if not all(place_page_locality_part_allows_period(part) for part in locality_parts):
         return False
-    if all(place_page_locality_address_reject_key(part) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES for part in locality_parts):
+    reject_count = sum(
+        place_page_locality_address_reject_key(part) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES
+        for part in locality_parts
+    )
+    if reject_count >= 2:
         return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
 
@@ -7133,16 +7142,27 @@ def place_selector_matches(
         place.name,
         place.maps_url,
         place.cid,
-        extract_maps_cid(place.maps_url),
         place.google_id,
         place.maps_place_token,
-        extract_maps_place_token(place.maps_url),
     ):
         normalized = as_string(candidate.casefold() if isinstance(candidate, str) else candidate)
         if normalized is None:
             continue
         values.add(normalized)
         values.add(f"{slug}:{normalized}".casefold())
+    for prefix, candidate in (
+        ("cid", place.cid),
+        ("cid", extract_maps_cid(place.maps_url)),
+        ("gms", place.maps_place_token),
+        ("gms", extract_maps_place_token(place.maps_url)),
+    ):
+        normalized = as_string(candidate.casefold() if isinstance(candidate, str) else candidate)
+        if normalized is None:
+            continue
+        values.add(normalized)
+        values.add(f"{prefix}:{normalized}".casefold())
+        values.add(f"{slug}:{normalized}".casefold())
+        values.add(f"{slug}:{prefix}:{normalized}".casefold())
     return selectors & values
 
 
