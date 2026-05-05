@@ -1402,6 +1402,7 @@
     --filter-scroll-pill-height: 2.3rem;
     --filter-scroll-row-gap: 0.75rem;
     --filter-scroll-buffer: 8px;
+
     max-height: calc(
       (4 * var(--filter-scroll-pill-height)) +
       (3 * var(--filter-scroll-row-gap)) +
@@ -2233,6 +2234,7 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--mobile-filter-grid-gap);
       width: 100%;
+
       max-height: calc(
         (3 * var(--mobile-filter-pill-height)) +
         (2 * var(--mobile-filter-grid-gap)) +
@@ -2469,6 +2471,7 @@
     height: 2.15rem;
     padding-inline: 0.72rem;
     background: color-mix(in srgb, var(--surface) 88%, transparent);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
@@ -2488,6 +2491,7 @@
     min-height: 2.15rem;
     padding-inline: 0.55rem;
     background: color-mix(in srgb, var(--surface) 90%, transparent);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     font-size: 0.72rem;
   }
@@ -2496,6 +2500,7 @@
     width: 2.15rem;
     height: 2.15rem;
     background: color-mix(in srgb, var(--surface) 90%, transparent);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
@@ -2516,6 +2521,7 @@
     border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--surface) 92%, transparent);
     box-shadow: 0 8px 20px rgba(31, 37, 34, 0.12);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
