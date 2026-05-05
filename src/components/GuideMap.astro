@@ -785,6 +785,7 @@ const mapPlaces = places
     mapElement: HTMLElement,
     places: MapPlace[],
     onSelectPlace: (placeId: string) => void,
+    onShowPlaceDetails: (placeId: string) => void,
   ): MapRuntime => {
     const placePhotosEnabled = mapElement.dataset.placePhotosEnabled === "true";
     const map = L.map(mapElement, {
@@ -836,9 +837,29 @@ const mapPlaces = places
       focusCenter = { lat: center.lat, lng: center.lng };
       focusZoom = map.getZoom();
     };
+    const bindLeafletPopupActions = (marker: L.Marker, place: MapPlace) => {
+      marker.on("popupopen", (event: L.PopupEvent) => {
+        const popupElement = event.popup.getElement();
+        const closeButton = popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]");
+        const detailsButton = popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]");
+        if (closeButton) {
+          closeButton.onclick = () => {
+            map.closePopup();
+          };
+        }
+        if (detailsButton) {
+          detailsButton.onclick = (clickEvent) => {
+            clickEvent.preventDefault();
+            clickEvent.stopPropagation();
+            onShowPlaceDetails(place.id);
+          };
+        }
+      });
+    };
     places.forEach((place) => {
       const marker = placeMarker(place, placePhotosEnabled).addTo(map);
       marker.on("click", () => onSelectPlace(place.id));
+      bindLeafletPopupActions(marker, place);
       markers.set(place.id, marker);
     });
 
@@ -1078,6 +1099,16 @@ const mapPlaces = places
         window.requestAnimationFrame(captureFocusView);
       });
     };
+    const capFittedZoomAndCapture = () => {
+      const idleListener = map.addListener("idle", () => {
+        idleListener.remove();
+        const zoom = map.getZoom();
+        if (zoom !== undefined && zoom > focusMaxResetZoom) {
+          map.setZoom(focusMaxResetZoom);
+        }
+        scheduleFocusViewCapture();
+      });
+    };
 
     return {
       rawMap: map,
@@ -1088,14 +1119,14 @@ const mapPlaces = places
         if (visiblePlaces.length === 1) {
           map.setCenter({ lat: visiblePlaces[0].lat, lng: visiblePlaces[0].lng });
           map.setZoom(14);
-          scheduleFocusViewCapture();
+          capFittedZoomAndCapture();
           return;
         }
 
         const bounds = new google.maps.LatLngBounds();
         visiblePlaces.forEach((place) => bounds.extend({ lat: place.lat, lng: place.lng }));
         map.fitBounds(bounds, 28);
-        scheduleFocusViewCapture();
+        capFittedZoomAndCapture();
       },
       getBoundsContains: (place) => map.getBounds()?.contains({ lat: place.lat, lng: place.lng }) ?? true,
       getCenter: () => {
@@ -1256,6 +1287,7 @@ const mapPlaces = places
     const shouldAutoFocusCardFromMarker = () => window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY).matches;
     const handleMarkerSelect = (placeId: string) =>
       selectPlace(placeId, { focusCard: shouldAutoFocusCardFromMarker() });
+    const handlePopupDetailsSelect = (placeId: string) => selectPlace(placeId, { focusCard: true });
     let runtime: MapRuntime | null = null;
 
     const syncFullAreaButton = () => {
@@ -1335,9 +1367,9 @@ const mapPlaces = places
       runtime =
         requestedProvider === "google" && apiKey
           ? await initGoogleRuntime(mapElement, places, apiKey, handleMarkerSelect).catch(() =>
-              initLeafletRuntime(mapElement, places, handleMarkerSelect),
+              initLeafletRuntime(mapElement, places, handleMarkerSelect, handlePopupDetailsSelect),
             )
-          : initLeafletRuntime(mapElement, places, handleMarkerSelect);
+          : initLeafletRuntime(mapElement, places, handleMarkerSelect, handlePopupDetailsSelect);
 
       runtime.setVisiblePlaces(currentVisiblePlaceIds);
       mapElement.guideMap = runtime.rawMap;

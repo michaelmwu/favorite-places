@@ -332,6 +332,57 @@
     scroll-margin-top: 8rem;
   }
 
+  .country-section-head {
+    justify-content: flex-start;
+  }
+
+  .country-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+
+  .count-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    min-height: 1.85rem;
+    padding: 0.2rem 0.58rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent-soft) 28%, var(--surface));
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  .count-chip strong {
+    color: var(--ink);
+    font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .count-chip span {
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .country-guide-count {
+    flex-shrink: 0;
+    transform: translateY(0.02rem);
+  }
+
+  .guide-card-place-count {
+    align-self: flex-start;
+    background: color-mix(in srgb, var(--surface-strong) 54%, var(--surface));
+  }
+
   .country-browser {
     margin-bottom: 1rem;
     position: sticky;
@@ -1674,6 +1725,7 @@
     position: relative;
     top: auto;
     order: 0;
+    margin-bottom: clamp(1.1rem, 2.5vw, 2rem);
     padding: 1rem;
     background: color-mix(in srgb, var(--surface) 94%, var(--surface-strong));
   }

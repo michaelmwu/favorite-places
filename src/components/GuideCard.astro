@@ -100,7 +100,12 @@ const guideDisplayTitle = trimCountryFromTitle(guide.title);
   {siteConfig.guideCard.showPlaceCount && (
     <div class="guide-card-footer ui-card-footer">
       <div class="stats-row ui-meta-row">
-        {siteConfig.guideCard.showPlaceCount && <span class="stat-pill ui-pill">{guide.place_count} places</span>}
+        {siteConfig.guideCard.showPlaceCount && (
+          <span class="count-chip guide-card-place-count">
+            <strong>{guide.place_count}</strong>
+            <span>place{guide.place_count === 1 ? "" : "s"}</span>
+          </span>
+        )}
       </div>
     </div>
   )}
