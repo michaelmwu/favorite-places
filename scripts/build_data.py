@@ -6525,6 +6525,34 @@ PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS = (
 PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
+PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
+    "art gallery",
+    "bakery",
+    "bar",
+    "cafe",
+    "coffee shop",
+    "curbside pickup",
+    "delivery",
+    "dessert shop",
+    "dine-in",
+    "dine in",
+    "drive-through",
+    "drive through",
+    "hotel",
+    "ice cream shop",
+    "kerbside pickup",
+    "museum",
+    "no-contact delivery",
+    "outdoor seating",
+    "restaurant",
+    "shop",
+    "shopping mall",
+    "store",
+    "takeaway",
+    "takeout",
+    "tourist attraction",
+}
 PLACE_PAGE_PROSE_TERM_RE = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
     r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
@@ -6571,7 +6599,11 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
         return None
     if normalized.endswith(" More"):
         return None
-    if normalized.endswith(".") and re.search(r"\b[23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3}\b", normalized) is None:
+    if (
+        normalized.endswith(".")
+        and re.search(r"\b[23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3}\b", normalized) is None
+        and not looks_like_place_page_locality_address(normalized)
+    ):
         return None
 
     if "·" in normalized:
@@ -6642,15 +6674,37 @@ def looks_like_place_page_formatted_address(value: str) -> bool:
     if PLACE_PAGE_ADDRESS_KEYWORD_RE.search(value) and len(value.split()) <= 5:
         return True
 
+    return looks_like_place_page_locality_address(value)
+
+
+def looks_like_place_page_locality_address(value: str) -> bool:
+    if re.search(r"[!?]", value):
+        return False
     locality_separator = " - " if " - " in value else ","
     locality_parts = [part.strip() for part in value.split(locality_separator) if part.strip()]
-    if len(locality_parts) >= 3 and not re.search(r"[.!?]", value):
+    max_words = 12 if locality_separator == " - " else 8
+    if sum(len(part.split()) for part in locality_parts) > max_words:
+        return False
+    max_parts = 6 if locality_separator == " - " else 4
+    if not 2 <= len(locality_parts) <= max_parts:
+        return False
+    if not all(place_page_locality_part_allows_period(part) for part in locality_parts):
+        return False
+    if all(place_page_locality_address_reject_key(part) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES for part in locality_parts):
+        return False
+    return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
+
+
+def place_page_locality_part_allows_period(part: str) -> bool:
+    if "." not in part:
         return True
-    if locality_separator == "," and 2 <= len(locality_parts) <= 4 and not re.search(r"[.!?]", value):
-        if len(value.split()) > 8:
-            return False
-        return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
-    return False
+    if PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE.fullmatch(part):
+        return True
+    return part.startswith("St. ") and len(part.split()) <= 3
+
+
+def place_page_locality_address_reject_key(part: str) -> str:
+    return part.casefold().strip(" .")
 
 
 def has_place_page_address_marker(value: str) -> bool:
@@ -7079,8 +7133,10 @@ def place_selector_matches(
         place.name,
         place.maps_url,
         place.cid,
+        extract_maps_cid(place.maps_url),
         place.google_id,
         place.maps_place_token,
+        extract_maps_place_token(place.maps_url),
     ):
         normalized = as_string(candidate.casefold() if isinstance(candidate, str) else candidate)
         if normalized is None:
