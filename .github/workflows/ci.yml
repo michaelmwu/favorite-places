@@ -47,7 +47,7 @@ jobs:
               - "scripts/**"
               - "pyproject.toml"
               - "uv.lock"
-              - "vendor/google-saved-lists/**"
+              - "vendor/gmaps-scraper/**"
               - "tests/python/**"
             content_or_data:
               - "data/raw/**"
@@ -115,7 +115,9 @@ jobs:
         run: uv sync --frozen
 
       - name: Run Python tests
-        run: uv run python3 -m unittest discover -s tests/python -p 'test_*.py'
+        run: |
+          uv run python3 -m unittest discover -s tests/python -p 'test_*.py'
+          uv run python3 -m unittest discover -s vendor/gmaps-scraper/tests -p 'test_*.py'
 
   verify-site:
     needs: changes

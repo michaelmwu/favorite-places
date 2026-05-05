@@ -9,6 +9,7 @@ from gmaps_scraper.place_scraper import (
     _clean_category_text,
     _clean_name_text,
     _extract_address_from_lines,
+    _extract_preview_address,
     _extract_preview_coordinates,
     _extract_preview_description,
     _extract_preview_phone,
@@ -356,8 +357,22 @@ class PlaceScraperTests(unittest.TestCase):
             "+33 1 42 00 00 00",
         )
 
+    def test_extract_preview_address_rejects_map_urls_and_prefers_postal_address(self) -> None:
+        self.assertEqual(
+            _extract_preview_address(
+                [
+                    "https://www.google.com/maps/place/Test/@48.8814703,2.340862,17z/data=!3m1!4b1",
+                    "26-28 Cotham Rd, Kew VIC 3101, Australia",
+                ]
+            ),
+            "26-28 Cotham Rd, Kew VIC 3101, Australia",
+        )
+
     def test_normalize_phone_candidate_accepts_long_unformatted_international_numbers(self) -> None:
         self.assertEqual(_normalize_phone_candidate("442071838750"), "442071838750")
+
+    def test_normalize_phone_candidate_rejects_numeric_preview_entity_ids(self) -> None:
+        self.assertIsNone(_normalize_phone_candidate("1777026232472"))
 
     def test_build_place_details_ignores_placeholder_name_invalid_phone_and_status_description(
         self,
@@ -533,6 +548,44 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.address_parts)
 
+    def test_build_place_details_rejects_page_chrome_address_and_falls_back_to_body(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Bianchetto",
+            resolved_url="https://www.google.com/maps/place/Bianchetto",
+            snapshot={
+                "name": "Bianchetto",
+                "address": "Imagery © 2026 Google TermsPrivacySend Product Feedback",
+                "body_text": "\n".join(
+                    [
+                        "Bianchetto",
+                        "Restaurant",
+                        "26-28 Cotham Rd, Kew VIC 3101, Australia",
+                    ]
+                ),
+            },
+        )
+
+        self.assertEqual(details.address, "26-28 Cotham Rd, Kew VIC 3101, Australia")
+
+    def test_build_place_details_rejects_invalid_snapshot_plus_code_and_falls_back_to_lines(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den",
+            snapshot={
+                "name": "Den",
+                "plus_code": "https://www.google.com/maps/place/Den",
+                "body_text": "\n".join(
+                    [
+                        "Den",
+                        "Japanese restaurant",
+                        "MPF7+73 Shibuya, Tokyo, Japan",
+                    ]
+                ),
+            },
+        )
+
+        self.assertEqual(details.plus_code, "MPF7+73 Shibuya, Tokyo, Japan")
+
     def test_normalize_google_place_id_accepts_trailing_hyphen(self) -> None:
         self.assertEqual(
             _normalize_google_place_id("ChIJabcdefghij-"),
@@ -586,6 +639,9 @@ class PlaceScraperTests(unittest.TestCase):
             _normalize_photo_url("https://lh3.googleusercontent.com/a-/ALV-UjW_avatar")
         )
         self.assertIsNone(_normalize_photo_url("https://lh5.ggpht.com/a/example-avatar"))
+        self.assertIsNone(
+            _normalize_photo_url("https://lh3.googleusercontent.com:443/a-/ALV-UjW_avatar")
+        )
         self.assertEqual(
             _normalize_photo_url("https://lh3.googleusercontent.com/p/example=s680-w680-h510"),
             "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
