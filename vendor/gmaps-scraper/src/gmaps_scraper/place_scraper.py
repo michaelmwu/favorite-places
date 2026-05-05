@@ -232,7 +232,13 @@ _PLACE_JS_EXTRACTOR = r"""
   ]);
 
   const rowValue = (row) => {
-    const value = row?.querySelector(".DkEaL, .Io6YTe")?.innerText?.trim();
+    // `.DkEaL` can be a localized row label when the value is in `.Io6YTe`.
+    // Prefer the value node and only use `.DkEaL` for older rows where it is
+    // the address text itself.
+    const value = (
+      row?.querySelector(".Io6YTe")?.innerText?.trim()
+      || row?.querySelector(".DkEaL")?.innerText?.trim()
+    );
     return value || null;
   };
 
@@ -967,13 +973,16 @@ def _looks_like_locality_address_line(line: str) -> bool:
         return False
     if not all(_locality_part_allows_period(part) for part in parts):
         return False
-    reject_count = sum(
-        _locality_address_reject_key(part) in _LOCALITY_ADDRESS_REJECT_VALUES
+    reject_keys = {
+        key
         for part in parts
-    )
+        if (key := _locality_address_reject_key(part)) in _LOCALITY_ADDRESS_REJECT_VALUES
+    }
     # One segment can be a real place name ("Bar, Montenegro"). Two or more UI
-    # labels are a strong signal this is a Google service/accessibility row.
-    if reject_count >= 2:
+    # labels are a strong signal this is a Google service/accessibility row. Use
+    # unique matches so repeated locality names like "Bar, Bar, Montenegro"
+    # still survive the fallback.
+    if len(reject_keys) >= 2:
         return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in parts)
 
@@ -1008,8 +1017,9 @@ def _looks_like_review_snippet(line: str) -> bool:
     terms = _PROSE_TERM_PATTERN.findall(line)
     word_count = len(line.split())
     # Short comma-separated review fragments can otherwise look like locality
-    # pairs, e.g. "good food, friendly owner".
-    if "," in line and len(terms) >= 2:
+    # pairs. Require each segment to be phrase-like so names such as "Friendly,
+    # Coffee Springs" are not rejected only because words overlap review prose.
+    if "," in line and len(terms) >= 2 and all(len(part.split()) >= 2 for part in line.split(",")):
         return True
     if word_count >= 10 and len(terms) >= 2:
         return True

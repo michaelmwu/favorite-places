@@ -401,6 +401,7 @@ class PlaceScraperTests(unittest.TestCase):
                     ),
                     "The nuggets are massive, good size burgers and probably the best for value in town",
                     "This place has great food, good service, friendly owner, and delicious burgers",
+                    "good food, friendly owner",
                 ]
             )
         )
@@ -414,7 +415,6 @@ class PlaceScraperTests(unittest.TestCase):
             _extract_preview_address(["Wheelchair accessible entrance, Dine-in, Takeout"])
         )
         self.assertIsNone(_extract_preview_address(["Museum, Art gallery"]))
-        self.assertIsNone(_extract_preview_address(["good food, friendly owner"]))
         self.assertIsNone(_extract_preview_address(["Friendly staff, good coffee."]))
         self.assertIsNone(_extract_preview_address(["Great food at St. James, highly recommend."]))
 
@@ -423,6 +423,11 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(_extract_preview_address(["St. John's, NL"]), "St. John's, NL")
         self.assertEqual(_extract_preview_address(["Washington, D.C."]), "Washington, D.C.")
         self.assertEqual(_extract_preview_address(["Bar, Montenegro"]), "Bar, Montenegro")
+        self.assertEqual(_extract_preview_address(["Bar, Bar, Montenegro"]), "Bar, Bar, Montenegro")
+        self.assertEqual(
+            _extract_preview_address(["Friendly, Coffee Springs"]),
+            "Friendly, Coffee Springs",
+        )
 
     def test_extract_preview_address_keeps_addresses_with_prose_words(self) -> None:
         self.assertEqual(

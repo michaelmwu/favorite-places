@@ -2744,6 +2744,9 @@ class BuildDataTests(unittest.TestCase):
             "Takeout, Delivery, Curbside pickup",
             "Wheelchair accessible entrance, Dine-in, Takeout",
             "Museum, Art gallery",
+            "Museum, Montenegro",
+            "Hotel, Spain",
+            "Friendly, XYZ",
             "good food, friendly owner",
             "Friendly staff, good coffee.",
             "Great food at St. James, highly recommend.",
@@ -2770,6 +2773,8 @@ class BuildDataTests(unittest.TestCase):
             "St. John's, NL",
             "Washington, D.C.",
             "Bar, Montenegro",
+            "Bar, Bar, Montenegro",
+            "東京, 日本",
             "Port of Spain, Trinidad & Tobago",
             "Jumeirah Beach - Jumeirah - Jumeira Third - Dubai - United Arab Emirates",
         ):

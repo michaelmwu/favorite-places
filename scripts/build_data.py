@@ -376,6 +376,7 @@ AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES = (
 )
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
+SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
 LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
@@ -1471,7 +1472,8 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Force-refresh enrichment for a specific place selector unless combined with "
             "--enrich or --enrich-missing. Repeat to target multiple places. "
-            "Matches exact place ids, CIDs, names, Maps URLs, and `guide-slug:<selector>` forms."
+            "Matches exact place ids, CIDs, names, Maps URLs, `cid:<value>`/`gms:<value>` "
+            "aliases, and `guide-slug:<selector>` forms."
         ),
     )
     parser.add_argument(
@@ -3937,6 +3939,10 @@ def is_subnational_locality(candidate: str) -> bool:
     return normalize_locality_key(candidate) in get_subnational_locality_keys()
 
 
+def is_subnational_code_locality(candidate: str) -> bool:
+    return candidate.strip().casefold() in get_subnational_locality_code_keys()
+
+
 def get_subnational_locality_keys() -> set[str]:
     global SUBNATIONAL_LOCALITY_KEYS
     if SUBNATIONAL_LOCALITY_KEYS is not None:
@@ -3955,6 +3961,25 @@ def get_subnational_locality_keys() -> set[str]:
         if normalize_locality_key(name)
     }
     return SUBNATIONAL_LOCALITY_KEYS
+
+
+def get_subnational_locality_code_keys() -> set[str]:
+    global SUBNATIONAL_LOCALITY_CODE_KEYS
+    if SUBNATIONAL_LOCALITY_CODE_KEYS is not None:
+        return SUBNATIONAL_LOCALITY_CODE_KEYS
+
+    code_keys: set[str] = set()
+    for subdivision in pycountry.subdivisions:
+        code = getattr(subdivision, "code", None)
+        if not code or "-" not in code:
+            continue
+        suffix = code.rsplit("-", 1)[-1]
+        if 2 <= len(suffix) <= 3 and suffix.isalpha():
+            code_keys.add(suffix.casefold())
+    code_keys.update(code.casefold() for code in AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES)
+
+    SUBNATIONAL_LOCALITY_CODE_KEYS = code_keys
+    return SUBNATIONAL_LOCALITY_CODE_KEYS
 
 
 def is_subcity_locality(candidate: str) -> bool:
@@ -6703,13 +6728,22 @@ def looks_like_place_page_locality_address(value: str) -> bool:
         return False
     if not all(place_page_locality_part_allows_period(part) for part in locality_parts):
         return False
-    reject_count = sum(
-        place_page_locality_address_reject_key(part) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES
+    reject_keys = {
+        key
         for part in locality_parts
-    )
-    # One segment can be a real place name ("Bar, Montenegro"). Two or more UI
-    # labels are a strong signal this is a Google service/accessibility row.
-    if reject_count >= 2:
+        if (key := place_page_locality_address_reject_key(part)) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES
+    }
+    # A reject word can also be a real locality ("Bar, Montenegro"). Keep it
+    # only when that same segment is a known geography; otherwise category rows
+    # like "Museum, Montenegro" or "Hotel, Spain" are still UI text, not
+    # addresses.
+    geography_reject_keys = {
+        place_page_locality_address_reject_key(part)
+        for part in locality_parts
+        if place_page_locality_address_reject_key(part) in reject_keys
+        and has_place_page_locality_geo_signal_part(part)
+    }
+    if reject_keys - geography_reject_keys:
         return False
     if not has_place_page_locality_geo_signal(locality_parts):
         return False
@@ -6719,13 +6753,22 @@ def looks_like_place_page_locality_address(value: str) -> bool:
 def has_place_page_locality_geo_signal(parts: Sequence[str]) -> bool:
     """Return True when the trailing locality chain names a known geography."""
     for part in parts[1:]:
-        if is_country_locality(part) or is_subnational_locality(part):
-            return True
-        if PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE.fullmatch(part):
-            return True
-        if PLACE_PAGE_REGION_CODE_RE.fullmatch(part.strip()):
+        if has_place_page_locality_geo_signal_part(part):
             return True
     return False
+
+
+def has_place_page_locality_geo_signal_part(part: str) -> bool:
+    if is_country_locality(part) or is_subnational_locality(part):
+        return True
+    if PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE.fullmatch(part):
+        return True
+    if PLACE_PAGE_REGION_CODE_RE.fullmatch(part.strip()) and is_subnational_code_locality(part):
+        return True
+    # Google can still return localized country/subdivision names despite
+    # hl=en. Non-ASCII trailing geography text is a safer signal than accepting
+    # arbitrary ASCII prose or unknown uppercase tokens such as "XYZ".
+    return any(character.isalpha() and not character.isascii() for character in part)
 
 
 def place_page_locality_part_allows_period(part: str) -> bool:
