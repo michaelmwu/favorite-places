@@ -857,6 +857,7 @@
   }
 
   .place-card {
+    position: relative;
     overflow: hidden;
     padding: 1rem;
     display: grid;
@@ -881,6 +882,28 @@
     border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
   }
 
+  .place-card[data-place-status="temporarily-closed"] {
+    border-color: color-mix(in srgb, var(--accent) 46%, var(--line));
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent-soft) 38%, var(--surface)),
+      var(--surface)
+    );
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .place-card[data-place-status="temporarily-closed"]::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0.42rem;
+    background: color-mix(in srgb, var(--accent) 58%, var(--accent-soft));
+    pointer-events: none;
+    transition:
+      background-color 160ms ease,
+      width 160ms ease;
+  }
+
   .place-card:hover,
   .place-card:focus-visible,
   .place-card[data-map-active="true"] {
@@ -902,6 +925,36 @@
 
   .place-card[data-map-active="true"] {
     box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .place-card[data-place-status="temporarily-closed"]:hover,
+  .place-card[data-place-status="temporarily-closed"]:focus-visible,
+  .place-card[data-place-status="temporarily-closed"][data-map-active="true"] {
+    border-color: color-mix(in srgb, var(--accent) 72%, var(--line));
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent-soft) 58%, var(--surface)),
+      color-mix(in srgb, var(--surface) 88%, var(--accent-soft))
+    );
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+      0 18px 42px rgba(31, 37, 34, 0.13);
+  }
+
+  .place-card[data-place-status="temporarily-closed"]:hover::before,
+  .place-card[data-place-status="temporarily-closed"]:focus-visible::before,
+  .place-card[data-place-status="temporarily-closed"][data-map-active="true"]::before {
+    width: 0.48rem;
+    background: color-mix(in srgb, var(--accent) 72%, var(--accent-soft));
+  }
+
+  .place-card[data-place-status="temporarily-closed"]:hover .place-card-status-indicator,
+  .place-card[data-place-status="temporarily-closed"]:focus-visible .place-card-status-indicator,
+  .place-card[data-place-status="temporarily-closed"][data-map-active="true"]
+    .place-card-status-indicator {
+    border-color: color-mix(in srgb, var(--accent) 58%, var(--line));
+    background: color-mix(in srgb, var(--accent-soft) 86%, var(--surface));
+    box-shadow: 0 12px 28px rgba(185, 71, 54, 0.18);
   }
 
   .place-card-photo {
@@ -1028,6 +1081,82 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+
+  .place-card-title-actions {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.42rem;
+  }
+
+  .place-card-status-indicator {
+    position: relative;
+    width: 2.3rem;
+    min-height: 2.3rem;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent-soft) 72%, var(--surface));
+    color: var(--accent-strong);
+    box-shadow: 0 10px 24px rgba(39, 47, 56, 0.1);
+    cursor: help;
+  }
+
+  .place-card-status-indicator::after {
+    content: "";
+    position: absolute;
+    right: 0.34rem;
+    top: 0.34rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border: 2px solid var(--surface);
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .place-card-status-indicator svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
+  }
+
+  .place-card-status-tooltip {
+    position: absolute;
+    z-index: 3;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: max-content;
+    max-width: min(15rem, 72vw);
+    padding: 0.48rem 0.62rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+    border-radius: 0.7rem;
+    background: color-mix(in srgb, var(--surface) 92%, white);
+    color: var(--ink);
+    box-shadow: 0 16px 34px rgba(31, 37, 34, 0.16);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.2rem);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  .place-card-status-indicator:hover .place-card-status-tooltip,
+  .place-card-status-indicator:focus-visible .place-card-status-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .place-card-status-indicator:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
   }
 
   .place-card-name-row h3 {
@@ -2884,7 +3013,7 @@
     }
   }
 
-  @media (min-width: 980px) and (max-width: 1279px) {
+  @media (min-width: 720px) and (max-width: 1279px) {
     .hero-grid {
       grid-template-columns: minmax(0, 1fr);
       gap: 0.85rem;
@@ -2893,23 +3022,22 @@
     .hero-grid > .section-stack:last-child {
       align-self: start;
       justify-self: start;
-      width: min(100%, 48rem);
+      width: min(100%, 34rem);
       margin-top: 0;
     }
 
     .hero-grid > .section-stack:last-child .social-card {
       width: 100%;
-      grid-template-columns: minmax(11rem, 1fr) auto;
-      align-items: center;
-      padding: 0.62rem;
-      gap: 0.55rem;
-      border-radius: var(--radius-md);
+      grid-template-columns: minmax(0, 1fr);
+      align-items: stretch;
+      padding: 0.82rem;
+      gap: 0.62rem;
     }
 
     .hero-grid > .section-stack:last-child .social-card-copy {
-      max-width: 24rem;
-      font-size: 0.78rem;
-      line-height: 1.28;
+      max-width: none;
+      font-size: 0.95rem;
+      line-height: 1.4;
     }
 
     .hero-grid > .section-stack:last-child .social-card-link {
@@ -2919,8 +3047,8 @@
     }
 
     .hero-grid > .section-stack:last-child .social-card-grid {
-      grid-template-columns: repeat(3, minmax(2.35rem, 1fr));
-      gap: 0.38rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
     }
 
     .hero-grid > .section-stack:last-child .social-card-grid .social-card-link {
@@ -2929,65 +3057,16 @@
     }
 
     .hero-grid > .section-stack:last-child .social-card-grid .social-card-link-copy {
-      display: none;
+      display: grid;
     }
 
     .hero-grid > .section-stack:last-child .social-card-icon {
-      width: 1.55rem;
-      height: 1.55rem;
+      width: 1.65rem;
+      height: 1.65rem;
     }
 
     .hero-grid > .section-stack:last-child .social-card-link-primary {
-      min-width: 8.75rem;
-    }
-  }
-
-  @media (min-width: 1280px) and (max-width: 1439px) {
-    .hero-grid {
-      grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.55fr);
-      align-items: start;
-    }
-
-    .hero-grid > .section-stack:last-child {
-      align-self: start;
-      justify-self: end;
-      width: min(100%, 22rem);
-      margin-top: clamp(3.75rem, 5vw, 5.25rem);
-    }
-
-    .hero-grid > .section-stack:last-child .social-card {
-      width: 100%;
-      padding: 0.75rem;
-      gap: 0.55rem;
-    }
-
-    .hero-grid > .section-stack:last-child .social-card-copy {
-      font-size: 0.84rem;
-      line-height: 1.34;
-    }
-
-    .hero-grid > .section-stack:last-child .social-card-link {
-      min-height: 2.35rem;
-      padding: 0.46rem 0.55rem;
-      gap: 0.4rem;
-    }
-
-    .hero-grid > .section-stack:last-child .social-card-grid {
-      gap: 0.4rem;
-    }
-
-    .hero-grid > .section-stack:last-child .social-card-grid .social-card-link {
-      justify-content: center;
-      padding-inline: 0.45rem;
-    }
-
-    .hero-grid > .section-stack:last-child .social-card-grid .social-card-link-copy {
-      display: none;
-    }
-
-    .hero-grid > .section-stack:last-child .social-card-icon {
-      width: 1.5rem;
-      height: 1.5rem;
+      min-width: 0;
     }
   }
 

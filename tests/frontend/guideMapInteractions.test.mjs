@@ -146,13 +146,13 @@ describe("guide map interactions", () => {
     const css = readSource("src/styles/global.css");
 
     expectCssToContain(css, ".hero-grid > .section-stack:last-child:has(.social-card)");
-    expectCssToContain(css, "@media (min-width: 980px) and (max-width: 1279px)");
+    expectCssToContain(css, "@media (min-width: 720px) and (max-width: 1279px)");
     expectCssToContain(css, "grid-template-columns: minmax(0, 1fr);");
-    expectCssToContain(css, "grid-template-columns: minmax(11rem, 1fr) auto;");
+    expectCssToContain(css, "width: min(100%, 34rem);");
+    expectCssToContain(css, "grid-template-columns: repeat(3, minmax(0, 1fr));");
     expectCssToContain(css, "margin-top: 0;");
-    expectCssToContain(css, "@media (min-width: 1280px) and (max-width: 1439px)");
-    expectCssToContain(css, "grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.55fr);");
-    expectCssToContain(css, "margin-top: clamp(3.75rem, 5vw, 5.25rem);");
+    expectCssToContain(css, "font-size: 0.95rem;");
+    expect(css).not.toContain("@media (min-width: 1280px) and (max-width: 1439px)");
     expectCssToContain(
       css,
       ".hero-grid > .section-stack:last-child .social-card-grid .social-card-link-copy",
