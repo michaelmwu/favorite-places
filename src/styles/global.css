@@ -332,13 +332,40 @@
     scroll-margin-top: 8rem;
   }
 
+  .count-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.38rem;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  .count-chip strong {
+    color: var(--ink);
+    font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.18rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .count-chip span {
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
   .country-guide-count {
     flex-shrink: 0;
-    margin-bottom: 0.12rem;
-    border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
-    background: color-mix(in srgb, var(--accent-soft) 52%, var(--surface));
-    color: var(--accent-strong);
-    font-weight: 800;
+    margin-bottom: 0.25rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent-soft);
+  }
+
+  .guide-card-place-count {
+    padding-top: 0.65rem;
+    border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
   }
 
   .country-browser {
@@ -1683,7 +1710,7 @@
     position: relative;
     top: auto;
     order: 0;
-    margin-bottom: clamp(2.25rem, 5vw, 4rem);
+    margin-bottom: clamp(1.1rem, 2.5vw, 2rem);
     padding: 1rem;
     background: color-mix(in srgb, var(--surface) 94%, var(--surface-strong));
   }

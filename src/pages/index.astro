@@ -350,8 +350,9 @@ const homeJsonLd = [
           title={countryFlag ? `${countryName} ${countryFlag}` : countryName}
           level={3}
         >
-          <span slot="aside" class="country-guide-count ui-pill">
-            {countryGuides.length} guide{countryGuides.length === 1 ? "" : "s"}
+          <span slot="aside" class="count-chip country-guide-count">
+            <strong>{countryGuides.length}</strong>
+            <span>guide{countryGuides.length === 1 ? "" : "s"}</span>
           </span>
         </SectionHeading>
 
