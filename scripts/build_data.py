@@ -1468,7 +1468,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=[],
         help=(
-            "Limit enrichment to a specific place selector. Repeat to target multiple places. "
+            "Force-refresh enrichment for a specific place selector unless combined with "
+            "--enrich or --enrich-missing. Repeat to target multiple places. "
             "Matches exact place ids, CIDs, names, Maps URLs, and `guide-slug:<selector>` forms."
         ),
     )
@@ -6524,7 +6525,7 @@ PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS = (
 PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
-PLACE_PAGE_PROSE_RE = re.compile(
+PLACE_PAGE_PROSE_TERM_RE = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
     r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
     re.IGNORECASE,
@@ -6557,7 +6558,7 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
         return None
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS):
         return None
-    if PLACE_PAGE_PROSE_RE.search(normalized) is not None:
+    if looks_like_place_page_review_snippet(normalized):
         return None
     if PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE.fullmatch(normalized):
         return None
@@ -6577,6 +6578,20 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
         return None
 
     return normalized if looks_like_place_page_formatted_address(normalized) else None
+
+
+def looks_like_place_page_review_snippet(value: str) -> bool:
+    if has_place_page_address_marker(value):
+        return False
+    if value.endswith(" More"):
+        return True
+    terms = PLACE_PAGE_PROSE_TERM_RE.findall(value)
+    word_count = len(value.split())
+    if word_count >= 10 and len(terms) >= 2:
+        return True
+    if word_count >= 10 and re.search(r"[.!?]", value) and terms:
+        return True
+    return False
 
 
 def sanitize_place_page_phone(value: Any) -> str | None:
@@ -6631,6 +6646,16 @@ def looks_like_place_page_formatted_address(value: str) -> bool:
             return False
         return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
     return False
+
+
+def has_place_page_address_marker(value: str) -> bool:
+    return (
+        PLACE_PAGE_PLUS_CODE_RE.search(value) is not None
+        or PLACE_PAGE_POSTAL_CODE_RE.search(value) is not None
+        or PLACE_PAGE_ADDRESS_KEYWORD_RE.search(value) is not None
+        or "〒" in value
+        or value.startswith("Japan, ")
+    )
 
 
 def coerce_enrichment_address_parts(value: Any) -> AddressParts | None:

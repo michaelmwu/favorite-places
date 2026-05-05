@@ -2690,6 +2690,27 @@ class BuildDataTests(unittest.TestCase):
 
                 self.assertIsNone(place.formatted_address)
 
+    def test_normalize_place_page_enrichment_keeps_addresses_with_prose_words(self) -> None:
+        for address in (
+            "Good Burger, 1 Main St, New York, NY 10001",
+            "Session Road, Baguio, Benguet 2600, Philippines",
+        ):
+            with self.subTest(address=address):
+                place = build_data.normalize_place_page_enrichment(
+                    SimpleNamespace(
+                        source_url="https://www.google.com/maps/place/Test",
+                        resolved_url="https://www.google.com/maps/place/Test",
+                        name="Test",
+                        category="Restaurant",
+                        rating=4.6,
+                        review_count=101,
+                        address=address,
+                        limited_view=False,
+                    )
+                )
+
+                self.assertEqual(place.formatted_address, address)
+
     def test_normalize_place_page_enrichment_accepts_locality_only_address(self) -> None:
         place = build_data.normalize_place_page_enrichment(
             SimpleNamespace(

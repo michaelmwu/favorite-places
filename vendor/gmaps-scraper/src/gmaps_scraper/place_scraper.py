@@ -91,7 +91,7 @@ _ADDRESS_REJECT_SUBSTRINGS = (
 _ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 _ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 _URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
-_PROSE_PATTERN = re.compile(
+_PROSE_TERM_PATTERN = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
     r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
     re.IGNORECASE,
@@ -738,7 +738,7 @@ def _clean_address_text(value: object) -> str | None:
         return None
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
         return None
-    if _PROSE_PATTERN.search(normalized) is not None:
+    if _looks_like_review_snippet(normalized):
         return None
     if _ADDRESS_ENTITY_TOKEN_PATTERN.fullmatch(normalized):
         return None
@@ -867,7 +867,7 @@ def _looks_like_address_line(line: str) -> bool:
     lowered = line.lower()
     if _URL_LIKE_PATTERN.search(line) is not None:
         return False
-    if _PROSE_PATTERN.search(line) is not None:
+    if _looks_like_review_snippet(line):
         return False
     if "saved in" in lowered or "report a problem" in lowered:
         return False
@@ -908,6 +908,30 @@ def _looks_like_locality_address_line(line: str) -> bool:
     if not 2 <= len(parts) <= 4:
         return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in parts)
+
+
+def _has_address_marker(line: str) -> bool:
+    return (
+        _PLUS_CODE_PATTERN.search(line) is not None
+        or _POSTAL_CODE_PATTERN.search(line) is not None
+        or _ADDRESS_KEYWORD_PATTERN.search(line) is not None
+        or "〒" in line
+        or line.startswith("Japan, ")
+    )
+
+
+def _looks_like_review_snippet(line: str) -> bool:
+    if _has_address_marker(line):
+        return False
+    if line.endswith(" More"):
+        return True
+    terms = _PROSE_TERM_PATTERN.findall(line)
+    word_count = len(line.split())
+    if word_count >= 10 and len(terms) >= 2:
+        return True
+    if word_count >= 10 and re.search(r"[.!?]", line) and terms:
+        return True
+    return False
 
 
 def _extract_status_from_lines(lines: list[str]) -> str | None:

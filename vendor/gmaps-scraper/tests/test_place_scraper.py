@@ -404,6 +404,21 @@ class PlaceScraperTests(unittest.TestCase):
             )
         )
 
+    def test_extract_preview_address_keeps_addresses_with_prose_words(self) -> None:
+        self.assertEqual(
+            _extract_preview_address(
+                [
+                    "Good Burger, 1 Main St, New York, NY 10001",
+                    "The nuggets are massive, good size burgers and probably the best for value in town",
+                ]
+            ),
+            "Good Burger, 1 Main St, New York, NY 10001",
+        )
+        self.assertEqual(
+            _extract_preview_address(["Session Road, Baguio, Benguet 2600, Philippines"]),
+            "Session Road, Baguio, Benguet 2600, Philippines",
+        )
+
     def test_normalize_phone_candidate_accepts_long_unformatted_international_numbers(self) -> None:
         self.assertEqual(_normalize_phone_candidate("442071838750"), "442071838750")
 
