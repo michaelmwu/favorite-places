@@ -6544,6 +6544,11 @@ PLACE_PAGE_ADDRESS_KEYWORD_RE = re.compile(
     r"court|ct|square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
     re.IGNORECASE,
 )
+PLACE_PAGE_STRONG_ADDRESS_KEYWORD_RE = re.compile(
+    r"\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|lane|ln|drive|dr|court|ct|"
+    r"square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
+    re.IGNORECASE,
+)
 
 
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
@@ -6652,7 +6657,7 @@ def has_place_page_address_marker(value: str) -> bool:
     return (
         PLACE_PAGE_PLUS_CODE_RE.search(value) is not None
         or PLACE_PAGE_POSTAL_CODE_RE.search(value) is not None
-        or PLACE_PAGE_ADDRESS_KEYWORD_RE.search(value) is not None
+        or PLACE_PAGE_STRONG_ADDRESS_KEYWORD_RE.search(value) is not None
         or "〒" in value
         or value.startswith("Japan, ")
     )

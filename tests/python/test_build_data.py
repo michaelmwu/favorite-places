@@ -2678,6 +2678,7 @@ class BuildDataTests(unittest.TestCase):
                 "before closing time and the owner took the initiative to cook us More"
             ),
             "The nuggets are massive, good size burgers and probably the best for value in town",
+            "This place has great food, good service, friendly owner, and delicious burgers",
         ):
             with self.subTest(address=address):
                 place = build_data.normalize_place_page_enrichment(

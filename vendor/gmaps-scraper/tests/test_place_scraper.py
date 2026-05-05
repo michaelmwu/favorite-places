@@ -400,6 +400,7 @@ class PlaceScraperTests(unittest.TestCase):
                         "and more."
                     ),
                     "The nuggets are massive, good size burgers and probably the best for value in town",
+                    "This place has great food, good service, friendly owner, and delicious burgers",
                 ]
             )
         )

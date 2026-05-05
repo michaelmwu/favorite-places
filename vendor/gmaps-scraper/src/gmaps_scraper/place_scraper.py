@@ -78,6 +78,11 @@ _ADDRESS_KEYWORD_PATTERN = re.compile(
     r"court|ct|square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
     re.IGNORECASE,
 )
+_STRONG_ADDRESS_KEYWORD_PATTERN = re.compile(
+    r"\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|lane|ln|drive|dr|court|ct|"
+    r"square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
+    re.IGNORECASE,
+)
 _ADDRESS_REJECT_SUBSTRINGS = (
     "about this data",
     "faviconv2",
@@ -914,7 +919,7 @@ def _has_address_marker(line: str) -> bool:
     return (
         _PLUS_CODE_PATTERN.search(line) is not None
         or _POSTAL_CODE_PATTERN.search(line) is not None
-        or _ADDRESS_KEYWORD_PATTERN.search(line) is not None
+        or _STRONG_ADDRESS_KEYWORD_PATTERN.search(line) is not None
         or "〒" in line
         or line.startswith("Japan, ")
     )
