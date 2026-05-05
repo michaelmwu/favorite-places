@@ -86,8 +86,11 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".guide-map-popup-map-action");
     expectCssToContain(css, ".guide-map-popup-details-action");
     expectCssToContain(css, "@media (min-width: 1280px)");
-    expectCssToContain(css, "@media (max-width: 979px)");
-    expectCssToContain(css, "width: min(78vw, 16rem);");
+    expectCssToContain(css, "@media (max-width: 1279px)");
+    expectCssToContain(css, "width: min(74vw, 15.5rem);");
+    expectCssToContain(css, "max-height: min(54svh, 16rem);");
+    expectCssToContain(css, "overflow-y: auto;");
+    expectCssToContain(css, "height: clamp(4.75rem, 16svh, 6rem);");
     expectCssToContain(css, ".guide-map-popup-copy");
     expectCssToContain(css, ".guide-map-popup-photo img");
     expect(cssBlocks(css, ".guide-map-popup-photo img").join("\n")).toContain(
@@ -137,6 +140,20 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".social-card-copy {\n    font-size: 0.88rem;");
     expectCssToContain(css, ".social-card-link {\n    padding: 0.42rem 0.45rem;");
     expectCssToContain(css, ".social-card-icon {\n    width: 1.5rem;");
+  });
+
+  it("keeps the guide hero aside compact at intermediate desktop widths", () => {
+    const css = readSource("src/styles/global.css");
+
+    expectCssToContain(css, ".hero-grid > .section-stack:last-child:has(.social-card)");
+    expectCssToContain(css, "@media (min-width: 1280px) and (max-width: 1599px)");
+    expectCssToContain(css, "grid-template-columns: minmax(0, 1fr);");
+    expectCssToContain(css, "grid-template-columns: minmax(11rem, 1fr) auto;");
+    expectCssToContain(css, "margin-top: 0;");
+    expectCssToContain(
+      css,
+      ".hero-grid > .section-stack:last-child .social-card-grid .social-card-link-copy",
+    );
   });
 
   it("renders the Google Maps action as a compact icon button beside the place name", () => {
