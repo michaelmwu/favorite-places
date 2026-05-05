@@ -900,7 +900,7 @@ def _looks_like_address_line(line: str) -> bool:
 
 
 def _looks_like_locality_address_line(line: str) -> bool:
-    if re.search(r"[.!?&]", line):
+    if re.search(r"[.!?]", line):
         return False
     if len(line.split()) > 8:
         return False

@@ -98,7 +98,7 @@ class BuildDataTests(unittest.TestCase):
             patch.object(sys, "argv", ["build_data.py", "--enrich-place", "cid:123"]),
             patch.object(build_data, "sync_local_csv_sources"),
             patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
-            patch.object(build_data, "rebuild_generated_data"),
+            patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
         ):
             result = build_data.main()
 
@@ -109,6 +109,11 @@ class BuildDataTests(unittest.TestCase):
             place_selectors=["cid:123"],
             refresh_workers=build_data.DEFAULT_REFRESH_WORKERS,
             refresh_startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+        rebuild_generated_data.assert_called_once_with(
+            refresh_photos=False,
+            photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         )
 
     def test_refresh_generated_guide_photos_skips_artifact_rewrite_when_photo_state_is_unchanged(self) -> None:
@@ -2694,6 +2699,9 @@ class BuildDataTests(unittest.TestCase):
         for address in (
             "Good Burger, 1 Main St, New York, NY 10001",
             "Session Road, Baguio, Benguet 2600, Philippines",
+            "Best Avenue, Oakland, CA 94611",
+            "Dinner Plain, Victoria, Australia",
+            "Port of Spain, Trinidad & Tobago",
         ):
             with self.subTest(address=address):
                 place = build_data.normalize_place_page_enrichment(

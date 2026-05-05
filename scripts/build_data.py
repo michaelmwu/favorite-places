@@ -6641,7 +6641,7 @@ def looks_like_place_page_formatted_address(value: str) -> bool:
     locality_parts = [part.strip() for part in value.split(locality_separator) if part.strip()]
     if len(locality_parts) >= 3 and not re.search(r"[.!?]", value):
         return True
-    if locality_separator == "," and 2 <= len(locality_parts) <= 4 and not re.search(r"[.!?&]", value):
+    if locality_separator == "," and 2 <= len(locality_parts) <= 4 and not re.search(r"[.!?]", value):
         if len(value.split()) > 8:
             return False
         return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)

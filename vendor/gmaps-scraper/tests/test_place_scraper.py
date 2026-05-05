@@ -418,6 +418,18 @@ class PlaceScraperTests(unittest.TestCase):
             _extract_preview_address(["Session Road, Baguio, Benguet 2600, Philippines"]),
             "Session Road, Baguio, Benguet 2600, Philippines",
         )
+        self.assertEqual(
+            _extract_preview_address(["Best Avenue, Oakland, CA 94611"]),
+            "Best Avenue, Oakland, CA 94611",
+        )
+        self.assertEqual(
+            _extract_preview_address(["Dinner Plain, Victoria, Australia"]),
+            "Dinner Plain, Victoria, Australia",
+        )
+        self.assertEqual(
+            _extract_preview_address(["Port of Spain, Trinidad & Tobago"]),
+            "Port of Spain, Trinidad & Tobago",
+        )
 
     def test_normalize_phone_candidate_accepts_long_unformatted_international_numbers(self) -> None:
         self.assertEqual(_normalize_phone_candidate("442071838750"), "442071838750")
