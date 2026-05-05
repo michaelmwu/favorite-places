@@ -346,15 +346,15 @@ const homeJsonLd = [
 
     {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
       <div class="country-block ui-country-block" data-country-block data-country={countryName.toLowerCase()}>
-        <SectionHeading
-          title={countryFlag ? `${countryName} ${countryFlag}` : countryName}
-          level={3}
-        >
-          <span slot="aside" class="count-chip country-guide-count">
-            <strong>{countryGuides.length}</strong>
-            <span>guide{countryGuides.length === 1 ? "" : "s"}</span>
-          </span>
-        </SectionHeading>
+        <div class="ui-section-head country-section-head">
+          <div class="country-title-row">
+            <h3 class="ui-section-title">{countryFlag ? `${countryName} ${countryFlag}` : countryName}</h3>
+            <span class="count-chip country-guide-count">
+              <strong>{countryGuides.length}</strong>
+              <span>guide{countryGuides.length === 1 ? "" : "s"}</span>
+            </span>
+          </div>
+        </div>
 
         <div class="card-grid ui-card-grid">
           {countryGuides.map((guide) => (

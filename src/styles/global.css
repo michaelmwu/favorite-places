@@ -332,10 +332,27 @@
     scroll-margin-top: 8rem;
   }
 
+  .country-section-head {
+    justify-content: flex-start;
+  }
+
+  .country-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+
   .count-chip {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.38rem;
+    min-height: 1.85rem;
+    padding: 0.2rem 0.58rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--line));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent-soft) 28%, var(--surface));
     color: var(--muted);
     line-height: 1;
   }
@@ -343,29 +360,27 @@
   .count-chip strong {
     color: var(--ink);
     font-family: Raleway, Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 1.18rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
 
   .count-chip span {
     color: var(--muted);
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 800;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
   }
 
   .country-guide-count {
     flex-shrink: 0;
-    margin-bottom: 0.25rem;
-    padding-left: 1rem;
-    border-left: 3px solid var(--accent-soft);
+    transform: translateY(0.02rem);
   }
 
   .guide-card-place-count {
-    padding-top: 0.65rem;
-    border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+    align-self: flex-start;
+    background: color-mix(in srgb, var(--surface-strong) 54%, var(--surface));
   }
 
   .country-browser {
