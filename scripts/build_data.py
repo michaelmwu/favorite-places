@@ -6527,6 +6527,7 @@ PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.co
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
 PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
+PLACE_PAGE_REGION_CODE_RE = re.compile(r"[A-Z]{2,3}")
 PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
     "art gallery",
     "bakery",
@@ -6683,6 +6684,13 @@ def looks_like_place_page_formatted_address(value: str) -> bool:
 
 
 def looks_like_place_page_locality_address(value: str) -> bool:
+    """Accept locality-only addresses only when they have a geographic anchor.
+
+    The scraper uses structured Google Maps address rows first. This sanitizer
+    also sees legacy/plain-text payloads, so locality-only fallbacks must be
+    narrower than "short comma-separated phrase"; otherwise review snippets and
+    service-option rows can become cached addresses.
+    """
     if re.search(r"[!?]", value):
         return False
     locality_separator = " - " if " - " in value else ","
@@ -6699,9 +6707,25 @@ def looks_like_place_page_locality_address(value: str) -> bool:
         place_page_locality_address_reject_key(part) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES
         for part in locality_parts
     )
+    # One segment can be a real place name ("Bar, Montenegro"). Two or more UI
+    # labels are a strong signal this is a Google service/accessibility row.
     if reject_count >= 2:
         return False
+    if not has_place_page_locality_geo_signal(locality_parts):
+        return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
+
+
+def has_place_page_locality_geo_signal(parts: Sequence[str]) -> bool:
+    """Return True when the trailing locality chain names a known geography."""
+    for part in parts[1:]:
+        if is_country_locality(part) or is_subnational_locality(part):
+            return True
+        if PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE.fullmatch(part):
+            return True
+        if PLACE_PAGE_REGION_CODE_RE.fullmatch(part.strip()):
+            return True
+    return False
 
 
 def place_page_locality_part_allows_period(part: str) -> bool:
