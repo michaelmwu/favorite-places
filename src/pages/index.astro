@@ -348,9 +348,12 @@ const homeJsonLd = [
       <div class="country-block ui-country-block" data-country-block data-country={countryName.toLowerCase()}>
         <SectionHeading
           title={countryFlag ? `${countryName} ${countryFlag}` : countryName}
-          copy={`${countryGuides.length} guide${countryGuides.length === 1 ? "" : "s"}`}
           level={3}
-        />
+        >
+          <span slot="aside" class="country-guide-count ui-pill">
+            {countryGuides.length} guide{countryGuides.length === 1 ? "" : "s"}
+          </span>
+        </SectionHeading>
 
         <div class="card-grid ui-card-grid">
           {countryGuides.map((guide) => (

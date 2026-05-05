@@ -328,14 +328,17 @@
     margin-top: 2rem;
   }
 
-  .home-map-panel + .country-block {
-    margin-top: clamp(1.75rem, 4vw, 3rem);
-    padding-top: clamp(1.25rem, 3vw, 2rem);
-    border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
-  }
-
   .country-block {
     scroll-margin-top: 8rem;
+  }
+
+  .country-guide-count {
+    flex-shrink: 0;
+    margin-bottom: 0.12rem;
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+    background: color-mix(in srgb, var(--accent-soft) 52%, var(--surface));
+    color: var(--accent-strong);
+    font-weight: 800;
   }
 
   .country-browser {
@@ -1680,6 +1683,7 @@
     position: relative;
     top: auto;
     order: 0;
+    margin-bottom: clamp(2.25rem, 5vw, 4rem);
     padding: 1rem;
     background: color-mix(in srgb, var(--surface) 94%, var(--surface-strong));
   }
