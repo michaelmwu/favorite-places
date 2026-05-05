@@ -356,6 +356,7 @@ COUNTRY_LOCALITY_ALIASES = (
     "Taiwan",
     "台灣",
     "台湾",
+    "Trinidad & Tobago",
     "Spain",
     "España",
     "Espanya",
@@ -375,6 +376,7 @@ AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES = (
 )
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
+SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
 LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
@@ -1470,7 +1472,8 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Force-refresh enrichment for a specific place selector unless combined with "
             "--enrich or --enrich-missing. Repeat to target multiple places. "
-            "Matches exact place ids, CIDs, names, Maps URLs, and `guide-slug:<selector>` forms."
+            "Matches exact place ids, CIDs, names, Maps URLs, `cid:<value>`/`gms:<value>` "
+            "aliases, and `guide-slug:<selector>` forms."
         ),
     )
     parser.add_argument(
@@ -3936,6 +3939,10 @@ def is_subnational_locality(candidate: str) -> bool:
     return normalize_locality_key(candidate) in get_subnational_locality_keys()
 
 
+def is_subnational_code_locality(candidate: str) -> bool:
+    return candidate.strip().casefold() in get_subnational_locality_code_keys()
+
+
 def get_subnational_locality_keys() -> set[str]:
     global SUBNATIONAL_LOCALITY_KEYS
     if SUBNATIONAL_LOCALITY_KEYS is not None:
@@ -3954,6 +3961,25 @@ def get_subnational_locality_keys() -> set[str]:
         if normalize_locality_key(name)
     }
     return SUBNATIONAL_LOCALITY_KEYS
+
+
+def get_subnational_locality_code_keys() -> set[str]:
+    global SUBNATIONAL_LOCALITY_CODE_KEYS
+    if SUBNATIONAL_LOCALITY_CODE_KEYS is not None:
+        return SUBNATIONAL_LOCALITY_CODE_KEYS
+
+    code_keys: set[str] = set()
+    for subdivision in pycountry.subdivisions:
+        code = getattr(subdivision, "code", None)
+        if not code or "-" not in code:
+            continue
+        suffix = code.rsplit("-", 1)[-1]
+        if 2 <= len(suffix) <= 3 and suffix.isalpha():
+            code_keys.add(suffix.casefold())
+    code_keys.update(code.casefold() for code in AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES)
+
+    SUBNATIONAL_LOCALITY_CODE_KEYS = code_keys
+    return SUBNATIONAL_LOCALITY_CODE_KEYS
 
 
 def is_subcity_locality(candidate: str) -> bool:
@@ -6526,6 +6552,7 @@ PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.co
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
 PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
+PLACE_PAGE_REGION_CODE_RE = re.compile(r"[A-Z]{2,3}")
 PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
     "art gallery",
     "bakery",
@@ -6545,6 +6572,7 @@ PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
     "museum",
     "no-contact delivery",
     "outdoor seating",
+    "reservations",
     "restaurant",
     "shop",
     "shopping mall",
@@ -6552,10 +6580,11 @@ PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
     "takeaway",
     "takeout",
     "tourist attraction",
+    "wheelchair accessible entrance",
 }
 PLACE_PAGE_PROSE_TERM_RE = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
     re.IGNORECASE,
 )
 PLACE_PAGE_PLUS_CODE_RE = re.compile(
@@ -6624,6 +6653,8 @@ def looks_like_place_page_review_snippet(value: str) -> bool:
         return True
     terms = PLACE_PAGE_PROSE_TERM_RE.findall(value)
     word_count = len(value.split())
+    if "," in value and len(terms) >= 2:
+        return True
     if word_count >= 10 and len(terms) >= 2:
         return True
     if word_count >= 10 and re.search(r"[.!?]", value) and terms:
@@ -6678,6 +6709,13 @@ def looks_like_place_page_formatted_address(value: str) -> bool:
 
 
 def looks_like_place_page_locality_address(value: str) -> bool:
+    """Accept locality-only addresses only when they have a geographic anchor.
+
+    The scraper uses structured Google Maps address rows first. This sanitizer
+    also sees legacy/plain-text payloads, so locality-only fallbacks must be
+    narrower than "short comma-separated phrase"; otherwise review snippets and
+    service-option rows can become cached addresses.
+    """
     if re.search(r"[!?]", value):
         return False
     locality_separator = " - " if " - " in value else ","
@@ -6690,9 +6728,47 @@ def looks_like_place_page_locality_address(value: str) -> bool:
         return False
     if not all(place_page_locality_part_allows_period(part) for part in locality_parts):
         return False
-    if all(place_page_locality_address_reject_key(part) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES for part in locality_parts):
+    reject_keys = {
+        key
+        for part in locality_parts
+        if (key := place_page_locality_address_reject_key(part)) in PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES
+    }
+    # A reject word can also be a real locality ("Bar, Montenegro"). Keep it
+    # only when that same segment is a known geography; otherwise category rows
+    # like "Museum, Montenegro" or "Hotel, Spain" are still UI text, not
+    # addresses.
+    geography_reject_keys = {
+        place_page_locality_address_reject_key(part)
+        for part in locality_parts
+        if place_page_locality_address_reject_key(part) in reject_keys
+        and has_place_page_locality_geo_signal_part(part)
+    }
+    if reject_keys - geography_reject_keys:
+        return False
+    if not has_place_page_locality_geo_signal(locality_parts):
         return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
+
+
+def has_place_page_locality_geo_signal(parts: Sequence[str]) -> bool:
+    """Return True when the trailing locality chain names a known geography."""
+    for part in parts[1:]:
+        if has_place_page_locality_geo_signal_part(part):
+            return True
+    return False
+
+
+def has_place_page_locality_geo_signal_part(part: str) -> bool:
+    if is_country_locality(part) or is_subnational_locality(part):
+        return True
+    if PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE.fullmatch(part):
+        return True
+    if PLACE_PAGE_REGION_CODE_RE.fullmatch(part.strip()) and is_subnational_code_locality(part):
+        return True
+    # Google can still return localized country/subdivision names despite
+    # hl=en. Non-ASCII trailing geography text is a safer signal than accepting
+    # arbitrary ASCII prose or unknown uppercase tokens such as "XYZ".
+    return any(character.isalpha() and not character.isascii() for character in part)
 
 
 def place_page_locality_part_allows_period(part: str) -> bool:
@@ -7133,16 +7209,27 @@ def place_selector_matches(
         place.name,
         place.maps_url,
         place.cid,
-        extract_maps_cid(place.maps_url),
         place.google_id,
         place.maps_place_token,
-        extract_maps_place_token(place.maps_url),
     ):
         normalized = as_string(candidate.casefold() if isinstance(candidate, str) else candidate)
         if normalized is None:
             continue
         values.add(normalized)
         values.add(f"{slug}:{normalized}".casefold())
+    for prefix, candidate in (
+        ("cid", place.cid),
+        ("cid", extract_maps_cid(place.maps_url)),
+        ("gms", place.maps_place_token),
+        ("gms", extract_maps_place_token(place.maps_url)),
+    ):
+        normalized = as_string(candidate.casefold() if isinstance(candidate, str) else candidate)
+        if normalized is None:
+            continue
+        values.add(normalized)
+        values.add(f"{prefix}:{normalized}".casefold())
+        values.add(f"{slug}:{normalized}".casefold())
+        values.add(f"{slug}:{prefix}:{normalized}".casefold())
     return selectors & values
 
 

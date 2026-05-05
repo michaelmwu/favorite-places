@@ -83,6 +83,9 @@ _STRONG_ADDRESS_KEYWORD_PATTERN = re.compile(
     r"square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
     re.IGNORECASE,
 )
+# These reject lists only apply after structured DOM extraction misses and we
+# are forced to classify plain Google Maps text rows. They intentionally target
+# UI/review vocabulary that commonly appears next to real address rows.
 _ADDRESS_REJECT_SUBSTRINGS = (
     "about this data",
     "faviconv2",
@@ -112,6 +115,7 @@ _LOCALITY_ADDRESS_REJECT_VALUES = {
     "museum",
     "no-contact delivery",
     "outdoor seating",
+    "reservations",
     "restaurant",
     "shop",
     "shopping mall",
@@ -119,14 +123,17 @@ _LOCALITY_ADDRESS_REJECT_VALUES = {
     "takeaway",
     "takeout",
     "tourist attraction",
+    "wheelchair accessible entrance",
 }
 _ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 _ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 _URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+# Locality-only addresses can legitimately contain periods in abbreviations
+# like "St. Louis" or "D.C."; prose with arbitrary periods is rejected later.
 _LOCALITY_ABBREVIATION_PERIOD_PATTERN = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
 _PROSE_TERM_PATTERN = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
     re.IGNORECASE,
 )
 _PLACE_JS_EXTRACTOR = r"""
@@ -225,7 +232,13 @@ _PLACE_JS_EXTRACTOR = r"""
   ]);
 
   const rowValue = (row) => {
-    const value = row?.querySelector(".DkEaL, .Io6YTe")?.innerText?.trim();
+    // `.DkEaL` can be a localized row label when the value is in `.Io6YTe`.
+    // Prefer the value node and only use `.DkEaL` for older rows where it is
+    // the address text itself.
+    const value = (
+      row?.querySelector(".Io6YTe")?.innerText?.trim()
+      || row?.querySelector(".DkEaL")?.innerText?.trim()
+    );
     return value || null;
   };
 
@@ -236,6 +249,9 @@ _PLACE_JS_EXTRACTOR = r"""
   };
 
   const addressValue = () => {
+    // Prefer Google Maps' structured address row. The icon fallback exists for
+    // localized pages where the aria-label text changes but the address glyph
+    // and row shape remain stable.
     const legacy = itemValue("address");
     if (legacy) {
       return legacy;
@@ -580,6 +596,8 @@ def _build_place_details(
         category=category,
         rating=_parse_rating(snapshot.get("rating")),
         review_count=_parse_review_count(snapshot.get("review_count")),
+        # Structural DOM data is primary. Text-line fallback is a last resort
+        # for preview/limited payloads and is intentionally conservative.
         address=_clean_address_text(snapshot.get("address"))
         or _extract_address_from_lines(combined_lines),
         located_in=_clean_text(snapshot.get("located_in")),
@@ -937,6 +955,15 @@ def _looks_like_address_line(line: str) -> bool:
 
 
 def _looks_like_locality_address_line(line: str) -> bool:
+    """Return True for locality-only addresses when stronger markers are absent.
+
+    Google sometimes exposes places such as notable streets as "Baku,
+    Azerbaijan" with no street number or postal code. This is a fallback for
+    those cases; structured address rows and digit/keyword addresses are handled
+    before this function. Because Google body text also contains service chips
+    and short review snippets, ambiguous text is rejected unless it looks like a
+    compact locality chain.
+    """
     if re.search(r"[!?]", line):
         return False
     if len(line.split()) > 8:
@@ -946,7 +973,16 @@ def _looks_like_locality_address_line(line: str) -> bool:
         return False
     if not all(_locality_part_allows_period(part) for part in parts):
         return False
-    if all(_locality_address_reject_key(part) in _LOCALITY_ADDRESS_REJECT_VALUES for part in parts):
+    reject_keys = {
+        key
+        for part in parts
+        if (key := _locality_address_reject_key(part)) in _LOCALITY_ADDRESS_REJECT_VALUES
+    }
+    # One segment can be a real place name ("Bar, Montenegro"). Two or more UI
+    # labels are a strong signal this is a Google service/accessibility row. Use
+    # unique matches so repeated locality names like "Bar, Bar, Montenegro"
+    # still survive the fallback.
+    if len(reject_keys) >= 2:
         return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in parts)
 
@@ -980,6 +1016,11 @@ def _looks_like_review_snippet(line: str) -> bool:
         return True
     terms = _PROSE_TERM_PATTERN.findall(line)
     word_count = len(line.split())
+    # Short comma-separated review fragments can otherwise look like locality
+    # pairs. Require each segment to be phrase-like so names such as "Friendly,
+    # Coffee Springs" are not rejected only because words overlap review prose.
+    if "," in line and len(terms) >= 2 and all(len(part.split()) >= 2 for part in line.split(",")):
+        return True
     if word_count >= 10 and len(terms) >= 2:
         return True
     if word_count >= 10 and re.search(r"[.!?]", line) and terms:
