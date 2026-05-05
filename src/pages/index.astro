@@ -347,8 +347,8 @@ const homeJsonLd = [
     {guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (
       <div class="country-block ui-country-block" data-country-block data-country={countryName.toLowerCase()}>
         <SectionHeading
-          eyebrow={`${countryGuides.length} guide${countryGuides.length === 1 ? "" : "s"}`}
           title={countryFlag ? `${countryName} ${countryFlag}` : countryName}
+          copy={`${countryGuides.length} guide${countryGuides.length === 1 ? "" : "s"}`}
           level={3}
         />
 

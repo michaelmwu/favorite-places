@@ -328,6 +328,12 @@
     margin-top: 2rem;
   }
 
+  .home-map-panel + .country-block {
+    margin-top: clamp(1.75rem, 4vw, 3rem);
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+    border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  }
+
   .country-block {
     scroll-margin-top: 8rem;
   }
