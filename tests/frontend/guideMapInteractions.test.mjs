@@ -37,9 +37,16 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain('<span class="map-toggle-label">Hide map</span>');
     expectCssToContain(css, ".map-toolbar");
     expect(cssBlocks(css, ".map-panel").join("\n")).toContain("position: relative");
-    expect(cssBlocks(css, ".map-actions").join("\n")).toContain("margin-left: auto");
+    expect(cssBlocks(css, ".map-actions").join("\n")).toContain("margin-left: 0");
     expectCssToContain(css, "@media (max-width: 979px)");
-    expectCssToContain(css, ".map-panel {\n    gap: 0;\n    padding: 0.45rem;");
+    expectCssToContain(
+      css,
+      ".map-panel {\n    --mobile-guide-map-height: clamp(22rem, 64svh, 34rem);",
+    );
+    expectCssToContain(
+      css,
+      ".map-panel {\n    --mobile-guide-map-height: clamp(22rem, 64svh, 34rem);\n\n    gap: 0;\n    padding: 0;",
+    );
     expectCssToContain(css, ".map-toolbar {\n    display: contents;");
     expectCssToContain(css, ".map-toggle {\n    position: absolute;\n    top: 0.85rem;");
     expectCssToContain(
@@ -49,6 +56,66 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".map-feedback-slot {\n    position: absolute;\n    top: 3.35rem;");
     expectCssToContain(css, ".guide-map {\n  width: 100%;\n  min-height: 16rem;");
     expectCssToContain(css, ".map-panel {\n    order: 0;\n    position: sticky;\n    top: 0.5rem;");
+  });
+
+  it("keeps place map popups compact, closeable, and informative", () => {
+    const guideMap = readSource("src/components/GuideMap.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(guideMap).toContain("rating: place.rating");
+    expect(guideMap).toContain("userRatingCount: place.user_rating_count");
+    expect(guideMap).toContain("const popupCompactReviewFormatter = new Intl.NumberFormat");
+    expect(guideMap).toContain('class="guide-map-popup-place-card"');
+    expect(guideMap).toContain('class="guide-map-popup-rating"');
+    expect(guideMap).toContain('class="guide-map-popup-map-action"');
+    expect(guideMap).toContain('class="guide-map-popup-details-action"');
+    expect(guideMap).toContain("data-guide-map-popup-close");
+    expect(guideMap).toContain("data-guide-map-popup-details");
+    expect(guideMap).not.toContain(">Open in Google Maps<");
+    expect(guideMap).not.toContain("<span>Maps</span>");
+    expect(guideMap).toContain("closeButton: false");
+    expect(guideMap).toContain("headerDisabled: true");
+    expect(guideMap).toContain('target?.closest("[data-guide-map-popup-close]")');
+    expect(guideMap).toContain('target?.closest<HTMLElement>("[data-guide-map-popup-details]")');
+    expectCssToContain(css, ".guide-map-popup-close");
+    expectCssToContain(
+      css,
+      ".guide-map .gm-style-iw-c:has(.guide-map-popup-close) .gm-style-iw-chr",
+    );
+    expectCssToContain(css, ".guide-map-popup-place-card");
+    expectCssToContain(css, ".guide-map-popup-map-action");
+    expectCssToContain(css, ".guide-map-popup-details-action");
+    expectCssToContain(css, "@media (min-width: 1280px)");
+    expectCssToContain(css, "@media (max-width: 1279px)");
+    expectCssToContain(css, "width: min(74vw, 15.5rem);");
+    expectCssToContain(css, "max-height: min(54svh, 16rem);");
+    expectCssToContain(css, "overflow-y: auto;");
+    expectCssToContain(css, "height: clamp(4.75rem, 16svh, 6rem);");
+    expectCssToContain(css, ".guide-map-popup-copy");
+    expectCssToContain(css, ".guide-map-popup-photo img");
+    expect(cssBlocks(css, ".guide-map-popup-photo img").join("\n")).toContain(
+      "object-position: center top",
+    );
+    expectCssToContain(css, ".guide-map-popup-content .guide-map-popup-rating");
+    expectCssToContain(css, "font-size: 0.68rem;");
+    expectCssToContain(css, "white-space: nowrap;");
+  });
+
+  it("focuses the full place card when a map marker is selected", () => {
+    const guideMap = readSource("src/components/GuideMap.astro");
+
+    expect(guideMap).toContain(
+      "const shouldAutoFocusCardFromMarker = () => window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY)",
+    );
+    expect(guideMap).toContain(
+      "selectPlace(placeId, { focusCard: shouldAutoFocusCardFromMarker() })",
+    );
+    expect(guideMap).toContain("const focusPlaceCard = (placeId: string) => {");
+    expect(guideMap).toContain("card.focus({ preventScroll: true });");
+    expect(guideMap).toContain(
+      'card.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });',
+    );
+    expect(guideMap).toContain("selectPlace(placeId, { expandCollapsed: true });");
   });
 
   it("tightens the mobile guide chrome to save vertical space", () => {
@@ -73,6 +140,23 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".social-card-copy {\n    font-size: 0.88rem;");
     expectCssToContain(css, ".social-card-link {\n    padding: 0.42rem 0.45rem;");
     expectCssToContain(css, ".social-card-icon {\n    width: 1.5rem;");
+  });
+
+  it("keeps the guide hero aside compact at intermediate desktop widths", () => {
+    const css = readSource("src/styles/global.css");
+
+    expectCssToContain(css, ".hero-grid > .section-stack:last-child:has(.social-card)");
+    expectCssToContain(css, "@media (min-width: 720px) and (max-width: 1279px)");
+    expectCssToContain(css, "grid-template-columns: minmax(0, 1fr);");
+    expectCssToContain(css, "width: min(100%, 34rem);");
+    expectCssToContain(css, "grid-template-columns: repeat(3, minmax(0, 1fr));");
+    expectCssToContain(css, "margin-top: 0;");
+    expectCssToContain(css, "font-size: 0.95rem;");
+    expect(css).not.toContain("@media (min-width: 1280px) and (max-width: 1439px)");
+    expectCssToContain(
+      css,
+      ".hero-grid > .section-stack:last-child .social-card-grid .social-card-link-copy",
+    );
   });
 
   it("renders the Google Maps action as a compact icon button beside the place name", () => {
@@ -115,8 +199,10 @@ describe("guide map interactions", () => {
     const placeCard = readSource("src/components/PlaceCard.astro");
     const css = readSource("src/styles/global.css");
 
-    expect(placeCard).toContain("(siteConfig.placeCard.showRating && ratingValue !== null)");
-    expect(placeCard).toContain("(siteConfig.placeCard.showReviewCount && reviewCount !== null)");
+    expect(placeCard).toContain("const placeRatingMetaLabel = [");
+    expect(placeCard).toContain("siteConfig.placeCard.showRating && ratingValue !== null");
+    expect(placeCard).toContain("siteConfig.placeCard.showReviewCount ? compactReviewLabel : null");
+    expect(placeCard).toContain('class="stat-pill ui-pill place-card-rating-pill"');
     expect(placeCard).toContain('class="place-card-meta-row"');
     expect(placeCard).toContain(
       'class="stats-row ui-meta-row place-card-stats place-card-meta-stats"',
@@ -125,6 +211,7 @@ describe("guide map interactions", () => {
     expect(placeCard).not.toContain("{!hasPhoto && hasStats && (");
     expectCssToContain(css, ".place-card-meta-row");
     expectCssToContain(css, ".place-card-meta-stats");
+    expectCssToContain(css, ".place-card-rating-pill");
     expectCssToContain(css, "container-type: inline-size;");
     expectCssToContain(css, "@container (min-width: 26rem)");
   });
@@ -151,8 +238,11 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain('panel.closest<HTMLElement>("[data-browse-layout]")');
     expect(guideMap).toContain("layout.dataset.mapCollapsed");
     expectCssToContain(css, '.browse-layout[data-map-collapsed="true"]');
-    expectCssToContain(css, "grid-template-columns: minmax(0, 1fr) 2.75rem");
+    expectCssToContain(css, "grid-template-columns: minmax(0, 1fr);");
     expectCssToContain(css, ".browse-layout > .map-panel {\n    order: 0;\n    position: sticky;");
+    expectCssToContain(css, '.browse-layout > .map-panel[data-collapsed="true"]');
+    expectCssToContain(css, "position: fixed;");
+    expectCssToContain(css, "right: 0;");
     expectCssToContain(css, ".home-map-panel {\n  position: relative;\n  top: auto;");
     expectCssToContain(
       css,
@@ -334,6 +424,35 @@ describe("guide map interactions", () => {
     expect(homeBrowser).toContain("No guides are close to you yet.");
   });
 
+  it("shows the home map reset control after the fitted view drifts", () => {
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
+
+    expect(homeMap).toContain("data-home-map-reset");
+    expect(homeMap).toContain(
+      "const homeFocusViewToleranceKm = (bounds: LatLngBoundsLiteral | null) => {",
+    );
+    expect(homeMap).toContain(
+      "const distanceInKm = (fromLat: number, fromLng: number, toLat: number, toLng: number) => {",
+    );
+    expect(homeMap).toContain("let focusCenter: Coordinates | null = null;");
+    expect(homeMap).toContain("let focusZoom: number | null = null;");
+    expect(homeMap).toContain("let focusDistanceToleranceKm = homeFocusViewToleranceKm");
+    expect(homeMap).toContain("const captureFocusView = () => {");
+    expect(homeMap).toContain(
+      "distanceInKm(center.lat, center.lng, focusCenter.lat, focusCenter.lng)",
+    );
+    expect(homeMap).toContain(
+      "distanceInKm(currentCenter.lat, currentCenter.lng, focusCenter.lat, focusCenter.lng)",
+    );
+    expect(homeMap).toContain("Math.abs(zoom - focusZoom) > 0.75");
+    expect(homeMap).toContain("resetButton.hidden = !runtime?.isOutsideFocusBounds();");
+    expect(homeMap).toContain("runtime.onViewChanged(syncResetButton);");
+    expect(homeMap).toContain('resetButton?.addEventListener("click", () => {');
+    expect(homeMap).toContain("runtime?.resetView();");
+    expect(homeMap).toContain('map.addListener("idle", handler);');
+    expect(homeMap).not.toContain('map.addListener("bounds_changed", handler);');
+  });
+
   it("constrains map panning before the world scrolls into grey tile space", () => {
     const homeMap = readSource("src/components/HomeGuideMap.astro");
     const guideMap = readSource("src/components/GuideMap.astro");
@@ -361,8 +480,11 @@ describe("guide map interactions", () => {
     expect(guideMap).not.toContain("const LEAFLET_WORLD_BOUNDS = L.latLngBounds");
     expect(guideMap).not.toContain("maxBounds: LEAFLET_WORLD_BOUNDS");
     expect(guideMap).not.toContain("maxBoundsViscosity: 1");
-    expect(guideMap).not.toContain("restriction: {");
+    expect(guideMap).toContain("const guideFocusBounds = (places: MapPlace[]) => {");
+    expect(guideMap).toContain("map.setMaxBounds(leafletBoundsFromLiteral(restrictionBounds))");
+    expect(guideMap).toContain("restriction: {");
+    expect(guideMap).toContain("latLngBounds: restrictionBounds");
     expect(guideMap).not.toContain("latLngBounds: WORLD_MAP_BOUNDS");
-    expect(guideMap).not.toContain("strictBounds: true");
+    expect(guideMap).toContain("strictBounds: true");
   });
 });
