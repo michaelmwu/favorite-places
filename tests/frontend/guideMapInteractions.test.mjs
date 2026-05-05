@@ -80,12 +80,18 @@ describe("guide map interactions", () => {
     );
     expect(guideMap).toContain('marker.on("popupopen", (event: L.PopupEvent) => {');
     expect(guideMap).toContain(
-      'popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]")',
+      'const closeButton = popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]");',
     );
     expect(guideMap).toContain(
-      '?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]")',
+      'const detailsButton = popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]");',
     );
-    expect(guideMap).toContain("onSelectPlace(place.id);");
+    expect(guideMap).toContain("closeButton.onclick = () => {");
+    expect(guideMap).toContain("detailsButton.onclick = (clickEvent) => {");
+    expect(guideMap).toContain("onShowPlaceDetails(place.id);");
+    expect(guideMap).toContain(
+      "const handlePopupDetailsSelect = (placeId: string) => selectPlace(placeId, { focusCard: true });",
+    );
+    expect(guideMap).toContain('marker.on("click", () => onSelectPlace(place.id));');
     expect(guideMap).toContain('target?.closest("[data-guide-map-popup-close]")');
     expect(guideMap).toContain('target?.closest<HTMLElement>("[data-guide-map-popup-details]")');
     expectCssToContain(css, ".guide-map-popup-close");
@@ -463,6 +469,7 @@ describe("guide map interactions", () => {
     expect(homeMap).toContain("const capFittedZoomAndCapture = () => {");
     expect(homeMap).toContain("if (zoom !== undefined && zoom > focusMaxResetZoom) {");
     expect(homeMap).toContain("map.setZoom(focusMaxResetZoom);");
+    expect(homeMap).toContain("if (visibleGuides.length === 0) return;");
     expect(homeMap).toContain("capFittedZoomAndCapture();");
     expect(homeMap).toContain("resetButton.hidden = !runtime?.isOutsideFocusBounds();");
     expect(homeMap).toContain("runtime.onViewChanged(syncResetButton);");

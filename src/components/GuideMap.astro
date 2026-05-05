@@ -785,6 +785,7 @@ const mapPlaces = places
     mapElement: HTMLElement,
     places: MapPlace[],
     onSelectPlace: (placeId: string) => void,
+    onShowPlaceDetails: (placeId: string) => void,
   ): MapRuntime => {
     const placePhotosEnabled = mapElement.dataset.placePhotosEnabled === "true";
     const map = L.map(mapElement, {
@@ -839,16 +840,20 @@ const mapPlaces = places
     const bindLeafletPopupActions = (marker: L.Marker, place: MapPlace) => {
       marker.on("popupopen", (event: L.PopupEvent) => {
         const popupElement = event.popup.getElement();
-        popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]")?.addEventListener("click", () => {
-          map.closePopup();
-        });
-        popupElement
-          ?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]")
-          ?.addEventListener("click", (clickEvent) => {
+        const closeButton = popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]");
+        const detailsButton = popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]");
+        if (closeButton) {
+          closeButton.onclick = () => {
+            map.closePopup();
+          };
+        }
+        if (detailsButton) {
+          detailsButton.onclick = (clickEvent) => {
             clickEvent.preventDefault();
             clickEvent.stopPropagation();
-            onSelectPlace(place.id);
-          });
+            onShowPlaceDetails(place.id);
+          };
+        }
       });
     };
     places.forEach((place) => {
@@ -1282,6 +1287,7 @@ const mapPlaces = places
     const shouldAutoFocusCardFromMarker = () => window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY).matches;
     const handleMarkerSelect = (placeId: string) =>
       selectPlace(placeId, { focusCard: shouldAutoFocusCardFromMarker() });
+    const handlePopupDetailsSelect = (placeId: string) => selectPlace(placeId, { focusCard: true });
     let runtime: MapRuntime | null = null;
 
     const syncFullAreaButton = () => {
@@ -1361,9 +1367,9 @@ const mapPlaces = places
       runtime =
         requestedProvider === "google" && apiKey
           ? await initGoogleRuntime(mapElement, places, apiKey, handleMarkerSelect).catch(() =>
-              initLeafletRuntime(mapElement, places, handleMarkerSelect),
+              initLeafletRuntime(mapElement, places, handleMarkerSelect, handlePopupDetailsSelect),
             )
-          : initLeafletRuntime(mapElement, places, handleMarkerSelect);
+          : initLeafletRuntime(mapElement, places, handleMarkerSelect, handlePopupDetailsSelect);
 
       runtime.setVisiblePlaces(currentVisiblePlaceIds);
       mapElement.guideMap = runtime.rawMap;
