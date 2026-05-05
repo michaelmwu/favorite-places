@@ -1464,6 +1464,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force-refresh place enrichment cache entries for every place.",
     )
     parser.add_argument(
+        "--enrich-place",
+        action="append",
+        default=[],
+        help=(
+            "Force-refresh enrichment for a specific place selector unless combined with "
+            "--enrich or --enrich-missing. Repeat to target multiple places. "
+            "Matches exact place ids, CIDs, names, Maps URLs, and `guide-slug:<selector>` forms."
+        ),
+    )
+    parser.add_argument(
         "--refresh-photos",
         action="store_true",
         help="Download missing local optimized place photos from cached enrichment photo URLs.",
@@ -2881,12 +2891,15 @@ def enrich_raw_sources(
     *,
     force_refresh: bool,
     missing_only: bool = False,
+    place_selectors: list[str] | None = None,
     refresh_workers: int = DEFAULT_REFRESH_WORKERS,
     refresh_startup_jitter_seconds: float = DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
 ) -> None:
     api_key = google_places_api_key()
     cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
     enrich_jobs: list[tuple[str, str, str, str, dict[str, Any], str | None, str | None]] = []
+    normalized_place_selectors = normalize_place_selectors(place_selectors or [])
+    matched_place_selectors: set[str] = set()
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
@@ -2896,6 +2909,16 @@ def enrich_raw_sources(
         cache_payloads[raw_path.stem] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
+            if normalized_place_selectors:
+                selector_matches = place_selector_matches(
+                    raw_path.stem,
+                    place,
+                    place_id=place_id,
+                    selectors=normalized_place_selectors,
+                )
+                matched_place_selectors.update(selector_matches)
+                if not selector_matches:
+                    continue
             refresh_reason = enrichment_refresh_reason(
                 place,
                 cache_payload.get(place_id),
@@ -2918,6 +2941,12 @@ def enrich_raw_sources(
                     country_name,
                 )
             )
+
+    if normalized_place_selectors:
+        missing_selectors = sorted(normalized_place_selectors - matched_place_selectors)
+        if missing_selectors:
+            missing_text = ", ".join(missing_selectors)
+            raise RuntimeError(f"No configured place matched: {missing_text}")
 
     if not enrich_jobs:
         return
@@ -3191,6 +3220,9 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.formatted_address = sanitize_place_page_formatted_address(place.formatted_address)
+    place.phone = sanitize_place_page_phone(place.phone)
+    place.plus_code = sanitize_place_page_plus_code(place.plus_code)
     place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
     place.photo_url = sanitize_place_photo_url(place.photo_url)
     return place
@@ -4734,6 +4766,9 @@ def preserve_existing_enrichment(
     if refreshed_place.user_rating_count is None and previous_place.user_rating_count is not None:
         refreshed_place.user_rating_count = previous_place.user_rating_count
         append_unique_reason(preserved_fields, "user_rating_count")
+    if not refreshed_place.formatted_address and previous_place.formatted_address:
+        refreshed_place.formatted_address = previous_place.formatted_address
+        append_unique_reason(preserved_fields, "address")
 
     if not refreshed_place.primary_type_display_name and previous_place.primary_type_display_name:
         refreshed_place.primary_type_display_name = previous_place.primary_type_display_name
@@ -6482,12 +6517,38 @@ PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS = (
     "faviconv2",
     "imagery ©",
     "map data ©",
+    "saved in",
     "send product feedback",
     "street view",
     "termsprivacy",
 )
 PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
+PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+PLACE_PAGE_PROSE_TERM_RE = re.compile(
+    r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
+    r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
+    re.IGNORECASE,
+)
+PLACE_PAGE_PLUS_CODE_RE = re.compile(
+    r"\b[23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3}"
+    r"(?:\s+[^\n]+)?\b"
+)
+PLACE_PAGE_PHONE_RE = re.compile(r"^\+?[0-9][0-9()\-\s]{7,}$")
+PLACE_PAGE_POSTAL_CODE_RE = re.compile(
+    r"\b(?:\d{5}(?:-\d{4})?|[A-Z]\d[A-Z]\s?\d[A-Z]\d|[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})\b",
+    re.IGNORECASE,
+)
+PLACE_PAGE_ADDRESS_KEYWORD_RE = re.compile(
+    r"\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|lane|ln|drive|dr|way|place|pl|"
+    r"court|ct|square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
+    re.IGNORECASE,
+)
+PLACE_PAGE_STRONG_ADDRESS_KEYWORD_RE = re.compile(
+    r"\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|lane|ln|drive|dr|court|ct|"
+    r"square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
+    re.IGNORECASE,
+)
 
 
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
@@ -6496,15 +6557,19 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
         return None
 
     lowered = normalized.lower()
-    if lowered.startswith(("http://", "https://", "www.")):
+    if PLACE_PAGE_URL_LIKE_RE.search(normalized) is not None:
         return None
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS):
         return None
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS):
         return None
+    if looks_like_place_page_review_snippet(normalized):
+        return None
     if PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE.fullmatch(normalized):
         return None
     if re.search(r"\d", normalized) and re.search(r"\breviews?\b", lowered):
+        return None
+    if normalized.endswith(" More"):
         return None
     if normalized.endswith(".") and re.search(r"\b[23456789CFGHJMPQRVWX]{4,8}\+[23456789CFGHJMPQRVWX]{2,3}\b", normalized) is None:
         return None
@@ -6517,7 +6582,85 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
                 return cleaned
         return None
 
+    return normalized if looks_like_place_page_formatted_address(normalized) else None
+
+
+def looks_like_place_page_review_snippet(value: str) -> bool:
+    if has_place_page_address_marker(value):
+        return False
+    if value.endswith(" More"):
+        return True
+    terms = PLACE_PAGE_PROSE_TERM_RE.findall(value)
+    word_count = len(value.split())
+    if word_count >= 10 and len(terms) >= 2:
+        return True
+    if word_count >= 10 and re.search(r"[.!?]", value) and terms:
+        return True
+    return False
+
+
+def sanitize_place_page_phone(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    if PLACE_PAGE_PHONE_RE.fullmatch(normalized) is None:
+        return None
+    digit_count = sum(character.isdigit() for character in normalized)
+    if digit_count < 8 or digit_count > 15:
+        return None
+    if normalized.isdigit() and digit_count == 13 and normalized.startswith("17"):
+        return None
     return normalized
+
+
+def sanitize_place_page_plus_code(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    match = PLACE_PAGE_PLUS_CODE_RE.search(normalized)
+    if match is None:
+        return None
+    return match.group(0).strip()
+
+
+def looks_like_place_page_formatted_address(value: str) -> bool:
+    if len(value) < 5:
+        return False
+    if PLACE_PAGE_PLUS_CODE_RE.search(value) is not None:
+        return True
+    if "〒" in value or value.startswith("Japan, "):
+        return True
+    if PLACE_PAGE_POSTAL_CODE_RE.search(value) is not None and any(character.isalpha() for character in value):
+        return True
+
+    has_digits = re.search(r"\d", value) is not None
+    has_letters = any(character.isalpha() for character in value)
+    if has_digits and has_letters and ("," in value or PLACE_PAGE_ADDRESS_KEYWORD_RE.search(value)):
+        if "," in value and PLACE_PAGE_ADDRESS_KEYWORD_RE.search(value) is None and len(value.split()) > 10:
+            return False
+        return True
+    if PLACE_PAGE_ADDRESS_KEYWORD_RE.search(value) and len(value.split()) <= 5:
+        return True
+
+    locality_separator = " - " if " - " in value else ","
+    locality_parts = [part.strip() for part in value.split(locality_separator) if part.strip()]
+    if len(locality_parts) >= 3 and not re.search(r"[.!?]", value):
+        return True
+    if locality_separator == "," and 2 <= len(locality_parts) <= 4 and not re.search(r"[.!?]", value):
+        if len(value.split()) > 8:
+            return False
+        return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in locality_parts)
+    return False
+
+
+def has_place_page_address_marker(value: str) -> bool:
+    return (
+        PLACE_PAGE_PLUS_CODE_RE.search(value) is not None
+        or PLACE_PAGE_POSTAL_CODE_RE.search(value) is not None
+        or PLACE_PAGE_STRONG_ADDRESS_KEYWORD_RE.search(value) is not None
+        or "〒" in value
+        or value.startswith("Japan, ")
+    )
 
 
 def coerce_enrichment_address_parts(value: Any) -> AddressParts | None:
@@ -6565,8 +6708,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     rating = as_float(getattr(details, "rating", None))
     user_rating_count = as_int(getattr(details, "review_count", None))
     website = as_string(getattr(details, "website", None))
-    phone = as_string(getattr(details, "phone", None))
-    plus_code = as_string(getattr(details, "plus_code", None))
+    phone = sanitize_place_page_phone(getattr(details, "phone", None))
+    plus_code = sanitize_place_page_plus_code(getattr(details, "plus_code", None))
     if formatted_address is None and plus_code and any(
         separator in plus_code for separator in (" - ", ",", " ")
     ):
@@ -6909,6 +7052,44 @@ def normalize_text(value: str | None) -> str:
     return re.sub(r"[^a-z0-9\s]", " ", value.lower()).strip()
 
 
+def normalize_place_selectors(selectors: list[str]) -> set[str]:
+    return {
+        normalized
+        for selector in selectors
+        if (normalized := as_string(selector.casefold() if isinstance(selector, str) else selector))
+    }
+
+
+def place_selector_matches(
+    slug: str,
+    place: RawPlace,
+    *,
+    place_id: str,
+    selectors: set[str],
+) -> set[str]:
+    if not selectors:
+        return set()
+
+    values = {
+        place_id.casefold(),
+        f"{slug}:{place_id}".casefold(),
+        f"guide-slug:{slug}".casefold(),
+    }
+    for candidate in (
+        place.name,
+        place.maps_url,
+        place.cid,
+        place.google_id,
+        place.maps_place_token,
+    ):
+        normalized = as_string(candidate.casefold() if isinstance(candidate, str) else candidate)
+        if normalized is None:
+            continue
+        values.add(normalized)
+        values.add(f"{slug}:{normalized}".casefold())
+    return selectors & values
+
+
 def token_overlap_score(left: str, right: str) -> int:
     left_tokens = {token for token in left.split() if len(token) > 2}
     right_tokens = {token for token in right.split() if len(token) > 2}
@@ -6947,6 +7128,8 @@ def main() -> int:
 
     if (args.refresh_list or args.refresh_force) and not args.refresh:
         args.refresh = True
+    if args.enrich_place and not (args.enrich or args.enrich_missing or args.refresh_enrichment):
+        args.refresh_enrichment = True
 
     if args.refresh:
         refresh_raw_sources(
@@ -6964,6 +7147,7 @@ def main() -> int:
         enrich_raw_sources(
             force_refresh=args.refresh_enrichment,
             missing_only=args.enrich_missing,
+            place_selectors=args.enrich_place,
             refresh_workers=args.refresh_workers,
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )
