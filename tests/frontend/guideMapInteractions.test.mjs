@@ -470,6 +470,7 @@ describe("guide map interactions", () => {
     expect(homeMap).toContain("if (zoom !== undefined && zoom > focusMaxResetZoom) {");
     expect(homeMap).toContain("map.setZoom(focusMaxResetZoom);");
     expect(homeMap).toContain("if (visibleGuides.length === 0) return;");
+    expect(homeMap).toContain("if (focusGuides.length === 0) return;");
     expect(homeMap).toContain("capFittedZoomAndCapture();");
     expect(homeMap).toContain("resetButton.hidden = !runtime?.isOutsideFocusBounds();");
     expect(homeMap).toContain("runtime.onViewChanged(syncResetButton);");

@@ -700,6 +700,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       },
       resetView: () => {
         applyFocusBounds(focusGuides);
+        if (focusGuides.length === 0) return;
         fitGoogleGuides(focusGuides);
         capFittedZoomAndCapture();
       },
