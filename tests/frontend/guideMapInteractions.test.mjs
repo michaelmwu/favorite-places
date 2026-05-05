@@ -29,7 +29,7 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".browse-layout > .map-panel {\n    order: 0;\n    position: sticky;");
   });
 
-  it("uses an in-flow mobile map toolbar instead of overlaying the controls", () => {
+  it("overlays compact mobile map controls without reserving toolbar height", () => {
     const guideMap = readSource("src/components/GuideMap.astro");
     const css = readSource("src/styles/global.css");
 
@@ -39,7 +39,14 @@ describe("guide map interactions", () => {
     expect(cssBlocks(css, ".map-panel").join("\n")).toContain("position: relative");
     expect(cssBlocks(css, ".map-actions").join("\n")).toContain("margin-left: auto");
     expectCssToContain(css, "@media (max-width: 979px)");
-    expectCssToContain(css, ".map-actions {\n    justify-content: flex-start;");
+    expectCssToContain(css, ".map-panel {\n    gap: 0;\n    padding: 0.45rem;");
+    expectCssToContain(css, ".map-toolbar {\n    display: contents;");
+    expectCssToContain(css, ".map-toggle {\n    position: absolute;\n    top: 0.85rem;");
+    expectCssToContain(
+      css,
+      ".map-actions {\n    position: absolute;\n    top: 0.85rem;\n    right: 0.85rem;",
+    );
+    expectCssToContain(css, ".map-feedback-slot {\n    position: absolute;\n    top: 3.35rem;");
     expectCssToContain(css, ".guide-map {\n  width: 100%;\n  min-height: 16rem;");
     expectCssToContain(css, ".map-panel {\n    order: 0;\n    position: sticky;\n    top: 0.5rem;");
   });
@@ -68,7 +75,7 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".social-card-icon {\n    width: 1.5rem;");
   });
 
-  it("renders the Google Maps action as a labeled pill beside the place name", () => {
+  it("renders the Google Maps action as a compact icon button beside the place name", () => {
     const placeCard = readSource("src/components/PlaceCard.astro");
     const css = readSource("src/styles/global.css");
 
@@ -95,7 +102,10 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".place-card-name-row");
     expectCssToContain(css, "width: 1.8rem;");
     expectCssToContain(css, "display: inline-flex;");
-    expectCssToContain(css, "padding: 0.32rem 0.62rem 0.32rem 0.42rem;");
+    expectCssToContain(css, "width: 2.45rem;");
+    expectCssToContain(css, "justify-content: center;");
+    expectCssToContain(css, "padding: 0;");
+    expectCssToContain(css, ".place-card-map-link-label {\n    display: none;");
     expectCssToContain(css, "background: color-mix(in srgb, var(--surface) 92%, white);");
     expectCssToContain(css, "color: #18457a;");
     expectCssToContain(css, "border-radius: 999px;");
@@ -148,8 +158,8 @@ describe("guide map interactions", () => {
       css,
       '.browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"]',
     );
-    expectCssToContain(css, "grid-template-columns: repeat(auto-fit, minmax(23rem, 28rem))");
-    expectCssToContain(css, "justify-content: start;");
+    expectCssToContain(css, "grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expectCssNotToContain(css, "grid-template-columns: repeat(auto-fit, minmax(23rem, 28rem))");
     expect(cssBlocks(css, ".map-panel").join("\n")).toContain("order: 0;");
     expectCssToContain(css, '.map-panel[data-collapsed="true"] .map-toggle');
     expectCssToContain(css, "border-color: transparent");
