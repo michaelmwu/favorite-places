@@ -4028,11 +4028,18 @@ def read_json(path: Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
-@lru_cache(maxsize=None)
 def load_site_build_hooks_module(path: Path) -> Any | None:
-    if not path.exists():
+    try:
+        resolved_path = path.resolve(strict=True)
+    except FileNotFoundError:
         return None
-    module_name = f"favorite_places_site_build_hooks_{hashlib.sha1(str(path).encode('utf-8')).hexdigest()[:12]}"
+    return _load_site_build_hooks_module(resolved_path, resolved_path.stat().st_mtime_ns)
+
+
+@lru_cache(maxsize=None)
+def _load_site_build_hooks_module(path: Path, mtime_ns: int) -> Any:
+    module_identity = f"{path}:{mtime_ns}"
+    module_name = f"favorite_places_site_build_hooks_{hashlib.sha1(module_identity.encode('utf-8')).hexdigest()[:12]}"
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise ImportError(f"Could not load site build hooks from {path}")
@@ -4056,7 +4063,7 @@ def transform_guide_description_with_site_hook(
     if hook is None:
         return normalized_description
     if not callable(hook):
-        raise TypeError("site/build_hooks.py transform_guide_description must be callable")
+        raise TypeError(f"{SITE_BUILD_HOOKS_PATH} transform_guide_description must be callable")
     transformed = hook(
         normalized_description,
         slug=slug,
@@ -4066,7 +4073,7 @@ def transform_guide_description_with_site_hook(
     if transformed is None:
         return None
     if not isinstance(transformed, str):
-        raise TypeError("site/build_hooks.py transform_guide_description must return str | None")
+        raise TypeError(f"{SITE_BUILD_HOOKS_PATH} transform_guide_description must return str | None")
     return normalize_text_blocks(transformed)
 
 

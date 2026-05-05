@@ -1831,7 +1831,7 @@ class BuildDataTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            build_data.load_site_build_hooks_module.cache_clear()
+            build_data._load_site_build_hooks_module.cache_clear()
             try:
                 with (
                     patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
@@ -1840,7 +1840,7 @@ class BuildDataTests(unittest.TestCase):
                 ):
                     guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
             finally:
-                build_data.load_site_build_hooks_module.cache_clear()
+                build_data._load_site_build_hooks_module.cache_clear()
 
         self.assertEqual(guide.description, "tokyo-japan: Original description")
 
@@ -1876,7 +1876,7 @@ class BuildDataTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            build_data.load_site_build_hooks_module.cache_clear()
+            build_data._load_site_build_hooks_module.cache_clear()
             try:
                 with (
                     patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
@@ -1885,9 +1885,24 @@ class BuildDataTests(unittest.TestCase):
                 ):
                     guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
             finally:
-                build_data.load_site_build_hooks_module.cache_clear()
+                build_data._load_site_build_hooks_module.cache_clear()
 
         self.assertEqual(guide.description, "Original description\n\nExtra note")
+
+    def test_load_site_build_hooks_module_does_not_cache_missing_file(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            hooks_path = Path(tmpdir) / "build_hooks.py"
+
+            self.assertIsNone(build_data.load_site_build_hooks_module(hooks_path))
+            hooks_path.write_text("hook_loaded = True\n", encoding="utf-8")
+
+            try:
+                module = build_data.load_site_build_hooks_module(hooks_path)
+            finally:
+                build_data._load_site_build_hooks_module.cache_clear()
+
+        self.assertIsNotNone(module)
+        self.assertTrue(module.hook_loaded)
 
     def test_normalize_text_blocks_strips_outer_blank_lines_and_collapses_internal_runs(self) -> None:
         self.assertEqual(
