@@ -1799,6 +1799,117 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(guide.list_tags, ["geneva", "geneve", "park"])
 
+    def test_normalize_guide_applies_site_build_hook_to_description(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            description="Original description",
+            places=[
+                RawPlace(
+                    name="Koffee Mameya",
+                    address="4-15-3 Jingumae, Shibuya City, Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="1",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            hooks_path = tmpdir_path / "build_hooks.py"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            hooks_path.write_text(
+                "\n".join(
+                    [
+                        "def transform_guide_description(description, *, slug, raw, list_override):",
+                        "    return f\"{slug}: {description}\"",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            build_data._load_site_build_hooks_module.cache_clear()
+            try:
+                with (
+                    patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                    patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                    patch.object(build_data, "SITE_BUILD_HOOKS_PATH", hooks_path),
+                ):
+                    guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+            finally:
+                build_data._load_site_build_hooks_module.cache_clear()
+
+        self.assertEqual(guide.description, "tokyo-japan: Original description")
+
+    def test_normalize_guide_collapses_blank_lines_after_site_hook_changes(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            description="\n\nOriginal description\n\n",
+            places=[
+                RawPlace(
+                    name="Coffee Supreme",
+                    address="Tokyo, Japan",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="1",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            hooks_path = tmpdir_path / "build_hooks.py"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            hooks_path.write_text(
+                "\n".join(
+                    [
+                        "def transform_guide_description(description, *, slug, raw, list_override):",
+                        "    return f'\\n\\n{description}\\n\\n\\nExtra note\\n\\n'",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            build_data._load_site_build_hooks_module.cache_clear()
+            try:
+                with (
+                    patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                    patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                    patch.object(build_data, "SITE_BUILD_HOOKS_PATH", hooks_path),
+                ):
+                    guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+            finally:
+                build_data._load_site_build_hooks_module.cache_clear()
+
+        self.assertEqual(guide.description, "Original description\n\nExtra note")
+
+    def test_load_site_build_hooks_module_does_not_cache_missing_file(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            hooks_path = Path(tmpdir) / "build_hooks.py"
+
+            self.assertIsNone(build_data.load_site_build_hooks_module(hooks_path))
+            hooks_path.write_text("hook_loaded = True\n", encoding="utf-8")
+
+            try:
+                module = build_data.load_site_build_hooks_module(hooks_path)
+            finally:
+                build_data._load_site_build_hooks_module.cache_clear()
+
+        self.assertIsNotNone(module)
+        self.assertTrue(module.hook_loaded)
+
+    def test_normalize_text_blocks_strips_outer_blank_lines_and_collapses_internal_runs(self) -> None:
+        self.assertEqual(
+            build_data.normalize_text_blocks("\n\nAlpha  \n\n\nBeta\n \n\nGamma\n\n"),
+            "Alpha\n\nBeta\n\nGamma",
+        )
+
     def test_normalize_guide_normalizes_accented_override_list_tags(self) -> None:
         raw = RawSavedList(
             title="Genève, Switzerland",

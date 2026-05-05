@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import importlib.util
 import io
 import json
 import math
@@ -91,6 +92,7 @@ GENERATED_DIR = ROOT / "src" / "data" / "generated"
 GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 PUBLIC_DATA_DIR = ROOT / "public" / "data"
 PLACE_PHOTOS_DIR = SITE_DIR / "public" / "place-photos"
+SITE_BUILD_HOOKS_PATH = SITE_DIR / "build_hooks.py"
 LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = SITE_DIR / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
@@ -2092,6 +2094,12 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
 
     title = as_string(list_override.get("title")) or raw.title or slug.replace("-", " ").title()
     description = as_string(list_override.get("description")) or raw.description
+    description = transform_guide_description_with_site_hook(
+        description,
+        slug=slug,
+        raw=raw,
+        list_override=list_override,
+    )
 
     city_name = as_string(list_override.get("city_name")) or infer_city_name(title)
     country_name = as_string(list_override.get("country_name")) or infer_country_name(title, raw)
@@ -4018,6 +4026,66 @@ def read_json(path: Path) -> dict[str, Any]:
         return {}
     payload = json.loads(path.read_text(encoding="utf-8"))
     return payload if isinstance(payload, dict) else {}
+
+
+def load_site_build_hooks_module(path: Path) -> Any | None:
+    try:
+        resolved_path = path.resolve(strict=True)
+    except FileNotFoundError:
+        return None
+    return _load_site_build_hooks_module(resolved_path, resolved_path.stat().st_mtime_ns)
+
+
+@lru_cache(maxsize=None)
+def _load_site_build_hooks_module(path: Path, mtime_ns: int) -> Any:
+    module_identity = f"{path}:{mtime_ns}"
+    module_name = f"favorite_places_site_build_hooks_{hashlib.sha1(module_identity.encode('utf-8')).hexdigest()[:12]}"
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load site build hooks from {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def transform_guide_description_with_site_hook(
+    description: str | None,
+    *,
+    slug: str,
+    raw: RawSavedList,
+    list_override: dict[str, Any],
+) -> str | None:
+    normalized_description = normalize_text_blocks(description)
+    module = load_site_build_hooks_module(SITE_BUILD_HOOKS_PATH)
+    if module is None:
+        return normalized_description
+    hook = getattr(module, "transform_guide_description", None)
+    if hook is None:
+        return normalized_description
+    if not callable(hook):
+        raise TypeError(f"{SITE_BUILD_HOOKS_PATH} transform_guide_description must be callable")
+    transformed = hook(
+        normalized_description,
+        slug=slug,
+        raw=raw,
+        list_override=list_override,
+    )
+    if transformed is None:
+        return None
+    if not isinstance(transformed, str):
+        raise TypeError(f"{SITE_BUILD_HOOKS_PATH} transform_guide_description must return str | None")
+    return normalize_text_blocks(transformed)
+
+
+def normalize_text_blocks(value: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    normalized = normalized.replace("\r\n", "\n").replace("\r", "\n")
+    normalized = "\n".join(line.rstrip() for line in normalized.split("\n"))
+    normalized = re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", normalized)
+    normalized = normalized.strip()
+    return normalized or None
 
 
 def load_raw_saved_list(path: Path) -> RawSavedList | None:
