@@ -93,9 +93,37 @@ _ADDRESS_REJECT_SUBSTRINGS = (
     "street view",
     "termsprivacy",
 )
+_LOCALITY_ADDRESS_REJECT_VALUES = {
+    "art gallery",
+    "bakery",
+    "bar",
+    "cafe",
+    "coffee shop",
+    "curbside pickup",
+    "delivery",
+    "dessert shop",
+    "dine-in",
+    "dine in",
+    "drive-through",
+    "drive through",
+    "hotel",
+    "ice cream shop",
+    "kerbside pickup",
+    "museum",
+    "no-contact delivery",
+    "outdoor seating",
+    "restaurant",
+    "shop",
+    "shopping mall",
+    "store",
+    "takeaway",
+    "takeout",
+    "tourist attraction",
+}
 _ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 _ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
 _URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+_LOCALITY_ABBREVIATION_PERIOD_PATTERN = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
 _PROSE_TERM_PATTERN = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
     r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
@@ -751,7 +779,11 @@ def _clean_address_text(value: object) -> str | None:
         character.isdigit() for character in normalized
     ):
         return None
-    if normalized.endswith(".") and _PLUS_CODE_PATTERN.search(normalized) is None:
+    if (
+        normalized.endswith(".")
+        and _PLUS_CODE_PATTERN.search(normalized) is None
+        and not _looks_like_locality_address_line(normalized)
+    ):
         return None
 
     if "·" in normalized:
@@ -905,14 +937,30 @@ def _looks_like_address_line(line: str) -> bool:
 
 
 def _looks_like_locality_address_line(line: str) -> bool:
-    if re.search(r"[.!?]", line):
+    if re.search(r"[!?]", line):
         return False
     if len(line.split()) > 8:
         return False
     parts = [part.strip() for part in line.split(",") if part.strip()]
     if not 2 <= len(parts) <= 4:
         return False
+    if not all(_locality_part_allows_period(part) for part in parts):
+        return False
+    if all(_locality_address_reject_key(part) in _LOCALITY_ADDRESS_REJECT_VALUES for part in parts):
+        return False
     return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in parts)
+
+
+def _locality_part_allows_period(part: str) -> bool:
+    if "." not in part:
+        return True
+    if _LOCALITY_ABBREVIATION_PERIOD_PATTERN.fullmatch(part):
+        return True
+    return part.startswith("St. ") and len(part.split()) <= 3
+
+
+def _locality_address_reject_key(part: str) -> str:
+    return part.casefold().strip(" .")
 
 
 def _has_address_marker(line: str) -> bool:

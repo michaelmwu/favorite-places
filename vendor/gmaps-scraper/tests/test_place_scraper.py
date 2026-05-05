@@ -405,6 +405,19 @@ class PlaceScraperTests(unittest.TestCase):
             )
         )
 
+    def test_extract_preview_address_rejects_service_option_lists(self) -> None:
+        self.assertIsNone(_extract_preview_address(["Dine-in, Takeout, Delivery"]))
+        self.assertIsNone(_extract_preview_address(["Dine-in, Takeout, Delivery."]))
+        self.assertIsNone(_extract_preview_address(["Takeout, Delivery, Curbside pickup"]))
+        self.assertIsNone(_extract_preview_address(["Museum, Art gallery"]))
+        self.assertIsNone(_extract_preview_address(["Friendly staff, good coffee."]))
+        self.assertIsNone(_extract_preview_address(["Great food at St. James, highly recommend."]))
+
+    def test_extract_preview_address_keeps_locality_abbreviations(self) -> None:
+        self.assertEqual(_extract_preview_address(["St. Louis, MO"]), "St. Louis, MO")
+        self.assertEqual(_extract_preview_address(["St. John's, NL"]), "St. John's, NL")
+        self.assertEqual(_extract_preview_address(["Washington, D.C."]), "Washington, D.C.")
+
     def test_extract_preview_address_keeps_addresses_with_prose_words(self) -> None:
         self.assertEqual(
             _extract_preview_address(
