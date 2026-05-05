@@ -191,14 +191,28 @@ _PLACE_JS_EXTRACTOR = r"""
     `[data-item-id="${itemId}"]`,
   ]);
 
+  const rowValue = (row) => {
+    const value = row?.querySelector(".DkEaL, .Io6YTe")?.innerText?.trim();
+    return value || null;
+  };
+
+  const isAddressIcon = (icon) => {
+    const label = icon?.getAttribute?.("aria-label") || "";
+    const glyph = icon?.innerText?.trim() || icon?.textContent?.trim() || "";
+    return label === "Address" || glyph === "";
+  };
+
   const addressValue = () => {
     const legacy = itemValue("address");
     if (legacy) {
       return legacy;
     }
-    for (const icon of panel.querySelectorAll('[aria-label="Address"][role="img"]')) {
+    for (const icon of panel.querySelectorAll(".google-symbols, [role='img']")) {
+      if (!isAddressIcon(icon)) {
+        continue;
+      }
       const row = icon.closest(".LCF4w, .MngOvd, .RcCsl, [data-section-id]");
-      const value = row?.querySelector(".DkEaL, .Io6YTe")?.innerText?.trim();
+      const value = rowValue(row);
       if (value && value !== "Address") {
         return value;
       }

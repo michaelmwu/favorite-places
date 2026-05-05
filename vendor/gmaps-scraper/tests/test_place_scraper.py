@@ -36,10 +36,12 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIn("if (legacy) {", _PLACE_JS_EXTRACTOR)
         self.assertIn('`[data-item-id="${itemId}"] .Io6YTe`', _PLACE_JS_EXTRACTOR)
 
-    def test_place_js_extractor_falls_back_to_icon_labeled_address_rows(self) -> None:
-        self.assertIn('[aria-label="Address"][role="img"]', _PLACE_JS_EXTRACTOR)
+    def test_place_js_extractor_falls_back_to_address_icon_rows(self) -> None:
+        self.assertIn('const isAddressIcon = (icon) => {', _PLACE_JS_EXTRACTOR)
+        self.assertIn('glyph === ""', _PLACE_JS_EXTRACTOR)
+        self.assertIn('panel.querySelectorAll(".google-symbols, [role=', _PLACE_JS_EXTRACTOR)
         self.assertIn('icon.closest(".LCF4w', _PLACE_JS_EXTRACTOR)
-        self.assertIn('row?.querySelector(".DkEaL, .Io6YTe")', _PLACE_JS_EXTRACTOR)
+        self.assertIn('const rowValue = (row) => {', _PLACE_JS_EXTRACTOR)
 
     def test_place_js_extractor_reads_structured_info_rows(self) -> None:
         self.assertIn("button[jsaction*='category']", _PLACE_JS_EXTRACTOR)
