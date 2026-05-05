@@ -139,7 +139,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         element: HTMLElement,
         options: Record<string, unknown>,
       ) => {
-        addListener: (eventName: string, handler: () => void) => void;
+        addListener: (eventName: string, handler: () => void) => { remove?: () => void } | undefined;
         fitBounds: (bounds: unknown, padding?: number | { top: number; right: number; bottom: number; left: number }) => void;
         getBounds: () => { intersects: (bounds: unknown) => boolean } | undefined;
         getCenter: () =>
@@ -647,13 +647,23 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         window.requestAnimationFrame(captureFocusView);
       });
     };
+    const capFittedZoomAndCapture = () => {
+      const idleListener = map.addListener("idle", () => {
+        idleListener?.remove?.();
+        const zoom = map.getZoom();
+        if (zoom !== undefined && zoom > focusMaxResetZoom) {
+          map.setZoom(focusMaxResetZoom);
+        }
+        scheduleFocusViewCapture();
+      });
+    };
 
     return {
       fitGuides: (visibleGuides) => {
         focusGuides = visibleGuides;
         applyFocusBounds(visibleGuides);
         fitGoogleGuides(visibleGuides);
-        scheduleFocusViewCapture();
+        capFittedZoomAndCapture();
       },
       invalidateSize: () => {
         window.dispatchEvent(new Event("resize"));
@@ -690,7 +700,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       resetView: () => {
         applyFocusBounds(focusGuides);
         fitGoogleGuides(focusGuides);
-        scheduleFocusViewCapture();
+        capFittedZoomAndCapture();
       },
       setVisibleGuides: (visibleGuideSlugs) => {
         markers.forEach((marker, guideSlug) => marker.setMap(visibleGuideSlugs.has(guideSlug) ? map : null));

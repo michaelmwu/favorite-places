@@ -75,6 +75,17 @@ describe("guide map interactions", () => {
     expect(guideMap).not.toContain("<span>Maps</span>");
     expect(guideMap).toContain("closeButton: false");
     expect(guideMap).toContain("headerDisabled: true");
+    expect(guideMap).toContain(
+      "const bindLeafletPopupActions = (marker: L.Marker, place: MapPlace) => {",
+    );
+    expect(guideMap).toContain('marker.on("popupopen", (event: L.PopupEvent) => {');
+    expect(guideMap).toContain(
+      'popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]")',
+    );
+    expect(guideMap).toContain(
+      '?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]")',
+    );
+    expect(guideMap).toContain("onSelectPlace(place.id);");
     expect(guideMap).toContain('target?.closest("[data-guide-map-popup-close]")');
     expect(guideMap).toContain('target?.closest<HTMLElement>("[data-guide-map-popup-details]")');
     expectCssToContain(css, ".guide-map-popup-close");
@@ -269,6 +280,10 @@ describe("guide map interactions", () => {
     expect(guideMap).toContain("data-map-frame-filter");
     expect(guideMap).toContain("data-map-full-area");
     expect(guideMap).toContain(">Reset Map</button>");
+    expect(guideMap).toContain("const capFittedZoomAndCapture = () => {");
+    expect(guideMap).toContain("if (zoom !== undefined && zoom > focusMaxResetZoom) {");
+    expect(guideMap).toContain("map.setZoom(focusMaxResetZoom);");
+    expect(guideMap).toContain("capFittedZoomAndCapture();");
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-reset-request"');
     expect(guideMap).toContain('new CustomEvent("guide:map-frame-filter"');
     expect(filters).toContain("countMatchingCards");
@@ -445,6 +460,10 @@ describe("guide map interactions", () => {
       "distanceInKm(currentCenter.lat, currentCenter.lng, focusCenter.lat, focusCenter.lng)",
     );
     expect(homeMap).toContain("Math.abs(zoom - focusZoom) > 0.75");
+    expect(homeMap).toContain("const capFittedZoomAndCapture = () => {");
+    expect(homeMap).toContain("if (zoom !== undefined && zoom > focusMaxResetZoom) {");
+    expect(homeMap).toContain("map.setZoom(focusMaxResetZoom);");
+    expect(homeMap).toContain("capFittedZoomAndCapture();");
     expect(homeMap).toContain("resetButton.hidden = !runtime?.isOutsideFocusBounds();");
     expect(homeMap).toContain("runtime.onViewChanged(syncResetButton);");
     expect(homeMap).toContain('resetButton?.addEventListener("click", () => {');

@@ -836,9 +836,25 @@ const mapPlaces = places
       focusCenter = { lat: center.lat, lng: center.lng };
       focusZoom = map.getZoom();
     };
+    const bindLeafletPopupActions = (marker: L.Marker, place: MapPlace) => {
+      marker.on("popupopen", (event: L.PopupEvent) => {
+        const popupElement = event.popup.getElement();
+        popupElement?.querySelector<HTMLButtonElement>("[data-guide-map-popup-close]")?.addEventListener("click", () => {
+          map.closePopup();
+        });
+        popupElement
+          ?.querySelector<HTMLButtonElement>("[data-guide-map-popup-details]")
+          ?.addEventListener("click", (clickEvent) => {
+            clickEvent.preventDefault();
+            clickEvent.stopPropagation();
+            onSelectPlace(place.id);
+          });
+      });
+    };
     places.forEach((place) => {
       const marker = placeMarker(place, placePhotosEnabled).addTo(map);
       marker.on("click", () => onSelectPlace(place.id));
+      bindLeafletPopupActions(marker, place);
       markers.set(place.id, marker);
     });
 
@@ -1078,6 +1094,16 @@ const mapPlaces = places
         window.requestAnimationFrame(captureFocusView);
       });
     };
+    const capFittedZoomAndCapture = () => {
+      const idleListener = map.addListener("idle", () => {
+        idleListener.remove();
+        const zoom = map.getZoom();
+        if (zoom !== undefined && zoom > focusMaxResetZoom) {
+          map.setZoom(focusMaxResetZoom);
+        }
+        scheduleFocusViewCapture();
+      });
+    };
 
     return {
       rawMap: map,
@@ -1088,14 +1114,14 @@ const mapPlaces = places
         if (visiblePlaces.length === 1) {
           map.setCenter({ lat: visiblePlaces[0].lat, lng: visiblePlaces[0].lng });
           map.setZoom(14);
-          scheduleFocusViewCapture();
+          capFittedZoomAndCapture();
           return;
         }
 
         const bounds = new google.maps.LatLngBounds();
         visiblePlaces.forEach((place) => bounds.extend({ lat: place.lat, lng: place.lng }));
         map.fitBounds(bounds, 28);
-        scheduleFocusViewCapture();
+        capFittedZoomAndCapture();
       },
       getBoundsContains: (place) => map.getBounds()?.contains({ lat: place.lat, lng: place.lng }) ?? true,
       getCenter: () => {
