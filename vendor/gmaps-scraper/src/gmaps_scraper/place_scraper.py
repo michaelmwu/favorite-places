@@ -83,12 +83,19 @@ _ADDRESS_REJECT_SUBSTRINGS = (
     "faviconv2",
     "imagery ©",
     "map data ©",
+    "saved in",
     "send product feedback",
     "street view",
     "termsprivacy",
 )
 _ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 _ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
+_URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+_PROSE_PATTERN = re.compile(
+    r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
+    r"burger|burgers|nugget|nuggets|owner|recommend|session)\b",
+    re.IGNORECASE,
+)
 _PLACE_JS_EXTRACTOR = r"""
 () => {
   const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
@@ -183,6 +190,21 @@ _PLACE_JS_EXTRACTOR = r"""
     `[data-item-id="${itemId}"] .Io6YTe`,
     `[data-item-id="${itemId}"]`,
   ]);
+
+  const addressValue = () => {
+    const legacy = itemValue("address");
+    if (legacy) {
+      return legacy;
+    }
+    for (const icon of panel.querySelectorAll('[aria-label="Address"][role="img"]')) {
+      const row = icon.closest(".LCF4w, .MngOvd, .RcCsl, [data-section-id]");
+      const value = row?.querySelector(".DkEaL, .Io6YTe")?.innerText?.trim();
+      if (value && value !== "Address") {
+        return value;
+      }
+    }
+    return null;
+  };
 
   const normalizeCount = (value) => {
     if (!value) {
@@ -302,7 +324,7 @@ _PLACE_JS_EXTRACTOR = r"""
       ".skqShb .fontBodyMedium button",
       "button.DkEaL",
     ]),
-    address: itemValue("address"),
+    address: addressValue(),
     located_in: itemValue("locatedin"),
     status: firstText(["div.OqCZI .ZDu9vd", "div.OqCZI .o0Svhf"]),
     website: firstAttr(["a[data-item-id='authority']"], "href", document) || itemValue("authority"),
@@ -696,11 +718,13 @@ def _clean_address_text(value: object) -> str | None:
         return None
 
     lowered = normalized.lower()
-    if lowered.startswith(("http://", "https://", "www.")):
+    if _URL_LIKE_PATTERN.search(normalized) is not None:
         return None
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
         return None
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
+        return None
+    if _PROSE_PATTERN.search(normalized) is not None:
         return None
     if _ADDRESS_ENTITY_TOKEN_PATTERN.fullmatch(normalized):
         return None
@@ -827,11 +851,21 @@ def _extract_address_from_lines(lines: list[str]) -> str | None:
 
 def _looks_like_address_line(line: str) -> bool:
     lowered = line.lower()
-    if lowered.startswith(("http://", "https://", "www.")):
+    if _URL_LIKE_PATTERN.search(line) is not None:
+        return False
+    if _PROSE_PATTERN.search(line) is not None:
+        return False
+    if "saved in" in lowered or "report a problem" in lowered:
+        return False
+    if line.endswith(" More"):
         return False
     if _looks_like_status_text(line):
         return False
     if _PHONE_PATTERN.match(line):
+        return False
+    if any(keyword in lowered for keyword in _REVIEW_LABEL_KEYWORDS) and any(
+        character.isdigit() for character in line
+    ):
         return False
     if _PLUS_CODE_PATTERN.search(line):
         return False
@@ -843,10 +877,23 @@ def _looks_like_address_line(line: str) -> bool:
     if _POSTAL_CODE_PATTERN.search(line) and any(character.isalpha() for character in line):
         return True
     if re.search(r"\d", line) is None:
-        return False
+        return _looks_like_locality_address_line(line)
     if "," in line and any(character.isalpha() for character in line):
+        if _ADDRESS_KEYWORD_PATTERN.search(line) is None and len(line.split()) > 10:
+            return False
         return True
     return _ADDRESS_KEYWORD_PATTERN.search(line) is not None
+
+
+def _looks_like_locality_address_line(line: str) -> bool:
+    if re.search(r"[.!?&]", line):
+        return False
+    if len(line.split()) > 8:
+        return False
+    parts = [part.strip() for part in line.split(",") if part.strip()]
+    if not 2 <= len(parts) <= 4:
+        return False
+    return all(any(character.isalpha() for character in part) and len(part) <= 60 for part in parts)
 
 
 def _extract_status_from_lines(lines: list[str]) -> str | None:
@@ -1076,7 +1123,7 @@ def _extract_preview_address(strings: list[str]) -> str | None:
             continue
         if "maps/preview/place" in normalized or normalized.startswith("/g/"):
             continue
-        if _clean_address_text(normalized) is not None:
+        if _clean_address_text(normalized) is not None and _looks_like_address_line(normalized):
             candidates.append(normalized)
     if not candidates:
         return None

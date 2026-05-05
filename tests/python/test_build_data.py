@@ -93,6 +93,24 @@ class BuildDataTests(unittest.TestCase):
             startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         )
 
+    def test_main_treats_enrich_place_as_targeted_refresh(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--enrich-place", "cid:123"]),
+            patch.object(build_data, "sync_local_csv_sources"),
+            patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
+            patch.object(build_data, "rebuild_generated_data"),
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        enrich_raw_sources.assert_called_once_with(
+            force_refresh=True,
+            missing_only=False,
+            place_selectors=["cid:123"],
+            refresh_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            refresh_startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+
     def test_refresh_generated_guide_photos_skips_artifact_rewrite_when_photo_state_is_unchanged(self) -> None:
         guide = Guide(
             slug="tokyo-japan",
@@ -2610,6 +2628,100 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(street_view.formatted_address)
         self.assertEqual(prefixed.formatted_address, "Exit 37 - Sheikh Mohammed Bin Zayed Rd")
 
+    def test_normalize_place_page_enrichment_rejects_fixaddress_url_addresses(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Nizami+Street",
+                resolved_url="https://www.google.com/maps/place/Nizami+Street",
+                name="Nizami Street",
+                category="Transportation",
+                rating=4.7,
+                review_count=1825,
+                address=(
+                    "Address https://www.google.com/local/place/rap/fixaddress?"
+                    "g2lb=72971417,73155522,100805691&hl=en-CA&gl=ca"
+                ),
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(place.formatted_address)
+
+    def test_normalize_place_page_enrichment_rejects_review_prose_as_address(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Nizami+Street",
+                resolved_url="https://www.google.com/maps/place/Nizami+Street",
+                name="Nizami Street",
+                category="Transportation",
+                rating=4.7,
+                review_count=1842,
+                address=(
+                    "It was amazing street walk experience i hade ever before. "
+                    "Shops and natural bueaty is next level experience 💖"
+                ),
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(place.formatted_address)
+
+    def test_normalize_place_page_enrichment_rejects_long_review_snippet_as_address(self) -> None:
+        for address in (
+            (
+                "The best takeout or eat in I recommend this place. We dropped in 5 minutes "
+                "before closing time and the owner took the initiative to cook us More"
+            ),
+            "The nuggets are massive, good size burgers and probably the best for value in town",
+        ):
+            with self.subTest(address=address):
+                place = build_data.normalize_place_page_enrichment(
+                    SimpleNamespace(
+                        source_url="https://www.google.com/maps/place/Tropical+Taste",
+                        resolved_url="https://www.google.com/maps/place/Tropical+Taste",
+                        name="Tropical Taste",
+                        category="Restaurant",
+                        rating=4.6,
+                        review_count=101,
+                        address=address,
+                        limited_view=False,
+                    )
+                )
+
+                self.assertIsNone(place.formatted_address)
+
+    def test_normalize_place_page_enrichment_accepts_locality_only_address(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Nizami+Street",
+                resolved_url="https://www.google.com/maps/place/Nizami+Street",
+                name="Nizami St",
+                category="Notable street",
+                rating=4.7,
+                review_count=1842,
+                address="Baku, Azerbaijan",
+                limited_view=False,
+            )
+        )
+
+        self.assertEqual(place.formatted_address, "Baku, Azerbaijan")
+
+    def test_normalize_place_page_enrichment_rejects_saved_list_row_as_address(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Nizami+Street",
+                resolved_url="https://www.google.com/maps/place/Nizami+Street",
+                name="Nizami St",
+                category="Notable street",
+                rating=4.7,
+                review_count=1842,
+                address="Saved in Favorites & Baku, Azerbaijan 🇦🇿",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(place.formatted_address)
+
     def test_normalize_place_page_enrichment_falls_back_to_compound_plus_code(self) -> None:
         place = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -2629,6 +2741,45 @@ class BuildDataTests(unittest.TestCase):
             place.formatted_address,
             "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
         )
+        self.assertEqual(place.plus_code, "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates")
+
+    def test_normalize_place_page_enrichment_sanitizes_phone_and_plus_code(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Nar+%26+Sharab",
+                resolved_url="https://www.google.com/maps/place/Nar+%26+Sharab",
+                name="Nar & Sharab",
+                category="Restaurant",
+                rating=4.4,
+                review_count=51,
+                address="Namiq Quliyev, Baku, Azerbaijan",
+                phone="+994 50 241 01 01",
+                plus_code="Plus code: 8R3F+XV Baku, Azerbaijan",
+                limited_view=False,
+            )
+        )
+
+        self.assertEqual(place.phone, "+994 50 241 01 01")
+        self.assertEqual(place.plus_code, "8R3F+XV Baku, Azerbaijan")
+
+    def test_normalize_place_page_enrichment_rejects_invalid_phone_and_plus_code(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/place/Nizami+Street",
+                resolved_url="https://www.google.com/maps/place/Nizami+Street",
+                name="Nizami St",
+                category="Notable street",
+                rating=4.7,
+                review_count=1842,
+                address="Baku, Azerbaijan",
+                phone="1776616236980",
+                plus_code="Your Maps history",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(place.phone)
+        self.assertIsNone(place.plus_code)
 
     def test_normalize_place_page_enrichment_uses_address_like_description_when_address_missing(self) -> None:
         place = build_data.normalize_place_page_enrichment(
@@ -4572,6 +4723,134 @@ class BuildDataTests(unittest.TestCase):
                 ["missing-cache-entry", "refresh-window-expired"],
             )
 
+    def test_enrich_raw_sources_filters_to_selected_place(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="First Place", maps_url="https://maps.google.com/?cid=111", cid="111"),
+                RawPlace(name="Second Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            seen_places: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, place_name, _refresh_reason, _place_payload, **_kwargs):
+                seen_places.append(place_name)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query=place_name,
+                    matched=True,
+                    place=EnrichmentPlace(display_name=place_name),
+                )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=True,
+                    place_selectors=["cid:222"],
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            self.assertEqual(seen_places, ["Second Place"])
+
+    def test_enrich_raw_sources_does_not_match_bare_guide_slug_as_place(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[RawPlace(name="First Place", maps_url="https://maps.google.com/?cid=111", cid="111")],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "No configured place matched: tokyo-japan"):
+                    build_data.enrich_raw_sources(
+                        force_refresh=True,
+                        place_selectors=["tokyo-japan"],
+                        refresh_workers=1,
+                        refresh_startup_jitter_seconds=0,
+                    )
+
+    def test_enrich_raw_sources_matches_explicit_guide_slug_selector(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo",
+            places=[
+                RawPlace(name="First Place", maps_url="https://maps.google.com/?cid=111", cid="111"),
+                RawPlace(name="Second Place", maps_url="https://maps.google.com/?cid=222", cid="222"),
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            seen_places: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, place_name, _refresh_reason, _place_payload, **_kwargs):
+                seen_places.append(place_name)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query=place_name,
+                    matched=True,
+                    place=EnrichmentPlace(display_name=place_name),
+                )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=True,
+                    place_selectors=["guide-slug:tokyo-japan"],
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+            self.assertEqual(seen_places, ["First Place", "Second Place"])
+
     def test_enrich_raw_sources_parallel_writes_cache_incrementally(self) -> None:
         raw = RawSavedList(
             title="Tokyo",
@@ -5773,6 +6052,106 @@ class BuildDataTests(unittest.TestCase):
             "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
             "rating, user_rating_count, primary_category, status, maps_url, photo_url.",
         )
+
+    def test_enrich_place_job_preserves_valid_previous_address_when_refresh_loses_it(self) -> None:
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Tropical Taste, Tonga",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Tropical Taste",
+                formatted_address="VQ4V+29M, Nuku'alofa, Tonga",
+                rating=4.6,
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-23T00:00:00+00:00",
+            query="Tropical Taste, Tonga",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Tropical Taste",
+                primary_type_display_name="Restaurant",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data, "fetch_places_enrichment", return_value=refreshed_entry),
+            patch("builtins.print") as print_mock,
+        ):
+            result = build_data.enrich_place_job(
+                "tonga",
+                "cid:111",
+                "Tropical Taste",
+                "forced",
+                {
+                    "name": "Tropical Taste",
+                    "address": "VQ4V+29M, Nuku'alofa, Tonga",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key=None,
+                refresh_startup_jitter_seconds=0,
+                existing_entry=previous_entry,
+            )
+
+        self.assertIs(result, refreshed_entry)
+        assert result.place is not None
+        self.assertEqual(result.place.formatted_address, "VQ4V+29M, Nuku'alofa, Tonga")
+        self.assertEqual(print_mock.call_count, 2)
+        self.assertEqual(
+            print_mock.call_args_list[1].args[0],
+            "WARNING: Preserving previous enrichment fields for tonga:cid:111 [Tropical Taste]: "
+            "rating, address.",
+        )
+
+    def test_enrich_place_job_does_not_preserve_suspicious_previous_address(self) -> None:
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Tropical Taste, Tonga",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Tropical Taste",
+                formatted_address=(
+                    "The best takeout or eat in I recommend this place. We dropped in 5 minutes "
+                    "before closing time and the owner took the initiative to cook us More"
+                ),
+                rating=4.6,
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-23T00:00:00+00:00",
+            query="Tropical Taste, Tonga",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Tropical Taste",
+                primary_type_display_name="Restaurant",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+            patch.object(build_data, "fetch_places_enrichment", return_value=refreshed_entry),
+            patch("builtins.print"),
+        ):
+            result = build_data.enrich_place_job(
+                "tonga",
+                "cid:111",
+                "Tropical Taste",
+                "forced",
+                {
+                    "name": "Tropical Taste",
+                    "address": "VQ4V+29M, Nuku'alofa, Tonga",
+                    "maps_url": "https://maps.google.com/?cid=111",
+                    "cid": "111",
+                },
+                api_key=None,
+                refresh_startup_jitter_seconds=0,
+                existing_entry=previous_entry,
+            )
+
+        assert result.place is not None
+        self.assertIsNone(result.place.formatted_address)
 
     def test_enrich_place_job_does_not_preserve_suspicious_old_photo_urls(self) -> None:
         previous_entry = EnrichmentCacheEntry(
