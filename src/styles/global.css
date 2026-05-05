@@ -1106,11 +1106,14 @@
   }
 
   .place-card-tags .tag-pill {
+    min-width: 0;
     max-width: 100%;
     white-space: nowrap;
   }
 
   .place-card-tags .tag-pill-label {
+    display: block;
+    flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2580,21 +2583,5 @@
     min-width: 5.7rem;
     min-height: 2.15rem;
     font-size: 0.68rem;
-  }
-}
-
-@layer components {
-  @media (max-width: 719px) {
-    .ui-tag-row.tag-row-mobile-grid-scroll {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.25rem), 1fr));
-      gap: var(--mobile-filter-grid-gap);
-    }
-
-    .ui-tag-row.tag-row-mobile-grid-scroll .ui-tag-pill {
-      width: 100%;
-      justify-content: space-between;
-      white-space: nowrap;
-    }
   }
 }
