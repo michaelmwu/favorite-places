@@ -41,14 +41,30 @@ const compactReviewCountFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 });
 const reviewCountFormatter = new Intl.NumberFormat("en-US");
+const compactReviewLabel =
+  reviewCount !== null
+    ? `${compactReviewCountFormatter.format(reviewCount)} ${reviewCount === 1 ? "review" : "reviews"}`
+    : null;
+const placeRatingMetaLabel = [
+  siteConfig.placeCard.showRating && ratingValue !== null ? `${ratingFormatter.format(ratingValue)} ★` : null,
+  siteConfig.placeCard.showReviewCount ? compactReviewLabel : null,
+]
+  .filter(Boolean)
+  .join(" · ");
+const placeRatingMetaTitle = [
+  siteConfig.placeCard.showRating && ratingValue !== null ? `${ratingFormatter.format(ratingValue)} Google Maps rating` : null,
+  siteConfig.placeCard.showReviewCount && reviewCount !== null
+    ? `${reviewCountFormatter.format(reviewCount)} Google Maps ${reviewCount === 1 ? "review" : "reviews"}`
+    : null,
+]
+  .filter(Boolean)
+  .join(" · ");
 const placeholderMeta =
   place.neighborhood ??
   guideContext.cityName ??
   guideContext.countryName ??
   siteConfig.placeCard.photoPlaceholderFallback;
-const hasStats =
-  (siteConfig.placeCard.showRating && ratingValue !== null) ||
-  (siteConfig.placeCard.showReviewCount && reviewCount !== null);
+const hasStats = placeRatingMetaLabel.length > 0;
 const metaParts = [
   siteConfig.placeCard.showCategory ? (place.primary_category ?? siteConfig.placeCard.savedPlaceLabel) : null,
   siteConfig.placeCard.showNeighborhood ? place.neighborhood : null,
@@ -148,14 +164,9 @@ const badges = [
         {metaParts.length > 0 && <p class="meta-copy">{metaParts.join(" · ")}</p>}
         {hasStats && (
           <div class="stats-row ui-meta-row place-card-stats place-card-meta-stats">
-            {siteConfig.placeCard.showRating && ratingValue !== null && (
-              <span class="stat-pill ui-pill">{ratingFormatter.format(ratingValue)} ★</span>
-            )}
-            {siteConfig.placeCard.showReviewCount && reviewCount !== null && (
-              <span class="stat-pill ui-pill" title={`${reviewCountFormatter.format(reviewCount)} Google Maps reviews`}>
-                {compactReviewCountFormatter.format(reviewCount)} reviews
-              </span>
-            )}
+            <span class="stat-pill ui-pill place-card-rating-pill" title={placeRatingMetaTitle}>
+              {placeRatingMetaLabel}
+            </span>
           </div>
         )}
       </div>

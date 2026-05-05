@@ -41,9 +41,14 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
           <p class="small-copy" data-home-map-summary>
             Showing {mapGuides.length} guide{mapGuides.length === 1 ? "" : "s"} on the map.
           </p>
-          <button class="map-inline-toggle" type="button" data-home-map-toggle aria-expanded="true">
-            Hide map
-          </button>
+          <div class="home-map-actions">
+            <button class="map-inline-toggle" type="button" data-home-map-reset hidden>
+              Reset map
+            </button>
+            <button class="map-inline-toggle" type="button" data-home-map-toggle aria-expanded="true">
+              Hide map
+            </button>
+          </div>
         </div>
       </div>
 
@@ -89,6 +94,13 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     lng: number;
   }
 
+  interface LatLngBoundsLiteral {
+    east: number;
+    north: number;
+    south: number;
+    west: number;
+  }
+
   interface HomeGuideMapElement extends HTMLElement {
     homeGuideMapInitialized?: boolean;
   }
@@ -96,6 +108,9 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   interface HomeMapRuntime {
     fitGuides: (guides: HomeMapGuide[]) => void;
     invalidateSize?: () => void;
+    isOutsideFocusBounds: () => boolean;
+    onViewChanged: (handler: () => void) => void;
+    resetView: () => void;
     setVisibleGuides: (visibleGuideSlugs: Set<string>) => void;
   }
 
@@ -118,13 +133,18 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       };
       LatLngBounds: new () => {
         extend: (coordinates: Coordinates) => void;
+        intersects: (bounds: unknown) => boolean;
       };
       Map: new (
         element: HTMLElement,
         options: Record<string, unknown>,
       ) => {
+        addListener: (eventName: string, handler: () => void) => void;
         fitBounds: (bounds: unknown, padding?: number | { top: number; right: number; bottom: number; left: number }) => void;
+        getBounds: () => { intersects: (bounds: unknown) => boolean } | undefined;
+        getZoom: () => number | undefined;
         setCenter: (coordinates: Coordinates) => void;
+        setOptions: (options: Record<string, unknown>) => void;
         setZoom: (zoom: number) => void;
       };
       Marker: new (options: Record<string, unknown>) => {
@@ -149,6 +169,9 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     south: -WORLD_MAP_MAX_LATITUDE,
     west: WORLD_MAP_MIN_LONGITUDE,
   };
+  const HOME_FOCUS_BOUNDS_MIN_SPAN = 8;
+  const HOME_FOCUS_BOUNDS_PADDING_RATIO = 0.75;
+  const HOME_RESET_ZOOM_BUFFER = 4;
   const LEAFLET_WORLD_BOUNDS = L.latLngBounds(
     [-WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MIN_LONGITUDE],
     [WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MAX_LONGITUDE],
@@ -206,6 +229,73 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   `;
 
   const markerLabelUnits = (label: string) => Array.from(label).length;
+
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+  const guideBoundsLiteral = (guides: HomeMapGuide[]): LatLngBoundsLiteral | null => {
+    if (guides.length === 0) return null;
+
+    return guides.reduce<LatLngBoundsLiteral>(
+      (bounds, guide) => ({
+        east: Math.max(bounds.east, guide.lng),
+        north: Math.max(bounds.north, guide.lat),
+        south: Math.min(bounds.south, guide.lat),
+        west: Math.min(bounds.west, guide.lng),
+      }),
+      {
+        east: guides[0].lng,
+        north: guides[0].lat,
+        south: guides[0].lat,
+        west: guides[0].lng,
+      },
+    );
+  };
+
+  const expandBoundsLiteral = (
+    bounds: LatLngBoundsLiteral,
+    minSpan: number,
+    paddingRatio: number,
+  ): LatLngBoundsLiteral => {
+    const centerLat = (bounds.north + bounds.south) / 2;
+    const centerLng = (bounds.east + bounds.west) / 2;
+    const latSpan = Math.max(bounds.north - bounds.south, minSpan);
+    const lngSpan = Math.max(bounds.east - bounds.west, minSpan);
+    const paddedLatHalfSpan = (latSpan * (1 + paddingRatio * 2)) / 2;
+    const paddedLngHalfSpan = (lngSpan * (1 + paddingRatio * 2)) / 2;
+
+    return {
+      east: clamp(centerLng + paddedLngHalfSpan, WORLD_MAP_MIN_LONGITUDE, WORLD_MAP_MAX_LONGITUDE),
+      north: clamp(centerLat + paddedLatHalfSpan, -WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MAX_LATITUDE),
+      south: clamp(centerLat - paddedLatHalfSpan, -WORLD_MAP_MAX_LATITUDE, WORLD_MAP_MAX_LATITUDE),
+      west: clamp(centerLng - paddedLngHalfSpan, WORLD_MAP_MIN_LONGITUDE, WORLD_MAP_MAX_LONGITUDE),
+    };
+  };
+
+  const guideFocusBounds = (guides: HomeMapGuide[]) => {
+    const bounds = guideBoundsLiteral(guides);
+    if (!bounds) return null;
+
+    return expandBoundsLiteral(bounds, HOME_FOCUS_BOUNDS_MIN_SPAN, HOME_FOCUS_BOUNDS_PADDING_RATIO);
+  };
+
+  const leafletBoundsFromLiteral = (bounds: LatLngBoundsLiteral) =>
+    L.latLngBounds([bounds.south, bounds.west], [bounds.north, bounds.east]);
+
+  const leafletGuideBounds = (guides: HomeMapGuide[]) => {
+    const bounds = guideBoundsLiteral(guides);
+    return bounds ? leafletBoundsFromLiteral(bounds) : null;
+  };
+
+  const homeFocusMinZoom = (bounds: LatLngBoundsLiteral) => {
+    const span = Math.max(bounds.north - bounds.south, bounds.east - bounds.west);
+    if (span >= 150) return WORLD_MAP_MIN_ZOOM;
+    if (span >= 70) return 1;
+    if (span >= 35) return 2;
+    if (span >= 16) return 3;
+    return 4;
+  };
+
+  const homeFocusMaxResetZoom = (minZoom: number) => Math.min(12, Math.max(7, minZoom + HOME_RESET_ZOOM_BUFFER));
 
   const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
     if (guides.length === 0) return;
@@ -329,6 +419,19 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     }).addTo(map);
 
     const markers = new Map<string, L.Marker>();
+    let focusGuides = guides;
+    let focusBounds = leafletGuideBounds(guides);
+    let focusMinZoom = WORLD_MAP_MIN_ZOOM;
+    let focusMaxResetZoom = 12;
+    const applyFocusBounds = (visibleGuides: HomeMapGuide[]) => {
+      const nextFocusBounds = leafletGuideBounds(visibleGuides);
+      const restrictionBoundsLiteral = guideFocusBounds(visibleGuides);
+      focusBounds = nextFocusBounds;
+      focusMinZoom = restrictionBoundsLiteral ? homeFocusMinZoom(restrictionBoundsLiteral) : WORLD_MAP_MIN_ZOOM;
+      focusMaxResetZoom = homeFocusMaxResetZoom(focusMinZoom);
+      map.setMinZoom(WORLD_MAP_MIN_ZOOM);
+      map.setMaxBounds(LEAFLET_WORLD_BOUNDS);
+    };
     guides.forEach((guide) => {
       const marker = L.marker([guide.lat, guide.lng], {
         icon: L.divIcon({
@@ -348,8 +451,26 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     });
 
     return {
-      fitGuides: (visibleGuides) => fitGuides(map, visibleGuides),
+      fitGuides: (visibleGuides) => {
+        focusGuides = visibleGuides;
+        applyFocusBounds(visibleGuides);
+        fitGuides(map, visibleGuides);
+      },
       invalidateSize: () => map.invalidateSize(),
+      isOutsideFocusBounds: () => {
+        const zoom = map.getZoom();
+        return Boolean(
+          focusBounds &&
+            (!map.getBounds().intersects(focusBounds) || zoom < focusMinZoom || zoom > focusMaxResetZoom),
+        );
+      },
+      onViewChanged: (handler) => {
+        map.on("moveend zoomend", handler);
+      },
+      resetView: () => {
+        applyFocusBounds(focusGuides);
+        fitGuides(map, focusGuides);
+      },
       setVisibleGuides: (visibleGuideSlugs) => {
         markers.forEach((marker, guideSlug) => {
           if (visibleGuideSlugs.has(guideSlug)) {
@@ -384,6 +505,10 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     });
     const infoWindow = new googleMaps.maps.InfoWindow();
     const markers = new Map<string, any>();
+    let focusGuides = guides;
+    let focusBounds: InstanceType<GoogleMapsApi["maps"]["LatLngBounds"]> | null = null;
+    let focusMinZoom = WORLD_MAP_MIN_ZOOM;
+    let focusMaxResetZoom = 12;
     const markerColor = getThemeValue("--accent", "#b94736");
     const markerFillColor = getThemeValue("--surface-strong", "#f7f7f4");
     const markerLabelColor = getThemeValue("--ink", "#20262c");
@@ -418,22 +543,58 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       markers.set(guide.slug, marker);
     });
 
+    const fitGoogleGuides = (visibleGuides: HomeMapGuide[]) => {
+      if (visibleGuides.length === 0) return;
+
+      if (visibleGuides.length === 1) {
+        map.setCenter({ lat: visibleGuides[0].lat, lng: visibleGuides[0].lng });
+        map.setZoom(5);
+        return;
+      }
+
+      const bounds = new googleMaps.maps.LatLngBounds();
+      visibleGuides.forEach((guide) => bounds.extend({ lat: guide.lat, lng: guide.lng }));
+      map.fitBounds(bounds, 28);
+    };
+    const applyFocusBounds = (visibleGuides: HomeMapGuide[]) => {
+      const restrictionBounds = guideFocusBounds(visibleGuides) || WORLD_MAP_BOUNDS;
+      focusBounds = visibleGuides.length > 0 ? new googleMaps.maps.LatLngBounds() : null;
+      visibleGuides.forEach((guide) => focusBounds?.extend({ lat: guide.lat, lng: guide.lng }));
+      focusMinZoom = homeFocusMinZoom(restrictionBounds);
+      focusMaxResetZoom = homeFocusMaxResetZoom(focusMinZoom);
+      map.setOptions({
+        minZoom: WORLD_MAP_MIN_ZOOM,
+        restriction: {
+          latLngBounds: WORLD_MAP_BOUNDS,
+          strictBounds: true,
+        },
+      });
+    };
+
     return {
       fitGuides: (visibleGuides) => {
-        if (visibleGuides.length === 0) return;
-
-        if (visibleGuides.length === 1) {
-          map.setCenter({ lat: visibleGuides[0].lat, lng: visibleGuides[0].lng });
-          map.setZoom(5);
-          return;
-        }
-
-        const bounds = new googleMaps.maps.LatLngBounds();
-        visibleGuides.forEach((guide) => bounds.extend({ lat: guide.lat, lng: guide.lng }));
-        map.fitBounds(bounds, 28);
+        focusGuides = visibleGuides;
+        applyFocusBounds(visibleGuides);
+        fitGoogleGuides(visibleGuides);
       },
       invalidateSize: () => {
         window.dispatchEvent(new Event("resize"));
+      },
+      isOutsideFocusBounds: () => {
+        const currentBounds = map.getBounds();
+        const zoom = map.getZoom() ?? focusMinZoom;
+        return Boolean(
+          focusBounds &&
+            currentBounds &&
+            (!currentBounds.intersects(focusBounds) || zoom < focusMinZoom || zoom > focusMaxResetZoom),
+        );
+      },
+      onViewChanged: (handler) => {
+        map.addListener("bounds_changed", handler);
+      },
+      resetView: () => {
+        applyFocusBounds(focusGuides);
+        fitGoogleGuides(focusGuides);
       },
       setVisibleGuides: (visibleGuideSlugs) => {
         markers.forEach((marker, guideSlug) => marker.setMap(visibleGuideSlugs.has(guideSlug) ? map : null));
@@ -496,6 +657,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
 
     const panel = element.closest<HTMLElement>("[data-home-map-panel]");
     const summary = panel?.querySelector<HTMLElement>("[data-home-map-summary]") || null;
+    const resetButton = panel?.querySelector<HTMLButtonElement>("[data-home-map-reset]") || null;
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
     const apiKey = element.dataset.googleMapsApiKey || "";
     let runtime: HomeMapRuntime | null = null;
@@ -508,6 +670,11 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       visibleGuideCount: guides.length,
       visibleGuideSlugs: guides.map((guide) => guide.slug),
     };
+    const syncResetButton = () => {
+      if (!resetButton) return;
+      resetButton.hidden = !runtime?.isOutsideFocusBounds();
+    };
+    const scheduleResetButtonSync = () => window.requestAnimationFrame(syncResetButton);
 
     const applyVisibility = (
       visibleGuideSlugs: string[],
@@ -523,6 +690,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       currentVisibleGuides = guides.filter((guide) => currentVisibleGuideSlugs.has(guide.slug));
       runtime?.setVisibleGuides(currentVisibleGuideSlugs);
       runtime?.fitGuides(currentVisibleGuides);
+      scheduleResetButtonSync();
       updateSummary(summary, currentVisibleGuides.length, activeScopeLabel, activeScopeMode, query);
     };
 
@@ -556,10 +724,16 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     } catch {
       runtime = initLeafletRuntime(element, guides);
     }
+    runtime.onViewChanged(syncResetButton);
+    resetButton?.addEventListener("click", () => {
+      runtime?.resetView();
+      scheduleResetButtonSync();
+    });
 
     element.addEventListener("favorite-places:home-map-panel-opened", () => {
       runtime?.invalidateSize?.();
       runtime?.fitGuides(currentVisibleGuides);
+      scheduleResetButtonSync();
     });
 
     applyVisibility(
@@ -572,6 +746,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     if (panel?.dataset.collapsed !== "true") {
       runtime?.invalidateSize?.();
       runtime?.fitGuides(currentVisibleGuides);
+      scheduleResetButtonSync();
     }
     element.homeGuideMapInitialized = true;
   };

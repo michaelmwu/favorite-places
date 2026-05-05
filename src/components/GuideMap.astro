@@ -26,6 +26,8 @@ const mapPlaces = places
     lng: place.lng,
     mapsUrl: place.maps_url,
     mainPhotoPath: place.main_photo_path,
+    rating: place.rating,
+    userRatingCount: place.user_rating_count,
     topPick: place.top_pick,
   }));
 ---
@@ -41,7 +43,7 @@ const mapPlaces = places
 
         <div class="map-actions" data-map-actions>
           <button class="map-control-button" type="button" data-map-frame-filter>Search this area</button>
-          <button class="map-control-button" type="button" data-map-full-area>Reset Map</button>
+          <button class="map-control-button" type="button" data-map-full-area hidden>Reset Map</button>
           <button
             class="map-icon-button"
             type="button"
@@ -114,6 +116,8 @@ const mapPlaces = places
     lng: number;
     mapsUrl: string;
     mainPhotoPath: string | null;
+    rating: number | null;
+    userRatingCount: number | null;
     topPick: boolean;
   }
 
@@ -128,6 +132,13 @@ const mapPlaces = places
   interface Coordinates {
     lat: number;
     lng: number;
+  }
+
+  interface LatLngBoundsLiteral {
+    east: number;
+    north: number;
+    south: number;
+    west: number;
   }
 
   interface GuideLocationBounds {
@@ -152,6 +163,7 @@ const mapPlaces = places
     hasVisiblePlace: (placeId: string) => boolean;
     highlightPlace: (place: MapPlace, active: boolean) => void;
     invalidateSize?: () => void;
+    isOutsideFocusView: () => boolean;
     onViewportChange?: (handler: () => void) => () => void;
     openPlace: (place: MapPlace) => void;
     setUserLocation: (coordinates: Coordinates | null) => void;
@@ -161,7 +173,7 @@ const mapPlaces = places
 
   interface GoogleMapsApi {
     maps: {
-      InfoWindow: new (options?: { content?: string }) => {
+      InfoWindow: new (options?: { content?: string; headerDisabled?: boolean }) => {
         close: () => void;
         open: (options: { anchor: unknown; map: unknown; shouldFocus?: boolean }) => void;
         setContent: (content: string) => void;
@@ -169,6 +181,7 @@ const mapPlaces = places
       LatLngBounds: new () => {
         contains: (coordinates: Coordinates) => boolean;
         extend: (coordinates: Coordinates) => void;
+        intersects: (bounds: unknown) => boolean;
       };
       Map: new (
         element: HTMLElement,
@@ -176,7 +189,12 @@ const mapPlaces = places
       ) => {
         addListener: (eventName: string, handler: () => void) => { remove: () => void };
         fitBounds: (bounds: unknown, padding?: number | { top: number; right: number; bottom: number; left: number }) => void;
-        getBounds: () => { contains: (coordinates: Coordinates) => boolean } | undefined;
+        getBounds: () =>
+          | {
+              contains: (coordinates: Coordinates) => boolean;
+              intersects: (bounds: unknown) => boolean;
+            }
+          | undefined;
         getCenter: () =>
           | {
               lat: () => number;
@@ -187,6 +205,7 @@ const mapPlaces = places
         getZoom: () => number | undefined;
         panTo: (coordinates: Coordinates) => void;
         setCenter: (coordinates: Coordinates) => void;
+        setOptions: (options: Record<string, unknown>) => void;
         setZoom: (zoom: number) => void;
       };
       Marker: new (options: Record<string, unknown>) => {
@@ -210,7 +229,8 @@ const mapPlaces = places
     }
   }
 
-  const MAP_COLLAPSED_KEY = "favoritePlacesMapCollapsed";
+  const MAP_COLLAPSED_DESKTOP_KEY = "favoritePlacesMapCollapsedDesktop";
+  const MAP_COLLAPSED_MOBILE_KEY = "favoritePlacesMapCollapsedMobile";
   const DESKTOP_MAP_MEDIA_QUERY = "(min-width: 980px)";
   const SIDE_BY_SIDE_MAP_MEDIA_QUERY = "(min-width: 1280px)";
   const LOCATION_PROXIMITY_BUFFER_KM = 25;
@@ -218,6 +238,12 @@ const mapPlaces = places
   const LOCATION_OUTLIER_MIN_DISTANCE_KM = 50;
   const LOCATION_RECENTER_MIN_ZOOM = 14;
   const LOCATION_RECENTER_TOLERANCE_KM = 0.75;
+  const GUIDE_WORLD_MAX_LATITUDE = 85.05112878;
+  const GUIDE_WORLD_MIN_LONGITUDE = -180;
+  const GUIDE_WORLD_MAX_LONGITUDE = 180;
+  const GUIDE_FOCUS_BOUNDS_MIN_SPAN = 0.08;
+  const GUIDE_FOCUS_BOUNDS_PADDING_RATIO = 1.5;
+  const GUIDE_RESET_ZOOM_BUFFER = 5;
 
   const escapeHtml = (value: string) =>
     value
@@ -247,16 +273,64 @@ const mapPlaces = places
     }
   };
 
+  const popupRatingFormatter = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  const popupCompactReviewFormatter = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+  const popupFullReviewFormatter = new Intl.NumberFormat("en-US");
+
+  const popupRatingMeta = (place: MapPlace) => {
+    const rating =
+      typeof place.rating === "number" && Number.isFinite(place.rating) ? popupRatingFormatter.format(place.rating) : null;
+    const reviewCount =
+      typeof place.userRatingCount === "number" && Number.isFinite(place.userRatingCount) && place.userRatingCount >= 0
+        ? place.userRatingCount
+        : null;
+
+    if (!rating && reviewCount === null) return null;
+
+    const compactReviews = reviewCount !== null ? popupCompactReviewFormatter.format(reviewCount) : null;
+    const reviewWord = reviewCount === 1 ? "review" : "reviews";
+    const label = [rating ? `${rating} ★` : null, compactReviews ? `${compactReviews} ${reviewWord}` : null]
+      .filter(Boolean)
+      .join(" · ");
+    const title = [
+      rating ? `${rating} Google Maps rating` : null,
+      reviewCount !== null ? `${popupFullReviewFormatter.format(reviewCount)} Google Maps ${reviewWord}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    return { label, title };
+  };
+
   const popupHtml = (place: MapPlace, placePhotosEnabled: boolean) => {
     const meta = [place.category, place.neighborhood].filter(Boolean).join(" · ");
     const mapsUrl = safeMapsUrl(place.mapsUrl);
     const photoUrl = placePhotosEnabled ? safePhotoUrl(place.mainPhotoPath) : null;
+    const ratingMeta = popupRatingMeta(place);
+    const mapsActionHtml = mapsUrl
+      ? `<a class="guide-map-popup-map-action" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noreferrer" aria-label="Open ${escapeHtml(place.name)} in Google Maps" title="Open in Google Maps"><img src="/icons/google-maps.svg" alt="" width="18" height="26" loading="lazy" decoding="async" /></a>`
+      : "";
+    const detailsActionHtml = `<button class="guide-map-popup-details-action" type="button" data-guide-map-popup-details data-place-id="${escapeHtml(place.id)}" aria-label="Show details for ${escapeHtml(place.name)}">Details</button>`;
+    const footerHtml = `<span class="guide-map-popup-footer">${ratingMeta ? `<span class="guide-map-popup-rating" title="${escapeHtml(ratingMeta.title)}">${escapeHtml(ratingMeta.label)}</span>` : ""}<span class="guide-map-popup-actions">${detailsActionHtml}${mapsActionHtml}</span></span>`;
+    const popupBody = `
+      ${photoUrl ? `<div class="guide-map-popup-photo"><img src="${escapeHtml(photoUrl)}" alt="Photo of ${escapeHtml(place.name)}" loading="lazy" /></div>` : ""}
+      <span class="guide-map-popup-copy">
+        <strong>${escapeHtml(place.name)}</strong>
+        <span class="guide-map-popup-meta">${escapeHtml(meta)}</span>
+        ${footerHtml}
+      </span>
+    `;
+    const escapedName = escapeHtml(place.name);
     return `
       <div class="guide-map-popup-content">
-        ${photoUrl ? `<div class="guide-map-popup-photo"><img src="${escapeHtml(photoUrl)}" alt="Photo of ${escapeHtml(place.name)}" loading="lazy" /></div>` : ""}
-        <strong>${escapeHtml(place.name)}</strong>
-        <span>${escapeHtml(meta)}</span>
-        ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noreferrer">Open in Google Maps</a>` : ""}
+        <button class="guide-map-popup-close" type="button" data-guide-map-popup-close aria-label="Close place details"></button>
+        <div class="guide-map-popup-place-card" aria-label="${escapedName}">${popupBody}</div>
       </div>
     `;
   };
@@ -318,6 +392,88 @@ const mapPlaces = places
       className: "guide-map-popup-shell",
       closeButton: false,
     });
+
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+  const placesBoundsLiteral = (places: MapPlace[]): LatLngBoundsLiteral | null => {
+    if (places.length === 0) return null;
+
+    return places.reduce<LatLngBoundsLiteral>(
+      (bounds, place) => ({
+        east: Math.max(bounds.east, place.lng),
+        north: Math.max(bounds.north, place.lat),
+        south: Math.min(bounds.south, place.lat),
+        west: Math.min(bounds.west, place.lng),
+      }),
+      {
+        east: places[0].lng,
+        north: places[0].lat,
+        south: places[0].lat,
+        west: places[0].lng,
+      },
+    );
+  };
+
+  const expandBoundsLiteral = (
+    bounds: LatLngBoundsLiteral,
+    minSpan: number,
+    paddingRatio: number,
+  ): LatLngBoundsLiteral => {
+    const centerLat = (bounds.north + bounds.south) / 2;
+    const centerLng = (bounds.east + bounds.west) / 2;
+    const latSpan = Math.max(bounds.north - bounds.south, minSpan);
+    const lngSpan = Math.max(bounds.east - bounds.west, minSpan);
+    const paddedLatHalfSpan = (latSpan * (1 + paddingRatio * 2)) / 2;
+    const paddedLngHalfSpan = (lngSpan * (1 + paddingRatio * 2)) / 2;
+
+    return {
+      east: clamp(centerLng + paddedLngHalfSpan, GUIDE_WORLD_MIN_LONGITUDE, GUIDE_WORLD_MAX_LONGITUDE),
+      north: clamp(centerLat + paddedLatHalfSpan, -GUIDE_WORLD_MAX_LATITUDE, GUIDE_WORLD_MAX_LATITUDE),
+      south: clamp(centerLat - paddedLatHalfSpan, -GUIDE_WORLD_MAX_LATITUDE, GUIDE_WORLD_MAX_LATITUDE),
+      west: clamp(centerLng - paddedLngHalfSpan, GUIDE_WORLD_MIN_LONGITUDE, GUIDE_WORLD_MAX_LONGITUDE),
+    };
+  };
+
+  const guideFocusBounds = (places: MapPlace[]) => {
+    const bounds = placesBoundsLiteral(places);
+    if (!bounds) return null;
+
+    return expandBoundsLiteral(bounds, GUIDE_FOCUS_BOUNDS_MIN_SPAN, GUIDE_FOCUS_BOUNDS_PADDING_RATIO);
+  };
+
+  const leafletBoundsFromLiteral = (bounds: LatLngBoundsLiteral) =>
+    L.latLngBounds([bounds.south, bounds.west], [bounds.north, bounds.east]);
+
+  const leafletPlacesBounds = (places: MapPlace[]) => {
+    const bounds = placesBoundsLiteral(places);
+    return bounds ? leafletBoundsFromLiteral(bounds) : null;
+  };
+
+  const guideFocusMinZoom = (bounds: LatLngBoundsLiteral) => {
+    const span = Math.max(bounds.north - bounds.south, bounds.east - bounds.west);
+    if (span >= 40) return 2;
+    if (span >= 20) return 4;
+    if (span >= 8) return 6;
+    if (span >= 3) return 8;
+    if (span >= 1) return 10;
+    if (span >= 0.35) return 11;
+    return 12;
+  };
+
+  const guideFocusMaxResetZoom = (minZoom: number) => Math.min(19, Math.max(17, minZoom + GUIDE_RESET_ZOOM_BUFFER));
+
+  const focusViewToleranceKm = (bounds: LatLngBoundsLiteral | null) => {
+    if (!bounds) return 5;
+
+    const center = {
+      lat: (bounds.north + bounds.south) / 2,
+      lng: (bounds.east + bounds.west) / 2,
+    };
+    const latDistanceKm = distanceInKm(bounds.south, center.lng, bounds.north, center.lng);
+    const lngDistanceKm = distanceInKm(center.lat, bounds.west, center.lat, bounds.east);
+
+    return Math.max(3, Math.min(50, Math.max(latDistanceKm, lngDistanceKm) * 0.18));
+  };
 
   const fitPlaces = (map: L.Map, places: MapPlace[]) => {
     if (places.length === 0) return;
@@ -489,7 +645,10 @@ const mapPlaces = places
     }
 
     if (persist) {
-      window.localStorage.setItem(MAP_COLLAPSED_KEY, collapsed ? "true" : "false");
+      window.localStorage.setItem(
+        window.matchMedia(DESKTOP_MAP_MEDIA_QUERY).matches ? MAP_COLLAPSED_DESKTOP_KEY : MAP_COLLAPSED_MOBILE_KEY,
+        collapsed ? "true" : "false",
+      );
     }
 
     if (!collapsed && mapElement?.guideMapFit) {
@@ -515,19 +674,26 @@ const mapPlaces = places
   };
 
   const initPanels = () => {
-    const storedCollapsed = window.localStorage.getItem(MAP_COLLAPSED_KEY);
     const desktopMediaQuery = window.matchMedia(DESKTOP_MAP_MEDIA_QUERY);
     const sideBySideMediaQuery = window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY);
-    const defaultCollapsed = storedCollapsed === null ? !desktopMediaQuery.matches : storedCollapsed === "true";
+    const defaultCollapsed = () => {
+      const storageKey = desktopMediaQuery.matches ? MAP_COLLAPSED_DESKTOP_KEY : MAP_COLLAPSED_MOBILE_KEY;
+      const storedCollapsed = window.localStorage.getItem(storageKey);
+
+      return storedCollapsed === null ? !desktopMediaQuery.matches : storedCollapsed === "true";
+    };
 
     document.querySelectorAll<HTMLElement>("[data-map-panel]").forEach((panel) => {
       if (panel.dataset.panelInitialized === "true") return;
       panel.dataset.panelInitialized = "true";
 
       syncPanelOrder(panel);
-      setPanelCollapsed(panel, defaultCollapsed, false);
+      setPanelCollapsed(panel, defaultCollapsed(), false);
       panel.querySelector("[data-map-toggle]")?.addEventListener("click", () => {
         setPanelCollapsed(panel, panel.dataset.collapsed !== "true");
+      });
+      desktopMediaQuery.addEventListener("change", () => {
+        setPanelCollapsed(panel, defaultCollapsed(), false);
       });
       sideBySideMediaQuery.addEventListener("change", () => syncPanelOrder(panel));
     });
@@ -630,6 +796,12 @@ const mapPlaces = places
       zoomControl: true,
       zoomSnap: 0.1,
     });
+    mapElement.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest("[data-guide-map-popup-close]")) {
+        map.closePopup();
+      }
+    });
     enableTrackpadPinchZoom(map, mapElement);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -640,6 +812,30 @@ const mapPlaces = places
     const markers = new Map<string, L.Marker>();
     let userLocationHalo: L.CircleMarker | null = null;
     let userLocationDot: L.CircleMarker | null = null;
+    let focusBounds = leafletPlacesBounds(places);
+    let focusMinZoom = 0;
+    let focusMaxResetZoom = 19;
+    let focusCenter: Coordinates | null = null;
+    let focusZoom: number | null = null;
+    let focusDistanceToleranceKm = focusViewToleranceKm(placesBoundsLiteral(places));
+    const applyFocusBounds = (visiblePlaces: MapPlace[]) => {
+      const placeBounds = placesBoundsLiteral(visiblePlaces);
+      const nextFocusBounds = leafletPlacesBounds(visiblePlaces);
+      const restrictionBounds = guideFocusBounds(visiblePlaces);
+      focusBounds = nextFocusBounds;
+      focusDistanceToleranceKm = focusViewToleranceKm(placeBounds);
+      focusMinZoom = restrictionBounds ? guideFocusMinZoom(restrictionBounds) : 0;
+      focusMaxResetZoom = guideFocusMaxResetZoom(focusMinZoom);
+      map.setMinZoom(focusMinZoom);
+      if (restrictionBounds) {
+        map.setMaxBounds(leafletBoundsFromLiteral(restrictionBounds));
+      }
+    };
+    const captureFocusView = () => {
+      const center = map.getCenter();
+      focusCenter = { lat: center.lat, lng: center.lng };
+      focusZoom = map.getZoom();
+    };
     places.forEach((place) => {
       const marker = placeMarker(place, placePhotosEnabled).addTo(map);
       marker.on("click", () => onSelectPlace(place.id));
@@ -649,7 +845,11 @@ const mapPlaces = places
     return {
       rawMap: map,
       closePopup: () => map.closePopup(),
-      fitPlaces: (visiblePlaces) => fitPlaces(map, visiblePlaces),
+      fitPlaces: (visiblePlaces) => {
+        applyFocusBounds(visiblePlaces);
+        fitPlaces(map, visiblePlaces);
+        captureFocusView();
+      },
       getBoundsContains: (place) => map.getBounds().contains(L.latLng(place.lat, place.lng)),
       getCenter: () => {
         const center = map.getCenter();
@@ -667,6 +867,22 @@ const mapPlaces = places
         marker.setZIndexOffset(active ? 1000 : place.topPick ? 10 : 0);
       },
       invalidateSize: () => map.invalidateSize(),
+      isOutsideFocusView: () => {
+        const zoom = map.getZoom();
+        const center = map.getCenter();
+        const offFocusCenter = focusCenter
+          ? distanceInKm(center.lat, center.lng, focusCenter.lat, focusCenter.lng) > focusDistanceToleranceKm
+          : false;
+        const offFocusZoom = focusZoom !== null ? Math.abs(zoom - focusZoom) > 0.75 : false;
+        return Boolean(
+          focusBounds &&
+            (!map.getBounds().intersects(focusBounds) ||
+              zoom < focusMinZoom ||
+              zoom > focusMaxResetZoom ||
+              offFocusCenter ||
+              offFocusZoom),
+        );
+      },
       onViewportChange: (handler) => {
         map.on("moveend zoomend", handler);
         return () => {
@@ -756,10 +972,22 @@ const mapPlaces = places
       zoom: 13,
       zoomControl: true,
     });
-    const infoWindow = new google.maps.InfoWindow();
+    const infoWindow = new google.maps.InfoWindow({ headerDisabled: true });
+    mapElement.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest("[data-guide-map-popup-close]")) {
+        infoWindow.close();
+      }
+    });
     const markers = new Map<string, any>();
     let userLocationHalo: any | null = null;
     let userLocationDot: any | null = null;
+    let focusBounds: InstanceType<GoogleMapsApi["maps"]["LatLngBounds"]> | null = null;
+    let focusMinZoom = 0;
+    let focusMaxResetZoom = 19;
+    let focusCenter: Coordinates | null = null;
+    let focusZoom: number | null = null;
+    let focusDistanceToleranceKm = focusViewToleranceKm(placesBoundsLiteral(places));
 
     const markerIcon = (place: MapPlace, active = false) => {
       const size = getMapMarkerSize(place.markerIcon, place.topPick, active);
@@ -817,21 +1045,57 @@ const mapPlaces = places
       marker.addListener("click", () => onSelectPlace(place.id));
       markers.set(place.id, marker);
     });
+    const applyFocusBounds = (visiblePlaces: MapPlace[]) => {
+      const placeBounds = placesBoundsLiteral(visiblePlaces);
+      const restrictionBounds = guideFocusBounds(visiblePlaces);
+      focusBounds = visiblePlaces.length > 0 ? new google.maps.LatLngBounds() : null;
+      visiblePlaces.forEach((place) => focusBounds?.extend({ lat: place.lat, lng: place.lng }));
+      focusDistanceToleranceKm = focusViewToleranceKm(placeBounds);
+      focusMinZoom = restrictionBounds ? guideFocusMinZoom(restrictionBounds) : 0;
+      focusMaxResetZoom = guideFocusMaxResetZoom(focusMinZoom);
+      if (restrictionBounds) {
+        map.setOptions({
+          minZoom: focusMinZoom,
+          restriction: {
+            latLngBounds: restrictionBounds,
+            strictBounds: true,
+          },
+        });
+      }
+    };
+    const captureFocusView = () => {
+      const center = map.getCenter();
+      if (!center) return;
+
+      focusCenter = {
+        lat: typeof center.lat === "function" ? center.lat() : center.lat,
+        lng: typeof center.lng === "function" ? center.lng() : center.lng,
+      };
+      focusZoom = map.getZoom() ?? null;
+    };
+    const scheduleFocusViewCapture = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(captureFocusView);
+      });
+    };
 
     return {
       rawMap: map,
       closePopup: () => infoWindow.close(),
       fitPlaces: (visiblePlaces) => {
         if (visiblePlaces.length === 0) return;
+        applyFocusBounds(visiblePlaces);
         if (visiblePlaces.length === 1) {
           map.setCenter({ lat: visiblePlaces[0].lat, lng: visiblePlaces[0].lng });
           map.setZoom(14);
+          scheduleFocusViewCapture();
           return;
         }
 
         const bounds = new google.maps.LatLngBounds();
         visiblePlaces.forEach((place) => bounds.extend({ lat: place.lat, lng: place.lng }));
         map.fitBounds(bounds, 28);
+        scheduleFocusViewCapture();
       },
       getBoundsContains: (place) => map.getBounds()?.contains({ lat: place.lat, lng: place.lng }) ?? true,
       getCenter: () => {
@@ -852,6 +1116,32 @@ const mapPlaces = places
         if (!marker) return;
         marker.setIcon(markerIcon(place, active));
         marker.setZIndex(active ? 1000 : place.topPick ? 10 : 1);
+      },
+      isOutsideFocusView: () => {
+        const currentBounds = map.getBounds();
+        const zoom = map.getZoom() ?? focusMinZoom;
+        const center = map.getCenter();
+        const currentCenter = center
+          ? {
+              lat: typeof center.lat === "function" ? center.lat() : center.lat,
+              lng: typeof center.lng === "function" ? center.lng() : center.lng,
+            }
+          : null;
+        const offFocusCenter =
+          focusCenter && currentCenter
+            ? distanceInKm(currentCenter.lat, currentCenter.lng, focusCenter.lat, focusCenter.lng) >
+              focusDistanceToleranceKm
+            : false;
+        const offFocusZoom = focusZoom !== null ? Math.abs(zoom - focusZoom) > 0.75 : false;
+        return Boolean(
+          focusBounds &&
+            currentBounds &&
+            (!currentBounds.intersects(focusBounds) ||
+              zoom < focusMinZoom ||
+              zoom > focusMaxResetZoom ||
+              offFocusCenter ||
+              offFocusZoom),
+        );
       },
       onViewportChange: (handler) => {
         const idleListener = map.addListener("idle", handler);
@@ -949,6 +1239,7 @@ const mapPlaces = places
     let currentVisiblePlaceIds = visiblePlaceIdsFromCards();
     let currentPlaces = places.filter((place) => currentVisiblePlaceIds.has(place.id));
     const mapFrameActive = () => mapResetButtons.some((button) => !button.hidden);
+    let currentMapFrameActive = mapFrameActive();
     const mapElement = element as GuideMapElement;
     mapElement.guideLocationBounds = locationBoundsForPlaces(places) ?? undefined;
     const placeById = new Map(places.map((place) => [place.id, place]));
@@ -962,13 +1253,24 @@ const mapPlaces = places
     let locationWatchId: number | null = null;
     const requestedProvider = element.dataset.mapProvider === "google" ? "google" : "leaflet";
     const apiKey = element.dataset.googleMapsApiKey || "";
-    const handleMarkerSelect = (placeId: string) => selectPlace(placeId);
+    const shouldAutoFocusCardFromMarker = () => window.matchMedia(SIDE_BY_SIDE_MAP_MEDIA_QUERY).matches;
+    const handleMarkerSelect = (placeId: string) =>
+      selectPlace(placeId, { focusCard: shouldAutoFocusCardFromMarker() });
     let runtime: MapRuntime | null = null;
 
+    const syncFullAreaButton = () => {
+      if (!mapFullAreaButton) return;
+
+      mapFullAreaButton.hidden = !currentMapFrameActive && !runtime?.isOutsideFocusView();
+    };
+    const scheduleFullAreaButtonSync = () => window.requestAnimationFrame(syncFullAreaButton);
+
     const updateMapFrameControls = (active: boolean) => {
+      currentMapFrameActive = active;
       mapResetButtons.forEach((button) => {
         button.hidden = !active;
       });
+      syncFullAreaButton();
     };
 
     const dispatchUserLocation = (
@@ -1012,6 +1314,7 @@ const mapPlaces = places
       if (!detail.mapFrameActive) {
         runtime.fitPlaces(currentPlaces);
       }
+      scheduleFullAreaButtonSync();
 
       if (shouldRecenterAfterUpdate) {
         scheduleLocationCenter();
@@ -1053,6 +1356,18 @@ const mapPlaces = places
       cards.forEach((card) => {
         card.dataset.mapActive = card.dataset.placeId === placeId ? "true" : "false";
       });
+    };
+    const cardByPlaceId = new Map(
+      cards
+        .map((card) => [card.dataset.placeId, card] as const)
+        .filter((entry): entry is readonly [string, HTMLElement] => Boolean(entry[0])),
+    );
+    const focusPlaceCard = (placeId: string) => {
+      const card = cardByPlaceId.get(placeId);
+      if (!card || card.hidden) return;
+
+      card.focus({ preventScroll: true });
+      card.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
     };
 
     const updateActiveMarker = (openPopup = false) => {
@@ -1110,11 +1425,26 @@ const mapPlaces = places
       }
     };
 
-    const selectPlace = (placeId: string, expandCollapsed = false) => {
+    const selectPlace = (
+      placeId: string,
+      { expandCollapsed = false, focusCard = false }: { expandCollapsed?: boolean; focusCard?: boolean } = {},
+    ) => {
       hoveredPlaceId = "";
       selectedPlaceId = placeId;
       showPlace(placeId, { ensureVisible: true, expandCollapsed });
+      if (focusCard) focusPlaceCard(placeId);
     };
+
+    mapElement.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      const detailsButton = target?.closest<HTMLElement>("[data-guide-map-popup-details]");
+      const placeId = detailsButton?.dataset.placeId;
+      if (!placeId) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      selectPlace(placeId, { focusCard: true });
+    });
 
     const hoverPlace = (placeId: string) => {
       hoveredPlaceId = placeId;
@@ -1365,6 +1695,7 @@ const mapPlaces = places
         currentPlaces = places;
         runtime.setVisiblePlaces(new Set(places.map((place) => place.id)));
         runtime.fitPlaces(places);
+        scheduleFullAreaButtonSync();
       }
     };
 
@@ -1380,14 +1711,14 @@ const mapPlaces = places
       card.addEventListener("click", (event) => {
         const target = event.target instanceof Element ? event.target : null;
         if (target?.closest("a, button, input, select, textarea, [role='button']")) return;
-        selectPlace(placeId, true);
+        selectPlace(placeId, { expandCollapsed: true });
       });
       card.addEventListener("keydown", (event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         const target = event.target instanceof Element ? event.target : null;
         if (target?.closest("a, button, input, select, textarea, [role='button']")) return;
         event.preventDefault();
-        selectPlace(placeId, true);
+        selectPlace(placeId, { expandCollapsed: true });
       });
     });
 
@@ -1399,12 +1730,15 @@ const mapPlaces = places
       locationButton.addEventListener("click", centerOnCurrentLocation);
     }
     runtime.onViewportChange?.(syncLocationButtonToViewport);
+    runtime.onViewportChange?.(syncFullAreaButton);
     mapElement.guideMapFit = () => {
       runtime?.invalidateSize?.();
       runtime?.fitPlaces(currentPlaces);
+      scheduleFullAreaButtonSync();
     };
 
     runtime.fitPlaces(currentPlaces);
+    scheduleFullAreaButtonSync();
     window.setTimeout(() => mapElement.guideMapFit?.(), 0);
   };
 
