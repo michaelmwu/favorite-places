@@ -142,6 +142,13 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         addListener: (eventName: string, handler: () => void) => void;
         fitBounds: (bounds: unknown, padding?: number | { top: number; right: number; bottom: number; left: number }) => void;
         getBounds: () => { intersects: (bounds: unknown) => boolean } | undefined;
+        getCenter: () =>
+          | {
+              lat: () => number;
+              lng: () => number;
+            }
+          | Coordinates
+          | undefined;
         getZoom: () => number | undefined;
         setCenter: (coordinates: Coordinates) => void;
         setOptions: (options: Record<string, unknown>) => void;
@@ -297,6 +304,35 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
 
   const homeFocusMaxResetZoom = (minZoom: number) => Math.min(12, Math.max(7, minZoom + HOME_RESET_ZOOM_BUFFER));
 
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+
+  const distanceInKm = (fromLat: number, fromLng: number, toLat: number, toLng: number) => {
+    const earthRadiusKm = 6371;
+    const latDelta = toRadians(toLat - fromLat);
+    const lngDelta = toRadians(toLng - fromLng);
+    const fromLatRadians = toRadians(fromLat);
+    const toLatRadians = toRadians(toLat);
+    const a =
+      Math.sin(latDelta / 2) ** 2 +
+      Math.cos(fromLatRadians) * Math.cos(toLatRadians) * Math.sin(lngDelta / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return earthRadiusKm * c;
+  };
+
+  const homeFocusViewToleranceKm = (bounds: LatLngBoundsLiteral | null) => {
+    if (!bounds) return 250;
+
+    const center = {
+      lat: (bounds.north + bounds.south) / 2,
+      lng: (bounds.east + bounds.west) / 2,
+    };
+    const latDistanceKm = distanceInKm(bounds.south, center.lng, bounds.north, center.lng);
+    const lngDistanceKm = distanceInKm(center.lat, bounds.west, center.lat, bounds.east);
+
+    return Math.max(150, Math.min(1500, Math.max(latDistanceKm, lngDistanceKm) * 0.18));
+  };
+
   const fitGuides = (map: L.Map, guides: HomeMapGuide[]) => {
     if (guides.length === 0) return;
 
@@ -423,14 +459,24 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     let focusBounds = leafletGuideBounds(guides);
     let focusMinZoom = WORLD_MAP_MIN_ZOOM;
     let focusMaxResetZoom = 12;
+    let focusCenter: Coordinates | null = null;
+    let focusZoom: number | null = null;
+    let focusDistanceToleranceKm = homeFocusViewToleranceKm(guideBoundsLiteral(guides));
     const applyFocusBounds = (visibleGuides: HomeMapGuide[]) => {
+      const guideBounds = guideBoundsLiteral(visibleGuides);
       const nextFocusBounds = leafletGuideBounds(visibleGuides);
       const restrictionBoundsLiteral = guideFocusBounds(visibleGuides);
       focusBounds = nextFocusBounds;
+      focusDistanceToleranceKm = homeFocusViewToleranceKm(guideBounds);
       focusMinZoom = restrictionBoundsLiteral ? homeFocusMinZoom(restrictionBoundsLiteral) : WORLD_MAP_MIN_ZOOM;
       focusMaxResetZoom = homeFocusMaxResetZoom(focusMinZoom);
       map.setMinZoom(WORLD_MAP_MIN_ZOOM);
       map.setMaxBounds(LEAFLET_WORLD_BOUNDS);
+    };
+    const captureFocusView = () => {
+      const center = map.getCenter();
+      focusCenter = { lat: center.lat, lng: center.lng };
+      focusZoom = map.getZoom();
     };
     guides.forEach((guide) => {
       const marker = L.marker([guide.lat, guide.lng], {
@@ -455,13 +501,23 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         focusGuides = visibleGuides;
         applyFocusBounds(visibleGuides);
         fitGuides(map, visibleGuides);
+        captureFocusView();
       },
       invalidateSize: () => map.invalidateSize(),
       isOutsideFocusBounds: () => {
         const zoom = map.getZoom();
+        const center = map.getCenter();
+        const offFocusCenter = focusCenter
+          ? distanceInKm(center.lat, center.lng, focusCenter.lat, focusCenter.lng) > focusDistanceToleranceKm
+          : false;
+        const offFocusZoom = focusZoom !== null ? Math.abs(zoom - focusZoom) > 0.75 : false;
         return Boolean(
           focusBounds &&
-            (!map.getBounds().intersects(focusBounds) || zoom < focusMinZoom || zoom > focusMaxResetZoom),
+            (!map.getBounds().intersects(focusBounds) ||
+              zoom < focusMinZoom ||
+              zoom > focusMaxResetZoom ||
+              offFocusCenter ||
+              offFocusZoom),
         );
       },
       onViewChanged: (handler) => {
@@ -470,6 +526,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       resetView: () => {
         applyFocusBounds(focusGuides);
         fitGuides(map, focusGuides);
+        captureFocusView();
       },
       setVisibleGuides: (visibleGuideSlugs) => {
         markers.forEach((marker, guideSlug) => {
@@ -509,6 +566,9 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     let focusBounds: InstanceType<GoogleMapsApi["maps"]["LatLngBounds"]> | null = null;
     let focusMinZoom = WORLD_MAP_MIN_ZOOM;
     let focusMaxResetZoom = 12;
+    let focusCenter: Coordinates | null = null;
+    let focusZoom: number | null = null;
+    let focusDistanceToleranceKm = homeFocusViewToleranceKm(guideBoundsLiteral(guides));
     const markerColor = getThemeValue("--accent", "#b94736");
     const markerFillColor = getThemeValue("--surface-strong", "#f7f7f4");
     const markerLabelColor = getThemeValue("--ink", "#20262c");
@@ -557,9 +617,11 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       map.fitBounds(bounds, 28);
     };
     const applyFocusBounds = (visibleGuides: HomeMapGuide[]) => {
+      const guideBounds = guideBoundsLiteral(visibleGuides);
       const restrictionBounds = guideFocusBounds(visibleGuides) || WORLD_MAP_BOUNDS;
       focusBounds = visibleGuides.length > 0 ? new googleMaps.maps.LatLngBounds() : null;
       visibleGuides.forEach((guide) => focusBounds?.extend({ lat: guide.lat, lng: guide.lng }));
+      focusDistanceToleranceKm = homeFocusViewToleranceKm(guideBounds);
       focusMinZoom = homeFocusMinZoom(restrictionBounds);
       focusMaxResetZoom = homeFocusMaxResetZoom(focusMinZoom);
       map.setOptions({
@@ -570,12 +632,28 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         },
       });
     };
+    const captureFocusView = () => {
+      const center = map.getCenter();
+      if (!center) return;
+
+      focusCenter = {
+        lat: typeof center.lat === "function" ? center.lat() : center.lat,
+        lng: typeof center.lng === "function" ? center.lng() : center.lng,
+      };
+      focusZoom = map.getZoom() ?? null;
+    };
+    const scheduleFocusViewCapture = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(captureFocusView);
+      });
+    };
 
     return {
       fitGuides: (visibleGuides) => {
         focusGuides = visibleGuides;
         applyFocusBounds(visibleGuides);
         fitGoogleGuides(visibleGuides);
+        scheduleFocusViewCapture();
       },
       invalidateSize: () => {
         window.dispatchEvent(new Event("resize"));
@@ -583,18 +661,36 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       isOutsideFocusBounds: () => {
         const currentBounds = map.getBounds();
         const zoom = map.getZoom() ?? focusMinZoom;
+        const center = map.getCenter();
+        const currentCenter = center
+          ? {
+              lat: typeof center.lat === "function" ? center.lat() : center.lat,
+              lng: typeof center.lng === "function" ? center.lng() : center.lng,
+            }
+          : null;
+        const offFocusCenter =
+          focusCenter && currentCenter
+            ? distanceInKm(currentCenter.lat, currentCenter.lng, focusCenter.lat, focusCenter.lng) >
+              focusDistanceToleranceKm
+            : false;
+        const offFocusZoom = focusZoom !== null ? Math.abs(zoom - focusZoom) > 0.75 : false;
         return Boolean(
           focusBounds &&
             currentBounds &&
-            (!currentBounds.intersects(focusBounds) || zoom < focusMinZoom || zoom > focusMaxResetZoom),
+            (!currentBounds.intersects(focusBounds) ||
+              zoom < focusMinZoom ||
+              zoom > focusMaxResetZoom ||
+              offFocusCenter ||
+              offFocusZoom),
         );
       },
       onViewChanged: (handler) => {
-        map.addListener("bounds_changed", handler);
+        map.addListener("idle", handler);
       },
       resetView: () => {
         applyFocusBounds(focusGuides);
         fitGoogleGuides(focusGuides);
+        scheduleFocusViewCapture();
       },
       setVisibleGuides: (visibleGuideSlugs) => {
         markers.forEach((marker, guideSlug) => marker.setMap(visibleGuideSlugs.has(guideSlug) ? map : null));

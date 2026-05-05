@@ -424,6 +424,35 @@ describe("guide map interactions", () => {
     expect(homeBrowser).toContain("No guides are close to you yet.");
   });
 
+  it("shows the home map reset control after the fitted view drifts", () => {
+    const homeMap = readSource("src/components/HomeGuideMap.astro");
+
+    expect(homeMap).toContain("data-home-map-reset");
+    expect(homeMap).toContain(
+      "const homeFocusViewToleranceKm = (bounds: LatLngBoundsLiteral | null) => {",
+    );
+    expect(homeMap).toContain(
+      "const distanceInKm = (fromLat: number, fromLng: number, toLat: number, toLng: number) => {",
+    );
+    expect(homeMap).toContain("let focusCenter: Coordinates | null = null;");
+    expect(homeMap).toContain("let focusZoom: number | null = null;");
+    expect(homeMap).toContain("let focusDistanceToleranceKm = homeFocusViewToleranceKm");
+    expect(homeMap).toContain("const captureFocusView = () => {");
+    expect(homeMap).toContain(
+      "distanceInKm(center.lat, center.lng, focusCenter.lat, focusCenter.lng)",
+    );
+    expect(homeMap).toContain(
+      "distanceInKm(currentCenter.lat, currentCenter.lng, focusCenter.lat, focusCenter.lng)",
+    );
+    expect(homeMap).toContain("Math.abs(zoom - focusZoom) > 0.75");
+    expect(homeMap).toContain("resetButton.hidden = !runtime?.isOutsideFocusBounds();");
+    expect(homeMap).toContain("runtime.onViewChanged(syncResetButton);");
+    expect(homeMap).toContain('resetButton?.addEventListener("click", () => {');
+    expect(homeMap).toContain("runtime?.resetView();");
+    expect(homeMap).toContain('map.addListener("idle", handler);');
+    expect(homeMap).not.toContain('map.addListener("bounds_changed", handler);');
+  });
+
   it("constrains map panning before the world scrolls into grey tile space", () => {
     const homeMap = readSource("src/components/HomeGuideMap.astro");
     const guideMap = readSource("src/components/GuideMap.astro");
