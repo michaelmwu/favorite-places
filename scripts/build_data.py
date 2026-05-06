@@ -2160,6 +2160,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         )
         primary_category_localized = None if manual_primary_category else enrichment.primary_type_display_name_localized
         use_semantic_enrichment = google_maps_place_semantic_llm_enabled()
+        use_semantic_descriptions = google_maps_place_semantic_descriptions_enabled()
         semantic_tags = [
             tag
             for tag in [
@@ -2209,7 +2210,9 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_pick_override = as_bool(override.get("top_pick"))
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         note = as_string(override.get("note")) or place.note
-        why_recommended = as_string(override.get("why_recommended"))
+        why_recommended = as_string(override.get("why_recommended")) or (
+            enrichment.semantic_description if use_semantic_descriptions else None
+        )
         if "vibe_tags" in override:
             override_vibe_tags = coerce_string_list(override.get("vibe_tags"))
             vibe_tags = sorted({slugify(tag) for tag in override_vibe_tags if slugify(tag)})
@@ -4339,6 +4342,22 @@ def google_maps_place_semantic_llm_enabled() -> bool:
     if configured is not None:
         return configured
     site_value = as_bool(site_google_maps_place_config_value("semantic_llm"))
+    return bool(site_value)
+
+
+def google_maps_place_semantic_descriptions_enabled() -> bool:
+    configured = PlacesSettings().google_maps_place_semantic_descriptions
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("semantic_descriptions"))
+    return bool(site_value)
+
+
+def google_maps_place_semantic_description_force_refresh() -> bool:
+    configured = PlacesSettings().google_maps_place_semantic_description_force_refresh
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("semantic_description_force_refresh"))
     return bool(site_value)
 
 
@@ -6522,6 +6541,7 @@ def fetch_place_page_enrichment(
                 raw_place=place,
                 city_name=city_name,
                 country_name=country_name,
+                existing_entry=existing_entry,
             )
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
@@ -7221,29 +7241,64 @@ def apply_semantic_enrichment(
     raw_place: RawPlace,
     city_name: str | None,
     country_name: str | None,
+    existing_entry: EnrichmentCacheEntry | None = None,
 ) -> None:
-    if not google_maps_place_semantic_llm_enabled():
+    include_semantics = google_maps_place_semantic_llm_enabled()
+    include_description = google_maps_place_semantic_descriptions_enabled()
+    force_description = google_maps_place_semantic_description_force_refresh()
+    if not include_semantics and not include_description:
+        return
+    description_signature = semantic_description_signature(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    )
+    description_reused = False
+    previous_place = existing_entry.place if existing_entry else None
+    if (
+        include_description
+        and not force_description
+        and previous_place is not None
+        and previous_place.semantic_description
+        and previous_place.semantic_description_signature == description_signature
+    ):
+        enrichment_place.semantic_description = previous_place.semantic_description
+        enrichment_place.semantic_description_signature = previous_place.semantic_description_signature
+        enrichment_place.semantic_source = previous_place.semantic_source or "llm"
+        description_reused = True
+    if description_reused and not include_semantics:
         return
     repair = repair_semantic_enrichment_with_llm(
         enrichment_place,
         raw_place=raw_place,
         city_name=city_name,
         country_name=country_name,
+        include_semantics=include_semantics,
+        include_description=include_description and not description_reused,
+        bypass_cache=include_description and force_description,
     )
     if repair is None:
         return
-    neighborhood = sanitize_semantic_label(repair.get("neighborhood"), max_length=64)
-    if neighborhood is not None:
-        enrichment_place.semantic_neighborhood = neighborhood
-    enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
-    enrichment_place.semantic_vibe_tags = normalize_semantic_tag_list(repair.get("vibe_tags"), limit=8)
-    enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
+    if include_semantics:
+        neighborhood = sanitize_semantic_label(repair.get("neighborhood"), max_length=64)
+        if neighborhood is not None:
+            enrichment_place.semantic_neighborhood = neighborhood
+        enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
+        enrichment_place.semantic_vibe_tags = normalize_semantic_tag_list(repair.get("vibe_tags"), limit=8)
+        enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
+    if include_description and not description_reused:
+        description = sanitize_semantic_description(repair.get("description"))
+        if description is not None:
+            enrichment_place.semantic_description = description
+            enrichment_place.semantic_description_signature = description_signature
     if any(
         (
             enrichment_place.semantic_neighborhood,
             enrichment_place.semantic_tags,
             enrichment_place.semantic_vibe_tags,
             enrichment_place.semantic_types,
+            enrichment_place.semantic_description,
         )
     ):
         enrichment_place.semantic_source = "llm"
@@ -7255,7 +7310,12 @@ def repair_semantic_enrichment_with_llm(
     raw_place: RawPlace,
     city_name: str | None,
     country_name: str | None,
+    include_semantics: bool,
+    include_description: bool,
+    bypass_cache: bool = False,
 ) -> dict[str, Any] | None:
+    if not include_semantics and not include_description:
+        return None
     config = semantic_llm_config()
     if config is None:
         return None
@@ -7264,14 +7324,20 @@ def repair_semantic_enrichment_with_llm(
         raw_place=raw_place,
         city_name=city_name,
         country_name=country_name,
+        include_description=include_description,
     )
+    evidence["requested_outputs"] = {
+        "semantic_tags": include_semantics,
+        "description": include_description,
+    }
     evidence_hash = hashlib.sha256(
         json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode("utf-8")
     ).hexdigest()
     cache_path = google_maps_place_semantic_cache_dir() / f"{config['namespace']}-{evidence_hash}.json"
-    cached = read_semantic_llm_cache(cache_path)
-    if cached is not None:
-        return cached
+    if not bypass_cache:
+        cached = read_semantic_llm_cache(cache_path)
+        if cached is not None:
+            return cached
 
     payload: dict[str, Any] = {
         "model": config["model"],
@@ -7281,8 +7347,10 @@ def repair_semantic_enrichment_with_llm(
                 "content": (
                     "You classify saved places for a travel guide. Return only compact JSON. "
                     "Infer neighborhood only from the address/geography evidence. Generate broad, reusable "
-                    "kebab-case tags, vibe_tags, and types. Do not quote or summarize review text. "
-                    "Do not expose About or review details. Prefer 3-6 tags and 2-4 vibe_tags."
+                    "kebab-case tags, vibe_tags, and types when requested. Generate one concise, "
+                    "non-hype place description when requested. Do not quote or summarize review text. "
+                    "Do not expose About or review details. Prefer 3-6 tags, 2-4 vibe_tags, and "
+                    "a description under 180 characters."
                 ),
             },
             {
@@ -7294,6 +7362,7 @@ def repair_semantic_enrichment_with_llm(
                             "tags": ["major visible/search tags, kebab-case"],
                             "vibe_tags": ["atmosphere/use-case tags, kebab-case"],
                             "types": ["specific place type tags, kebab-case"],
+                            "description": "one concise sentence or null",
                         },
                         "evidence": evidence,
                     },
@@ -7337,8 +7406,9 @@ def semantic_enrichment_evidence(
     raw_place: RawPlace,
     city_name: str | None,
     country_name: str | None,
+    include_description: bool = False,
 ) -> dict[str, Any]:
-    return {
+    evidence: dict[str, Any] = {
         "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
         "city": city_name,
         "country": country_name,
@@ -7351,8 +7421,95 @@ def semantic_enrichment_evidence(
         "price_range": enrichment_place.price_range,
         "review_topics": enrichment_place.review_topics[:12],
         "about_sections": compact_about_sections(enrichment_place.about_sections),
-        "review_signals": compact_review_signals(enrichment_place.reviews),
     }
+    if include_description:
+        evidence["review_signals"] = compact_review_signals(enrichment_place.reviews)
+    return evidence
+
+
+def semantic_description_signature(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> str:
+    payload = {
+        "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
+        "city": city_name,
+        "country": country_name,
+        "name": semantic_signature_text(enrichment_place.display_name or raw_place.name),
+        "address": semantic_signature_text(
+            enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
+        ),
+        "category": semantic_signature_text(enrichment_place.primary_type_display_name),
+        "types": [value for value in (semantic_signature_text(item) for item in enrichment_place.types[:8]) if value],
+        "price_range": semantic_signature_text(enrichment_place.price_range),
+        "rating_bucket": rating_bucket(enrichment_place.rating),
+        "review_count_bucket": review_count_bucket(enrichment_place.user_rating_count),
+        "review_topics": compact_review_topics_for_signature(enrichment_place.review_topics),
+        "about_sections": compact_about_sections_for_signature(enrichment_place.about_sections),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
+def semantic_signature_text(value: Any) -> str | None:
+    text = as_string(value)
+    if text is None:
+        return None
+    normalized = unicodedata.normalize("NFKC", text).casefold()
+    signature_chars: list[str] = []
+    for char in normalized:
+        category = unicodedata.category(char)
+        signature_chars.append(char if category[0] in {"L", "N"} else " ")
+    compact = re.sub(r"\s+", " ", "".join(signature_chars)).strip()
+    return compact or None
+
+
+def rating_bucket(value: float | None) -> float | None:
+    if value is None:
+        return None
+    return round(value * 2) / 2
+
+
+def review_count_bucket(value: int | None) -> str | None:
+    if value is None:
+        return None
+    if value < 100:
+        return str((value // 25) * 25)
+    if value < 1000:
+        return str((value // 100) * 100)
+    return str((value // 1000) * 1000)
+
+
+def compact_review_topics_for_signature(topics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for topic in topics[:12]:
+        label = semantic_signature_text(topic.get("label"))
+        if not label:
+            continue
+        count = as_int(topic.get("count"))
+        compact.append({"label": label, "count_bucket": review_count_bucket(count)})
+    return sorted(compact, key=lambda item: item["label"])
+
+
+def compact_about_sections_for_signature(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for section in sections[:8]:
+        title = semantic_signature_text(section.get("title"))
+        items = section.get("items")
+        labels: list[str] = []
+        if isinstance(items, list):
+            for item in items[:10]:
+                if isinstance(item, dict):
+                    label = semantic_signature_text(item.get("label"))
+                    if label:
+                        labels.append(label)
+        if title or labels:
+            compact.append({"title": title, "items": sorted(set(labels))})
+    return sorted(compact, key=lambda item: (item["title"] or "", item["items"]))
 
 
 def compact_about_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -7391,6 +7548,16 @@ def sanitize_semantic_label(value: Any, *, max_length: int) -> str | None:
     if re.search(r"\d{3,}", label):
         return None
     return label
+
+
+def sanitize_semantic_description(value: Any) -> str | None:
+    description = as_string(value)
+    if description is None:
+        return None
+    description = re.sub(r"\s+", " ", description).strip()
+    if not description or len(description) > 240:
+        return None
+    return description
 
 
 def normalize_semantic_tag_list(value: Any, *, limit: int) -> list[str]:

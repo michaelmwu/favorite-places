@@ -244,6 +244,8 @@ Common variables:
 - `GOOGLE_MAPS_PLACES_LLM_REPAIR`: override site scraper repair policy with `off`, `dom`, or `dom_then_translation`
 - `GOOGLE_MAPS_PLACES_COLLECT_REVIEWS` / `GOOGLE_MAPS_PLACES_COLLECT_ABOUT`: override optional review/About panel collection
 - `GOOGLE_MAPS_PLACES_SEMANTIC_LLM`: override optional LLM semantic enrichment for neighborhood, type tags, and vibe tags
+- `GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS`: override optional LLM-generated card descriptions
+- `GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH`: force description regeneration instead of signature reuse
 - `PUBLIC_MAP_PROVIDER=leaflet`: force Leaflet/OpenStreetMap rendering
 - `PUBLIC_PLACE_PHOTOS=off`: hide place photos in the UI
 - `FAVORITE_PLACES_SITE_DIR`: point the app and Python pipeline at a non-default site pack
@@ -290,7 +292,7 @@ The default strategy is `scrape_then_api`. The scraper path does not require a P
 
 `site/enrichment.json` owns site-level scraper policy. The `google_maps_places.llm_repair` value supports `off`, `dom`, and `dom_then_translation`; the default is `dom`, which lets the scraper use optional LLM repair only for thin DOM extraction. Display translation repair is only run by `dom_then_translation`, after reusable prior display fields are applied. `google_maps_places.collect_reviews` and `collect_about` default to `false`; set them to `true` only for sites that want the heavier cache payload.
 
-`google_maps_places.semantic_llm` defaults to `false`. When enabled, the pipeline sends compact cache-only evidence to the configured OpenAI-compatible model to infer better neighborhood labels, type tags, and vibe tags. Inputs include category, address, price range, review topics, compact review signals, and About labels; generated public JSON still does not expose reviews or About sections directly. If credentials are absent or the LLM call fails, deterministic locality/category/vibe rules remain the fallback.
+`google_maps_places.semantic_llm` defaults to `false`. When enabled, the pipeline sends compact cache-only evidence to the configured OpenAI-compatible model to infer better neighborhood labels, type tags, and vibe tags. Inputs include category, address, price range, review topics, compact review signals, and About labels; generated public JSON still does not expose reviews or About sections directly. `google_maps_places.semantic_descriptions` separately enables generated card descriptions. Description reuse is keyed by a coarse semantic signature over identity and enrichment quality signals, not volatile review text; `semantic_description_force_refresh` bypasses reuse and the semantic LLM cache for intentional regeneration. If credentials are absent or the LLM call fails, deterministic locality/category/vibe rules remain the fallback.
 
 The example site opts into review and About collection in `site.example/enrichment.json` so the fixture cache exercises those fields.
 

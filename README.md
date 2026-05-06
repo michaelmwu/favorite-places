@@ -150,12 +150,14 @@ Example `site/enrichment.json`:
     "llm_repair": "dom",
     "collect_reviews": false,
     "collect_about": false,
-    "semantic_llm": false
+    "semantic_llm": false,
+    "semantic_descriptions": false,
+    "semantic_description_force_refresh": false
   }
 }
 ```
 
-When `semantic_llm` is enabled and LLM credentials are configured, the pipeline uses compact cache-only evidence from price range, review topics, review snippets, and About labels to infer neighborhood, type tags, and vibe tags. If the LLM is unavailable or errors, deterministic category, locality, and vibe rules still produce the guide data.
+When `semantic_llm` is enabled and LLM credentials are configured, the pipeline uses compact cache-only evidence from price range, review topics, review snippets, and About labels to infer neighborhood, type tags, and vibe tags. `semantic_descriptions` separately enables generated card descriptions. Descriptions are reused while the semantic description signature remains stable; the signature tracks major quality changes such as name/address/category changes, review topics appearing, About sections changing, price range, and coarse rating/review-count buckets. Set `semantic_description_force_refresh` when you intentionally want to regenerate descriptions even if the signature is unchanged. If the LLM is unavailable or errors, deterministic category, locality, and vibe rules still produce the guide data.
 
 Manual overrides always win over machine-enriched fields.
 
@@ -176,6 +178,12 @@ GOOGLE_MAPS_PLACES_LLM_REPAIR=dom
 
 # Optional LLM semantic tags/neighborhoods from enriched cache evidence.
 GOOGLE_MAPS_PLACES_SEMANTIC_LLM=false
+
+# Optional LLM-generated card descriptions from enriched cache evidence.
+GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS=false
+
+# Force LLM-generated card description regeneration.
+GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH=false
 
 # Optional proxy for Google Maps list and place-page scraping.
 GMAPS_SCRAPER_PROXY=...

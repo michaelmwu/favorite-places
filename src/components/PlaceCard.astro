@@ -55,6 +55,7 @@ const compactReviewLabel =
 const placeRatingMetaLabel = [
   siteConfig.placeCard.showRating && ratingValue !== null ? `${ratingFormatter.format(ratingValue)} ★` : null,
   siteConfig.placeCard.showReviewCount ? compactReviewLabel : null,
+  siteConfig.placeCard.showPriceRange ? priceRange : null,
 ]
   .filter(Boolean)
   .join(" · ");
@@ -63,6 +64,7 @@ const placeRatingMetaTitle = [
   siteConfig.placeCard.showReviewCount && reviewCount !== null
     ? `${reviewCountFormatter.format(reviewCount)} Google Maps ${reviewCount === 1 ? "review" : "reviews"}`
     : null,
+  siteConfig.placeCard.showPriceRange && priceRange !== null ? `Price range ${priceRange}` : null,
 ]
   .filter(Boolean)
   .join(" · ");
@@ -75,7 +77,6 @@ const hasStats = placeRatingMetaLabel.length > 0;
 const metaParts = [
   siteConfig.placeCard.showCategory ? (place.primary_category ?? siteConfig.placeCard.savedPlaceLabel) : null,
   siteConfig.placeCard.showNeighborhood ? place.neighborhood : null,
-  siteConfig.placeCard.showPriceRange ? priceRange : null,
 ].filter(Boolean);
 const markerSvg = buildMapMarkerSvg(
   place.marker_icon,

@@ -47,6 +47,20 @@ class PlacesSettings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_SEMANTIC_LLM", "GMAPS_PLACES_SEMANTIC_LLM"),
     )
+    google_maps_place_semantic_descriptions: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS",
+            "GMAPS_PLACES_SEMANTIC_DESCRIPTIONS",
+        ),
+    )
+    google_maps_place_semantic_description_force_refresh: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH",
+            "GMAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH",
+        ),
+    )
 
 
 class SourceConfig(PipelineModel):
@@ -187,6 +201,8 @@ class EnrichmentPlace(PipelineModel):
     semantic_tags: list[str] = Field(default_factory=list)
     semantic_vibe_tags: list[str] = Field(default_factory=list)
     semantic_types: list[str] = Field(default_factory=list)
+    semantic_description: str | None = None
+    semantic_description_signature: str | None = None
     semantic_source: str | None = None
     limited_view: bool = False
 
