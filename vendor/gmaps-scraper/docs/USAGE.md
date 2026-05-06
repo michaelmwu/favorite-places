@@ -107,6 +107,13 @@ also include raw investigation artifacts under `artifacts/` and a compact
 `selector-recipe.json`. Reuse selector recipes across sessions, not full DOM
 snapshots.
 
+Reviews and About collection are enabled by default for place scraping. Use
+`--skip-reviews` when you only need overview facts and do not want to open the
+Reviews tab. Use `--skip-about` when About-panel attributes are not needed.
+Skipping Reviews still preserves any review-count/topic evidence present on the
+overview page, but it will not expand the Reviews tab for more topics or visible
+review snippets.
+
 ## Optional LLM Repair
 
 LLM repair is opt-in. Deterministic DOM and preview extraction always run first.
@@ -119,6 +126,24 @@ uv run gmaps-scraper \
   URL \
   --kind place \
   --llm-repair
+```
+
+The LLM path is split into two generic tasks:
+
+- `dom_repair`: repair missing or suspicious Google Maps facts from sanitized
+  DOM evidence.
+- `display_translation`: produce English-readable `address_display_en` and
+  `category_display_en` when raw Google fields contain non-Latin display text.
+
+By default, `--llm-repair` enables both tasks. Restrict work with repeated
+`--llm-task` flags:
+
+```bash
+uv run gmaps-scraper \
+  URL \
+  --kind place \
+  --llm-repair \
+  --llm-task display_translation
 ```
 
 Configuration precedence is:
@@ -215,6 +240,7 @@ from gmaps_scraper import (
     llm_cache_namespace_from_env,
     needs_display_en,
     openai_compatible_place_repairer_from_env,
+    repair_place_display_fields,
     reuse_place_display_fields,
     scrape_place,
 )
@@ -229,20 +255,78 @@ needs_translation = (
 )
 
 if needs_translation:
-    fresh = scrape_place(
-        place_url,
-        llm_fallback=cached_place_repairer(
+    fresh = repair_place_display_fields(
+        fresh,
+        repairer=cached_place_repairer(
             openai_compatible_place_repairer_from_env(),
             cache_dir=Path(".gmaps-scraper/llm-cache"),
             cache_namespace=llm_cache_namespace_from_env(),
         ),
-        llm_policy="on_quality_failure",
+        evidence={"city": "Singapore", "country": "Singapore"},
     )
 ```
 
 For mapping-based caches, use
 `reusable_place_display_fields(current_fields, previous_fields)` and merge the
 returned keys into the refreshed record.
+
+`repair_place_display_fields()` is a no-scrape helper. It sends only the current
+place fields and optional caller evidence to the display-translation repairer.
+Useful caller evidence includes guide/list city, country, or region. Reviews and
+review topics should not be used for display translation.
+
+### Display Repair Without Scraping
+
+Use `repair_place_display_fields()` when a downstream cache already has fresh
+place facts and only needs English-readable display fields. This avoids opening
+Google Maps again.
+
+```python
+from pathlib import Path
+
+from gmaps_scraper import (
+    PlaceDetails,
+    cached_place_repairer,
+    llm_cache_namespace_from_env,
+    openai_compatible_place_repairer_from_env,
+    repair_place_display_fields,
+)
+
+repairer = cached_place_repairer(
+    openai_compatible_place_repairer_from_env(),
+    cache_dir=Path(".gmaps-scraper/llm-cache"),
+    cache_namespace=llm_cache_namespace_from_env(),
+)
+
+place = PlaceDetails(
+    source_url="https://www.google.com/maps/place/Fiamma",
+    resolved_url="https://www.google.com/maps/place/Fiamma",
+    name="Fiamma",
+    category="イタリア料理店",
+    rating=None,
+    review_count=None,
+    address="1 The Knolls, シンガポール 098297",
+    located_in="Capella Singapore",
+)
+
+place = repair_place_display_fields(
+    place,
+    repairer=repairer,
+    evidence={
+        "city": "Singapore",
+        "country": "Singapore",
+        "source": "downstream guide metadata",
+    },
+)
+
+print(place.category_display_en)  # "Italian restaurant"
+print(place.address_display_en)   # "1 The Knolls, Singapore 098297"
+```
+
+The repair request includes raw `name`, `secondary_name`, `category`, `address`,
+`located_in`, `address_parts`, and `google_place_id` when present. The model can
+only return display translation fields; venue names, reviews, review topics,
+tags, neighborhoods, and ranking data are ignored by this helper.
 
 ## Maps Search URL Helper
 

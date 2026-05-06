@@ -38,6 +38,19 @@ PLACE_LLM_REPAIR_FIELDS: tuple[str, ...] = (
     "about_sections",
 )
 
+PLACE_LLM_DISPLAY_TRANSLATION_FIELDS: tuple[str, ...] = (
+    "category_display_en",
+    "category_display_en_source",
+    "category_display_en_confidence",
+    "address_display_en",
+    "address_display_en_source",
+    "address_display_en_confidence",
+)
+
+PLACE_LLM_DOM_REPAIR_FIELDS: tuple[str, ...] = tuple(
+    field for field in PLACE_LLM_REPAIR_FIELDS if field not in PLACE_LLM_DISPLAY_TRANSLATION_FIELDS
+)
+
 
 @dataclass(slots=True)
 class ListOwner:
@@ -243,6 +256,7 @@ class PlaceLLMRepairRequest:
     current_fields: dict[str, Any]
     diagnostics: PlaceExtractionDiagnostics
     evidence: dict[str, Any]
+    tasks: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, object]:
         """Convert the repair request into a JSON-serializable dictionary."""
@@ -252,6 +266,7 @@ class PlaceLLMRepairRequest:
             "current_fields": self.current_fields,
             "diagnostics": self.diagnostics.to_dict(),
             "evidence": self.evidence,
+            "tasks": self.tasks,
         }
 
 

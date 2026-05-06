@@ -1,6 +1,8 @@
 """Google Maps scraping helpers."""
 
 from gmaps_scraper.display_fields import (
+    PlaceDisplayFieldRepairer,
+    repair_place_display_fields,
     reusable_place_display_fields,
     reuse_place_display_fields,
 )
@@ -26,6 +28,7 @@ from gmaps_scraper.models import (
 from gmaps_scraper.parser import ParseError, parse_saved_list_artifacts
 from gmaps_scraper.place_scraper import (
     PlaceLLMRepairer,
+    PlaceLLMTask,
     collect_place_snapshot,
     scrape_place,
     scrape_places,
@@ -63,9 +66,11 @@ __all__ = [
     "PlaceAboutItem",
     "PlaceAboutSection",
     "PlaceDetails",
+    "PlaceDisplayFieldRepairer",
     "PlaceExtractionDiagnostics",
     "PlaceLLMRepairRequest",
     "PlaceLLMRepairer",
+    "PlaceLLMTask",
     "PlaceReview",
     "PlaceScrapeResult",
     "ReviewTopic",
@@ -83,6 +88,7 @@ __all__ = [
     "needs_display_en",
     "parse_saved_list_artifacts",
     "openai_compatible_place_repairer_from_env",
+    "repair_place_display_fields",
     "reusable_place_display_fields",
     "reuse_place_display_fields",
     "scrape_place",

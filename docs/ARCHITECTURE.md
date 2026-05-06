@@ -241,6 +241,8 @@ Common variables:
 - `GOOGLE_MAPS_JS_API_KEY`: browser Google Maps display key, read by Astro during render/build and embedded only when the Google map provider is active
 - `GOOGLE_PLACES_API_KEY`: server/build-time key for API-based enrichment
 - `GOOGLE_PLACES_ENRICHMENT_STRATEGY`: choose `scrape`, `api`, or `scrape_then_api` for place enrichment
+- `GOOGLE_MAPS_PLACE_LLM_REPAIR`: override site scraper repair policy with `off`, `dom`, or `dom_then_translation`
+- `GOOGLE_MAPS_PLACE_COLLECT_REVIEWS` / `GOOGLE_MAPS_PLACE_COLLECT_ABOUT`: override optional review/About panel collection
 - `PUBLIC_MAP_PROVIDER=leaflet`: force Leaflet/OpenStreetMap rendering
 - `PUBLIC_PLACE_PHOTOS=off`: hide place photos in the UI
 - `FAVORITE_PLACES_SITE_DIR`: point the app and Python pipeline at a non-default site pack
@@ -284,6 +286,10 @@ Enrichment is optional and cached. A normal build can run without enrichment, bu
 - `scrape_then_api`: Google Maps place-page scraping first, then Google Places Text Search when the scraped result is blocked, limited, unmatched, or too sparse to trust
 
 The default strategy is `scrape_then_api`. The scraper path does not require a Places API key. `api` mode and the fallback leg of `scrape_then_api` require `GOOGLE_PLACES_API_KEY`.
+
+`site/enrichment.json` owns site-level scraper policy. The `google_maps_place.llm_repair` value supports `off`, `dom`, and `dom_then_translation`; the default is `dom`, which lets the scraper use optional LLM repair only for thin DOM extraction. Display translation repair is only run by `dom_then_translation`, after reusable prior display fields are applied. `google_maps_place.collect_reviews` and `collect_about` default to `false`; set them to `true` only for sites that want the heavier cache payload.
+
+The example site opts into review and About collection in `site.example/enrichment.json` so the fixture cache exercises those fields.
 
 The API path uses Google Places Text Search with a narrow field mask and location bias around scraped coordinates.
 

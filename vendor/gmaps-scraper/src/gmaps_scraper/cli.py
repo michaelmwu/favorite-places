@@ -22,9 +22,11 @@ from gmaps_scraper.models import PlaceDetails, PlaceLLMRepairRequest
 from gmaps_scraper.place_scraper import (
     _PLACE_LLM_PROMPT_VERSION,
     PlaceLLMRepairer,
+    PlaceLLMTask,
     _build_place_details,
     _build_place_diagnostics,
     _build_place_llm_evidence,
+    _diagnostics_for_llm_tasks,
     _extract_llm_repair_source,
     _hash_evidence,
     _merge_llm_place_fields,
@@ -183,6 +185,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="When to call the optional LLM repair callback for place scraping.",
     )
     parser.add_argument(
+        "--llm-task",
+        action="append",
+        choices=["dom_repair", "display_translation"],
+        help=(
+            "Restrict optional LLM work for place scraping. Repeat to enable "
+            "multiple tasks. Defaults to both DOM repair and display translation."
+        ),
+    )
+    parser.add_argument(
         "--llm-env-file",
         type=Path,
         default=Path(".env"),
@@ -192,6 +203,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--llm-cache-dir",
         type=Path,
         help="Cache optional LLM place repairs in this directory.",
+    )
+    parser.add_argument(
+        "--skip-reviews",
+        action="store_true",
+        help="For place scraping, skip opening the Reviews tab.",
+    )
+    parser.add_argument(
+        "--skip-about",
+        action="store_true",
+        help="For place scraping, skip opening the About tab.",
     )
     parser.add_argument(
         "--dump-debug-output",
@@ -231,6 +252,14 @@ def main() -> int:
             )
         if args.llm_cache_dir is not None and not args.llm_repair:
             parser.error("`--llm-cache-dir` requires `--llm-repair`.")
+        if args.llm_task is not None and not args.llm_repair:
+            parser.error("`--llm-task` requires `--llm-repair`.")
+        llm_tasks = cast(
+            tuple[PlaceLLMTask, ...],
+            tuple(args.llm_task or ("dom_repair", "display_translation")),
+        )
+        collect_reviews = not args.skip_reviews
+        collect_about = not args.skip_about
         llm_fallback = None
         if args.llm_repair:
             try:
@@ -265,6 +294,9 @@ def main() -> int:
                     http_session=http_session,
                     llm_fallback=llm_fallback,
                     llm_policy=args.llm_policy,
+                    llm_tasks=llm_tasks,
+                    collect_reviews=collect_reviews,
+                    collect_about=collect_about,
                     max_concurrency=args.max_concurrency,
                     max_retries=args.max_retries,
                     retry_backoff_ms=args.retry_backoff_ms,
@@ -280,6 +312,9 @@ def main() -> int:
                     http_session=http_session,
                     llm_fallback=llm_fallback,
                     llm_policy=args.llm_policy,
+                    llm_tasks=llm_tasks,
+                    collect_reviews=collect_reviews,
+                    collect_about=collect_about,
                     max_concurrency=args.max_concurrency,
                     max_retries=args.max_retries,
                     retry_backoff_ms=args.retry_backoff_ms,
@@ -342,6 +377,9 @@ def main() -> int:
                     http_session=http_session,
                     llm_fallback=llm_fallback,
                     llm_policy=args.llm_policy,
+                    llm_tasks=llm_tasks,
+                    collect_reviews=collect_reviews,
+                    collect_about=collect_about,
                 )
             else:
                 place_result = scrape_place(
@@ -353,6 +391,9 @@ def main() -> int:
                     http_session=http_session,
                     llm_fallback=llm_fallback,
                     llm_policy=args.llm_policy,
+                    llm_tasks=llm_tasks,
+                    collect_reviews=collect_reviews,
+                    collect_about=collect_about,
                     screenshot_path=screenshot_path,
                     overview_screenshot_path=overview_screenshot_path,
                 )
@@ -366,6 +407,9 @@ def main() -> int:
                 http_session=http_session,
                 llm_fallback=llm_fallback,
                 llm_policy=args.llm_policy,
+                llm_tasks=llm_tasks,
+                collect_reviews=collect_reviews,
+                collect_about=collect_about,
                 screenshot_path=_place_screenshot_path(
                     args.screenshot_output_dir or (place_debug_output_dir / "artifacts"),
                     place_urls[0],
@@ -420,8 +464,14 @@ def main() -> int:
         )
     if args.llm_repair:
         parser.error("`--llm-repair` is supported only with `--kind place`.")
+    if args.llm_task is not None:
+        parser.error("`--llm-task` is supported only with `--kind place`.")
     if args.llm_cache_dir is not None:
         parser.error("`--llm-cache-dir` is supported only with `--kind place`.")
+    if args.skip_reviews:
+        parser.error("`--skip-reviews` is supported only with `--kind place`.")
+    if args.skip_about:
+        parser.error("`--skip-about` is supported only with `--kind place`.")
     if args.screenshot_output_dir is not None:
         parser.error("`--screenshot-output-dir` is supported only with `--kind place`.")
     if args.input is not None:
@@ -553,6 +603,9 @@ def _scrape_place_for_debug(
     http_session: HttpSessionConfig | None,
     llm_fallback: PlaceLLMRepairer | None,
     llm_policy: str,
+    llm_tasks: tuple[PlaceLLMTask, ...] = ("dom_repair", "display_translation"),
+    collect_reviews: bool = True,
+    collect_about: bool = True,
     screenshot_path: Path | None = None,
     overview_screenshot_path: Path | None = None,
 ) -> tuple[PlaceDetails, dict[str, object], dict[str, object], dict[str, object]]:
@@ -563,6 +616,8 @@ def _scrape_place_for_debug(
         settle_time_ms=settle_time_ms,
         browser_session=browser_session,
         http_session=http_session,
+        collect_reviews=collect_reviews,
+        collect_about=collect_about,
         screenshot_path=screenshot_path,
         overview_screenshot_path=overview_screenshot_path,
     )
@@ -593,19 +648,22 @@ def _scrape_place_for_debug(
     if llm_fallback is None or not _should_use_llm_repair(
         cast(Literal["never", "on_quality_failure", "always"], llm_policy),
         details.diagnostics,
+        tasks=llm_tasks,
     ):
         return details, snapshot, merged_snapshot, evidence
     if llm_policy not in {"always", "on_quality_failure"}:
         raise ValueError(f"Unsupported llm_policy: {llm_policy}")
     details.diagnostics.prompt_version = _PLACE_LLM_PROMPT_VERSION
+    request_diagnostics = _diagnostics_for_llm_tasks(details.diagnostics, llm_tasks)
     try:
         repair = llm_fallback(
             PlaceLLMRepairRequest(
                 source_url=place_url,
                 resolved_url=resolved_url,
                 current_fields=_place_detail_values(details),
-                diagnostics=details.diagnostics,
+                diagnostics=request_diagnostics,
                 evidence=evidence,
+                tasks=list(llm_tasks),
             )
         )
     except Exception as exc:
@@ -618,6 +676,7 @@ def _scrape_place_for_debug(
         merged_snapshot,
         repair,
         current_fields=_place_detail_values(details),
+        llm_tasks=llm_tasks,
     )
     repaired_details = _build_place_details(
         place_url,

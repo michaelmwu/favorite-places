@@ -93,6 +93,7 @@ GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 PUBLIC_DATA_DIR = ROOT / "public" / "data"
 PLACE_PHOTOS_DIR = SITE_DIR / "public" / "place-photos"
 SITE_BUILD_HOOKS_PATH = SITE_DIR / "build_hooks.py"
+SITE_ENRICHMENT_CONFIG_PATH = SITE_DIR / "enrichment.json"
 LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = SITE_DIR / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
@@ -1107,9 +1108,16 @@ try:
     from gmaps_scraper import (
         BrowserSessionConfig,
         HttpSessionConfig,
+        LLMRepairError,
         ParseError,
         ScrapeError,
         build_maps_search_url as build_scraper_maps_search_url,
+        cached_place_repairer,
+        llm_cache_namespace_from_env,
+        needs_display_en,
+        openai_compatible_place_repairer_from_env,
+        repair_place_display_fields,
+        reusable_place_display_fields,
         scrape_place,
         scrape_saved_list,
     )
@@ -1122,7 +1130,14 @@ except ImportError:
 
     BrowserSessionConfig = None
     HttpSessionConfig = None
+    LLMRepairError = RuntimeError
     build_scraper_maps_search_url = None
+    cached_place_repairer = None
+    llm_cache_namespace_from_env = None
+    needs_display_en = None
+    openai_compatible_place_repairer_from_env = None
+    repair_place_display_fields = None
+    reusable_place_display_fields = None
     scrape_place = None
     scrape_saved_list = None
 
@@ -2211,7 +2226,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         if prefer_enrichment_names and enrichment.display_name:
             preferred_name = enrichment.display_name
         normalized_name = as_string(override.get("name")) or preferred_name
-        normalized_address = place.address or enrichment.formatted_address
+        normalized_address = place.address or enrichment.address_display_en or enrichment.formatted_address
         maps_url = build_public_google_maps_url(
             name=normalized_name,
             address=normalized_address,
@@ -3036,6 +3051,7 @@ def enrich_place_job(
         country_name=country_name,
         google_place_id=existing_entry.place.google_place_id if existing_entry and existing_entry.place else None,
         api_key=api_key,
+        existing_entry=existing_entry,
     )
     merged_entry, warning = preserve_existing_enrichment(
         slug=slug,
@@ -3226,6 +3242,8 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
     place.formatted_address = sanitize_place_page_formatted_address(place.formatted_address)
+    place.address_display_en = sanitize_place_page_formatted_address(place.address_display_en)
+    place.category_display_en = sanitize_enrichment_primary_category(place.category_display_en)
     place.phone = sanitize_place_page_phone(place.phone)
     place.plus_code = sanitize_place_page_plus_code(place.plus_code)
     place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
@@ -4221,6 +4239,89 @@ def google_places_enrichment_strategy() -> Literal["scrape", "api", "scrape_then
     return PlacesSettings().google_places_enrichment_strategy
 
 
+@lru_cache(maxsize=1)
+def site_enrichment_config() -> dict[str, Any]:
+    return read_json(SITE_ENRICHMENT_CONFIG_PATH)
+
+
+def site_google_maps_place_config_value(key: str) -> Any:
+    config = site_enrichment_config()
+    google_maps_place = config.get("google_maps_place")
+    if isinstance(google_maps_place, dict) and key in google_maps_place:
+        return google_maps_place[key]
+    place_scraping = config.get("place_scraping")
+    if isinstance(place_scraping, dict) and key in place_scraping:
+        return place_scraping[key]
+    return config.get(key)
+
+
+def google_maps_place_llm_repair_mode() -> Literal["off", "dom", "dom_then_translation"]:
+    configured = PlacesSettings().google_maps_place_llm_repair
+    if configured is not None:
+        return configured
+    site_value = as_string(site_google_maps_place_config_value("llm_repair"))
+    if site_value is not None:
+        if site_value not in {"off", "dom", "dom_then_translation"}:
+            raise RuntimeError(
+                f"{SITE_ENRICHMENT_CONFIG_PATH} google_maps_place.llm_repair must be "
+                "`off`, `dom`, or `dom_then_translation`."
+            )
+        return site_value
+    return "dom"
+
+
+def google_maps_place_llm_cache_dir() -> Path:
+    configured = PlacesSettings().google_maps_place_llm_cache_dir
+    if configured:
+        path = Path(configured).expanduser()
+        return path if path.is_absolute() else ROOT / path
+    return SCRAPER_STATE_DIR / "llm-cache"
+
+
+def google_maps_place_collect_reviews() -> bool:
+    configured = PlacesSettings().google_maps_place_collect_reviews
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("collect_reviews"))
+    return bool(site_value)
+
+
+def google_maps_place_collect_about() -> bool:
+    configured = PlacesSettings().google_maps_place_collect_about
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("collect_about"))
+    return bool(site_value)
+
+
+@lru_cache(maxsize=1)
+def build_place_llm_repairer() -> Any | None:
+    if (
+        cached_place_repairer is None
+        or llm_cache_namespace_from_env is None
+        or openai_compatible_place_repairer_from_env is None
+    ):
+        return None
+
+    try:
+        repairer = openai_compatible_place_repairer_from_env(
+            default_config_file=ROOT / "vendor" / "gmaps-scraper" / "llm.json",
+            local_config_file=ROOT / "llm.local.json",
+        )
+        cache_namespace = llm_cache_namespace_from_env(
+            default_config_file=ROOT / "vendor" / "gmaps-scraper" / "llm.json",
+            local_config_file=ROOT / "llm.local.json",
+        )
+    except LLMRepairError:
+        return None
+
+    return cached_place_repairer(
+        repairer,
+        cache_dir=google_maps_place_llm_cache_dir(),
+        cache_namespace=cache_namespace,
+    )
+
+
 def configured_source_path(source: SourceConfig) -> Path:
     if not source.path:
         raise RuntimeError(f"Configured source {source.slug} is missing a path.")
@@ -4798,6 +4899,10 @@ def preserve_existing_enrichment(
     if not refreshed_place.formatted_address and previous_place.formatted_address:
         refreshed_place.formatted_address = previous_place.formatted_address
         append_unique_reason(preserved_fields, "address")
+    if not refreshed_place.address_display_en and previous_place.address_display_en:
+        refreshed_place.address_display_en = previous_place.address_display_en
+        refreshed_place.address_display_en_source = previous_place.address_display_en_source
+        refreshed_place.address_display_en_confidence = previous_place.address_display_en_confidence
 
     if not refreshed_place.primary_type_display_name and previous_place.primary_type_display_name:
         refreshed_place.primary_type_display_name = previous_place.primary_type_display_name
@@ -4817,6 +4922,10 @@ def preserve_existing_enrichment(
 
     if not refreshed_place.primary_type_display_name_localized and previous_place.primary_type_display_name_localized:
         refreshed_place.primary_type_display_name_localized = previous_place.primary_type_display_name_localized
+    if not refreshed_place.category_display_en and previous_place.category_display_en:
+        refreshed_place.category_display_en = previous_place.category_display_en
+        refreshed_place.category_display_en_source = previous_place.category_display_en_source
+        refreshed_place.category_display_en_confidence = previous_place.category_display_en_confidence
 
     if not refreshed_place.business_status and previous_place.business_status:
         refreshed_place.business_status = previous_place.business_status
@@ -6155,6 +6264,60 @@ def public_photo_path(filename: str) -> str:
     return f"/place-photos/{filename}"
 
 
+def place_details_display_field_map(details: Any) -> dict[str, object]:
+    return {
+        "category": as_string(getattr(details, "category", None)),
+        "category_display_en": as_string(getattr(details, "category_display_en", None)),
+        "category_display_en_source": as_string(getattr(details, "category_display_en_source", None)),
+        "category_display_en_confidence": as_string(getattr(details, "category_display_en_confidence", None)),
+        "address": as_string(getattr(details, "address", None)),
+        "address_display_en": as_string(getattr(details, "address_display_en", None)),
+        "address_display_en_source": as_string(getattr(details, "address_display_en_source", None)),
+        "address_display_en_confidence": as_string(getattr(details, "address_display_en_confidence", None)),
+    }
+
+
+def enrichment_place_display_field_map(place: EnrichmentPlace | None) -> dict[str, object]:
+    if place is None:
+        return {}
+    return {
+        "category": place.primary_type_display_name_localized or place.primary_type_display_name,
+        "category_display_en": place.category_display_en,
+        "category_display_en_source": place.category_display_en_source,
+        "category_display_en_confidence": place.category_display_en_confidence,
+        "address": place.formatted_address,
+        "address_display_en": place.address_display_en,
+        "address_display_en_source": place.address_display_en_source,
+        "address_display_en_confidence": place.address_display_en_confidence,
+    }
+
+
+def apply_reusable_place_display_fields(
+    details: Any,
+    existing_entry: EnrichmentCacheEntry | None,
+) -> None:
+    if reusable_place_display_fields is None or existing_entry is None:
+        return
+    reusable = reusable_place_display_fields(
+        place_details_display_field_map(details),
+        enrichment_place_display_field_map(existing_entry.place),
+    )
+    for key, value in reusable.items():
+        setattr(details, key, value)
+
+
+def place_details_need_display_translation(details: Any) -> bool:
+    if needs_display_en is None:
+        return False
+    return (
+        bool(needs_display_en(as_string(getattr(details, "address", None))))
+        and as_string(getattr(details, "address_display_en", None)) is None
+    ) or (
+        bool(needs_display_en(as_string(getattr(details, "category", None))))
+        and as_string(getattr(details, "category_display_en", None)) is None
+    )
+
+
 def fetch_places_enrichment(
     place: RawPlace,
     *,
@@ -6163,6 +6326,7 @@ def fetch_places_enrichment(
     google_place_id: str | None = None,
     api_key: str | None,
     strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
+    existing_entry: EnrichmentCacheEntry | None = None,
 ) -> EnrichmentCacheEntry:
     if strategy is None:
         strategy = google_places_enrichment_strategy()
@@ -6173,6 +6337,7 @@ def fetch_places_enrichment(
             city_name=city_name,
             country_name=country_name,
             google_place_id=google_place_id,
+            existing_entry=existing_entry,
         )
 
     if strategy == "api":
@@ -6192,6 +6357,7 @@ def fetch_places_enrichment(
         city_name=city_name,
         country_name=country_name,
         google_place_id=google_place_id,
+        existing_entry=existing_entry,
     )
     if page_entry.error is None and page_entry.place is not None:
         if api_key is None or not should_fallback_to_places_api(page_entry):
@@ -6221,6 +6387,7 @@ def fetch_place_page_enrichment(
     city_name: str | None = None,
     country_name: str | None = None,
     google_place_id: str | None = None,
+    existing_entry: EnrichmentCacheEntry | None = None,
 ) -> EnrichmentCacheEntry:
     query = build_place_page_search_query(
         place,
@@ -6239,6 +6406,23 @@ def fetch_place_page_enrichment(
 
     proxy = current_scraper_proxy()
     session_state, browser_session, http_session = build_scraper_sessions(proxy)
+    llm_mode = google_maps_place_llm_repair_mode()
+    llm_repairer = None if llm_mode == "off" else build_place_llm_repairer()
+    collect_reviews = google_maps_place_collect_reviews()
+    collect_about = google_maps_place_collect_about()
+
+    def scrape_for_enrichment(scrape_url: str, *, llm_tasks: Sequence[Any]) -> Any:
+        return scrape_place(
+            scrape_url,
+            headless=True,
+            browser_session=browser_session,
+            http_session=http_session,
+            llm_fallback=llm_repairer,
+            llm_tasks=llm_tasks,
+            collect_reviews=collect_reviews,
+            collect_about=collect_about,
+        )
+
     try:
         last_error: str | None = None
         saw_non_error_result = False
@@ -6249,23 +6433,13 @@ def fetch_place_page_enrichment(
             google_place_id=google_place_id,
         ):
             try:
-                details = scrape_place(
-                    scrape_url,
-                    headless=True,
-                    browser_session=browser_session,
-                    http_session=http_session,
-                )
+                details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
             except RECOVERABLE_REFRESH_ERRORS as exc:
                 if should_reset_scraper_session(exc):
                     clear_scraper_session_state(session_state)
                     browser_session, http_session = build_scraper_configs(session_state, proxy)
                     try:
-                        details = scrape_place(
-                            scrape_url,
-                            headless=True,
-                            browser_session=browser_session,
-                            http_session=http_session,
-                        )
+                        details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
                     except RECOVERABLE_REFRESH_ERRORS as retry_exc:
                         last_error = f"scrape_error:{retry_exc}"
                         continue
@@ -6275,6 +6449,25 @@ def fetch_place_page_enrichment(
 
             saw_non_error_result = True
             record_scraper_session_use(session_state, proxy=proxy)
+            apply_reusable_place_display_fields(details, existing_entry)
+            if (
+                llm_mode == "dom_then_translation"
+                and llm_repairer is not None
+                and repair_place_display_fields is not None
+                and place_details_need_display_translation(details)
+            ):
+                try:
+                    details = repair_place_display_fields(
+                        details,
+                        repairer=llm_repairer,
+                        evidence={
+                            "city": city_name,
+                            "country": country_name,
+                            "query": query,
+                        },
+                    )
+                except Exception as exc:
+                    last_error = f"display_repair_error:{exc}"
             enrichment_place = normalize_place_page_enrichment(details)
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
@@ -6849,15 +7042,19 @@ def coerce_enrichment_address_parts(value: Any) -> AddressParts | None:
 
 def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     raw_category = sanitize_enrichment_primary_category(as_string(getattr(details, "category", None)))
+    category_display_en = sanitize_enrichment_primary_category(
+        as_string(getattr(details, "category_display_en", None))
+    )
+    category_basis = category_display_en or raw_category
     primary_type = None
     types: list[str] = []
-    if raw_category is not None:
+    if category_basis is not None:
         primary_type, types = normalized_enrichment_type_ids(
-            slugify(raw_category).replace("-", "_"),
-            raw_category,
-            [slugify(raw_category).replace("-", "_")],
+            slugify(category_basis).replace("-", "_"),
+            category_basis,
+            [slugify(category_basis).replace("-", "_")],
         )
-    category = canonical_primary_category_label(primary_type=primary_type, display_name=raw_category)
+    category = canonical_primary_category_label(primary_type=primary_type, display_name=category_basis)
     category_localized = localized_primary_category_label(
         raw_display_name=raw_category,
         canonical_display_name=category,
@@ -6868,6 +7065,9 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     from_search_url = bool(source_url and "/maps/search/" in source_url)
     display_name = sanitize_place_page_display_name(getattr(details, "name", None))
     formatted_address = sanitize_place_page_formatted_address(getattr(details, "address", None))
+    address_display_en = sanitize_place_page_formatted_address(
+        getattr(details, "address_display_en", None)
+    )
     rating = as_float(getattr(details, "rating", None))
     user_rating_count = as_int(getattr(details, "review_count", None))
     website = as_string(getattr(details, "website", None))
@@ -6911,12 +7111,19 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         google_place_id=as_string(getattr(details, "google_place_id", None)),
         display_name=display_name,
         formatted_address=formatted_address,
+        address_display_en=address_display_en,
+        address_display_en_source=as_string(getattr(details, "address_display_en_source", None)),
+        address_display_en_confidence=as_string(getattr(details, "address_display_en_confidence", None)),
         google_maps_uri=maps_uri,
         rating=rating,
         user_rating_count=user_rating_count,
+        price_range=as_string(getattr(details, "price_range", None)),
         primary_type=primary_type,
         primary_type_display_name=category,
         primary_type_display_name_localized=category_localized,
+        category_display_en=category_display_en,
+        category_display_en_source=as_string(getattr(details, "category_display_en_source", None)),
+        category_display_en_confidence=as_string(getattr(details, "category_display_en_confidence", None)),
         types=types,
         business_status=normalize_place_page_business_status(as_string(getattr(details, "status", None))),
         website=website,
@@ -6926,8 +7133,29 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         description=description,
         main_photo_url=main_photo_url,
         photo_url=photo_url,
+        review_topics=coerce_json_object_list(getattr(details, "review_topics", None)),
+        reviews=coerce_json_object_list(getattr(details, "reviews", None)),
+        about_sections=coerce_json_object_list(getattr(details, "about_sections", None)),
         limited_view=limited_view,
     )
+
+
+def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    items: list[dict[str, Any]] = []
+    for item in value:
+        if hasattr(item, "to_dict") and callable(item.to_dict):
+            payload = item.to_dict()
+        elif isinstance(item, dict):
+            payload = item
+        else:
+            continue
+        if isinstance(payload, dict):
+            compact = {str(key): val for key, val in payload.items() if val not in (None, "", [])}
+            if compact:
+                items.append(compact)
+    return items
 
 
 def normalize_place_page_business_status(status: str | None) -> str | None:

@@ -13,6 +13,8 @@ from typing import Any, Literal, cast
 from urllib.parse import parse_qs, unquote, urlparse
 
 from gmaps_scraper.models import (
+    PLACE_LLM_DISPLAY_TRANSLATION_FIELDS,
+    PLACE_LLM_DOM_REPAIR_FIELDS,
     PLACE_LLM_REPAIR_FIELDS,
     AddressParts,
     PlaceAboutItem,
@@ -47,6 +49,20 @@ _TITLE_SELECTOR = ", ".join(_TITLE_SELECTORS)
 _PLACE_LLM_PROMPT_VERSION = "gmaps-place-repair-v1"
 _TRANSLATION_MEMORY = TranslationMemory.default()
 type PlaceLLMRepairer = Callable[[PlaceLLMRepairRequest], Mapping[str, object] | None]
+type PlaceLLMTask = Literal["dom_repair", "display_translation"]
+_DEFAULT_LLM_TASKS: tuple[PlaceLLMTask, ...] = ("dom_repair", "display_translation")
+_DOM_REPAIR_QUALITY_FLAGS = {
+    "address_rejected",
+    "limited_view",
+    "missing_name",
+    "name_rejected",
+    "search_result_page",
+    "thin_place_result",
+}
+_DISPLAY_TRANSLATION_QUALITY_FLAGS = {
+    "needs_address_display_en",
+    "needs_category_display_en",
+}
 _REVIEW_LABEL_KEYWORDS = ("review", "reviews", "評論", "クチコミ")
 _REVIEW_TOPIC_REJECT_LABELS = {
     "all",
@@ -74,6 +90,14 @@ _REVIEW_TOPIC_REJECT_TERMS = (
     "sort by",
     "write a review",
 )
+_UI_ACTION_LABELS = {
+    "call",
+    "directions",
+    "save",
+    "saved",
+    "share",
+    "website",
+}
 _DESCRIPTION_STOP_MARKERS = {
     "photos",
     "about this data",
@@ -820,6 +844,9 @@ def scrape_place(
     http_session: HttpSessionConfig | None = None,
     llm_fallback: PlaceLLMRepairer | None = None,
     llm_policy: Literal["never", "on_quality_failure", "always"] = "on_quality_failure",
+    llm_tasks: Sequence[PlaceLLMTask] = _DEFAULT_LLM_TASKS,
+    collect_reviews: bool = True,
+    collect_about: bool = True,
     screenshot_path: Path | None = None,
     overview_screenshot_path: Path | None = None,
 ) -> PlaceDetails:
@@ -837,6 +864,8 @@ def scrape_place(
         settle_time_ms=settle_time_ms,
         browser_session=browser_session,
         http_session=http_session,
+        collect_reviews=collect_reviews,
+        collect_about=collect_about,
         screenshot_path=screenshot_path,
         overview_screenshot_path=overview_screenshot_path,
     )
@@ -845,6 +874,7 @@ def scrape_place(
         snapshot=snapshot,
         llm_fallback=llm_fallback,
         llm_policy=llm_policy,
+        llm_tasks=llm_tasks,
     )
 
 
@@ -858,6 +888,9 @@ def scrape_places(
     http_session: HttpSessionConfig | None = None,
     llm_fallback: PlaceLLMRepairer | None = None,
     llm_policy: Literal["never", "on_quality_failure", "always"] = "on_quality_failure",
+    llm_tasks: Sequence[PlaceLLMTask] = _DEFAULT_LLM_TASKS,
+    collect_reviews: bool = True,
+    collect_about: bool = True,
     max_concurrency: int = 1,
     max_retries: int = 1,
     retry_backoff_ms: int = 2_000,
@@ -888,6 +921,9 @@ def scrape_places(
             http_session=http_session,
             llm_fallback=llm_fallback,
             llm_policy=llm_policy,
+            llm_tasks=llm_tasks,
+            collect_reviews=collect_reviews,
+            collect_about=collect_about,
             max_retries=max_retries,
             retry_backoff_ms=retry_backoff_ms,
             stagger_ms=stagger_ms,
@@ -904,6 +940,9 @@ def scrape_places(
         http_session=http_session,
         llm_fallback=llm_fallback,
         llm_policy=llm_policy,
+        llm_tasks=llm_tasks,
+        collect_reviews=collect_reviews,
+        collect_about=collect_about,
         max_concurrency=max_concurrency,
         max_retries=max_retries,
         retry_backoff_ms=retry_backoff_ms,
@@ -919,6 +958,7 @@ def _build_place_details_from_snapshot(
     snapshot: Mapping[str, object],
     llm_fallback: PlaceLLMRepairer | None,
     llm_policy: Literal["never", "on_quality_failure", "always"],
+    llm_tasks: Sequence[PlaceLLMTask] = _DEFAULT_LLM_TASKS,
 ) -> PlaceDetails:
     resolved_url = _normalize_response_url(snapshot.get("resolved_url"))
     if _looks_like_saved_list_url(resolved_url):
@@ -944,18 +984,25 @@ def _build_place_details_from_snapshot(
         merged_snapshot,
         evidence_hash=evidence_hash,
     )
-    if llm_fallback is None or not _should_use_llm_repair(llm_policy, details.diagnostics):
+    normalized_tasks = _normalize_llm_tasks(llm_tasks)
+    if llm_fallback is None or not _should_use_llm_repair(
+        llm_policy,
+        details.diagnostics,
+        tasks=normalized_tasks,
+    ):
         return details
 
     details.diagnostics.prompt_version = _PLACE_LLM_PROMPT_VERSION
+    request_diagnostics = _diagnostics_for_llm_tasks(details.diagnostics, normalized_tasks)
     try:
         repair = llm_fallback(
             PlaceLLMRepairRequest(
                 source_url=place_url,
                 resolved_url=resolved_url,
                 current_fields=_place_detail_values(details),
-                diagnostics=details.diagnostics,
+                diagnostics=request_diagnostics,
                 evidence=evidence,
+                tasks=list(normalized_tasks),
             )
         )
     except Exception as exc:
@@ -970,6 +1017,7 @@ def _build_place_details_from_snapshot(
         merged_snapshot,
         repair,
         current_fields=_place_detail_values(details),
+        llm_tasks=normalized_tasks,
     )
     repaired_details = _build_place_details(
         place_url,
@@ -1001,6 +1049,9 @@ def _scrape_places_sequential(
     http_session: HttpSessionConfig | None,
     llm_fallback: PlaceLLMRepairer | None,
     llm_policy: Literal["never", "on_quality_failure", "always"],
+    llm_tasks: Sequence[PlaceLLMTask],
+    collect_reviews: bool,
+    collect_about: bool,
     max_retries: int,
     retry_backoff_ms: int,
     stagger_ms: int,
@@ -1025,6 +1076,9 @@ def _scrape_places_sequential(
                     http_session=http_session,
                     llm_fallback=llm_fallback,
                     llm_policy=llm_policy,
+                    llm_tasks=llm_tasks,
+                    collect_reviews=collect_reviews,
+                    collect_about=collect_about,
                     max_retries=max_retries,
                     retry_backoff_ms=retry_backoff_ms,
                     retry_quality_flags=retry_quality_flags,
@@ -1055,6 +1109,9 @@ def _scrape_places_parallel(
     http_session: HttpSessionConfig | None,
     llm_fallback: PlaceLLMRepairer | None,
     llm_policy: Literal["never", "on_quality_failure", "always"],
+    llm_tasks: Sequence[PlaceLLMTask],
+    collect_reviews: bool,
+    collect_about: bool,
     max_concurrency: int,
     max_retries: int,
     retry_backoff_ms: int,
@@ -1092,6 +1149,9 @@ def _scrape_places_parallel(
             http_session=worker_http_session,
             llm_fallback=llm_fallback,
             llm_policy=llm_policy,
+            llm_tasks=llm_tasks,
+            collect_reviews=collect_reviews,
+            collect_about=collect_about,
             max_retries=max_retries,
             retry_backoff_ms=retry_backoff_ms,
             stagger_ms=stagger_ms,
@@ -1165,6 +1225,9 @@ def _scrape_place_with_context_and_retries(
     http_session: HttpSessionConfig | None,
     llm_fallback: PlaceLLMRepairer | None,
     llm_policy: Literal["never", "on_quality_failure", "always"],
+    llm_tasks: Sequence[PlaceLLMTask],
+    collect_reviews: bool,
+    collect_about: bool,
     max_retries: int,
     retry_backoff_ms: int,
     retry_quality_flags: Sequence[str],
@@ -1183,6 +1246,8 @@ def _scrape_place_with_context_and_retries(
                 timeout_ms=timeout_ms,
                 settle_time_ms=settle_time_ms,
                 http_session=http_session,
+                collect_reviews=collect_reviews,
+                collect_about=collect_about,
                 screenshot_path=screenshot_path,
                 overview_screenshot_path=overview_screenshot_path,
             )
@@ -1191,6 +1256,7 @@ def _scrape_place_with_context_and_retries(
                 snapshot=snapshot,
                 llm_fallback=llm_fallback,
                 llm_policy=llm_policy,
+                llm_tasks=llm_tasks,
             )
         except Exception as exc:
             last_error = str(exc)
@@ -1233,6 +1299,8 @@ def collect_place_snapshot(
     settle_time_ms: int = 3_000,
     browser_session: BrowserSessionConfig | None = None,
     http_session: HttpSessionConfig | None = None,
+    collect_reviews: bool = True,
+    collect_about: bool = True,
     screenshot_path: Path | None = None,
     overview_screenshot_path: Path | None = None,
 ) -> dict[str, object]:
@@ -1248,6 +1316,8 @@ def collect_place_snapshot(
             timeout_ms=timeout_ms,
             settle_time_ms=settle_time_ms,
             http_session=http_session,
+            collect_reviews=collect_reviews,
+            collect_about=collect_about,
             screenshot_path=screenshot_path,
             overview_screenshot_path=overview_screenshot_path,
         )
@@ -1262,6 +1332,8 @@ def _collect_place_snapshot_with_context(
     timeout_ms: int,
     settle_time_ms: int,
     http_session: HttpSessionConfig | None,
+    collect_reviews: bool,
+    collect_about: bool,
     screenshot_path: Path | None,
     overview_screenshot_path: Path | None,
 ) -> dict[str, object]:
@@ -1286,13 +1358,13 @@ def _collect_place_snapshot_with_context(
         dom_snapshot = page.evaluate(_PLACE_JS_EXTRACTOR)
         if overview_screenshot_path is not None:
             _write_place_screenshot(page, overview_screenshot_path)
-        if isinstance(dom_snapshot, Mapping):
+        if collect_reviews and isinstance(dom_snapshot, Mapping):
             review_snapshot = _collect_review_panel_snapshot(page, timeout_ms=timeout_ms)
             if review_snapshot:
                 dom_snapshot = {**dom_snapshot, **review_snapshot}
-        if screenshot_path is not None:
+        if collect_reviews and screenshot_path is not None:
             _write_place_screenshot(page, screenshot_path)
-        if isinstance(dom_snapshot, Mapping):
+        if collect_about and isinstance(dom_snapshot, Mapping):
             about_snapshot = _collect_about_panel_snapshot(page, timeout_ms=timeout_ms)
             if about_snapshot:
                 dom_snapshot = {**dom_snapshot, **about_snapshot}
@@ -1433,9 +1505,12 @@ def _build_place_details(
     body_lines = _body_lines(snapshot.get("body_text"))
     search_lines = panel_lines or body_lines
     combined_lines = _dedupe_lines([*panel_lines, *body_lines])
-    name = _clean_name_text(snapshot.get("name")) or _first_meaningful_name(search_lines)
     category = _clean_category_text(snapshot.get("category")) or _extract_category_from_lines(
         search_lines
+    )
+    name = _clean_structured_name_text(snapshot.get("name")) or _first_meaningful_name(
+        search_lines,
+        excluded_values=(category,),
     )
     category_display_en, category_display_en_source, category_display_en_confidence = (
         _derive_category_display_en(category, snapshot)
@@ -1552,22 +1627,41 @@ _LLM_REPAIR_FIELDS = set(PLACE_LLM_REPAIR_FIELDS)
 _QUALITY_CORE_FIELDS = ("name", "category", "rating", "review_count", "address")
 
 
+def _normalize_llm_tasks(tasks: Sequence[PlaceLLMTask]) -> tuple[PlaceLLMTask, ...]:
+    return tuple(dict.fromkeys(tasks))
+
+
+def _llm_repair_fields_for_tasks(tasks: Sequence[PlaceLLMTask]) -> set[str]:
+    if not tasks:
+        return set()
+    fields: set[str] = set()
+    if "dom_repair" in tasks:
+        fields.update(PLACE_LLM_DOM_REPAIR_FIELDS)
+    if "display_translation" in tasks:
+        fields.update(PLACE_LLM_DISPLAY_TRANSLATION_FIELDS)
+    return fields
+
+
 def _merge_llm_place_fields(
     snapshot: Mapping[str, object],
     repair: Mapping[str, object],
     *,
     current_fields: Mapping[str, object],
+    llm_tasks: Sequence[PlaceLLMTask] = _DEFAULT_LLM_TASKS,
 ) -> dict[str, object]:
     raw_fields = repair.get("fields")
     fields = raw_fields if isinstance(raw_fields, Mapping) else repair
     merged = dict(snapshot)
     raw_sources = snapshot.get("field_sources")
     field_sources = dict(raw_sources) if isinstance(raw_sources, Mapping) else {}
+    allowed_repair_fields = _llm_repair_fields_for_tasks(llm_tasks)
 
     for key, value in fields.items():
         if key == "_repair_source":
             continue
         if not isinstance(key, str) or key not in _LLM_REPAIR_FIELDS:
+            continue
+        if key not in allowed_repair_fields:
             continue
         if _is_missing_value(value):
             continue
@@ -1863,6 +1957,17 @@ def _build_place_diagnostics(
     if raw_address is not None and details.address is None:
         quality_flags.append("address_rejected")
 
+    raw_name = _clean_text(snapshot.get("name"))
+    if (
+        details.name is None
+        and (
+            raw_name is not None
+            and _looks_like_ui_action_label(raw_name)
+            or _snapshot_contains_ui_action_name_candidate(snapshot)
+        )
+    ):
+        quality_flags.append("name_rejected")
+
     if (
         details.rating is None
         and details.review_count is None
@@ -1954,26 +2059,58 @@ def _score_place_confidence(missing_fields: list[str], quality_flags: list[str])
 def _should_use_llm_repair(
     policy: Literal["never", "on_quality_failure", "always"],
     diagnostics: PlaceExtractionDiagnostics,
+    *,
+    tasks: Sequence[PlaceLLMTask] = _DEFAULT_LLM_TASKS,
 ) -> bool:
+    normalized_tasks = _normalize_llm_tasks(tasks)
+    if not normalized_tasks:
+        return False
     if policy == "never":
         return False
     if policy == "always":
         return True
     if policy != "on_quality_failure":
         raise ValueError(f"Unsupported llm_policy: {policy}")
-    critical_flags = {
-        "address_rejected",
-        "limited_view",
-        "search_result_page",
-        "thin_place_result",
-        "needs_address_display_en",
-        "needs_category_display_en",
-    }
-    return (
-        "missing_name" in diagnostics.quality_flags
-        or any(flag in critical_flags for flag in diagnostics.quality_flags)
+    quality_flags = set(diagnostics.quality_flags)
+    if "dom_repair" in normalized_tasks and (
+        quality_flags & _DOM_REPAIR_QUALITY_FLAGS
         or (diagnostics.confidence is not None and diagnostics.confidence < 0.7)
+    ):
+        return True
+    return bool(
+        "display_translation" in normalized_tasks
+        and quality_flags & _DISPLAY_TRANSLATION_QUALITY_FLAGS
     )
+
+
+def _diagnostics_for_llm_tasks(
+    diagnostics: PlaceExtractionDiagnostics,
+    tasks: Sequence[PlaceLLMTask],
+) -> PlaceExtractionDiagnostics:
+    allowed_flags = _llm_quality_flags_for_tasks(diagnostics.quality_flags, tasks)
+    return PlaceExtractionDiagnostics(
+        field_sources=dict(diagnostics.field_sources),
+        missing_fields=list(diagnostics.missing_fields),
+        quality_flags=allowed_flags,
+        confidence=diagnostics.confidence,
+        llm_used=diagnostics.llm_used,
+        repair_source=diagnostics.repair_source,
+        llm_error=diagnostics.llm_error,
+        evidence_hash=diagnostics.evidence_hash,
+        prompt_version=diagnostics.prompt_version,
+    )
+
+
+def _llm_quality_flags_for_tasks(
+    quality_flags: Sequence[str],
+    tasks: Sequence[PlaceLLMTask],
+) -> list[str]:
+    allowed: set[str] = set()
+    if "dom_repair" in tasks:
+        allowed.update(_DOM_REPAIR_QUALITY_FLAGS)
+    if "display_translation" in tasks:
+        allowed.update(_DISPLAY_TRANSLATION_QUALITY_FLAGS)
+    return [flag for flag in quality_flags if flag in allowed]
 
 
 def _collect_preview_place_enrichment(
@@ -2138,13 +2275,15 @@ def _clean_plus_code_text(value: object) -> str | None:
     return match.group(0).strip()
 
 
-def _clean_name_text(value: object) -> str | None:
+def _clean_name_text(value: object, *, reject_ui_actions: bool = True) -> str | None:
     normalized = _clean_text(value)
     if normalized is None:
         return None
     if _looks_like_status_text(normalized):
         return None
     if _looks_like_search_results_label(normalized):
+        return None
+    if reject_ui_actions and _looks_like_ui_action_label(normalized):
         return None
     if _looks_like_rating_text(normalized):
         return None
@@ -2155,22 +2294,37 @@ def _clean_name_text(value: object) -> str | None:
     return None
 
 
+def _clean_structured_name_text(value: object) -> str | None:
+    return _clean_name_text(value, reject_ui_actions=False)
+
+
 def _clean_category_text(value: object) -> str | None:
     normalized = _clean_text(value)
     if normalized is None:
         return None
     if _looks_like_status_text(normalized):
         return None
-    if _looks_like_search_results_label(normalized) or normalized.casefold() == "share":
+    if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
         return None
     if not any(character.isalpha() for character in normalized):
         return None
     return normalized
 
 
-def _first_meaningful_name(lines: list[str]) -> str | None:
+def _first_meaningful_name(
+    lines: list[str],
+    *,
+    excluded_values: Sequence[str | None] = (),
+) -> str | None:
+    excluded = {
+        value.casefold()
+        for value in excluded_values
+        if isinstance(value, str) and value.strip()
+    }
     for line in lines:
         normalized = _clean_name_text(line)
+        if normalized is not None and normalized.casefold() in excluded:
+            continue
         if normalized is not None:
             return normalized
     return None
@@ -2407,7 +2561,7 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if _looks_like_status_text(normalized):
         return None
-    if _looks_like_search_results_label(normalized) or normalized.casefold() == "share":
+    if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
         return None
     if not any(character.isalnum() for character in normalized):
         return None
@@ -2920,6 +3074,23 @@ def _looks_like_search_results_label(value: str) -> bool:
     return normalized.casefold() in _SEARCH_RESULTS_LABELS
 
 
+def _looks_like_ui_action_label(value: str) -> bool:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return False
+    return normalized.casefold() in _UI_ACTION_LABELS
+
+
+def _snapshot_contains_ui_action_name_candidate(snapshot: Mapping[str, object]) -> bool:
+    lines = _dedupe_lines(
+        [
+            *_body_lines(snapshot.get("panel_text")),
+            *_body_lines(snapshot.get("body_text")),
+        ]
+    )
+    return any(_looks_like_ui_action_label(line) for line in lines)
+
+
 def _extract_preview_coordinates(root: list[object]) -> tuple[float, float] | None:
     fallback_e7_pair: tuple[float, float] | None = None
     for node in _iter_lists(root):
@@ -3034,10 +3205,13 @@ def _parse_review_count(value: object) -> int | None:
 
 
 def _resolve_review_count(snapshot: Mapping[str, object], lines: list[str]) -> int | None:
+    direct_count = _parse_review_count(snapshot.get("review_count"))
+    if direct_count is not None:
+        return direct_count
     from_lines = _extract_review_count_from_lines(lines)
     if from_lines is not None:
         return from_lines
-    return _parse_review_count(snapshot.get("review_count"))
+    return None
 
 
 def _extract_review_count_from_lines(lines: list[str]) -> int | None:

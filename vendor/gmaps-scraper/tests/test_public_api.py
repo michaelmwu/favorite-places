@@ -28,6 +28,7 @@ from gmaps_scraper import (
     load_place_selector_recipe,
     needs_display_en,
     openai_compatible_place_repairer_from_env,
+    repair_place_display_fields,
     reusable_place_display_fields,
     reuse_place_display_fields,
     scrape_place,
@@ -64,6 +65,7 @@ class PublicApiTests(unittest.TestCase):
         self.assertTrue(callable(llm_cache_namespace_from_env))
         self.assertTrue(callable(needs_display_en))
         self.assertTrue(callable(openai_compatible_place_repairer_from_env))
+        self.assertTrue(callable(repair_place_display_fields))
         self.assertTrue(callable(reusable_place_display_fields))
         self.assertTrue(callable(reuse_place_display_fields))
         self.assertTrue(callable(write_default_place_selector_recipe))

@@ -27,6 +27,22 @@ class PlacesSettings(BaseSettings):
         default="scrape_then_api",
         validation_alias=AliasChoices("GOOGLE_PLACES_ENRICHMENT_STRATEGY"),
     )
+    google_maps_place_llm_repair: Literal["off", "dom", "dom_then_translation"] | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_LLM_REPAIR", "GMAPS_PLACE_LLM_REPAIR"),
+    )
+    google_maps_place_llm_cache_dir: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_LLM_CACHE_DIR", "GMAPS_PLACE_LLM_CACHE_DIR"),
+    )
+    google_maps_place_collect_reviews: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_COLLECT_REVIEWS", "GMAPS_PLACE_COLLECT_REVIEWS"),
+    )
+    google_maps_place_collect_about: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_COLLECT_ABOUT", "GMAPS_PLACE_COLLECT_ABOUT"),
+    )
 
 
 class SourceConfig(PipelineModel):
@@ -138,12 +154,19 @@ class EnrichmentPlace(PipelineModel):
     google_place_resource_name: str | None = None
     display_name: str | None = None
     formatted_address: str | None = None
+    address_display_en: str | None = None
+    address_display_en_source: str | None = None
+    address_display_en_confidence: str | None = None
     google_maps_uri: str | None = None
     rating: float | None = None
     user_rating_count: int | None = None
+    price_range: str | None = None
     primary_type: str | None = None
     primary_type_display_name: str | None = None
     primary_type_display_name_localized: str | None = None
+    category_display_en: str | None = None
+    category_display_en_source: str | None = None
+    category_display_en_confidence: str | None = None
     types: list[str] = Field(default_factory=list)
     business_status: str | None = None
     website: str | None = None
@@ -153,6 +176,9 @@ class EnrichmentPlace(PipelineModel):
     description: str | None = None
     main_photo_url: str | None = None
     photo_url: str | None = None
+    review_topics: list[dict[str, Any]] = Field(default_factory=list)
+    reviews: list[dict[str, Any]] = Field(default_factory=list)
+    about_sections: list[dict[str, Any]] = Field(default_factory=list)
     limited_view: bool = False
 
 

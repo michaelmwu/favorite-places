@@ -125,6 +125,7 @@ repaired_place = scrape_place(
         cache_dir=Path(".gmaps-scraper/llm-cache"),
         cache_namespace=llm_cache_namespace_from_env(),
     ),
+    llm_tasks=("dom_repair", "display_translation"),
 )
 ```
 
@@ -136,7 +137,17 @@ then call optional LLM repair if a raw non-Latin address/category still needs
 normalization.
 
 ```python
-from gmaps_scraper import needs_display_en, reuse_place_display_fields, scrape_place
+from pathlib import Path
+
+from gmaps_scraper import (
+    cached_place_repairer,
+    llm_cache_namespace_from_env,
+    needs_display_en,
+    openai_compatible_place_repairer_from_env,
+    repair_place_display_fields,
+    reuse_place_display_fields,
+    scrape_place,
+)
 
 fresh = scrape_place(place_url, llm_policy="never")
 fresh = reuse_place_display_fields(fresh, previous_place)
@@ -146,11 +157,31 @@ needs_translation = (
 ) or (
     needs_display_en(fresh.category) and fresh.category_display_en is None
 )
+
+if needs_translation:
+    repairer = cached_place_repairer(
+        openai_compatible_place_repairer_from_env(),
+        cache_dir=Path(".gmaps-scraper/llm-cache"),
+        cache_namespace=llm_cache_namespace_from_env(),
+    )
+    translated = repair_place_display_fields(
+        fresh,
+        repairer=repairer,
+        evidence={"city": "Singapore", "country": "Singapore"},
+    )
 ```
 
 The downstream app owns the spend policy. `gmaps-scraper` owns the generic
 Google Maps repair prompt, evidence shape, script detection, translation memory,
 and cache mechanics.
+
+`repair_place_display_fields` does not scrape Google Maps. It only repairs
+English-readable display fields from an existing `PlaceDetails`; optional
+`evidence` is caller-provided context such as guide city/country.
+
+Reviews and About attributes are collected by default. Use `collect_reviews=False`
+or `collect_about=False` in library code, or `--skip-reviews` / `--skip-about` in
+the CLI, when a refresh only needs overview facts.
 
 ## Documentation
 

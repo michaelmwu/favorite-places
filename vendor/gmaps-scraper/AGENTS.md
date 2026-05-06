@@ -27,11 +27,11 @@ individual Google Maps place pages.
 
 1. Load the place URL in a real browser environment.
 2. Extract structured DOM rows from the rendered place panel.
-3. Open Reviews and About tabs when needed to collect review topics, visible
+3. Open Reviews and About tabs when enabled to collect review topics, visible
    review snippets, and About attributes.
 4. Use preview payloads and conservative text fallbacks for missing facts.
 5. Build diagnostics and quality flags.
-6. Optionally run caller-provided LLM repair only when enabled by policy.
+6. Optionally run caller-provided LLM repair tasks only when enabled by policy.
 
 ## Parsing Rules
 
@@ -168,6 +168,11 @@ Place scraping returns `PlaceDetails` JSON shaped like:
 
 Preserve raw Google fields. Put English-readable display values in separate
 `*_display_en` fields rather than overwriting raw `address` or `category`.
+LLM repair is task-scoped: `dom_repair` repairs generic Google Maps facts, and
+`display_translation` produces English-readable address/category display fields.
+Reviews and About panel collection are enabled by default for full place output,
+but callers may skip those extra tab interactions when refreshing overview-only
+facts.
 Downstream product concepts such as tags, neighborhoods, guide keywords, and
 ranking logic do not belong in this package.
 

@@ -14,7 +14,12 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from gmaps_scraper.models import PLACE_LLM_REPAIR_FIELDS, PlaceLLMRepairRequest
+from gmaps_scraper.models import (
+    PLACE_LLM_DISPLAY_TRANSLATION_FIELDS,
+    PLACE_LLM_DOM_REPAIR_FIELDS,
+    PLACE_LLM_REPAIR_FIELDS,
+    PlaceLLMRepairRequest,
+)
 from gmaps_scraper.translation_memory import (
     TranslationMemory,
     write_learned_translation_memory,
@@ -233,6 +238,7 @@ def _place_repair_cache_key(
         "google_place_id": request.current_fields.get("google_place_id"),
         "evidence_hash": request.diagnostics.evidence_hash,
         "prompt_version": request.diagnostics.prompt_version,
+        "tasks": request.tasks,
     }
     return sha256(json.dumps(identity, sort_keys=True).encode("utf-8")).hexdigest()
 
@@ -289,7 +295,7 @@ def openai_compatible_place_repair(
             "role": "user",
             "content": json.dumps(
                 {
-                    "allowed_fields": list(PLACE_LLM_REPAIR_FIELDS),
+                    "allowed_fields": _allowed_fields_for_tasks(request.tasks),
                     "review_topic_shape": {
                         "label": "string",
                         "count": "integer or null",
@@ -334,6 +340,17 @@ def openai_compatible_place_repair(
     if not isinstance(decoded, Mapping):
         return None
     return decoded
+
+
+def _allowed_fields_for_tasks(tasks: list[str]) -> list[str]:
+    if not tasks:
+        return list(PLACE_LLM_REPAIR_FIELDS)
+    allowed: list[str] = []
+    if "dom_repair" in tasks:
+        allowed.extend(PLACE_LLM_DOM_REPAIR_FIELDS)
+    if "display_translation" in tasks:
+        allowed.extend(PLACE_LLM_DISPLAY_TRANSLATION_FIELDS)
+    return list(dict.fromkeys(allowed))
 
 
 def _extract_chat_content(payload: Mapping[str, Any]) -> str | None:

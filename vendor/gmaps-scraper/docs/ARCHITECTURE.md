@@ -205,6 +205,13 @@ need English-readable display normalization. `llm_policy="never"` disables model
 repair, and `llm_policy="always"` is intended for debugging or controlled
 backfills.
 
+LLM work is task-scoped. `dom_repair` allows the model to repair generic Google
+Maps facts when extraction is thin or suspicious. `display_translation` allows
+English-readable display normalization for raw address/category fields. Callers
+can pass `llm_tasks=("display_translation",)` to avoid DOM repair, or
+`llm_tasks=("dom_repair",)` to avoid display translation. The CLI exposes the
+same split with repeated `--llm-task` flags.
+
 The LLM is allowed to backfill bounded Google Maps place fields, but it must only
 return values supported by the sanitized evidence. Review text is not accepted
 through the LLM path. Review topics and About sections are accepted only when the
@@ -256,9 +263,31 @@ memory logic.
 
 Only when the raw field changed, the prior display field is missing/stale, and
 the raw value still needs English display normalization should a downstream
-consumer run the optional LLM repair path with a stable cache directory. This
-keeps the spend decision in the product while keeping Google Maps-specific
-translation memory and prompt behavior in `gmaps-scraper`.
+consumer run `repair_place_display_fields()` with a stable cache-backed repairer.
+That helper does not scrape the page again; it builds a
+`display_translation`-only repair request from an existing `PlaceDetails`.
+Callers may pass generic evidence such as guide/list city, country, or region.
+`located_in` remains the Google Maps containing-place field, such as a hotel,
+mall, building, or complex, not city/country. This keeps the spend decision in
+the product while keeping Google Maps-specific translation memory and prompt
+behavior in `gmaps-scraper`.
+
+## Optional Panel Collection
+
+Place scraping always starts with the overview panel. Reviews and About are
+additional panel collection steps:
+
+- Reviews collection clicks the Reviews tab, expands visible topic chips, and
+  captures visible review snippets.
+- About collection clicks the About tab and captures attribute sections such as
+  Accessibility or Service options.
+
+Both are enabled by default because they are part of the full place output
+contract. Callers can pass `collect_reviews=False` or `collect_about=False`, and
+the CLI exposes `--skip-reviews` and `--skip-about`, when a refresh only needs
+core overview facts. Skipping Reviews does not delete overview review counts or
+topic chips already present in the initial DOM; it only avoids the extra tab
+interaction and review screenshot.
 
 ## Search URL Construction
 

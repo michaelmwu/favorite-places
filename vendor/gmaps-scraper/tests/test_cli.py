@@ -257,6 +257,9 @@ class CliTests(unittest.TestCase):
             http_session=None,
             llm_fallback=None,
             llm_policy="on_quality_failure",
+            llm_tasks=("dom_repair", "display_translation"),
+            collect_reviews=True,
+            collect_about=True,
         )
         collect_saved_list_result.assert_not_called()
 
@@ -513,6 +516,9 @@ class CliTests(unittest.TestCase):
             ),
             llm_fallback=None,
             llm_policy="on_quality_failure",
+            llm_tasks=("dom_repair", "display_translation"),
+            collect_reviews=True,
+            collect_about=True,
         )
 
     def test_place_kind_can_enable_llm_repair_from_env(self) -> None:
@@ -563,7 +569,55 @@ class CliTests(unittest.TestCase):
             http_session=None,
             llm_fallback=llm_fallback,
             llm_policy="always",
+            llm_tasks=("dom_repair", "display_translation"),
+            collect_reviews=True,
+            collect_about=True,
         )
+
+    def test_place_kind_can_scope_llm_tasks_and_skip_tabs(self) -> None:
+        stdout = io.StringIO()
+        details = PlaceDetails(
+            source_url="https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den",
+            name="Den",
+            category="Japanese restaurant",
+            rating=4.4,
+            review_count=324,
+            address="Tokyo, Japan",
+        )
+        llm_fallback = Mock()
+
+        with (
+            patch(
+                "sys.argv",
+                [
+                    "gmaps-scraper",
+                    "https://www.google.com/maps/place/Den",
+                    "--kind",
+                    "place",
+                    "--llm-repair",
+                    "--llm-task",
+                    "display_translation",
+                    "--skip-reviews",
+                    "--skip-about",
+                ],
+            ),
+            patch(
+                "gmaps_scraper.cli.openai_compatible_place_repairer_from_env",
+                return_value=llm_fallback,
+            ),
+            patch("gmaps_scraper.cli.scrape_place", return_value=details) as scrape_place,
+            redirect_stdout(stdout),
+        ):
+            exit_code = main()
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(
+            scrape_place.call_args.kwargs["llm_tasks"],
+            ("display_translation",),
+        )
+        self.assertFalse(scrape_place.call_args.kwargs["collect_reviews"])
+        self.assertFalse(scrape_place.call_args.kwargs["collect_about"])
 
     def test_place_kind_uses_env_file_model_for_llm_cache_namespace(self) -> None:
         stdout = io.StringIO()
@@ -784,6 +838,9 @@ class CliTests(unittest.TestCase):
             http_session=None,
             llm_fallback=None,
             llm_policy="on_quality_failure",
+            llm_tasks=("dom_repair", "display_translation"),
+            collect_reviews=True,
+            collect_about=True,
             max_concurrency=1,
             max_retries=2,
             retry_backoff_ms=750,
@@ -836,6 +893,9 @@ class CliTests(unittest.TestCase):
             http_session=None,
             llm_fallback=None,
             llm_policy="on_quality_failure",
+            llm_tasks=("dom_repair", "display_translation"),
+            collect_reviews=True,
+            collect_about=True,
             max_concurrency=1,
             max_retries=1,
             retry_backoff_ms=2_000,

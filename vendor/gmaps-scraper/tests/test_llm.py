@@ -85,6 +85,34 @@ class LLMConfigTests(unittest.TestCase):
         )
         self.assertEqual(len(calls), 1)
 
+    def test_cached_place_repairer_separates_llm_task_namespaces(self) -> None:
+        calls: list[PlaceLLMRepairRequest] = []
+
+        def repairer(request: PlaceLLMRepairRequest) -> dict[str, object]:
+            calls.append(request)
+            return {"address_display_en": "Tokyo, Japan"}
+
+        first_request = _build_request()
+        first_request.tasks = ["display_translation"]
+        first_request.diagnostics.evidence_hash = "evidence-fixture"
+        first_request.diagnostics.prompt_version = "prompt-fixture"
+        second_request = _build_request()
+        second_request.tasks = ["dom_repair"]
+        second_request.diagnostics.evidence_hash = "evidence-fixture"
+        second_request.diagnostics.prompt_version = "prompt-fixture"
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            cached = cached_place_repairer(
+                repairer,
+                cache_dir=Path(tmp_dir),
+                cache_namespace="gpt-test",
+            )
+
+            cached(first_request)
+            cached(second_request)
+
+        self.assertEqual(len(calls), 2)
+
     def test_cached_place_repairer_reuses_learned_translation_memory(self) -> None:
         calls: list[PlaceLLMRepairRequest] = []
 

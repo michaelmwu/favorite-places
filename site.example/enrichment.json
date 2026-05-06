@@ -1,0 +1,7 @@
+{
+  "google_maps_place": {
+    "llm_repair": "dom",
+    "collect_reviews": true,
+    "collect_about": true
+  }
+}
