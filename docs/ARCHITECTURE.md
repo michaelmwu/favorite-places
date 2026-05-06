@@ -280,6 +280,7 @@ Enrichment is optional and cached. A normal build can run without enrichment, bu
 - `bun run fill:enrichment`: only places with no cache entry
 - `bun run fill:gaps`: missing enrichment plus missing photos
 - `bun run refresh:enrichment`: force-refresh every entry
+- `bun run refresh:semantic-descriptions`: generate or refresh LLM semantic descriptions from existing cache evidence only, without scraping or Places API calls
 - `bun run export:cache:json`: optional debug export of per-guide cache JSON from SQLite
 
 `GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls source selection:

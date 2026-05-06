@@ -4,7 +4,7 @@
     "collect_reviews": true,
     "collect_about": true,
     "semantic_llm": false,
-    "semantic_descriptions": false,
+    "semantic_descriptions": true,
     "semantic_description_force_refresh": false
   }
 }

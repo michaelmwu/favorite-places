@@ -1483,12 +1483,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force-refresh place enrichment cache entries for every place.",
     )
     parser.add_argument(
+        "--refresh-semantic-descriptions",
+        action="store_true",
+        help=(
+            "Generate or refresh LLM semantic descriptions from existing enrichment cache entries only; "
+            "does not scrape Google Maps or call the Places API."
+        ),
+    )
+    parser.add_argument(
+        "--force-semantic-descriptions",
+        action="store_true",
+        help=(
+            "Force-regenerate cached LLM semantic descriptions even when their semantic signatures still match. "
+            "Implies --refresh-semantic-descriptions."
+        ),
+    )
+    parser.add_argument(
         "--enrich-place",
         action="append",
         default=[],
         help=(
-            "Force-refresh enrichment for a specific place selector unless combined with "
-            "--enrich or --enrich-missing. Repeat to target multiple places. "
+            "Force-refresh enrichment, or refresh semantic descriptions, for a specific place selector unless combined "
+            "with --enrich or --enrich-missing. Repeat to target multiple places. "
             "Matches exact place ids, CIDs, names, Maps URLs, `cid:<value>`/`gms:<value>` "
             "aliases, and `guide-slug:<selector>` forms."
         ),
@@ -3049,6 +3065,91 @@ def enrich_raw_sources(
         raise
     finally:
         executor.shutdown(wait=True, cancel_futures=True)
+
+
+def refresh_cached_semantic_descriptions(
+    *,
+    force_refresh: bool = False,
+    place_selectors: Sequence[str] | None = None,
+) -> tuple[int, int, int]:
+    normalized_place_selectors = normalize_place_selectors(place_selectors or [])
+    matched_place_selectors: set[str] = set()
+    cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
+    semantic_jobs: list[tuple[str, str, RawPlace, EnrichmentCacheEntry, str | None, str | None]] = []
+    updated_count = 0
+    reused_count = 0
+    skipped_count = 0
+
+    for raw_path in sorted(RAW_DIR.glob("*.json")):
+        raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+        slug = raw_path.stem
+        city_name = infer_city_name(raw.title or "")
+        country_name = infer_country_name(raw.title or "", raw)
+        cache_payload = load_places_cache(slug)
+        cache_payloads[slug] = cache_payload
+
+        for place in raw.places:
+            place_id = stable_place_id(place, source_type=raw.configured_source_type)
+            if normalized_place_selectors:
+                selector_matches = place_selector_matches(
+                    slug,
+                    place,
+                    place_id=place_id,
+                    selectors=normalized_place_selectors,
+                )
+                matched_place_selectors.update(selector_matches)
+                if not selector_matches:
+                    continue
+
+            entry = cache_payload.get(place_id)
+            if not cache_entry_has_publishable_enrichment(entry) or entry is None or entry.place is None:
+                skipped_count += 1
+                continue
+            semantic_jobs.append((slug, place_id, place, entry, city_name, country_name))
+
+    if normalized_place_selectors:
+        missing_selectors = sorted(normalized_place_selectors - matched_place_selectors)
+        if missing_selectors:
+            missing_text = ", ".join(missing_selectors)
+            raise RuntimeError(f"No configured place matched: {missing_text}")
+
+    changed_slugs: set[str] = set()
+    for slug, place_id, place, entry, city_name, country_name in semantic_jobs:
+        assert entry.place is not None
+        previous_description = entry.place.semantic_description
+        previous_signature = entry.place.semantic_description_signature
+        apply_semantic_enrichment(
+            entry.place,
+            raw_place=place,
+            city_name=city_name,
+            country_name=country_name,
+            existing_entry=entry,
+            enable_semantics=False,
+            enable_description=True,
+            force_description=force_refresh,
+        )
+        current_description = entry.place.semantic_description
+        current_signature = entry.place.semantic_description_signature
+        if current_description and (
+            current_description != previous_description or current_signature != previous_signature
+        ):
+            updated_count += 1
+            changed_slugs.add(slug)
+            print(f"Generated semantic description for {slug}:{place_id} [{place.name}]", flush=True)
+        elif current_description:
+            reused_count += 1
+        else:
+            skipped_count += 1
+
+    for slug in sorted(changed_slugs):
+        save_places_cache(slug, cache_payloads[slug])
+
+    print(
+        "Semantic description refresh complete: "
+        f"{updated_count} generated, {reused_count} reused, {skipped_count} skipped.",
+        flush=True,
+    )
+    return updated_count, reused_count, skipped_count
 
 
 def enrich_place_job(
@@ -7242,10 +7343,19 @@ def apply_semantic_enrichment(
     city_name: str | None,
     country_name: str | None,
     existing_entry: EnrichmentCacheEntry | None = None,
+    enable_semantics: bool | None = None,
+    enable_description: bool | None = None,
+    force_description: bool | None = None,
 ) -> None:
-    include_semantics = google_maps_place_semantic_llm_enabled()
-    include_description = google_maps_place_semantic_descriptions_enabled()
-    force_description = google_maps_place_semantic_description_force_refresh()
+    include_semantics = google_maps_place_semantic_llm_enabled() if enable_semantics is None else enable_semantics
+    include_description = (
+        google_maps_place_semantic_descriptions_enabled() if enable_description is None else enable_description
+    )
+    force_description = (
+        google_maps_place_semantic_description_force_refresh()
+        if force_description is None
+        else force_description
+    )
     if not include_semantics and not include_description:
         return
     description_signature = semantic_description_signature(
@@ -8016,7 +8126,11 @@ def main() -> int:
 
     if (args.refresh_list or args.refresh_force) and not args.refresh:
         args.refresh = True
-    if args.enrich_place and not (args.enrich or args.enrich_missing or args.refresh_enrichment):
+    if args.force_semantic_descriptions and not args.refresh_semantic_descriptions:
+        args.refresh_semantic_descriptions = True
+    if args.enrich_place and not (
+        args.enrich or args.enrich_missing or args.refresh_enrichment or args.refresh_semantic_descriptions
+    ):
         args.refresh_enrichment = True
 
     if args.refresh:
@@ -8038,6 +8152,13 @@ def main() -> int:
             place_selectors=args.enrich_place,
             refresh_workers=args.refresh_workers,
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
+        )
+
+    if args.refresh_semantic_descriptions:
+        sync_local_csv_sources()
+        refresh_cached_semantic_descriptions(
+            force_refresh=args.force_semantic_descriptions,
+            place_selectors=args.enrich_place,
         )
 
     if args.export_cache_json:

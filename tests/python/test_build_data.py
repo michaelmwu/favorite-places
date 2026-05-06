@@ -116,6 +116,29 @@ class BuildDataTests(unittest.TestCase):
             startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         )
 
+    def test_main_force_semantic_descriptions_runs_cache_only_pass(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--force-semantic-descriptions", "--enrich-place", "cid:123"]),
+            patch.object(build_data, "sync_local_csv_sources") as sync_local_csv_sources,
+            patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
+            patch.object(build_data, "refresh_cached_semantic_descriptions") as refresh_descriptions,
+            patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        sync_local_csv_sources.assert_called_once()
+        enrich_raw_sources.assert_not_called()
+        refresh_descriptions.assert_called_once_with(
+            force_refresh=True,
+            place_selectors=["cid:123"],
+        )
+        rebuild_generated_data.assert_called_once_with(
+            refresh_photos=False,
+            photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+
     def test_refresh_generated_guide_photos_skips_artifact_rewrite_when_photo_state_is_unchanged(self) -> None:
         guide = Guide(
             slug="tokyo-japan",
@@ -5272,6 +5295,64 @@ class BuildDataTests(unittest.TestCase):
                 )
 
             self.assertEqual(seen_reasons, ["missing-cache-entry"])
+
+    def test_refresh_cached_semantic_descriptions_updates_existing_cache_without_scrape(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[RawPlace(name="Tea House", maps_url="https://maps.google.com/?cid=111", cid="111")],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            cache_payload = {
+                "cid:111": EnrichmentCacheEntry(
+                    fetched_at="2026-05-01T00:00:00+00:00",
+                    source="google_maps_page",
+                    query="Tea House, Taipei, Taiwan",
+                    matched=True,
+                    place=EnrichmentPlace(
+                        display_name="Tea House",
+                        formatted_address="No. 12, Songgao Rd, Taipei City",
+                        primary_type_display_name="Tea house",
+                        review_topics=[{"label": "oolong", "count": 12}],
+                    ),
+                )
+            }
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+            ):
+                build_data.save_places_cache("taipei-taiwan", cache_payload)
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "fetch_places_enrichment") as fetch_places_enrichment,
+                patch.object(
+                    build_data,
+                    "repair_semantic_enrichment_with_llm",
+                    return_value={"description": "A quiet tea stop focused on oolong."},
+                ) as repair,
+            ):
+                updated_count, reused_count, skipped_count = build_data.refresh_cached_semantic_descriptions()
+                refreshed_cache = build_data.load_places_cache("taipei-taiwan")
+
+        fetch_places_enrichment.assert_not_called()
+        repair.assert_called_once()
+        self.assertEqual((updated_count, reused_count, skipped_count), (1, 0, 0))
+        self.assertEqual(
+            refreshed_cache["cid:111"].place.semantic_description,
+            "A quiet tea stop focused on oolong.",
+        )
+        self.assertIsNotNone(refreshed_cache["cid:111"].place.semantic_description_signature)
 
     def test_enrich_raw_sources_prioritizes_missing_entries_before_expired_refreshes(self) -> None:
         raw = RawSavedList(

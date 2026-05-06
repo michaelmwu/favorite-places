@@ -133,6 +133,13 @@ bun run enrich:data
 bun run refresh:enrichment
 ```
 
+Generate LLM semantic descriptions from existing cached enrichment without rescraping or using the Places API:
+
+```bash
+bun run refresh:semantic-descriptions
+bun run refresh:semantic-descriptions:force
+```
+
 The behavior is configurable in a few places:
 
 - `GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls enrichment source selection. Use `scrape` for scraper-only, `api` for API-only, or `scrape_then_api` for scraper first with API fallback. The default is `scrape_then_api`.
@@ -140,7 +147,7 @@ The behavior is configurable in a few places:
 - `site/enrichment.json` controls site-owned scraper policy. `google_maps_places.llm_repair` defaults to `dom`, while `collect_reviews` and `collect_about` default to `false` so enrichment stays compact unless a site opts into those heavier panels.
 - `GOOGLE_MAPS_PLACES_LLM_REPAIR`, `GOOGLE_MAPS_PLACES_COLLECT_REVIEWS`, and `GOOGLE_MAPS_PLACES_COLLECT_ABOUT` override the site enrichment config for automation or one-off refreshes.
 - `GMAPS_SCRAPER_PROXY` routes Google Maps list and place-page scraping through a proxy.
-- The command controls refresh scope: `fill:gaps` fills missing enrichment and photos, `enrich:data` fills missing or stale cache entries, and `refresh:enrichment` refreshes every entry.
+- The command controls refresh scope: `fill:gaps` fills missing enrichment and photos, `enrich:data` fills missing or stale cache entries, `refresh:enrichment` refreshes every entry, and `refresh:semantic-descriptions` only updates cached semantic descriptions from already cached enrichment evidence.
 
 Example `site/enrichment.json`:
 
