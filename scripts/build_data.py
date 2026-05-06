@@ -3151,7 +3151,6 @@ def derive_visible_place_tags(
     tags: list[str],
     semantic_tags: list[str],
     category: str | None,
-    limit: int = 4,
 ) -> list[str]:
     visible: list[str] = []
     for tag in semantic_tags:
@@ -3162,7 +3161,7 @@ def derive_visible_place_tags(
             append_unique_tag(visible, category_tag)
     for tag in tags:
         append_unique_tag(visible, tag)
-    return visible[:limit]
+    return visible
 
 
 def derive_locality_tags(

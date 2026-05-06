@@ -2770,7 +2770,7 @@ class BuildDataTests(unittest.TestCase):
                 semantic_tags=["omakase", "date-night"],
                 category="Sushi restaurant",
             ),
-            ["omakase", "date-night", "sushi-restaurant", "tokyo"],
+            ["omakase", "date-night", "sushi-restaurant", "tokyo", "restaurant", "food", "ginza"],
         )
 
     def test_apply_semantic_enrichment_uses_optional_llm_response(self) -> None:
