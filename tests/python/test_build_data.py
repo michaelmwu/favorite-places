@@ -2763,6 +2763,54 @@ class BuildDataTests(unittest.TestCase):
             ["restaurant", "western-restaurant", "steak-house"],
         )
 
+    def test_derive_visible_place_tags_prioritizes_semantic_and_category_tags(self) -> None:
+        self.assertEqual(
+            build_data.derive_visible_place_tags(
+                tags=["tokyo", "restaurant", "food", "ginza", "date-night"],
+                semantic_tags=["omakase", "date-night"],
+                category="Sushi restaurant",
+            ),
+            ["omakase", "date-night", "sushi-restaurant", "tokyo"],
+        )
+
+    def test_apply_semantic_enrichment_uses_optional_llm_response(self) -> None:
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+            price_range="NT$200-400",
+            review_topics=[{"label": "oolong", "count": 12}],
+            about_sections=[{"title": "Service options", "items": [{"label": "Dine-in"}]}],
+        )
+        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=True),
+            patch.object(
+                build_data,
+                "repair_semantic_enrichment_with_llm",
+                return_value={
+                    "neighborhood": "Xinyi District",
+                    "tags": ["tea-house", "Taipei Tea"],
+                    "vibe_tags": ["quiet", "date night"],
+                    "types": ["specialty-cafe"],
+                },
+            ) as repair,
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            )
+
+        repair.assert_called_once()
+        self.assertEqual(enrichment.semantic_neighborhood, "Xinyi District")
+        self.assertEqual(enrichment.semantic_tags, ["tea-house", "taipei-tea"])
+        self.assertEqual(enrichment.semantic_vibe_tags, ["quiet", "date-night"])
+        self.assertEqual(enrichment.semantic_types, ["specialty-cafe"])
+        self.assertEqual(enrichment.semantic_source, "llm")
+
     def test_normalize_place_page_enrichment_infers_localized_category_types(self) -> None:
         steakhouse = build_data.normalize_place_page_enrichment(
             SimpleNamespace(

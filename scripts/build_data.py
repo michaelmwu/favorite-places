@@ -2159,9 +2159,19 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             or humanize_type_id(enrichment.primary_type)
         )
         primary_category_localized = None if manual_primary_category else enrichment.primary_type_display_name_localized
+        use_semantic_enrichment = google_maps_place_semantic_llm_enabled()
+        semantic_tags = [
+            tag
+            for tag in [
+                *(enrichment.semantic_tags if use_semantic_enrichment else []),
+                *(enrichment.semantic_types if use_semantic_enrichment else []),
+            ]
+            if tag
+        ]
         tags = sorted(
             {
                 *coerce_string_list(override.get("tags")),
+                *semantic_tags,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
@@ -2184,11 +2194,15 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             enrichment_locality_candidates,
         )
         neighborhood = as_string(override.get("neighborhood")) or (
+            enrichment.semantic_neighborhood
+            if use_semantic_enrichment and enrichment.semantic_neighborhood
+            else None
+        ) or (
             locality_candidates[0] if locality_candidates else None
         )
         neighborhood_uses_enrichment = bool(
             neighborhood
-            and neighborhood in enrichment_locality_candidates
+            and (neighborhood in enrichment_locality_candidates or neighborhood == enrichment.semantic_neighborhood)
             and neighborhood not in raw_locality_candidates
         )
         hidden = bool(override.get("hidden", False))
@@ -2209,6 +2223,8 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 why_recommended=why_recommended,
                 top_pick=top_pick,
             )
+            if use_semantic_enrichment:
+                vibe_tags = sorted({*vibe_tags, *enrichment.semantic_vibe_tags})
         marker_icon = derive_marker_icon(
             place,
             enrichment=enrichment,
@@ -2254,7 +2270,13 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             primary_category_localized=primary_category_localized,
             marker_icon=marker_icon,
             tags=tags,
+            visible_tags=derive_visible_place_tags(
+                tags=tags,
+                semantic_tags=semantic_tags,
+                category=primary_category,
+            ),
             vibe_tags=vibe_tags,
+            price_range=enrichment.price_range,
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
@@ -3122,6 +3144,25 @@ def derive_place_tags(
         tags.add(normalize_tag_slug(category))
     tags.update(derive_enrichment_type_tags(enrichment))
     return sorted(tag for tag in tags if tag)
+
+
+def derive_visible_place_tags(
+    *,
+    tags: list[str],
+    semantic_tags: list[str],
+    category: str | None,
+    limit: int = 4,
+) -> list[str]:
+    visible: list[str] = []
+    for tag in semantic_tags:
+        append_unique_tag(visible, tag)
+    if category:
+        category_tag = normalize_tag_slug(category)
+        if category_tag:
+            append_unique_tag(visible, category_tag)
+    for tag in tags:
+        append_unique_tag(visible, tag)
+    return visible[:limit]
 
 
 def derive_locality_tags(
@@ -4291,6 +4332,14 @@ def google_maps_place_collect_about() -> bool:
     if configured is not None:
         return configured
     site_value = as_bool(site_google_maps_place_config_value("collect_about"))
+    return bool(site_value)
+
+
+def google_maps_place_semantic_llm_enabled() -> bool:
+    configured = PlacesSettings().google_maps_place_semantic_llm
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("semantic_llm"))
     return bool(site_value)
 
 
@@ -6469,6 +6518,12 @@ def fetch_place_page_enrichment(
                 except Exception as exc:
                     last_error = f"display_repair_error:{exc}"
             enrichment_place = normalize_place_page_enrichment(details)
+            apply_semantic_enrichment(
+                enrichment_place,
+                raw_place=place,
+                city_name=city_name,
+                country_name=country_name,
+            )
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
                 continue
@@ -7156,6 +7211,269 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
             if compact:
                 items.append(compact)
     return items
+
+
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v1"
+
+
+def apply_semantic_enrichment(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> None:
+    if not google_maps_place_semantic_llm_enabled():
+        return
+    repair = repair_semantic_enrichment_with_llm(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    )
+    if repair is None:
+        return
+    neighborhood = sanitize_semantic_label(repair.get("neighborhood"), max_length=64)
+    if neighborhood is not None:
+        enrichment_place.semantic_neighborhood = neighborhood
+    enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
+    enrichment_place.semantic_vibe_tags = normalize_semantic_tag_list(repair.get("vibe_tags"), limit=8)
+    enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
+    if any(
+        (
+            enrichment_place.semantic_neighborhood,
+            enrichment_place.semantic_tags,
+            enrichment_place.semantic_vibe_tags,
+            enrichment_place.semantic_types,
+        )
+    ):
+        enrichment_place.semantic_source = "llm"
+
+
+def repair_semantic_enrichment_with_llm(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> dict[str, Any] | None:
+    config = semantic_llm_config()
+    if config is None:
+        return None
+    evidence = semantic_enrichment_evidence(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    )
+    evidence_hash = hashlib.sha256(
+        json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    cache_path = google_maps_place_semantic_cache_dir() / f"{config['namespace']}-{evidence_hash}.json"
+    cached = read_semantic_llm_cache(cache_path)
+    if cached is not None:
+        return cached
+
+    payload: dict[str, Any] = {
+        "model": config["model"],
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "You classify saved places for a travel guide. Return only compact JSON. "
+                    "Infer neighborhood only from the address/geography evidence. Generate broad, reusable "
+                    "kebab-case tags, vibe_tags, and types. Do not quote or summarize review text. "
+                    "Do not expose About or review details. Prefer 3-6 tags and 2-4 vibe_tags."
+                ),
+            },
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "schema": {
+                            "neighborhood": "string or null",
+                            "tags": ["major visible/search tags, kebab-case"],
+                            "vibe_tags": ["atmosphere/use-case tags, kebab-case"],
+                            "types": ["specific place type tags, kebab-case"],
+                        },
+                        "evidence": evidence,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+        ],
+        "response_format": {"type": "json_object"},
+    }
+    try:
+        request = Request(
+            f"{config['base_url'].rstrip('/')}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {config['api_key']}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urlopen(request, timeout=45) as response:
+            response_payload = json.loads(response.read().decode("utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    content = extract_chat_message_content(response_payload)
+    if content is None:
+        return None
+    try:
+        decoded = json.loads(content)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(decoded, dict):
+        return None
+    write_semantic_llm_cache(cache_path, decoded)
+    return decoded
+
+
+def semantic_enrichment_evidence(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> dict[str, Any]:
+    return {
+        "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
+        "city": city_name,
+        "country": country_name,
+        "name": enrichment_place.display_name or raw_place.name,
+        "address": enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address,
+        "raw_address": enrichment_place.formatted_address or raw_place.address,
+        "category": enrichment_place.primary_type_display_name,
+        "category_localized": enrichment_place.primary_type_display_name_localized,
+        "types": enrichment_place.types[:8],
+        "price_range": enrichment_place.price_range,
+        "review_topics": enrichment_place.review_topics[:12],
+        "about_sections": compact_about_sections(enrichment_place.about_sections),
+        "review_signals": compact_review_signals(enrichment_place.reviews),
+    }
+
+
+def compact_about_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for section in sections[:8]:
+        title = as_string(section.get("title"))
+        items = section.get("items")
+        labels: list[str] = []
+        if isinstance(items, list):
+            for item in items[:10]:
+                if isinstance(item, dict):
+                    label = as_string(item.get("label"))
+                    if label:
+                        labels.append(label)
+        if title or labels:
+            compact.append({"title": title, "items": labels})
+    return compact
+
+
+def compact_review_signals(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for review in reviews[:5]:
+        text = as_string(review.get("text") or review.get("snippet"))
+        rating = review.get("rating")
+        if text:
+            text = text[:180]
+        if text or rating is not None:
+            compact.append({"rating": rating, "snippet": text})
+    return compact
+
+
+def sanitize_semantic_label(value: Any, *, max_length: int) -> str | None:
+    label = as_string(value)
+    if label is None or len(label) > max_length:
+        return None
+    if re.search(r"\d{3,}", label):
+        return None
+    return label
+
+
+def normalize_semantic_tag_list(value: Any, *, limit: int) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    tags: list[str] = []
+    for item in value:
+        item_text = as_string(item)
+        if item_text is None:
+            continue
+        tag = normalize_tag_slug(item_text)
+        if tag and tag not in tags:
+            tags.append(tag)
+        if len(tags) >= limit:
+            break
+    return tags
+
+
+@lru_cache(maxsize=1)
+def semantic_llm_config() -> dict[str, str] | None:
+    env = load_dotenv_values(ROOT / ".env")
+    model = os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL") or env.get("LLM_MODEL") or env.get("OPENAI_MODEL")
+    api_key = os.environ.get("LLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or env.get("LLM_API_KEY") or env.get("OPENAI_API_KEY")
+    base_url = (
+        os.environ.get("LLM_BASE_URL")
+        or os.environ.get("OPENAI_BASE_URL")
+        or env.get("LLM_BASE_URL")
+        or env.get("OPENAI_BASE_URL")
+        or "https://api.openai.com/v1"
+    )
+    if not model or not api_key:
+        return None
+    namespace = hashlib.sha256(f"{base_url}:{model}:{SEMANTIC_LLM_PROMPT_VERSION}".encode("utf-8")).hexdigest()[:16]
+    return {"model": model, "api_key": api_key, "base_url": base_url, "namespace": namespace}
+
+
+def load_dotenv_values(path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return values
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, raw_value = stripped.split("=", 1)
+        values[key.strip()] = raw_value.strip().strip("\"'")
+    return values
+
+
+def google_maps_place_semantic_cache_dir() -> Path:
+    return SCRAPER_STATE_DIR / "semantic-cache"
+
+
+def read_semantic_llm_cache(path: Path) -> dict[str, Any] | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    repair = payload.get("repair") if isinstance(payload, dict) else None
+    return repair if isinstance(repair, dict) else None
+
+
+def write_semantic_llm_cache(path: Path, repair: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"repair": repair}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def extract_chat_message_content(payload: Any) -> str | None:
+    if not isinstance(payload, dict):
+        return None
+    choices = payload.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return None
+    first = choices[0]
+    if not isinstance(first, dict):
+        return None
+    message = first.get("message")
+    if not isinstance(message, dict):
+        return None
+    return as_string(message.get("content"))
 
 
 def normalize_place_page_business_status(status: str | None) -> str | None:

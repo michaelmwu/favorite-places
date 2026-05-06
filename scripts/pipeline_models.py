@@ -43,6 +43,10 @@ class PlacesSettings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_COLLECT_ABOUT", "GMAPS_PLACE_COLLECT_ABOUT"),
     )
+    google_maps_place_semantic_llm: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_SEMANTIC_LLM", "GMAPS_PLACE_SEMANTIC_LLM"),
+    )
 
 
 class SourceConfig(PipelineModel):
@@ -179,6 +183,11 @@ class EnrichmentPlace(PipelineModel):
     review_topics: list[dict[str, Any]] = Field(default_factory=list)
     reviews: list[dict[str, Any]] = Field(default_factory=list)
     about_sections: list[dict[str, Any]] = Field(default_factory=list)
+    semantic_neighborhood: str | None = None
+    semantic_tags: list[str] = Field(default_factory=list)
+    semantic_vibe_tags: list[str] = Field(default_factory=list)
+    semantic_types: list[str] = Field(default_factory=list)
+    semantic_source: str | None = None
     limited_view: bool = False
 
 
@@ -270,7 +279,9 @@ class NormalizedPlace(PipelineModel):
     primary_category_localized: str | None = None
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
+    visible_tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
+    price_range: str | None = None
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None

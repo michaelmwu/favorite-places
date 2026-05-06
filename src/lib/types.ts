@@ -69,7 +69,9 @@ export interface Place {
   primary_category_localized?: string | null;
   marker_icon: MarkerIcon;
   tags: string[];
+  visible_tags: string[];
   vibe_tags: string[];
+  price_range: string | null;
   locality_path: string[];
   neighborhood: string | null;
   note: string | null;

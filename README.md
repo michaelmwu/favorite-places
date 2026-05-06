@@ -149,10 +149,13 @@ Example `site/enrichment.json`:
   "google_maps_place": {
     "llm_repair": "dom",
     "collect_reviews": false,
-    "collect_about": false
+    "collect_about": false,
+    "semantic_llm": false
   }
 }
 ```
+
+When `semantic_llm` is enabled and LLM credentials are configured, the pipeline uses compact cache-only evidence from price range, review topics, review snippets, and About labels to infer neighborhood, type tags, and vibe tags. If the LLM is unavailable or errors, deterministic category, locality, and vibe rules still produce the guide data.
 
 Manual overrides always win over machine-enriched fields.
 
@@ -170,6 +173,9 @@ GOOGLE_PLACES_ENRICHMENT_STRATEGY=scrape_then_api
 
 # Scraper LLM repair policy: off, dom, or dom_then_translation.
 GOOGLE_MAPS_PLACE_LLM_REPAIR=dom
+
+# Optional LLM semantic tags/neighborhoods from enriched cache evidence.
+GOOGLE_MAPS_PLACE_SEMANTIC_LLM=false
 
 # Optional proxy for Google Maps list and place-page scraping.
 GMAPS_SCRAPER_PROXY=...

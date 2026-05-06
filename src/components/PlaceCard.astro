@@ -19,8 +19,14 @@ interface Props {
 
 const { bestHit = false, featured = false, guideContext = {}, place } = Astro.props;
 const placeTags = place.tags ?? [];
+const configuredVisibleTags = place.visible_tags ?? [];
 const placeVibeTags = place.vibe_tags ?? [];
 const displayTags = getDisplayGuideTags(getDisplayPlaceTags(placeTags), guideContext);
+const visibleTags = (
+  configuredVisibleTags.length > 0
+    ? getDisplayGuideTags(getDisplayPlaceTags(configuredVisibleTags), guideContext)
+    : displayTags
+).slice(0, siteConfig.placeCard.maxTags);
 const displayVibeTags = getDisplayPlaceTags(placeVibeTags);
 const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
 const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
@@ -32,6 +38,7 @@ const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLower
 const hasPhoto = Boolean(siteConfig.placeCard.showPhoto && placePhotosEnabled && place.main_photo_path);
 const ratingValue = typeof place.rating === "number" ? place.rating : null;
 const reviewCount = typeof place.user_rating_count === "number" ? place.user_rating_count : null;
+const priceRange = typeof place.price_range === "string" && place.price_range.trim().length > 0 ? place.price_range.trim() : null;
 const ratingFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1,
@@ -68,6 +75,7 @@ const hasStats = placeRatingMetaLabel.length > 0;
 const metaParts = [
   siteConfig.placeCard.showCategory ? (place.primary_category ?? siteConfig.placeCard.savedPlaceLabel) : null,
   siteConfig.placeCard.showNeighborhood ? place.neighborhood : null,
+  siteConfig.placeCard.showPriceRange ? priceRange : null,
 ].filter(Boolean);
 const markerSvg = buildMapMarkerSvg(
   place.marker_icon,
@@ -219,9 +227,9 @@ const isTemporarilyClosed = siteConfig.placeCard.showStatus && place.status === 
       </p>
     </div>
   )}
-  {siteConfig.placeCard.showTags && displayTags.length > 0 && (
+  {siteConfig.placeCard.showTags && visibleTags.length > 0 && (
     <div class="tag-row ui-tag-row place-card-tags">
-      {displayTags.map((tag) => (
+      {visibleTags.map((tag) => (
         <span class="tag-pill ui-tag-pill">
           <span class="tag-pill-label">#{tag}</span>
         </span>
