@@ -1,4 +1,8 @@
 .DS_Store
+.env
+llm.local.json
+translation-memory.learned.json
+translation-memory.pending.json
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/

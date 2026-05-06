@@ -2575,6 +2575,24 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.primary_type_display_name_localized)
         self.assertEqual(place.types, [])
 
+    def test_normalize_place_page_enrichment_drops_ui_action_display_names(self) -> None:
+        place = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Taipei+Zoo",
+                resolved_url="https://www.google.com/maps/search/?api=1&query=Taipei+Zoo",
+                name="Share",
+                category="Zoo",
+                rating=4.6,
+                review_count=76982,
+                address="No. 30號, Section 2, Xinguang Rd",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(place.display_name)
+        self.assertEqual(place.primary_type_display_name, "Zoo")
+        self.assertEqual(place.formatted_address, "No. 30號, Section 2, Xinguang Rd")
+
     def test_normalize_place_page_enrichment_sanitizes_suspicious_addresses(self) -> None:
         chrome = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -3505,6 +3523,15 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(build_data.infer_country_name(raw.title or "", raw), "Japan")
         self.assertIsNone(build_data.infer_country_from_address(raw.places[0].address))
         self.assertIsNone(build_data.infer_country_from_address(raw.places[1].address))
+
+    def test_country_inference_ignores_parenthetical_title_suffix(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan (Example) 🇹🇼",
+            places=[],
+        )
+
+        self.assertEqual(build_data.infer_city_name(raw.title or ""), "Taipei")
+        self.assertEqual(build_data.infer_country_name(raw.title or "", raw), "Taiwan")
 
     def test_address_locality_tags_exclude_buildings_blocks_and_postal_fragments(self) -> None:
         enrichment = EnrichmentPlace()

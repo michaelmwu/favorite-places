@@ -190,8 +190,10 @@ class ScraperConsentTests(unittest.TestCase):
             launched,
             [
                 {
+                    "extra_http_headers": {"Accept-Language": "en-US,en;q=0.9"},
                     "headless": False,
                     "humanize": True,
+                    "locale": "en-US",
                 }
             ],
         )
@@ -228,8 +230,10 @@ class ScraperConsentTests(unittest.TestCase):
                 (
                     profile_dir,
                     {
+                        "extra_http_headers": {"Accept-Language": "en-US,en;q=0.9"},
                         "headless": True,
                         "humanize": True,
+                        "locale": "en-US",
                         "proxy": "http://proxy.example:8080",
                     },
                 )

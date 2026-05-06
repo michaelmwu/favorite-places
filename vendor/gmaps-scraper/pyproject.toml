@@ -20,6 +20,7 @@ gmaps-scraper = "gmaps_scraper.cli:main"
 [dependency-groups]
 dev = [
   "mypy",
+  "prek",
   "ruff",
 ]
 

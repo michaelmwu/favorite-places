@@ -1,8 +1,35 @@
 """Google Maps scraping helpers."""
 
-from gmaps_scraper.models import ListOwner, Place, PlaceDetails, SavedList
+from gmaps_scraper.display_fields import (
+    reusable_place_display_fields,
+    reuse_place_display_fields,
+)
+from gmaps_scraper.llm import (
+    LLMRepairError,
+    cached_place_repairer,
+    llm_cache_namespace_from_env,
+    openai_compatible_place_repairer_from_env,
+)
+from gmaps_scraper.models import (
+    ListOwner,
+    Place,
+    PlaceAboutItem,
+    PlaceAboutSection,
+    PlaceDetails,
+    PlaceExtractionDiagnostics,
+    PlaceLLMRepairRequest,
+    PlaceReview,
+    PlaceScrapeResult,
+    ReviewTopic,
+    SavedList,
+)
 from gmaps_scraper.parser import ParseError, parse_saved_list_artifacts
-from gmaps_scraper.place_scraper import scrape_place
+from gmaps_scraper.place_scraper import (
+    PlaceLLMRepairer,
+    collect_place_snapshot,
+    scrape_place,
+    scrape_places,
+)
 from gmaps_scraper.scraper import (
     BrowserProxyConfig,
     BrowserSessionConfig,
@@ -10,8 +37,15 @@ from gmaps_scraper.scraper import (
     ScrapeError,
     scrape_saved_list,
 )
+from gmaps_scraper.selector_recipes import (
+    default_place_selector_recipe,
+    load_place_selector_recipe,
+    write_default_place_selector_recipe,
+)
+from gmaps_scraper.translation_memory import needs_display_en
 from gmaps_scraper.url_tools import (
     PLACELIST_URL_MARKER,
+    build_maps_search_url,
     extract_list_id,
     extract_list_id_from_text,
     has_placelist_marker,
@@ -22,16 +56,37 @@ __all__ = [
     "BrowserProxyConfig",
     "BrowserSessionConfig",
     "HttpSessionConfig",
+    "LLMRepairError",
     "ListOwner",
     "ParseError",
     "Place",
+    "PlaceAboutItem",
+    "PlaceAboutSection",
     "PlaceDetails",
+    "PlaceExtractionDiagnostics",
+    "PlaceLLMRepairRequest",
+    "PlaceLLMRepairer",
+    "PlaceReview",
+    "PlaceScrapeResult",
+    "ReviewTopic",
     "SavedList",
     "ScrapeError",
+    "cached_place_repairer",
+    "build_maps_search_url",
+    "collect_place_snapshot",
+    "default_place_selector_recipe",
     "extract_list_id",
     "extract_list_id_from_text",
     "has_placelist_marker",
+    "load_place_selector_recipe",
+    "llm_cache_namespace_from_env",
+    "needs_display_en",
     "parse_saved_list_artifacts",
+    "openai_compatible_place_repairer_from_env",
+    "reusable_place_display_fields",
+    "reuse_place_display_fields",
     "scrape_place",
+    "scrape_places",
     "scrape_saved_list",
+    "write_default_place_selector_recipe",
 ]

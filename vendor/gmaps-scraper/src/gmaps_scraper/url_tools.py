@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from urllib.parse import urlencode
 
 PLACELIST_URL_MARKER = "maps/placelists/list/"
 _LIST_ID_PATTERN = re.compile(r"!2s([^!]+)")
@@ -31,3 +32,27 @@ def extract_list_id_from_text(value: str) -> str | None:
 def has_placelist_marker(value: str) -> bool:
     """Return whether a string contains the placelist URL marker."""
     return PLACELIST_URL_MARKER in value
+
+
+def build_maps_search_url(
+    query: str,
+    *,
+    place_id: str | None = None,
+    hl: str | None = "en",
+    gl: str | None = "us",
+) -> str:
+    """Build a Google Maps search URL for a caller-provided place query."""
+    normalized_query = " ".join(query.split())
+    if not normalized_query:
+        raise ValueError("query is required")
+    params: dict[str, str] = {
+        "api": "1",
+        "query": normalized_query,
+    }
+    if place_id is not None and place_id.strip():
+        params["query_place_id"] = place_id.strip()
+    if hl is not None and hl.strip():
+        params["hl"] = hl.strip()
+    if gl is not None and gl.strip():
+        params["gl"] = gl.strip()
+    return f"https://www.google.com/maps/search/?{urlencode(params)}"

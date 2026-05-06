@@ -4,11 +4,26 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Iterable, Mapping
-from typing import Any, cast
+import time
+from collections.abc import Callable, Iterable, Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from hashlib import sha256
+from pathlib import Path
+from typing import Any, Literal, cast
 from urllib.parse import parse_qs, unquote, urlparse
 
-from gmaps_scraper.models import AddressParts, PlaceDetails
+from gmaps_scraper.models import (
+    PLACE_LLM_REPAIR_FIELDS,
+    AddressParts,
+    PlaceAboutItem,
+    PlaceAboutSection,
+    PlaceDetails,
+    PlaceExtractionDiagnostics,
+    PlaceLLMRepairRequest,
+    PlaceReview,
+    PlaceScrapeResult,
+    ReviewTopic,
+)
 from gmaps_scraper.scraper import (
     _HTTP_IMPERSONATE,
     BrowserSessionConfig,
@@ -24,10 +39,41 @@ from gmaps_scraper.scraper import (
     _response_text,
     _save_http_cookie_jar,
 )
+from gmaps_scraper.translation_memory import TranslationMemory, needs_display_en
+from gmaps_scraper.url_tools import extract_list_id
 
 _TITLE_SELECTORS = ("h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1")
 _TITLE_SELECTOR = ", ".join(_TITLE_SELECTORS)
+_PLACE_LLM_PROMPT_VERSION = "gmaps-place-repair-v1"
+_TRANSLATION_MEMORY = TranslationMemory.default()
+type PlaceLLMRepairer = Callable[[PlaceLLMRepairRequest], Mapping[str, object] | None]
 _REVIEW_LABEL_KEYWORDS = ("review", "reviews", "評論", "クチコミ")
+_REVIEW_TOPIC_REJECT_LABELS = {
+    "all",
+    "all reviews",
+    "highest",
+    "like",
+    "likes",
+    "lowest",
+    "most relevant",
+    "newest",
+    "review",
+    "reviews",
+    "search",
+    "sort",
+    "write a review",
+}
+_REVIEW_TOPIC_REJECT_TERMS = (
+    "all reviews",
+    "google reviews",
+    "highest rated",
+    "lowest rated",
+    "most relevant",
+    "newest",
+    "review summary",
+    "sort by",
+    "write a review",
+)
 _DESCRIPTION_STOP_MARKERS = {
     "photos",
     "about this data",
@@ -36,6 +82,7 @@ _DESCRIPTION_STOP_MARKERS = {
     "suggest an edit",
     "limited view of google maps",
     "get the most out of google maps",
+    "our policies do not permit contributions to this type of place.",
 }
 _SEARCH_RESULTS_LABELS = {
     "result",
@@ -86,11 +133,18 @@ _STRONG_ADDRESS_KEYWORD_PATTERN = re.compile(
 # These reject lists only apply after structured DOM extraction misses and we
 # are forced to classify plain Google Maps text rows. They intentionally target
 # UI/review vocabulary that commonly appears next to real address rows.
+_PROSE_TERM_PATTERN = re.compile(
+    r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
+    re.IGNORECASE,
+)
 _ADDRESS_REJECT_SUBSTRINGS = (
     "about this data",
     "faviconv2",
     "imagery ©",
+    "imagery©",
     "map data ©",
+    "map data©",
     "saved in",
     "send product feedback",
     "street view",
@@ -131,10 +185,15 @@ _URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
 # Locality-only addresses can legitimately contain periods in abbreviations
 # like "St. Louis" or "D.C."; prose with arbitrary periods is rejected later.
 _LOCALITY_ABBREVIATION_PERIOD_PATTERN = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
-_PROSE_TERM_PATTERN = re.compile(
-    r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
-    re.IGNORECASE,
+_PRICE_RANGE_PATTERN = re.compile(
+    r"(?<!\S)(?:"
+    r"\${1,4}|"
+    r"(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\$|HK\$|CA\$|A\$)"
+    r"\s*[0-9][0-9,.\s\u00a0]*(?:\+|[-–]\s*"
+    r"(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\$|HK\$|CA\$|A\$)?"
+    r"\s*[0-9][0-9,.\s\u00a0]*)?"
+    r")(?=\s|$|·)",
+    flags=re.IGNORECASE,
 )
 _PLACE_JS_EXTRACTOR = r"""
 () => {
@@ -372,6 +431,145 @@ _PLACE_JS_EXTRACTOR = r"""
   const photoUrl = mainPhotoUrl
     || firstAttr(["meta[property='og:image']", "meta[itemprop='image']"], "content", document);
 
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const shallowPath = (element) => {
+    const parts = [];
+    let current = element;
+    for (let i = 0; i < 4 && current && current.nodeType === Node.ELEMENT_NODE; i += 1) {
+      let part = current.tagName.toLowerCase();
+      const id = current.getAttribute("data-item-id");
+      const role = current.getAttribute("role");
+      if (id) {
+        part += `[data-item-id="${id}"]`;
+      } else if (role) {
+        part += `[role="${role}"]`;
+      } else if (current.classList?.length) {
+        part += "." + Array.from(current.classList).slice(0, 2).join(".");
+      }
+      parts.unshift(part);
+      current = current.parentElement;
+    }
+    return parts.join(" > ");
+  };
+  const nearbyText = (element) => {
+    const texts = [];
+    const parent = element.parentElement;
+    if (!parent) {
+      return texts;
+    }
+    for (const child of parent.children) {
+      const text = cleanLine(child.innerText || child.textContent || "");
+      if (text && !texts.includes(text)) {
+        texts.push(text);
+      }
+      if (texts.length >= 4) {
+        break;
+      }
+    }
+    return texts;
+  };
+  const collectDomCandidates = () => {
+    const selectors = [
+      "[data-item-id]",
+      "button[aria-label]",
+      "a[aria-label]",
+      "[role='button'][aria-label]",
+      ".Io6YTe",
+      ".DkEaL",
+      ".F7nice",
+      "div[role='tablist'] button",
+    ];
+    const candidates = [];
+    const seen = new Set();
+    for (const selector of selectors) {
+      for (const element of panel.querySelectorAll(selector)) {
+        const text = cleanLine(element.innerText || element.textContent || "");
+        const ariaLabel = cleanLine(element.getAttribute("aria-label") || "");
+        const dataItemId = cleanLine(element.getAttribute("data-item-id") || "");
+        if (!text && !ariaLabel && !dataItemId) {
+          continue;
+        }
+        if (text.length > 240 || ariaLabel.length > 240) {
+          continue;
+        }
+        const key = `${selector}\n${text}\n${ariaLabel}\n${dataItemId}`;
+        if (seen.has(key)) {
+          continue;
+        }
+        seen.add(key);
+        candidates.push({
+          text,
+          tag: element.tagName.toLowerCase(),
+          role: cleanLine(element.getAttribute("role") || ""),
+          aria_label: ariaLabel,
+          data_item_id: dataItemId,
+          selector_hint: shallowPath(element),
+          nearby_text: nearbyText(element),
+        });
+        if (candidates.length >= 120) {
+          return candidates;
+        }
+      }
+    }
+    return candidates;
+  };
+  const collectReviewTopics = () => {
+    const selectors = [
+      "button[jsaction*='review']",
+      "button[aria-label*='review' i]",
+      "button[role='radio']",
+      "button[aria-pressed]",
+      "div[role='button'][aria-label]",
+    ];
+    const topics = [];
+    const seen = new Set();
+    for (const selector of selectors) {
+      for (const element of panel.querySelectorAll(selector)) {
+        const text = cleanLine(element.innerText || element.textContent || "");
+        const ariaLabel = cleanLine(element.getAttribute("aria-label") || "");
+        const candidate = /[0-9]/.test(text)
+          ? text
+          : (/[0-9]/.test(ariaLabel) ? ariaLabel : text || ariaLabel);
+        if (!candidate || candidate.length > 120 || !/[0-9]/.test(candidate)) {
+          continue;
+        }
+        const key = `${candidate}\n${ariaLabel}`;
+        if (seen.has(key)) {
+          continue;
+        }
+        seen.add(key);
+        topics.push({
+          text: candidate,
+          aria_label: ariaLabel,
+          source: selector,
+        });
+      }
+    }
+    return topics;
+  };
+  const priceRangeValue = () => {
+    const symbols = "(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\\$|HK\\$|CA\\$|A\\$)";
+    const pattern = new RegExp(
+      "(?:^|\\s|·)((?:\\${1,4})|" + symbols
+        + "\\s*[0-9][0-9,.\u00a0\\s]*(?:\\+|[-–]\\s*" + symbols
+        + "?\\s*[0-9][0-9,.\u00a0\\s]*)?)",
+      "i",
+    );
+    const roots = [
+      panel.querySelector(".dmRWX"),
+      panel.querySelector(".F7nice")?.parentElement,
+      panel,
+    ].filter(Boolean);
+    for (const root of roots) {
+      const text = cleanLine(root.innerText || root.textContent || "");
+      const match = text.match(pattern);
+      if (match?.[1]) {
+        return cleanLine(match[1].replace(/\u00a0/g, " "));
+      }
+    }
+    return null;
+  };
+
   return {
     name: firstText(titleSelectors),
     secondary_name: firstText(["h2.bwoZTb span", "h2.bwoZTb"]),
@@ -387,6 +585,7 @@ _PLACE_JS_EXTRACTOR = r"""
       ".skqShb .fontBodyMedium button",
       "button.DkEaL",
     ]),
+    price_range: priceRangeValue(),
     address: addressValue(),
     located_in: itemValue("locatedin"),
     status: firstText(["div.OqCZI .ZDu9vd", "div.OqCZI .o0Svhf"]),
@@ -396,6 +595,8 @@ _PLACE_JS_EXTRACTOR = r"""
       "button[data-item-id^='phone:']",
     ]),
     plus_code: itemValue("oloc"),
+    review_topics: collectReviewTopics(),
+    dom_candidates: collectDomCandidates(),
     main_photo_url: mainPhotoUrl,
     photo_url: photoUrl,
     panel_text: panel?.innerText || "",
@@ -446,6 +647,167 @@ _PLACE_REVIEW_SIGNAL_JS = r"""
   return false;
 }
 """
+_PLACE_REVIEW_TAB_CLICK_JS = r"""
+() => {
+  for (const tab of document.querySelectorAll("div[role='tablist'] button, button[role='tab']")) {
+    const text = (tab.innerText || tab.textContent || "").trim();
+    const ariaLabel = tab.getAttribute("aria-label") || "";
+    if (/(review|reviews|評論|クチコミ)/i.test(`${text} ${ariaLabel}`)) {
+      tab.click();
+      return true;
+    }
+  }
+  return false;
+}
+"""
+_PLACE_REVIEW_TOPIC_JS = r"""
+() => {
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  let root = document.querySelector("div[role='main']") || document.body;
+  for (const button of root.querySelectorAll("button, div[role='button']")) {
+    const text = cleanLine(button.innerText || button.textContent || "");
+    const ariaLabel = cleanLine(button.getAttribute("aria-label") || "");
+    if (/^\+\d+$/.test(text) && !/photo/i.test(ariaLabel)) {
+      button.click();
+    }
+  }
+  const selectors = [
+    "button[jsaction*='review']",
+    "button[aria-label*='review' i]",
+    "button[role='radio']",
+    "button[aria-pressed]",
+    "div[role='button'][aria-label]",
+  ];
+  const topics = [];
+  const seen = new Set();
+  for (const selector of selectors) {
+    for (const element of root.querySelectorAll(selector)) {
+      const text = cleanLine(element.innerText || element.textContent || "");
+      const ariaLabel = cleanLine(element.getAttribute("aria-label") || "");
+      const candidate = /[0-9]/.test(text)
+        ? text
+        : (/[0-9]/.test(ariaLabel) ? ariaLabel : text || ariaLabel);
+      if (!candidate || candidate.length > 120 || !/[0-9]/.test(candidate)) {
+        continue;
+      }
+      const key = `${candidate}\n${ariaLabel}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      topics.push({
+        text: candidate,
+        aria_label: ariaLabel,
+        source: selector,
+      });
+    }
+  }
+  return topics;
+}
+"""
+_PLACE_REVIEW_SNIPPET_JS = r"""
+() => {
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const reviewRoots = Array.from(document.querySelectorAll("[data-review-id], .jftiEf"));
+  const reviews = [];
+  const seen = new Set();
+  for (const root of reviewRoots) {
+    const text = cleanLine(
+      root.querySelector(".MyEned .wiI7pd, .wiI7pd, .MyEned")?.innerText || ""
+    );
+    const author = cleanLine(
+      root.querySelector(".d4r55, .WNxzHc, [aria-label^='Photo of']")?.innerText || ""
+    );
+    const ratingLabel = cleanLine(
+      root.querySelector("[role='img'][aria-label*='star' i]")?.getAttribute("aria-label") || ""
+    );
+    const time = cleanLine(root.querySelector(".rsqaWe, .xRkPPb")?.innerText || "");
+    const likeText = cleanLine(root.querySelector("button[jsaction*='like']")?.innerText || "");
+    if (!text && !author) {
+      continue;
+    }
+    const key = `${author}\n${time}\n${text}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    reviews.push({
+      author,
+      rating: ratingLabel,
+      relative_time: time,
+      text,
+      like_count: likeText,
+      source: "dom",
+    });
+    if (reviews.length >= 10) {
+      break;
+    }
+  }
+  return reviews;
+}
+"""
+_PLACE_ABOUT_TAB_CLICK_JS = r"""
+() => {
+  for (const tab of document.querySelectorAll("div[role='tablist'] button, button[role='tab']")) {
+    const text = (tab.innerText || tab.textContent || "").trim();
+    const ariaLabel = tab.getAttribute("aria-label") || "";
+    if (/(^|\b)(about|information|details)(\b|$)/i.test(`${text} ${ariaLabel}`)) {
+      tab.click();
+      return true;
+    }
+  }
+  return false;
+}
+"""
+_PLACE_ABOUT_PANEL_JS = r"""
+() => {
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const sections = [];
+  const seenSections = new Set();
+  const roots = Array.from(
+    document.querySelectorAll("div[aria-label^='About '], div[role='region'][aria-label*='About']")
+  );
+  if (roots.length === 0) {
+    roots.push(document.querySelector("div[role='main']") || document.body);
+  }
+  for (const root of roots) {
+    for (const section of root.querySelectorAll(".iP2t7d, section")) {
+      const title = cleanLine(section.querySelector("h2, h3")?.innerText || "");
+      if (!title || seenSections.has(title)) {
+        continue;
+      }
+      const items = [];
+      const seenItems = new Set();
+      for (const item of section.querySelectorAll("li span[aria-label]")) {
+        if (item.closest("h1, h2, h3, button[role='tab']")) {
+          continue;
+        }
+        const label = cleanLine(item.innerText || item.textContent || "");
+        const ariaLabel = cleanLine(item.getAttribute("aria-label") || "");
+        const candidate = label || ariaLabel;
+        if (!candidate || candidate === title || candidate.length > 160) {
+          continue;
+        }
+        const key = `${candidate}\n${ariaLabel}`;
+        if (seenItems.has(key)) {
+          continue;
+        }
+        seenItems.add(key);
+        items.push({
+          label: candidate,
+          aria_label: ariaLabel,
+          source: "about_panel",
+        });
+      }
+      if (items.length > 0) {
+        seenSections.add(title);
+        sections.push({title, items});
+      }
+    }
+  }
+  return sections;
+}
+"""
 
 
 def scrape_place(
@@ -456,8 +818,18 @@ def scrape_place(
     settle_time_ms: int = 3_000,
     browser_session: BrowserSessionConfig | None = None,
     http_session: HttpSessionConfig | None = None,
+    llm_fallback: PlaceLLMRepairer | None = None,
+    llm_policy: Literal["never", "on_quality_failure", "always"] = "on_quality_failure",
+    screenshot_path: Path | None = None,
+    overview_screenshot_path: Path | None = None,
 ) -> PlaceDetails:
-    """Scrape a Google Maps place page using a browser session."""
+    """Scrape a Google Maps place page using a browser session.
+
+    If ``llm_fallback`` is provided, it receives a compact sanitized evidence
+    packet and can return corrected Google Maps fields. The callback owns the
+    provider, model, keys, and budget policy; this package only owns the
+    generic Maps evidence schema.
+    """
     snapshot = collect_place_snapshot(
         place_url,
         headless=headless,
@@ -465,35 +837,435 @@ def scrape_place(
         settle_time_ms=settle_time_ms,
         browser_session=browser_session,
         http_session=http_session,
+        screenshot_path=screenshot_path,
+        overview_screenshot_path=overview_screenshot_path,
     )
+    return _build_place_details_from_snapshot(
+        place_url,
+        snapshot=snapshot,
+        llm_fallback=llm_fallback,
+        llm_policy=llm_policy,
+    )
+
+
+def scrape_places(
+    place_urls: Sequence[str],
+    *,
+    headless: bool = True,
+    timeout_ms: int = 30_000,
+    settle_time_ms: int = 3_000,
+    browser_session: BrowserSessionConfig | None = None,
+    http_session: HttpSessionConfig | None = None,
+    llm_fallback: PlaceLLMRepairer | None = None,
+    llm_policy: Literal["never", "on_quality_failure", "always"] = "on_quality_failure",
+    max_concurrency: int = 1,
+    max_retries: int = 1,
+    retry_backoff_ms: int = 2_000,
+    stagger_ms: int = 0,
+    retry_quality_flags: Sequence[str] = ("limited_view", "thin_place_result"),
+    screenshot_output_dir: Path | None = None,
+) -> list[PlaceScrapeResult]:
+    """Scrape multiple Google Maps place pages.
+
+    Sequential mode reuses one browser context across URLs. Parallel mode gives
+    each worker its own browser context and, when a profile dir is configured,
+    its own worker-scoped profile directory.
+    """
+    urls = [url.strip() for url in place_urls if url.strip()]
+    if not urls:
+        return []
+    if max_concurrency < 1:
+        raise ValueError("max_concurrency must be at least 1.")
+    if max_retries < 0:
+        raise ValueError("max_retries must be non-negative.")
+    if max_concurrency == 1:
+        return _scrape_places_sequential(
+            urls,
+            headless=headless,
+            timeout_ms=timeout_ms,
+            settle_time_ms=settle_time_ms,
+            browser_session=browser_session,
+            http_session=http_session,
+            llm_fallback=llm_fallback,
+            llm_policy=llm_policy,
+            max_retries=max_retries,
+            retry_backoff_ms=retry_backoff_ms,
+            stagger_ms=stagger_ms,
+            retry_quality_flags=retry_quality_flags,
+            screenshot_output_dir=screenshot_output_dir,
+        )
+
+    return _scrape_places_parallel(
+        urls,
+        headless=headless,
+        timeout_ms=timeout_ms,
+        settle_time_ms=settle_time_ms,
+        browser_session=browser_session,
+        http_session=http_session,
+        llm_fallback=llm_fallback,
+        llm_policy=llm_policy,
+        max_concurrency=max_concurrency,
+        max_retries=max_retries,
+        retry_backoff_ms=retry_backoff_ms,
+        stagger_ms=stagger_ms,
+        retry_quality_flags=retry_quality_flags,
+        screenshot_output_dir=screenshot_output_dir,
+    )
+
+
+def _build_place_details_from_snapshot(
+    place_url: str,
+    *,
+    snapshot: Mapping[str, object],
+    llm_fallback: PlaceLLMRepairer | None,
+    llm_policy: Literal["never", "on_quality_failure", "always"],
+) -> PlaceDetails:
     resolved_url = _normalize_response_url(snapshot.get("resolved_url"))
+    if _looks_like_saved_list_url(resolved_url):
+        raise ScrapeError(
+            "Place URL resolved to a Google Maps saved list. "
+            "Use `--kind list` for saved-list URLs or pass an individual place URL."
+        )
     dom_snapshot = cast(Mapping[str, object], snapshot["dom"])
     preview_snapshot = cast(
         Mapping[str, object],
         snapshot.get("preview") if isinstance(snapshot.get("preview"), Mapping) else {},
     )
     merged_snapshot = _merge_place_sources(dom_snapshot, preview_snapshot)
-    return _build_place_details(
+    details = _build_place_details(
         place_url,
         resolved_url=resolved_url,
         snapshot=merged_snapshot,
     )
+    evidence = _build_place_llm_evidence(merged_snapshot)
+    evidence_hash = _hash_evidence(evidence)
+    details.diagnostics = _build_place_diagnostics(
+        details,
+        merged_snapshot,
+        evidence_hash=evidence_hash,
+    )
+    if llm_fallback is None or not _should_use_llm_repair(llm_policy, details.diagnostics):
+        return details
+
+    details.diagnostics.prompt_version = _PLACE_LLM_PROMPT_VERSION
+    try:
+        repair = llm_fallback(
+            PlaceLLMRepairRequest(
+                source_url=place_url,
+                resolved_url=resolved_url,
+                current_fields=_place_detail_values(details),
+                diagnostics=details.diagnostics,
+                evidence=evidence,
+            )
+        )
+    except Exception as exc:
+        details.diagnostics.llm_error = str(exc)
+        details.diagnostics.prompt_version = _PLACE_LLM_PROMPT_VERSION
+        return details
+    if repair is None:
+        return details
+
+    repair_source = _extract_llm_repair_source(repair)
+    repaired_snapshot = _merge_llm_place_fields(
+        merged_snapshot,
+        repair,
+        current_fields=_place_detail_values(details),
+    )
+    repaired_details = _build_place_details(
+        place_url,
+        resolved_url=resolved_url,
+        snapshot=repaired_snapshot,
+    )
+    repaired_details.diagnostics = _build_place_diagnostics(
+        repaired_details,
+        repaired_snapshot,
+        evidence_hash=evidence_hash,
+        llm_used=_repair_source_used_llm(repair_source),
+        repair_source=repair_source,
+        prompt_version=_PLACE_LLM_PROMPT_VERSION,
+    )
+    return repaired_details
+
+
+def _looks_like_saved_list_url(value: str | None) -> bool:
+    return value is not None and extract_list_id(value) is not None
+
+
+def _scrape_places_sequential(
+    place_urls: Sequence[str],
+    *,
+    headless: bool,
+    timeout_ms: int,
+    settle_time_ms: int,
+    browser_session: BrowserSessionConfig | None,
+    http_session: HttpSessionConfig | None,
+    llm_fallback: PlaceLLMRepairer | None,
+    llm_policy: Literal["never", "on_quality_failure", "always"],
+    max_retries: int,
+    retry_backoff_ms: int,
+    stagger_ms: int,
+    retry_quality_flags: Sequence[str],
+    screenshot_output_dir: Path | None,
+) -> list[PlaceScrapeResult]:
+    context = _launch_browser_context(
+        headless=headless,
+        browser_session=browser_session,
+    )
+    try:
+        results: list[PlaceScrapeResult] = []
+        for index, place_url in enumerate(place_urls):
+            if index > 0 and stagger_ms > 0:
+                time.sleep(stagger_ms / 1000)
+            results.append(
+                _scrape_place_with_context_and_retries(
+                    place_url,
+                    context=context,
+                    timeout_ms=timeout_ms,
+                    settle_time_ms=settle_time_ms,
+                    http_session=http_session,
+                    llm_fallback=llm_fallback,
+                    llm_policy=llm_policy,
+                    max_retries=max_retries,
+                    retry_backoff_ms=retry_backoff_ms,
+                    retry_quality_flags=retry_quality_flags,
+                    screenshot_path=_place_screenshot_path(
+                        screenshot_output_dir,
+                        place_url,
+                        stage="reviews",
+                    ),
+                    overview_screenshot_path=_place_screenshot_path(
+                        screenshot_output_dir,
+                        place_url,
+                        stage="overview",
+                    ),
+                )
+            )
+    finally:
+        context.close()
+    return results
+
+
+def _scrape_places_parallel(
+    place_urls: Sequence[str],
+    *,
+    headless: bool,
+    timeout_ms: int,
+    settle_time_ms: int,
+    browser_session: BrowserSessionConfig | None,
+    http_session: HttpSessionConfig | None,
+    llm_fallback: PlaceLLMRepairer | None,
+    llm_policy: Literal["never", "on_quality_failure", "always"],
+    max_concurrency: int,
+    max_retries: int,
+    retry_backoff_ms: int,
+    stagger_ms: int,
+    retry_quality_flags: Sequence[str],
+    screenshot_output_dir: Path | None,
+) -> list[PlaceScrapeResult]:
+    results: list[PlaceScrapeResult | None] = [None] * len(place_urls)
+    worker_count = min(max_concurrency, len(place_urls))
+    chunks: list[list[tuple[int, str]]] = [[] for _ in range(worker_count)]
+    for index, place_url in enumerate(place_urls):
+        chunks[index % worker_count].append((index, place_url))
+
+    def scrape_worker(worker_index_and_items: tuple[int, list[tuple[int, str]]]) -> list[
+        tuple[int, PlaceScrapeResult]
+    ]:
+        worker_index, items = worker_index_and_items
+        if stagger_ms > 0:
+            time.sleep(worker_index * stagger_ms / 1000)
+        worker_session = _browser_session_for_parallel_worker(
+            browser_session,
+            worker_index=worker_index,
+        )
+        worker_http_session = _http_session_for_parallel_worker(
+            http_session,
+            worker_index=worker_index,
+        )
+        worker_urls = [place_url for _, place_url in items]
+        worker_results = _scrape_places_sequential(
+            worker_urls,
+            headless=headless,
+            timeout_ms=timeout_ms,
+            settle_time_ms=settle_time_ms,
+            browser_session=worker_session,
+            http_session=worker_http_session,
+            llm_fallback=llm_fallback,
+            llm_policy=llm_policy,
+            max_retries=max_retries,
+            retry_backoff_ms=retry_backoff_ms,
+            stagger_ms=stagger_ms,
+            retry_quality_flags=retry_quality_flags,
+            screenshot_output_dir=screenshot_output_dir,
+        )
+        return [
+            (index, result)
+            for (index, _place_url), result in zip(items, worker_results, strict=True)
+        ]
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        future_items = {
+            executor.submit(scrape_worker, (worker_index, chunk)): chunk
+            for worker_index, chunk in enumerate(chunks)
+            if chunk
+        }
+        for future in as_completed(future_items):
+            try:
+                worker_results = future.result()
+            except Exception as exc:
+                for index, place_url in future_items[future]:
+                    results[index] = PlaceScrapeResult(
+                        source_url=place_url,
+                        attempts=0,
+                        error=f"Parallel place worker failed: {exc}",
+                    )
+                continue
+            for index, result in worker_results:
+                results[index] = result
+
+    return [result for result in results if result is not None]
+
+
+def _browser_session_for_parallel_worker(
+    browser_session: BrowserSessionConfig | None,
+    *,
+    worker_index: int,
+) -> BrowserSessionConfig | None:
+    if browser_session is None or browser_session.profile_dir is None:
+        return browser_session
+    return BrowserSessionConfig(
+        profile_dir=browser_session.profile_dir / f"worker-{worker_index + 1}",
+        proxy=browser_session.proxy,
+    )
+
+
+def _http_session_for_parallel_worker(
+    http_session: HttpSessionConfig | None,
+    *,
+    worker_index: int,
+) -> HttpSessionConfig | None:
+    if http_session is None or http_session.cookie_jar_path is None:
+        return http_session
+    cookie_jar_path = http_session.cookie_jar_path
+    return HttpSessionConfig(
+        cookie_jar_path=(
+            cookie_jar_path.parent
+            / f"{cookie_jar_path.stem}.worker-{worker_index + 1}{cookie_jar_path.suffix}"
+        ),
+        proxy=http_session.proxy,
+    )
+
+
+def _scrape_place_with_context_and_retries(
+    place_url: str,
+    *,
+    context: Any,
+    timeout_ms: int,
+    settle_time_ms: int,
+    http_session: HttpSessionConfig | None,
+    llm_fallback: PlaceLLMRepairer | None,
+    llm_policy: Literal["never", "on_quality_failure", "always"],
+    max_retries: int,
+    retry_backoff_ms: int,
+    retry_quality_flags: Sequence[str],
+    screenshot_path: Path | None,
+    overview_screenshot_path: Path | None,
+) -> PlaceScrapeResult:
+    attempts = 0
+    last_error: str | None = None
+    last_place: PlaceDetails | None = None
+    while attempts <= max_retries:
+        attempts += 1
+        try:
+            snapshot = _collect_place_snapshot_with_context(
+                place_url,
+                context=context,
+                timeout_ms=timeout_ms,
+                settle_time_ms=settle_time_ms,
+                http_session=http_session,
+                screenshot_path=screenshot_path,
+                overview_screenshot_path=overview_screenshot_path,
+            )
+            place = _build_place_details_from_snapshot(
+                place_url,
+                snapshot=snapshot,
+                llm_fallback=llm_fallback,
+                llm_policy=llm_policy,
+            )
+        except Exception as exc:
+            last_error = str(exc)
+        else:
+            last_place = place
+            if not _should_retry_place_result(place, retry_quality_flags):
+                return PlaceScrapeResult(
+                    source_url=place_url,
+                    place=place,
+                    attempts=attempts,
+                )
+            last_error = "quality flags: " + ", ".join(
+                place.diagnostics.quality_flags if place.diagnostics is not None else []
+            )
+        if attempts <= max_retries and retry_backoff_ms > 0:
+            time.sleep((retry_backoff_ms * attempts) / 1000)
+    return PlaceScrapeResult(
+        source_url=place_url,
+        place=last_place,
+        error=last_error or "Place scrape failed.",
+        attempts=attempts,
+    )
+
+
+def _should_retry_place_result(
+    place: PlaceDetails,
+    retry_quality_flags: Sequence[str],
+) -> bool:
+    if not retry_quality_flags or place.diagnostics is None:
+        return False
+    retry_flags = set(retry_quality_flags)
+    return any(flag in retry_flags for flag in place.diagnostics.quality_flags)
 
 
 def collect_place_snapshot(
     place_url: str,
     *,
-    headless: bool,
-    timeout_ms: int,
-    settle_time_ms: int,
+    headless: bool = True,
+    timeout_ms: int = 30_000,
+    settle_time_ms: int = 3_000,
     browser_session: BrowserSessionConfig | None = None,
     http_session: HttpSessionConfig | None = None,
+    screenshot_path: Path | None = None,
+    overview_screenshot_path: Path | None = None,
 ) -> dict[str, object]:
     """Collect a normalized DOM snapshot for a Google Maps place page."""
     context = _launch_browser_context(
         headless=headless,
         browser_session=browser_session,
     )
+    try:
+        return _collect_place_snapshot_with_context(
+            place_url,
+            context=context,
+            timeout_ms=timeout_ms,
+            settle_time_ms=settle_time_ms,
+            http_session=http_session,
+            screenshot_path=screenshot_path,
+            overview_screenshot_path=overview_screenshot_path,
+        )
+    finally:
+        context.close()
+
+
+def _collect_place_snapshot_with_context(
+    place_url: str,
+    *,
+    context: Any,
+    timeout_ms: int,
+    settle_time_ms: int,
+    http_session: HttpSessionConfig | None,
+    screenshot_path: Path | None,
+    overview_screenshot_path: Path | None,
+) -> dict[str, object]:
+    page = None
     try:
         page = context.new_page()
         _seed_google_consent_cookies(page, source_url=place_url)
@@ -512,6 +1284,18 @@ def collect_place_snapshot(
         page.wait_for_timeout(settle_time_ms)
         resolved_url = _normalize_response_url(getattr(page, "url", None))
         dom_snapshot = page.evaluate(_PLACE_JS_EXTRACTOR)
+        if overview_screenshot_path is not None:
+            _write_place_screenshot(page, overview_screenshot_path)
+        if isinstance(dom_snapshot, Mapping):
+            review_snapshot = _collect_review_panel_snapshot(page, timeout_ms=timeout_ms)
+            if review_snapshot:
+                dom_snapshot = {**dom_snapshot, **review_snapshot}
+        if screenshot_path is not None:
+            _write_place_screenshot(page, screenshot_path)
+        if isinstance(dom_snapshot, Mapping):
+            about_snapshot = _collect_about_panel_snapshot(page, timeout_ms=timeout_ms)
+            if about_snapshot:
+                dom_snapshot = {**dom_snapshot, **about_snapshot}
         preview_snapshot = _collect_preview_place_enrichment(
             place_url,
             resolved_url=resolved_url,
@@ -521,7 +1305,11 @@ def collect_place_snapshot(
     except Exception as exc:  # pragma: no cover - browser error path
         raise ScrapeError(f"Failed to scrape place page: {exc}") from exc
     finally:
-        context.close()
+        if page is not None:
+            try:
+                page.close()
+            except Exception:
+                pass
 
     if not isinstance(dom_snapshot, Mapping):
         raise ScrapeError("Failed to collect a structured place snapshot from the page.")
@@ -530,6 +1318,31 @@ def collect_place_snapshot(
         "dom": dict(dom_snapshot),
         "preview": preview_snapshot,
     }
+
+
+def _place_screenshot_path(
+    output_dir: Path | None,
+    place_url: str,
+    *,
+    stage: Literal["overview", "reviews"],
+) -> Path | None:
+    if output_dir is None:
+        return None
+    slug = "".join(character.lower() if character.isalnum() else "-" for character in place_url)
+    slug = "-".join(part for part in slug.split("-") if part)
+    digest = sha256(place_url.encode("utf-8")).hexdigest()[:8]
+    return output_dir / f"{slug[:80] or 'place'}-{digest}-{stage}.png"
+
+
+def _write_place_screenshot(page: Any, screenshot_path: Path) -> None:
+    screenshot_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        page.screenshot(path=str(screenshot_path), full_page=True)
+    except Exception:
+        try:
+            page.screenshot(path=str(screenshot_path))
+        except Exception:
+            return
 
 
 def _wait_for_review_signal(page: Any, *, timeout_ms: int) -> bool:
@@ -566,6 +1379,50 @@ def _ensure_review_signal(page: Any, *, timeout_ms: int) -> bool:
     return _wait_for_review_signal(page, timeout_ms=min(timeout_ms, 4_000))
 
 
+def _collect_review_panel_snapshot(page: Any, *, timeout_ms: int) -> dict[str, object]:
+    try:
+        clicked = page.evaluate(_PLACE_REVIEW_TAB_CLICK_JS)
+    except Exception:
+        return {}
+    if clicked is not True:
+        return {}
+    page.wait_for_timeout(min(max(timeout_ms // 10, 1_000), 3_000))
+    try:
+        topics = page.evaluate(_PLACE_REVIEW_TOPIC_JS)
+        page.wait_for_timeout(500)
+        expanded_topics = page.evaluate(_PLACE_REVIEW_TOPIC_JS)
+        reviews = page.evaluate(_PLACE_REVIEW_SNIPPET_JS)
+    except Exception:
+        return {}
+    result: dict[str, object] = {}
+    if isinstance(expanded_topics, list) and len(expanded_topics) >= (
+        len(topics) if isinstance(topics, list) else 0
+    ):
+        result["review_topics"] = expanded_topics
+    elif isinstance(topics, list):
+        result["review_topics"] = topics
+    if isinstance(reviews, list):
+        result["reviews"] = reviews
+    return result
+
+
+def _collect_about_panel_snapshot(page: Any, *, timeout_ms: int) -> dict[str, object]:
+    try:
+        clicked = page.evaluate(_PLACE_ABOUT_TAB_CLICK_JS)
+    except Exception:
+        return {}
+    if clicked is not True:
+        return {}
+    page.wait_for_timeout(min(max(timeout_ms // 10, 1_000), 3_000))
+    try:
+        sections = page.evaluate(_PLACE_ABOUT_PANEL_JS)
+    except Exception:
+        return {}
+    if not isinstance(sections, list):
+        return {}
+    return {"about_sections": sections}
+
+
 def _build_place_details(
     source_url: str,
     *,
@@ -580,12 +1437,21 @@ def _build_place_details(
     category = _clean_category_text(snapshot.get("category")) or _extract_category_from_lines(
         search_lines
     )
+    category_display_en, category_display_en_source, category_display_en_confidence = (
+        _derive_category_display_en(category, snapshot)
+    )
     lat = _parse_float(snapshot.get("lat"))
     if lat is None:
         lat = _extract_coordinate_from_url(resolved_url or source_url, index=0)
     lng = _parse_float(snapshot.get("lng"))
     if lng is None:
         lng = _extract_coordinate_from_url(resolved_url or source_url, index=1)
+    address = _clean_address_text(snapshot.get("address")) or _extract_address_from_lines(
+        combined_lines
+    )
+    address_display_en, address_display_en_source, address_display_en_confidence = (
+        _derive_address_display_en(address, snapshot)
+    )
     return PlaceDetails(
         source_url=source_url,
         resolved_url=resolved_url,
@@ -594,12 +1460,19 @@ def _build_place_details(
         secondary_name=_clean_name_text(snapshot.get("secondary_name"))
         or _extract_secondary_name(combined_lines, name=name),
         category=category,
+        category_display_en=category_display_en,
+        category_display_en_source=category_display_en_source,
+        category_display_en_confidence=category_display_en_confidence,
         rating=_parse_rating(snapshot.get("rating")),
-        review_count=_parse_review_count(snapshot.get("review_count")),
+        review_count=_resolve_review_count(snapshot, combined_lines),
+        price_range=_clean_price_range_text(snapshot.get("price_range"))
+        or _extract_price_range_from_lines(combined_lines),
         # Structural DOM data is primary. Text-line fallback is a last resort
         # for preview/limited payloads and is intentionally conservative.
-        address=_clean_address_text(snapshot.get("address"))
-        or _extract_address_from_lines(combined_lines),
+        address=address,
+        address_display_en=address_display_en,
+        address_display_en_source=address_display_en_source,
+        address_display_en_confidence=address_display_en_confidence,
         located_in=_clean_text(snapshot.get("located_in")),
         status=_clean_text(snapshot.get("status")) or _extract_status_from_lines(combined_lines),
         website=_normalize_website(snapshot.get("website")),
@@ -615,6 +1488,9 @@ def _build_place_details(
         lng=lng,
         limited_view=_to_bool(snapshot.get("limited_view"))
         or any("limited view of google maps" in line.lower() for line in combined_lines),
+        review_topics=_normalize_review_topics(snapshot.get("review_topics")),
+        reviews=_normalize_reviews(snapshot.get("reviews")),
+        about_sections=_normalize_about_sections(snapshot.get("about_sections")),
     )
 
 
@@ -648,12 +1524,17 @@ def _merge_place_sources(
     secondary: Mapping[str, object],
 ) -> dict[str, object]:
     merged = dict(primary)
+    field_sources = {
+        key: "dom" for key, value in primary.items() if not _is_missing_value(value)
+    }
     for key, value in secondary.items():
         if key == "limited_view":
             merged[key] = _to_bool(merged.get(key)) or _to_bool(value)
             continue
         if _is_missing_value(merged.get(key)) and not _is_missing_value(value):
             merged[key] = value
+            field_sources[key] = "preview"
+    merged["field_sources"] = field_sources
     return merged
 
 
@@ -662,7 +1543,437 @@ def _is_missing_value(value: object) -> bool:
         return True
     if isinstance(value, str):
         return not value.strip()
+    if isinstance(value, list):
+        return len(value) == 0
     return False
+
+
+_LLM_REPAIR_FIELDS = set(PLACE_LLM_REPAIR_FIELDS)
+_QUALITY_CORE_FIELDS = ("name", "category", "rating", "review_count", "address")
+
+
+def _merge_llm_place_fields(
+    snapshot: Mapping[str, object],
+    repair: Mapping[str, object],
+    *,
+    current_fields: Mapping[str, object],
+) -> dict[str, object]:
+    raw_fields = repair.get("fields")
+    fields = raw_fields if isinstance(raw_fields, Mapping) else repair
+    merged = dict(snapshot)
+    raw_sources = snapshot.get("field_sources")
+    field_sources = dict(raw_sources) if isinstance(raw_sources, Mapping) else {}
+
+    for key, value in fields.items():
+        if key == "_repair_source":
+            continue
+        if not isinstance(key, str) or key not in _LLM_REPAIR_FIELDS:
+            continue
+        if _is_missing_value(value):
+            continue
+        if not _is_missing_value(current_fields.get(key)):
+            continue
+        if key == "review_topics":
+            value = _filter_llm_review_topics_by_evidence(value, snapshot.get("review_topics"))
+            if _is_missing_value(value):
+                continue
+        if key == "about_sections":
+            value = _filter_llm_about_sections_by_evidence(value, snapshot.get("about_sections"))
+            if _is_missing_value(value):
+                continue
+        merged[key] = value
+        field_sources[key] = "llm"
+
+    merged["field_sources"] = field_sources
+    return merged
+
+
+def _extract_llm_repair_source(repair: Mapping[str, object]) -> str:
+    raw_source = repair.get("_repair_source")
+    if isinstance(raw_source, str) and raw_source.strip():
+        return raw_source.strip()
+    return "llm"
+
+
+def _repair_source_used_llm(repair_source: str) -> bool:
+    return repair_source not in {"cache", "translation_memory"}
+
+
+def _filter_llm_review_topics_by_evidence(
+    value: object,
+    raw_evidence: object,
+) -> list[dict[str, object]]:
+    evidence_text = json.dumps(raw_evidence, ensure_ascii=False).casefold()
+    if not evidence_text or evidence_text == "null":
+        return []
+    evidence_digits = re.sub(r"\D", "", evidence_text)
+    if not isinstance(value, list):
+        return []
+    topics: list[ReviewTopic] = []
+    labels_seen: dict[str, int] = {}
+    for item in value:
+        topic = _review_topic_from_mapping(item) if isinstance(item, Mapping) else None
+        if topic is None:
+            topic = _parse_review_topic_candidate(item)
+        if topic is None:
+            continue
+        if topic.label.casefold() not in evidence_text:
+            continue
+        if topic.count is not None and str(topic.count) not in evidence_digits:
+            continue
+        key = topic.label.casefold()
+        existing_index = labels_seen.get(key)
+        if existing_index is None:
+            labels_seen[key] = len(topics)
+            topics.append(topic)
+            continue
+        existing = topics[existing_index]
+        if existing.count is None or (
+            topic.count is not None and topic.count > existing.count
+        ):
+            topics[existing_index] = topic
+    return [topic.to_dict() for topic in topics]
+
+
+def _filter_llm_about_sections_by_evidence(
+    value: object,
+    raw_evidence: object,
+) -> list[dict[str, object]]:
+    evidence_text = json.dumps(raw_evidence, ensure_ascii=False).casefold()
+    if not evidence_text or evidence_text == "null":
+        return []
+    result: list[dict[str, object]] = []
+    for section in _normalize_about_sections(value):
+        kept_items = [
+            item
+            for item in section.items
+            if item.label.casefold() in evidence_text
+        ]
+        if not kept_items:
+            continue
+        title = section.title
+        if title.casefold() not in evidence_text:
+            title = "About"
+        result.append(
+            PlaceAboutSection(title=title, items=kept_items).to_dict()
+        )
+    return result
+
+
+def _derive_category_display_en(
+    category: str | None,
+    snapshot: Mapping[str, object],
+) -> tuple[str | None, str | None, str | None]:
+    direct = _clean_category_text(snapshot.get("category_display_en"))
+    if direct is not None:
+        source = _clean_text(snapshot.get("category_display_en_source")) or "llm"
+        confidence = _clean_text(snapshot.get("category_display_en_confidence")) or "medium"
+        return direct, source, confidence
+
+    deterministic = _TRANSLATION_MEMORY.normalize_category(category)
+    if deterministic is None:
+        return None, None, None
+    return deterministic.text, deterministic.source, deterministic.confidence
+
+
+def _derive_address_display_en(
+    address: str | None,
+    snapshot: Mapping[str, object],
+) -> tuple[str | None, str | None, str | None]:
+    direct = _clean_address_display_en_text(snapshot.get("address_display_en"))
+    if direct is not None:
+        source = _clean_text(snapshot.get("address_display_en_source")) or "llm"
+        confidence = _clean_text(snapshot.get("address_display_en_confidence")) or "medium"
+        return direct, source, confidence
+
+    deterministic = _TRANSLATION_MEMORY.normalize_address(address)
+    if deterministic is None:
+        return None, None, None
+    return deterministic.text, deterministic.source, deterministic.confidence
+
+
+def _clean_address_display_en_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    lowered = normalized.lower()
+    if _URL_LIKE_PATTERN.search(normalized) is not None:
+        return None
+    if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
+        return None
+    return normalized
+
+
+def _needs_address_display_en(value: str | None) -> bool:
+    return _needs_display_en(value)
+
+
+def _needs_display_en(value: str | None) -> bool:
+    return needs_display_en(value)
+
+
+def _build_place_llm_evidence(snapshot: Mapping[str, object]) -> dict[str, object]:
+    panel_lines = _body_lines(snapshot.get("panel_text"))
+    body_lines = _body_lines(snapshot.get("body_text"))
+    lines = _dedupe_lines([*panel_lines, *body_lines])
+    return {
+        "prompt_version": _PLACE_LLM_PROMPT_VERSION,
+        "text_lines": lines[:80],
+        "dom_candidates": _sanitize_dom_candidates(snapshot.get("dom_candidates"), limit=80),
+        "review_topic_candidates": _sanitize_review_topic_candidates(
+            snapshot.get("review_topics"),
+            limit=50,
+        ),
+        "review_candidates": _sanitize_review_candidates(snapshot.get("reviews"), limit=10),
+        "about_sections": _sanitize_about_sections(snapshot.get("about_sections"), limit=20),
+    }
+
+
+def _sanitize_dom_candidates(value: object, *, limit: int) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        return []
+    candidates: list[dict[str, object]] = []
+    seen: set[tuple[str, str, str]] = set()
+    for item in value:
+        if not isinstance(item, Mapping):
+            continue
+        text = _clean_text(item.get("text")) or ""
+        aria_label = _clean_text(item.get("aria_label")) or ""
+        data_item_id = _clean_text(item.get("data_item_id")) or ""
+        if not text and not aria_label and not data_item_id:
+            continue
+        key = (text, aria_label, data_item_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        nearby = item.get("nearby_text")
+        candidate: dict[str, object] = {
+            "text": text[:240],
+            "aria_label": aria_label[:240],
+            "data_item_id": data_item_id[:120],
+        }
+        for attr in ("tag", "role", "selector_hint"):
+            normalized = _clean_text(item.get(attr))
+            if normalized is not None:
+                candidate[attr] = normalized[:240]
+        if isinstance(nearby, list):
+            nearby_text: list[str] = []
+            for value in nearby:
+                normalized_nearby = _clean_text(value)
+                if normalized_nearby is not None:
+                    nearby_text.append(normalized_nearby[:240])
+                if len(nearby_text) >= 4:
+                    break
+            if nearby_text:
+                candidate["nearby_text"] = nearby_text
+        candidates.append(candidate)
+        if len(candidates) >= limit:
+            break
+    return candidates
+
+
+def _sanitize_review_topic_candidates(value: object, *, limit: int) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        return []
+    candidates: list[dict[str, object]] = []
+    for item in value:
+        if isinstance(item, Mapping):
+            text = _clean_text(item.get("text") or item.get("label"))
+            aria_label = _clean_text(item.get("aria_label"))
+            source = _clean_text(item.get("source"))
+        else:
+            text = _clean_text(item)
+            aria_label = None
+            source = None
+        if text is None and aria_label is None:
+            continue
+        candidate: dict[str, object] = {}
+        if text is not None:
+            candidate["text"] = text[:120]
+        if aria_label is not None:
+            candidate["aria_label"] = aria_label[:160]
+        if source is not None:
+            candidate["source"] = source[:80]
+        candidates.append(candidate)
+        if len(candidates) >= limit:
+            break
+    return candidates
+
+
+def _sanitize_review_candidates(value: object, *, limit: int) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        return []
+    candidates: list[dict[str, object]] = []
+    for item in value:
+        if not isinstance(item, Mapping):
+            continue
+        candidate: dict[str, object] = {}
+        for key in ("author", "rating", "relative_time", "text", "like_count", "source"):
+            raw = item.get(key)
+            if key in {"rating", "like_count"} and isinstance(raw, (int, float)):
+                candidate[key] = raw
+                continue
+            normalized = _clean_text(raw)
+            if normalized is not None:
+                candidate[key] = normalized[:500] if key == "text" else normalized[:120]
+        if candidate:
+            candidates.append(candidate)
+        if len(candidates) >= limit:
+            break
+    return candidates
+
+
+def _sanitize_about_sections(value: object, *, limit: int) -> list[dict[str, object]]:
+    sections = _normalize_about_sections(value)
+    return [section.to_dict() for section in sections[:limit]]
+
+
+def _hash_evidence(evidence: Mapping[str, object]) -> str:
+    payload = json.dumps(evidence, sort_keys=True, ensure_ascii=False, default=str)
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _build_place_diagnostics(
+    details: PlaceDetails,
+    snapshot: Mapping[str, object],
+    *,
+    evidence_hash: str,
+    llm_used: bool = False,
+    repair_source: str | None = None,
+    prompt_version: str | None = None,
+) -> PlaceExtractionDiagnostics:
+    values = _place_detail_values(details)
+    missing_fields = [
+        field for field in _QUALITY_CORE_FIELDS if _is_missing_value(values.get(field))
+    ]
+    quality_flags = [f"missing_{field}" for field in missing_fields]
+
+    if details.limited_view:
+        quality_flags.append("limited_view")
+    if _needs_display_en(details.category) and details.category_display_en is None:
+        quality_flags.append("needs_category_display_en")
+    if _needs_address_display_en(details.address) and details.address_display_en is None:
+        quality_flags.append("needs_address_display_en")
+
+    page_url = f"{details.resolved_url or ''} {details.source_url}".lower()
+    if "/maps/search" in page_url and (details.name is None or details.category is None):
+        quality_flags.append("search_result_page")
+
+    raw_address = _clean_text(snapshot.get("address"))
+    if raw_address is not None and details.address is None:
+        quality_flags.append("address_rejected")
+
+    if (
+        details.rating is None
+        and details.review_count is None
+        and details.website is None
+        and details.phone is None
+    ):
+        quality_flags.append("no_reputation_or_contact")
+
+    if len(missing_fields) >= 3:
+        quality_flags.append("thin_place_result")
+
+    raw_sources = snapshot.get("field_sources")
+    field_sources = {
+        key: str(value)
+        for key, value in raw_sources.items()
+        if isinstance(key, str)
+        and isinstance(value, str)
+        and key in _LLM_REPAIR_FIELDS
+        and not _is_missing_value(values.get(key))
+    } if isinstance(raw_sources, Mapping) else {}
+    if details.category_display_en is not None and details.category_display_en_source is not None:
+        field_sources["category_display_en"] = details.category_display_en_source
+    if details.address_display_en is not None and details.address_display_en_source is not None:
+        field_sources["address_display_en"] = details.address_display_en_source
+    confidence = _score_place_confidence(missing_fields, quality_flags)
+    return PlaceExtractionDiagnostics(
+        field_sources=field_sources,
+        missing_fields=missing_fields,
+        quality_flags=quality_flags,
+        confidence=confidence,
+        llm_used=llm_used,
+        repair_source=repair_source,
+        evidence_hash=evidence_hash,
+        prompt_version=prompt_version,
+    )
+
+
+def _place_detail_values(details: PlaceDetails) -> dict[str, object]:
+    return {
+        "name": details.name,
+        "secondary_name": details.secondary_name,
+        "category": details.category,
+        "category_display_en": details.category_display_en,
+        "category_display_en_source": details.category_display_en_source,
+        "category_display_en_confidence": details.category_display_en_confidence,
+        "rating": details.rating,
+        "review_count": details.review_count,
+        "price_range": details.price_range,
+        "address": details.address,
+        "address_display_en": details.address_display_en,
+        "address_display_en_source": details.address_display_en_source,
+        "address_display_en_confidence": details.address_display_en_confidence,
+        "located_in": details.located_in,
+        "status": details.status,
+        "website": details.website,
+        "phone": details.phone,
+        "plus_code": details.plus_code,
+        "address_parts": details.address_parts,
+        "description": details.description,
+        "main_photo_url": details.main_photo_url,
+        "photo_url": details.photo_url,
+        "lat": details.lat,
+        "lng": details.lng,
+        "limited_view": details.limited_view,
+        "google_place_id": details.google_place_id,
+        "review_topics": [topic.to_dict() for topic in details.review_topics],
+        "reviews": [review.to_dict() for review in details.reviews],
+        "about_sections": [section.to_dict() for section in details.about_sections],
+    }
+
+
+def _score_place_confidence(missing_fields: list[str], quality_flags: list[str]) -> float:
+    score = 1.0
+    for field in missing_fields:
+        score -= 0.2 if field == "name" else 0.12
+    if "limited_view" in quality_flags:
+        score -= 0.15
+    if "search_result_page" in quality_flags:
+        score -= 0.15
+    if "address_rejected" in quality_flags:
+        score -= 0.1
+    if "thin_place_result" in quality_flags:
+        score -= 0.15
+    if "needs_category_display_en" in quality_flags:
+        score -= 0.05
+    return max(0.0, round(score, 2))
+
+
+def _should_use_llm_repair(
+    policy: Literal["never", "on_quality_failure", "always"],
+    diagnostics: PlaceExtractionDiagnostics,
+) -> bool:
+    if policy == "never":
+        return False
+    if policy == "always":
+        return True
+    if policy != "on_quality_failure":
+        raise ValueError(f"Unsupported llm_policy: {policy}")
+    critical_flags = {
+        "address_rejected",
+        "limited_view",
+        "search_result_page",
+        "thin_place_result",
+        "needs_address_display_en",
+        "needs_category_display_en",
+    }
+    return (
+        "missing_name" in diagnostics.quality_flags
+        or any(flag in critical_flags for flag in diagnostics.quality_flags)
+        or (diagnostics.confidence is not None and diagnostics.confidence < 0.7)
+    )
 
 
 def _collect_preview_place_enrichment(
@@ -922,11 +2233,13 @@ def _looks_like_address_line(line: str) -> bool:
     lowered = line.lower()
     if _URL_LIKE_PATTERN.search(line) is not None:
         return False
-    if _looks_like_review_snippet(line):
+    if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
+        return False
+    if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
         return False
     if "saved in" in lowered or "report a problem" in lowered:
         return False
-    if line.endswith(" More"):
+    if _looks_like_review_snippet(line):
         return False
     if _looks_like_status_text(line):
         return False
@@ -948,6 +2261,8 @@ def _looks_like_address_line(line: str) -> bool:
     if re.search(r"\d", line) is None:
         return _looks_like_locality_address_line(line)
     if "," in line and any(character.isalpha() for character in line):
+        if re.match(r"^\d+[A-Za-z0-9/-]*\b", line.strip()) and len(line.split()) <= 16:
+            return True
         if _ADDRESS_KEYWORD_PATTERN.search(line) is None and len(line.split()) > 10:
             return False
         return True
@@ -1043,6 +2358,25 @@ def _extract_phone_from_lines(lines: list[str]) -> str | None:
     return None
 
 
+def _clean_price_range_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None or len(normalized) > 80:
+        return None
+    normalized = normalized.replace("\u00a0", " ")
+    match = _PRICE_RANGE_PATTERN.search(normalized)
+    if match is None:
+        return None
+    return _clean_text(match.group(0))
+
+
+def _extract_price_range_from_lines(lines: list[str]) -> str | None:
+    for line in lines:
+        normalized = _clean_price_range_text(line)
+        if normalized is not None:
+            return normalized
+    return None
+
+
 def _extract_plus_code_from_lines(lines: list[str]) -> str | None:
     for line in lines:
         match = _PLUS_CODE_PATTERN.search(line)
@@ -1075,7 +2409,11 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if _looks_like_search_results_label(normalized) or normalized.casefold() == "share":
         return None
+    if not any(character.isalnum() for character in normalized):
+        return None
     if _normalize_phone_candidate(normalized) is not None:
+        return None
+    if _looks_like_address_line(normalized):
         return None
     if (
         _parse_rating(normalized) is not None
@@ -1197,6 +2535,247 @@ def _normalize_address_parts(value: list[object]) -> AddressParts | None:
     return normalized
 
 
+def _normalize_review_topics(value: object) -> list[ReviewTopic]:
+    if not isinstance(value, list):
+        return []
+    topics: list[ReviewTopic] = []
+    labels_seen: dict[str, int] = {}
+    for item in value:
+        topic = _review_topic_from_mapping(item) if isinstance(item, Mapping) else None
+        if topic is None:
+            topic = _parse_review_topic_candidate(item)
+        if topic is None:
+            continue
+        key = topic.label.casefold()
+        existing_index = labels_seen.get(key)
+        if existing_index is None:
+            labels_seen[key] = len(topics)
+            topics.append(topic)
+            continue
+        existing = topics[existing_index]
+        if existing.count is None or (
+            topic.count is not None and topic.count > existing.count
+        ):
+            topics[existing_index] = topic
+    return topics
+
+
+def _normalize_about_sections(value: object) -> list[PlaceAboutSection]:
+    if not isinstance(value, list):
+        return []
+    sections: list[PlaceAboutSection] = []
+    seen_titles: set[str] = set()
+    for item in value:
+        if not isinstance(item, Mapping):
+            continue
+        title = _clean_text(item.get("title"))
+        if title is None or title.casefold() in seen_titles:
+            continue
+        raw_items = item.get("items")
+        if not isinstance(raw_items, list):
+            continue
+        about_items: list[PlaceAboutItem] = []
+        seen_labels: set[str] = set()
+        for raw_item in raw_items:
+            about_item = _normalize_about_item(raw_item)
+            if about_item is None:
+                continue
+            key = about_item.label.casefold()
+            if key in seen_labels:
+                continue
+            seen_labels.add(key)
+            about_items.append(about_item)
+        if not about_items:
+            continue
+        seen_titles.add(title.casefold())
+        sections.append(PlaceAboutSection(title=title, items=about_items))
+    return sections
+
+
+def _normalize_about_item(value: object) -> PlaceAboutItem | None:
+    if isinstance(value, Mapping):
+        label = _clean_about_label(value.get("label"))
+        aria_label = _clean_text(value.get("aria_label"))
+        source = _clean_text(value.get("source"))
+    else:
+        label = _clean_about_label(value)
+        aria_label = None
+        source = None
+    if label is None:
+        return None
+    return PlaceAboutItem(label=label, aria_label=aria_label, source=source)
+
+
+def _clean_about_label(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None or len(normalized) > 160:
+        return None
+    if _URL_LIKE_PATTERN.search(normalized) is not None:
+        return None
+    if normalized in {"✓", ""}:
+        return None
+    normalized = normalized.removeprefix("✓ ").strip()
+    normalized = re.sub(r"^[\ue000-\uf8ff]\s*", "", normalized).strip()
+    return normalized or None
+
+
+def _review_topic_from_mapping(value: Mapping[str, object]) -> ReviewTopic | None:
+    direct_label = _clean_review_topic_label(value.get("label"))
+    direct_count = _parse_review_count(value.get("count"))
+    source = _clean_text(value.get("source"))
+    if direct_label is not None:
+        return ReviewTopic(label=direct_label, count=direct_count, source=source)
+
+    text = _clean_text(value.get("text"))
+    aria_label = _clean_text(value.get("aria_label"))
+    for candidate in (aria_label, text):
+        topic = _parse_review_topic_candidate(candidate)
+        if topic is not None:
+            return ReviewTopic(label=topic.label, count=topic.count, source=source)
+    return None
+
+
+def _parse_review_topic_candidate(value: object) -> ReviewTopic | None:
+    normalized = _clean_text(value)
+    if normalized is None or len(normalized) > 160:
+        return None
+    patterns = (
+        r"^(?P<label>.+?),?\s+mentioned\s+in\s+(?P<count>[0-9][0-9,.\s]*[KM萬万]?)\s+"
+        r"(?:reviews?|評論|クチコミ)\b$",
+        r"^(?:mentioned\s+in\s+)?(?P<count>[0-9][0-9,.\s]*[KM萬万]?)\s+"
+        r"(?:reviews?|評論|クチコミ)\b[^:：]*[:：]\s*(?P<label>.+)$",
+        r"^(?P<label>.+?)\s*[(](?P<count>[0-9][0-9,.\s]*[KM萬万]?)[)]$",
+        r"^(?P<label>.+?)\s+(?P<count>[0-9][0-9,.\s]*[KM萬万]?)$",
+        r"^(?P<count>[0-9][0-9,.\s]*[KM萬万]?)\s+(?P<label>.+)$",
+    )
+    for pattern in patterns:
+        match = re.match(pattern, normalized, flags=re.IGNORECASE)
+        if match is None:
+            continue
+        label = _clean_review_topic_label(match.group("label"))
+        count = _parse_review_count(match.group("count"))
+        if label is not None and count is not None:
+            return ReviewTopic(label=label, count=count)
+    return None
+
+
+def _clean_review_topic_label(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    normalized = normalized.strip(" \"'“”‘’()[]")
+    normalized = re.sub(
+        r"\s+[0-9][0-9,.\s]*[KM萬万]?$",
+        "",
+        normalized,
+        flags=re.IGNORECASE,
+    ).strip()
+    if not normalized or len(normalized) > 50:
+        return None
+    lowered = normalized.casefold()
+    if lowered in _REVIEW_TOPIC_REJECT_LABELS:
+        return None
+    if any(term in lowered for term in _REVIEW_TOPIC_REJECT_TERMS):
+        return None
+    if "rating" in lowered:
+        return None
+    if re.fullmatch(r"(?:[1-5]\s+)?stars?", lowered):
+        return None
+    if any(keyword in lowered for keyword in _REVIEW_LABEL_KEYWORDS):
+        return None
+    if _URL_LIKE_PATTERN.search(normalized) is not None:
+        return None
+    if not any(character.isalpha() for character in normalized):
+        return None
+    if _parse_rating(normalized) is not None and re.fullmatch(
+        r"[0-9]+(?:[.,][0-9]+)?",
+        normalized,
+    ):
+        return None
+    return normalized
+
+
+def _normalize_reviews(value: object) -> list[PlaceReview]:
+    if not isinstance(value, list):
+        return []
+    raw_reviews: list[PlaceReview] = []
+    seen: set[tuple[str | None, str | None, str | None]] = set()
+    for item in value:
+        if not isinstance(item, Mapping):
+            continue
+        text = _clean_review_text(item.get("text"))
+        author = _clean_text(item.get("author"))
+        relative_time = _clean_text(item.get("relative_time"))
+        if text is None and author is None:
+            continue
+        key = (author, relative_time, text)
+        if key in seen:
+            continue
+        seen.add(key)
+        raw_reviews.append(
+            PlaceReview(
+                author=author,
+                rating=_parse_rating(item.get("rating")),
+                relative_time=relative_time,
+                text=text,
+                like_count=_parse_review_like_count(item.get("like_count")),
+                source=_clean_text(item.get("source")),
+            )
+        )
+    return _merge_adjacent_review_fragments(raw_reviews)
+
+
+def _merge_adjacent_review_fragments(reviews: list[PlaceReview]) -> list[PlaceReview]:
+    merged: list[PlaceReview] = []
+    pending_author: PlaceReview | None = None
+    for review in reviews:
+        if review.text is None and review.author is not None:
+            if merged and merged[-1].author is None and merged[-1].text is not None:
+                previous = merged[-1]
+                merged[-1] = PlaceReview(
+                    author=review.author,
+                    rating=previous.rating,
+                    relative_time=previous.relative_time,
+                    text=previous.text,
+                    like_count=previous.like_count,
+                    source=previous.source or review.source,
+                )
+            else:
+                pending_author = review
+            continue
+        if pending_author is not None and review.author is None:
+            review = PlaceReview(
+                author=pending_author.author,
+                rating=review.rating,
+                relative_time=review.relative_time,
+                text=review.text,
+                like_count=review.like_count,
+                source=review.source or pending_author.source,
+            )
+            pending_author = None
+        merged.append(review)
+    return merged
+
+
+def _clean_review_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    return normalized.removesuffix(" More").strip()
+
+
+def _parse_review_like_count(value: object) -> int | None:
+    if isinstance(value, int):
+        return value
+    normalized = _clean_text(value)
+    if normalized is None or normalized.casefold() == "like":
+        return None
+    match = re.search(r"\b([0-9][0-9,.\s]*)\b", normalized)
+    if match is None:
+        return None
+    return _parse_review_count(match.group(1))
+
+
 def _extract_preview_phone(strings: list[str]) -> str | None:
     best_local: str | None = None
     for value in strings:
@@ -1255,8 +2834,9 @@ def _extract_preview_address(strings: list[str]) -> str | None:
             continue
         if "maps/preview/place" in normalized or normalized.startswith("/g/"):
             continue
-        if _clean_address_text(normalized) is not None and _looks_like_address_line(normalized):
-            candidates.append(normalized)
+        cleaned = _clean_address_text(normalized)
+        if cleaned is not None and _looks_like_address_line(cleaned):
+            candidates.append(cleaned)
     if not candidates:
         return None
     return max(candidates, key=len)
@@ -1453,13 +3033,42 @@ def _parse_review_count(value: object) -> int | None:
     return int(number * multiplier)
 
 
+def _resolve_review_count(snapshot: Mapping[str, object], lines: list[str]) -> int | None:
+    from_lines = _extract_review_count_from_lines(lines)
+    if from_lines is not None:
+        return from_lines
+    return _parse_review_count(snapshot.get("review_count"))
+
+
+def _extract_review_count_from_lines(lines: list[str]) -> int | None:
+    for line in lines:
+        match = re.fullmatch(
+            r"\(?([0-9][0-9,.\s]*[KM萬万]?)\)?\s+"
+            r"(?:reviews?|評論|クチコミ|件のクチコミ|件の Google クチコミ)",
+            line.strip(),
+            flags=re.IGNORECASE,
+        )
+        if match is None:
+            continue
+        return _parse_review_count(match.group(1))
+
+    for index, line in enumerate(lines[:-1]):
+        if _parse_rating(line) is None:
+            continue
+        match = re.match(r"^\(?([0-9][0-9,.\s]*[KM萬万]?)\)?(?:\s*[·⋅].*)?$", lines[index + 1])
+        if match is None:
+            continue
+        count = _parse_review_count(match.group(1))
+        if count is not None and count >= 10:
+            return count
+    return None
+
+
 def _normalize_website(value: object) -> str | None:
     text = _clean_text(value)
     if text is None:
         return None
-    if text.startswith("http://") or text.startswith("https://"):
-        return text
-    return text
+    return _normalize_preview_website(text)
 
 
 def _extract_coordinate_from_url(url: str, *, index: int) -> float | None:

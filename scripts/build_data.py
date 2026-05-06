@@ -1109,6 +1109,7 @@ try:
         HttpSessionConfig,
         ParseError,
         ScrapeError,
+        build_maps_search_url as build_scraper_maps_search_url,
         scrape_place,
         scrape_saved_list,
     )
@@ -1121,6 +1122,7 @@ except ImportError:
 
     BrowserSessionConfig = None
     HttpSessionConfig = None
+    build_scraper_maps_search_url = None
     scrape_place = None
     scrape_saved_list = None
 
@@ -4048,7 +4050,8 @@ def normalize_locality_equivalence_key(value: str | None) -> str:
 
 
 def split_title_parts(title: str) -> list[str]:
-    cleaned = re.sub(r"[^\w\s,&/-]", "", title)
+    title_without_parentheticals = re.sub(r"\([^)]*\)", " ", title)
+    cleaned = re.sub(r"[^\w\s,&/-]", "", title_without_parentheticals)
     return [part.strip() for part in cleaned.split(",") if part.strip()]
 
 
@@ -6386,9 +6389,7 @@ def score_place_page_candidate(
 ) -> int:
     score = 0
     raw_name = normalize_text(raw_place.name)
-    candidate_name = normalize_text(
-        enrichment_place.display_name or as_string(getattr(details, "name", None))
-    )
+    candidate_name = normalize_text(enrichment_place.display_name)
     raw_address = normalize_text(raw_place.address)
     candidate_address = normalize_text(
         enrichment_place.formatted_address or as_string(getattr(details, "address", None))
@@ -6437,11 +6438,9 @@ def build_place_page_candidate_urls(
         city_name=city_name,
         country_name=country_name,
     )
-    search_url = localize_google_maps_scrape_url(build_google_maps_search_url(query)) if query else None
+    search_url = build_google_maps_scrape_search_url(query) if query else None
     place_id_search_url = (
-        localize_google_maps_scrape_url(
-            build_google_maps_search_url(query, google_place_id=google_place_id)
-        )
+        build_google_maps_scrape_search_url(query, google_place_id=google_place_id)
         if query and google_place_id
         else None
     )
@@ -6478,6 +6477,23 @@ def localize_google_maps_scrape_url(url: str) -> str:
     query_pairs = [(key, value) for key, value in parse_qsl(split.query, keep_blank_values=True) if key not in {"hl", "gl"}]
     query_pairs.extend([("hl", "en"), ("gl", "us")])
     return urlunsplit(split._replace(query=urlencode(query_pairs)))
+
+
+def build_google_maps_scrape_search_url(
+    query: str,
+    *,
+    google_place_id: str | None = None,
+) -> str:
+    if build_scraper_maps_search_url is not None:
+        return build_scraper_maps_search_url(
+            query,
+            place_id=google_place_id,
+            hl="en",
+            gl="us",
+        )
+    return localize_google_maps_scrape_url(
+        build_google_maps_search_url(query, google_place_id=google_place_id)
+    )
 
 
 def should_prefer_search_place_url(maps_url: str) -> bool:
@@ -6606,6 +6622,23 @@ PLACE_PAGE_STRONG_ADDRESS_KEYWORD_RE = re.compile(
     r"square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
     re.IGNORECASE,
 )
+PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES = {
+    "call",
+    "directions",
+    "save",
+    "saved",
+    "share",
+    "website",
+}
+
+
+def sanitize_place_page_display_name(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    if normalize_text(normalized) in PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES:
+        return None
+    return normalized
 
 
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
@@ -6833,7 +6866,7 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     source_url = as_string(getattr(details, "source_url", None))
     resolved_url = as_string(getattr(details, "resolved_url", None))
     from_search_url = bool(source_url and "/maps/search/" in source_url)
-    display_name = as_string(getattr(details, "name", None))
+    display_name = sanitize_place_page_display_name(getattr(details, "name", None))
     formatted_address = sanitize_place_page_formatted_address(getattr(details, "address", None))
     rating = as_float(getattr(details, "rating", None))
     user_rating_count = as_int(getattr(details, "review_count", None))

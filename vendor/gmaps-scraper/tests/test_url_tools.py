@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from gmaps_scraper.url_tools import (
+    build_maps_search_url,
     extract_list_id,
     extract_list_id_from_text,
     has_placelist_marker,
@@ -29,6 +30,39 @@ class UrlToolsTests(unittest.TestCase):
     def test_detects_placelist_marker(self) -> None:
         self.assertTrue(has_placelist_marker("prefix maps/placelists/list/TESTLISTABC123456789"))
         self.assertFalse(has_placelist_marker("https://maps.app.goo.gl/TestSavedListShortUrl"))
+
+    def test_build_maps_search_url_defaults_to_english_us_locale(self) -> None:
+        self.assertEqual(
+            build_maps_search_url("Analogue, Singapore"),
+            (
+                "https://www.google.com/maps/search/"
+                "?api=1&query=Analogue%2C+Singapore&hl=en&gl=us"
+            ),
+        )
+
+    def test_build_maps_search_url_accepts_place_id_and_region_override(self) -> None:
+        self.assertEqual(
+            build_maps_search_url(
+                "Ad Astra, Taipei",
+                place_id="ChIJHeQU2UCpQjQRhNcDeQ1fUMI",
+                gl="tw",
+            ),
+            (
+                "https://www.google.com/maps/search/"
+                "?api=1&query=Ad+Astra%2C+Taipei"
+                "&query_place_id=ChIJHeQU2UCpQjQRhNcDeQ1fUMI&hl=en&gl=tw"
+            ),
+        )
+
+    def test_build_maps_search_url_can_omit_locale_params(self) -> None:
+        self.assertEqual(
+            build_maps_search_url("Den Tokyo", hl=None, gl=None),
+            "https://www.google.com/maps/search/?api=1&query=Den+Tokyo",
+        )
+
+    def test_build_maps_search_url_rejects_blank_query(self) -> None:
+        with self.assertRaisesRegex(ValueError, "query"):
+            build_maps_search_url("  ")
 
 
 if __name__ == "__main__":
