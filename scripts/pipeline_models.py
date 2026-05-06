@@ -29,23 +29,23 @@ class PlacesSettings(BaseSettings):
     )
     google_maps_place_llm_repair: Literal["off", "dom", "dom_then_translation"] | None = Field(
         default=None,
-        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_LLM_REPAIR", "GMAPS_PLACE_LLM_REPAIR"),
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_LLM_REPAIR", "GMAPS_PLACES_LLM_REPAIR"),
     )
     google_maps_place_llm_cache_dir: str | None = Field(
         default=None,
-        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_LLM_CACHE_DIR", "GMAPS_PLACE_LLM_CACHE_DIR"),
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_LLM_CACHE_DIR", "GMAPS_PLACES_LLM_CACHE_DIR"),
     )
     google_maps_place_collect_reviews: bool | None = Field(
         default=None,
-        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_COLLECT_REVIEWS", "GMAPS_PLACE_COLLECT_REVIEWS"),
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_COLLECT_REVIEWS", "GMAPS_PLACES_COLLECT_REVIEWS"),
     )
     google_maps_place_collect_about: bool | None = Field(
         default=None,
-        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_COLLECT_ABOUT", "GMAPS_PLACE_COLLECT_ABOUT"),
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_COLLECT_ABOUT", "GMAPS_PLACES_COLLECT_ABOUT"),
     )
     google_maps_place_semantic_llm: bool | None = Field(
         default=None,
-        validation_alias=AliasChoices("GOOGLE_MAPS_PLACE_SEMANTIC_LLM", "GMAPS_PLACE_SEMANTIC_LLM"),
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_SEMANTIC_LLM", "GMAPS_PLACES_SEMANTIC_LLM"),
     )
 
 

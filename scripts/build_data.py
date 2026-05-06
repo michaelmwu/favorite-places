@@ -4287,9 +4287,9 @@ def site_enrichment_config() -> dict[str, Any]:
 
 def site_google_maps_place_config_value(key: str) -> Any:
     config = site_enrichment_config()
-    google_maps_place = config.get("google_maps_place")
-    if isinstance(google_maps_place, dict) and key in google_maps_place:
-        return google_maps_place[key]
+    google_maps_places = config.get("google_maps_places")
+    if isinstance(google_maps_places, dict) and key in google_maps_places:
+        return google_maps_places[key]
     place_scraping = config.get("place_scraping")
     if isinstance(place_scraping, dict) and key in place_scraping:
         return place_scraping[key]
@@ -4304,7 +4304,7 @@ def google_maps_place_llm_repair_mode() -> Literal["off", "dom", "dom_then_trans
     if site_value is not None:
         if site_value not in {"off", "dom", "dom_then_translation"}:
             raise RuntimeError(
-                f"{SITE_ENRICHMENT_CONFIG_PATH} google_maps_place.llm_repair must be "
+                f"{SITE_ENRICHMENT_CONFIG_PATH} google_maps_places.llm_repair must be "
                 "`off`, `dom`, or `dom_then_translation`."
             )
         return site_value
