@@ -186,6 +186,7 @@ def repair_place_display_fields(
     repaired = _clean_repaired_display_fields(fields)
     if not repaired:
         return place
+    repair_source = _repair_source(repair)
     return replace(
         place,
         category_display_en=cast(
@@ -220,6 +221,12 @@ def repair_place_display_fields(
                 "address_display_en_confidence",
                 place.address_display_en_confidence,
             ),
+        ),
+        diagnostics=_repaired_display_diagnostics(
+            place,
+            repaired_fields=repaired,
+            request_diagnostics=diagnostics,
+            repair_source=repair_source,
         ),
     )
 
@@ -275,6 +282,52 @@ def _clean_repaired_display_fields(fields: Mapping[str, object]) -> dict[str, ob
             continue
         repaired[key] = normalized
     return repaired
+
+
+def _repair_source(repair: Mapping[str, object]) -> str:
+    source = repair.get("_repair_source")
+    if isinstance(source, str) and source.strip():
+        return source.strip()
+    return "llm"
+
+
+def _repaired_display_diagnostics(
+    place: PlaceDetails,
+    *,
+    repaired_fields: Mapping[str, object],
+    request_diagnostics: PlaceExtractionDiagnostics,
+    repair_source: str,
+) -> PlaceExtractionDiagnostics:
+    existing = place.diagnostics
+    quality_flags = list(existing.quality_flags) if existing is not None else []
+    if "category_display_en" in repaired_fields:
+        quality_flags = [
+            flag for flag in quality_flags if flag != "needs_category_display_en"
+        ]
+    if "address_display_en" in repaired_fields:
+        quality_flags = [
+            flag for flag in quality_flags if flag != "needs_address_display_en"
+        ]
+    field_sources = dict(existing.field_sources) if existing is not None else {}
+    for key in (
+        "category_display_en",
+        "address_display_en",
+    ):
+        if key in repaired_fields:
+            source_key = f"{key}_source"
+            field_sources[key] = (
+                _clean_display_value(repaired_fields.get(source_key)) or repair_source
+            )
+    return PlaceExtractionDiagnostics(
+        field_sources=field_sources,
+        missing_fields=list(existing.missing_fields) if existing is not None else [],
+        quality_flags=quality_flags,
+        confidence=existing.confidence if existing is not None else None,
+        llm_used=repair_source not in {"cache", "translation_memory"},
+        repair_source=repair_source,
+        evidence_hash=request_diagnostics.evidence_hash,
+        prompt_version=request_diagnostics.prompt_version,
+    )
 
 
 def _hash_display_repair_evidence(evidence: Mapping[str, object]) -> str:

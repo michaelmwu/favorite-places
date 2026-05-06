@@ -350,6 +350,8 @@ def _allowed_fields_for_tasks(tasks: list[str]) -> list[str]:
         allowed.extend(PLACE_LLM_DOM_REPAIR_FIELDS)
     if "display_translation" in tasks:
         allowed.extend(PLACE_LLM_DISPLAY_TRANSLATION_FIELDS)
+    if not allowed:
+        return list(PLACE_LLM_REPAIR_FIELDS)
     return list(dict.fromkeys(allowed))
 
 

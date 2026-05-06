@@ -7,7 +7,11 @@ from gmaps_scraper.display_fields import (
     reusable_place_display_fields,
     reuse_place_display_fields,
 )
-from gmaps_scraper.models import PlaceDetails, PlaceLLMRepairRequest
+from gmaps_scraper.models import (
+    PlaceDetails,
+    PlaceExtractionDiagnostics,
+    PlaceLLMRepairRequest,
+)
 
 
 class DisplayFieldReuseTests(unittest.TestCase):
@@ -132,6 +136,14 @@ class DisplayFieldReuseTests(unittest.TestCase):
             address="1 The Knolls, シンガポール 098297",
             located_in="Capella Singapore",
             address_parts=["1 The Knolls", "シンガポール 098297"],
+            diagnostics=PlaceExtractionDiagnostics(
+                quality_flags=[
+                    "needs_category_display_en",
+                    "needs_address_display_en",
+                    "thin_place_result",
+                ],
+                llm_used=False,
+            ),
         )
 
         def repairer(request: PlaceLLMRepairRequest) -> dict[str, object]:
@@ -157,6 +169,11 @@ class DisplayFieldReuseTests(unittest.TestCase):
         self.assertIsNot(repaired, place)
         self.assertEqual(repaired.category_display_en, "Italian restaurant")
         self.assertEqual(repaired.address_display_en, "1 The Knolls, Singapore 098297")
+        self.assertIsNotNone(repaired.diagnostics)
+        assert repaired.diagnostics is not None
+        self.assertEqual(repaired.diagnostics.quality_flags, ["thin_place_result"])
+        self.assertTrue(repaired.diagnostics.llm_used)
+        self.assertEqual(repaired.diagnostics.repair_source, "llm")
         self.assertEqual(len(calls), 1)
         request = calls[0]
         self.assertEqual(request.tasks, ["display_translation"])

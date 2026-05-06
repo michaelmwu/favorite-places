@@ -1352,7 +1352,8 @@ def _collect_place_snapshot_with_context(
             page.wait_for_selector(_TITLE_SELECTOR, timeout=timeout_ms, state="attached")
         except Exception:
             pass
-        _ensure_review_signal(page, timeout_ms=timeout_ms)
+        if collect_reviews:
+            _ensure_review_signal(page, timeout_ms=timeout_ms)
         page.wait_for_timeout(settle_time_ms)
         resolved_url = _normalize_response_url(getattr(page, "url", None))
         dom_snapshot = page.evaluate(_PLACE_JS_EXTRACTOR)
@@ -1362,7 +1363,7 @@ def _collect_place_snapshot_with_context(
             review_snapshot = _collect_review_panel_snapshot(page, timeout_ms=timeout_ms)
             if review_snapshot:
                 dom_snapshot = {**dom_snapshot, **review_snapshot}
-        if collect_reviews and screenshot_path is not None:
+        if screenshot_path is not None:
             _write_place_screenshot(page, screenshot_path)
         if collect_about and isinstance(dom_snapshot, Mapping):
             about_snapshot = _collect_about_panel_snapshot(page, timeout_ms=timeout_ms)

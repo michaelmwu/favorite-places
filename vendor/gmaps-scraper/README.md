@@ -169,6 +169,7 @@ if needs_translation:
         repairer=repairer,
         evidence={"city": "Singapore", "country": "Singapore"},
     )
+    fresh = translated
 ```
 
 The downstream app owns the spend policy. `gmaps-scraper` owns the generic

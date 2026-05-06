@@ -91,6 +91,9 @@ class PlaceScraperTests(unittest.TestCase):
             def reload(self, *_args: object, **_kwargs: object) -> None:
                 pass
 
+            def screenshot(self, *, path: str, **_kwargs: object) -> None:
+                Path(path).write_bytes(b"screenshot")
+
             def evaluate(self, script: object) -> object:
                 self.evaluate_calls += 1
                 if script == _PLACE_JS_EXTRACTOR:
@@ -112,21 +115,32 @@ class PlaceScraperTests(unittest.TestCase):
                 self.closed = True
 
         context = _FakeContext()
-        with (
-            patch("gmaps_scraper.place_scraper._launch_browser_context", return_value=context),
-            patch("gmaps_scraper.place_scraper._handle_google_consent"),
-            patch("gmaps_scraper.place_scraper._ensure_review_signal"),
-            patch("gmaps_scraper.place_scraper._collect_preview_place_enrichment", return_value={}),
-        ):
-            snapshot = collect_place_snapshot(
-                "https://www.google.com/maps/place/Den",
-                collect_reviews=False,
-                collect_about=False,
-            )
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            screenshot_path = Path(tmp_dir) / "overview-only.png"
+            with (
+                patch(
+                    "gmaps_scraper.place_scraper._launch_browser_context",
+                    return_value=context,
+                ),
+                patch("gmaps_scraper.place_scraper._handle_google_consent"),
+                patch("gmaps_scraper.place_scraper._ensure_review_signal") as review_signal,
+                patch(
+                    "gmaps_scraper.place_scraper._collect_preview_place_enrichment",
+                    return_value={},
+                ),
+            ):
+                snapshot = collect_place_snapshot(
+                    "https://www.google.com/maps/place/Den",
+                    collect_reviews=False,
+                    collect_about=False,
+                    screenshot_path=screenshot_path,
+                )
 
-        self.assertTrue(context.closed)
-        self.assertEqual(snapshot["dom"], {"name": "Den"})
-        self.assertEqual(context.page.evaluate_calls, 1)
+            self.assertTrue(context.closed)
+            self.assertEqual(snapshot["dom"], {"name": "Den"})
+            self.assertEqual(context.page.evaluate_calls, 1)
+            review_signal.assert_not_called()
+            self.assertEqual(screenshot_path.read_bytes(), b"screenshot")
 
     def test_scrape_places_reuses_context_and_retries_quality_flags(self) -> None:
         class _FakeContext:

@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from gmaps_scraper.llm import (
     cached_place_repairer,
+    openai_compatible_place_repair,
     openai_compatible_place_repairer_from_env,
 )
 from gmaps_scraper.models import (
@@ -227,6 +228,38 @@ class LLMConfigTests(unittest.TestCase):
         self.assertEqual(payload["response_format"], {"type": "json_object"})
         self.assertNotIn("temperature", payload)
         messages = payload["messages"]
+        self.assertIsInstance(messages, list)
+        user_message = messages[1]
+        self.assertIsInstance(user_message, dict)
+        content = user_message["content"]
+        self.assertIsInstance(content, str)
+        self.assertEqual(
+            json.loads(content)["allowed_fields"],
+            list(PLACE_LLM_REPAIR_FIELDS),
+        )
+
+    def test_unknown_llm_task_falls_back_to_all_allowed_fields(self) -> None:
+        captured: dict[str, object] = {}
+
+        def fake_urlopen(http_request: object, timeout: float) -> _FakeHTTPResponse:
+            del timeout
+            captured["payload"] = json.loads(http_request.data.decode("utf-8"))
+            return _FakeHTTPResponse(
+                {"choices": [{"message": {"content": "{}"}}]}
+            )
+
+        request = _build_request()
+        request.tasks = ["future_task"]
+        with patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            response = openai_compatible_place_repair(
+                request,
+                api_key="test-openai-key",
+                base_url="https://api.openai.com/v1",
+                model="gpt-5-mini",
+            )
+
+        self.assertEqual(response, {})
+        messages = captured["payload"]["messages"]
         self.assertIsInstance(messages, list)
         user_message = messages[1]
         self.assertIsInstance(user_message, dict)
