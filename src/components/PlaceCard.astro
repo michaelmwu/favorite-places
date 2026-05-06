@@ -210,7 +210,9 @@ const isTemporarilyClosed = siteConfig.placeCard.showStatus && place.status === 
     )}
   </div>
 
-  {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && <p class="rich-copy ui-copy" set:html={whyRecommendedHtml} />}
+  {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && (
+    <p class="rich-copy ui-copy place-card-description" set:html={whyRecommendedHtml} />
+  )}
   {siteConfig.placeCard.showNote && noteHtml && <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={noteHtml} />}
   {siteConfig.placeCard.showAddress && place.address && (
     <div class="place-card-address" title={place.address}>

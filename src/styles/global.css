@@ -1298,13 +1298,28 @@
     -webkit-line-clamp: 3;
   }
 
+  .place-card-description {
+    padding-left: 0.72rem;
+    border-left: 2px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+    color: color-mix(in srgb, var(--muted) 88%, var(--ink));
+    font-size: 0.94rem;
+    line-height: 1.48;
+  }
+
   .place-card-tags {
     width: 100%;
+    gap: 0.38rem;
   }
 
   .place-card-tags .tag-pill {
     min-width: 0;
     max-width: 100%;
+    min-height: 1.72rem;
+    padding: 0.08rem 0.48rem;
+    border-radius: 0.72rem;
+    background: color-mix(in srgb, var(--surface-strong) 60%, var(--surface));
+    font-size: 0.72rem;
+    line-height: 1.05;
     white-space: nowrap;
   }
 
@@ -3122,7 +3137,7 @@
     }
   }
 
-  @media (min-width: 1480px) {
+  @media (min-width: 1760px) {
     .browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"] {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
