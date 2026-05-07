@@ -35,7 +35,8 @@ The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner.
 - `GOOGLE_MAPS_JS_API_KEY` is read by Astro during render/build and emitted into the page only when the Google map provider is active. Treat it as the browser Google Maps display key: production usage should be on a separate key restricted by HTTP referrer and limited to `Maps JavaScript API`.
 - `GOOGLE_PLACES_API_KEY` is the optional server/build-time fallback key for Places enrichment when Google Maps place-page scraping cannot recover enough data. Do not expose it to the browser.
 - `PUBLIC_MAP_PROVIDER=leaflet` forces the Leaflet/OpenStreetMap fallback even when `GOOGLE_MAPS_JS_API_KEY` is present.
-- `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/` and rotates them when they go stale or get blocked.
+- `GMAPS_SCRAPER_PROXY` optionally routes scraper traffic through a proxy. The pipeline keeps proxy-specific scraper sessions under `.context/gmaps-scraper/` by default, rotates them when they go stale or get blocked, and can be pointed at a shared absolute path with `FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR` when you want reuse across worktrees or the main checkout.
+- `FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR` optionally overrides the scraper browser-profile and HTTP-cookie-jar root. Use the same absolute path from multiple worktrees if you want to share scraper trust state. A headed run with that same path may still be needed to establish consent or signed-in browser state; the browser profile and curl cookie jar are persisted together under this root but are separate artifacts.
 - `FAVORITE_PLACES_SITE_DIR` points both Astro and the Python data pipeline at the site pack. It defaults to `./site`, with `./site.example` as the fresh-checkout fallback.
 
 ## Data Practices
@@ -125,6 +126,6 @@ Guide pages default to Google Maps when `GOOGLE_MAPS_JS_API_KEY` is present at b
 - Manual `vibe_tags` overrides win over rule-derived browser search vibe tags.
 - Place enrichment cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
 - Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature`; URL sources skip network refreshes until the refresh window expires unless the source config changes, while CSV sources can skip rewrites when the input hash is unchanged.
-- The raw-list scraper now uses `gmaps-scraper`, which defaults to `curl_cffi` with browser fallback and supports place-page scraping. The pipeline reuses repo-local scraper sessions, rotates to a fresh identity when `GMAPS_SCRAPER_PROXY` changes, clears sessions after obvious block/cookie-jar failures, and expires idle sessions after 14 days.
+- The raw-list scraper now uses `gmaps-scraper`, which defaults to `curl_cffi` with browser fallback and supports place-page scraping. The pipeline reuses worktree-local scraper sessions by default, can share them across worktrees when `FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR` is set, rotates to a fresh identity when `GMAPS_SCRAPER_PROXY` changes, clears sessions after obvious block/cookie-jar failures, and expires idle sessions after 14 days.
 - Enrichment now prefers `gmaps-scraper` place-page scraping and uses `GOOGLE_PLACES_API_KEY` only as a fallback when a place page is blocked, limited, or too thin to trust.
 - Do not reintroduce tracked generated JSON unless the user explicitly asks for fixture-style examples in git.

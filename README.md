@@ -149,6 +149,7 @@ The behavior is configurable in a few places:
 - `site/enrichment.json` controls site-owned scraper policy. `google_maps_places.llm_repair` defaults to `dom`, while `collect_reviews` and `collect_about` default to `false` so enrichment stays compact unless a site opts into those heavier panels.
 - `GOOGLE_MAPS_PLACES_LLM_REPAIR`, `GOOGLE_MAPS_PLACES_COLLECT_REVIEWS`, and `GOOGLE_MAPS_PLACES_COLLECT_ABOUT` override the site enrichment config for automation or one-off refreshes.
 - `GMAPS_SCRAPER_PROXY` routes Google Maps list and place-page scraping through a proxy.
+- `FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR` optionally overrides where scraper browser profiles and HTTP cookie jars are stored. Point multiple worktrees at the same absolute path when you want to reuse scraper session state across them.
 - The command controls refresh scope: `fill:gaps` fills missing enrichment and photos, `enrich:data` fills missing or stale cache entries, `refresh:enrichment` refreshes every entry, `refresh:semantic-enrichment` updates cached semantic neighborhoods/tags from already cached evidence, and `refresh:semantic-descriptions` only updates cached semantic descriptions from already cached enrichment evidence.
 
 Example `site/enrichment.json`:
@@ -220,6 +221,9 @@ GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH=false
 # Optional proxy for Google Maps list and place-page scraping.
 GMAPS_SCRAPER_PROXY=...
 
+# Optional shared scraper state root for browser profiles and curl cookies.
+FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR=/absolute/path/to/.context/gmaps-scraper
+
 # Force Leaflet/OpenStreetMap rendering.
 PUBLIC_MAP_PROVIDER=leaflet
 
@@ -229,6 +233,14 @@ PUBLIC_PLACE_PHOTOS=off
 # Point at a non-default site pack.
 FAVORITE_PLACES_SITE_DIR=../site
 ```
+
+To share scraper state across Git worktrees and the main checkout, a practical choice is:
+
+```bash
+FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")/.context/gmaps-scraper"
+```
+
+A fresh persistent profile does not automatically fix limited-view responses on its own. It gives the scraper a durable browser profile and a durable curl cookie jar, but you may still need to run a headed scrape once against that same path to establish consent or trust state.
 
 Use a restricted browser key for `GOOGLE_MAPS_JS_API_KEY`. Do not expose `GOOGLE_PLACES_API_KEY` to the browser.
 

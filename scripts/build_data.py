@@ -66,6 +66,7 @@ except ModuleNotFoundError:
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_DIR_ENV = "FAVORITE_PLACES_SITE_DIR"
+SCRAPER_STATE_DIR_ENV = "FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR"
 
 
 def resolve_site_dir() -> Path:
@@ -83,6 +84,17 @@ def resolve_site_dir() -> Path:
     return ROOT / "site.example"
 
 
+def resolve_scraper_state_dir() -> Path:
+    configured_state_dir = os.environ.get(SCRAPER_STATE_DIR_ENV)
+    if configured_state_dir:
+        path = Path(configured_state_dir).expanduser()
+        if not path.is_absolute():
+            path = ROOT / path
+        return path.resolve()
+
+    return ROOT / ".context" / "gmaps-scraper"
+
+
 SITE_DIR = resolve_site_dir()
 CONFIG_PATH = SITE_DIR / "list_sources.json"
 RAW_DIR = SITE_DIR / "data" / "raw"
@@ -96,7 +108,7 @@ SITE_BUILD_HOOKS_PATH = SITE_DIR / "build_hooks.py"
 SITE_ENRICHMENT_CONFIG_PATH = SITE_DIR / "enrichment.json"
 LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = SITE_DIR / "overrides" / "places"
-SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
+SCRAPER_STATE_DIR = resolve_scraper_state_dir()
 PRICE_RATE_CACHE_DIR = ROOT / ".context" / "currency-rates"
 AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
