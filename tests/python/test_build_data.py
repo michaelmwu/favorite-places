@@ -5834,6 +5834,67 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertIsNotNone(refreshed_cache["cid:111"].place.semantic_description_signature)
 
+    def test_refresh_cached_semantic_descriptions_persists_stale_description_clear(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[RawPlace(name="Tea House", maps_url="https://maps.google.com/?cid=111", cid="111")],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            cache_payload = {
+                "cid:111": EnrichmentCacheEntry(
+                    fetched_at="2026-05-01T00:00:00+00:00",
+                    source="google_maps_page",
+                    query="Tea House, Taipei, Taiwan",
+                    matched=True,
+                    place=EnrichmentPlace(
+                        display_name="Tea House",
+                        formatted_address="No. 12, Songgao Rd, Taipei City",
+                        primary_type_display_name="Tea house",
+                        review_topics=[{"label": "oolong", "count": 12}],
+                        semantic_description="A stale generated description.",
+                        semantic_description_signature="old-signature",
+                        semantic_source="llm",
+                    ),
+                )
+            }
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+            ):
+                build_data.save_places_cache("taipei-taiwan", cache_payload)
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "fetch_places_enrichment") as fetch_places_enrichment,
+                patch.object(
+                    build_data,
+                    "repair_semantic_enrichment_with_llm",
+                    return_value={},
+                ) as repair,
+            ):
+                updated_count, reused_count, skipped_count = build_data.refresh_cached_semantic_descriptions()
+                refreshed_cache = build_data.load_places_cache("taipei-taiwan")
+
+        fetch_places_enrichment.assert_not_called()
+        repair.assert_called_once()
+        self.assertEqual((updated_count, reused_count, skipped_count), (1, 0, 0))
+        refreshed_place = refreshed_cache["cid:111"].place
+        assert refreshed_place is not None
+        self.assertIsNone(refreshed_place.semantic_description)
+        self.assertIsNone(refreshed_place.semantic_description_signature)
+        self.assertIsNone(refreshed_place.semantic_source)
+
     def test_refresh_cached_semantic_enrichment_updates_neighborhood_without_scrape(self) -> None:
         raw = RawSavedList(
             title="Taipei, Taiwan",

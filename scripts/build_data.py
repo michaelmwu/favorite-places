@@ -3345,7 +3345,7 @@ def refresh_cached_semantic_enrichment(
         current_description = entry.place.semantic_description
         current_signature = entry.place.semantic_description_signature
         semantic_changed = enable_semantics and current_semantics != previous_semantics
-        description_changed = enable_description and current_description and (
+        description_changed = enable_description and (
             current_description != previous_description
             or current_signature != previous_signature
         )
