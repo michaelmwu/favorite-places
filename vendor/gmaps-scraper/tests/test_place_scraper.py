@@ -50,7 +50,6 @@ from gmaps_scraper.place_scraper import (
     _search_result_candidate_url,
     _seed_google_consent_cookies,
     _should_use_llm_repair,
-    _with_google_maps_locale,
     collect_place_snapshot,
     scrape_places,
 )
@@ -1778,23 +1777,9 @@ class PlaceScraperTests(unittest.TestCase):
             self.assertTrue(_open_place_result_from_search_page(page, timeout_ms=30_000))
         self.assertEqual(
             page.visited,
-            [
-                (
-                    "https://www.google.com/maps/place/National+Azabu?hl=en&gl=us",
-                    "domcontentloaded",
-                    30_000,
-                )
-            ],
+            [("https://www.google.com/maps/place/National+Azabu", "domcontentloaded", 30_000)],
         )
         self.assertIn(("load_state", "load", 10_000), page.waited)
-
-    def test_with_google_maps_locale_replaces_existing_locale(self) -> None:
-        self.assertEqual(
-            _with_google_maps_locale(
-                "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=ja&gl=jp"
-            ),
-            "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=en&gl=us",
-        )
 
     def test_open_place_result_from_search_page_rejects_non_google_place_urls(self) -> None:
         class _FakePage:
