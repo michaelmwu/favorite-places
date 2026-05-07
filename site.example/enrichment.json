@@ -3,7 +3,7 @@
     "llm_repair": "dom",
     "collect_reviews": true,
     "collect_about": true,
-    "semantic_llm": false,
+    "semantic_llm": true,
     "semantic_descriptions": true,
     "semantic_description_force_refresh": false
   }

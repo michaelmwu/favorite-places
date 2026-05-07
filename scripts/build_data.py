@@ -375,6 +375,19 @@ AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES = (
     "NT",
     "ACT",
 )
+SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
+    "da an": "Da'an",
+    "daan": "Da'an",
+    "datong": "Datong",
+    "dazhi": "Dazhi",
+    "longshan temple": "Longshan Temple",
+    "marunouchi": "Marunouchi",
+    "ximen": "Ximen",
+    "ximending": "Ximending",
+    "xinyi": "Xinyi",
+    "zhongshan": "Zhongshan",
+    "zhishan": "Zhishan",
+}
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
@@ -1491,11 +1504,27 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--refresh-semantic-enrichment",
+        action="store_true",
+        help=(
+            "Generate or refresh LLM semantic neighborhoods, tags, vibe tags, and types from existing enrichment "
+            "cache entries only; does not scrape Google Maps or call the Places API."
+        ),
+    )
+    parser.add_argument(
         "--force-semantic-descriptions",
         action="store_true",
         help=(
             "Force-regenerate cached LLM semantic descriptions even when their semantic signatures still match. "
             "Implies --refresh-semantic-descriptions."
+        ),
+    )
+    parser.add_argument(
+        "--force-semantic-enrichment",
+        action="store_true",
+        help=(
+            "Force-regenerate cached LLM semantic neighborhoods and tags even when a semantic LLM cache entry exists. "
+            "Implies --refresh-semantic-enrichment."
         ),
     )
     parser.add_argument(
@@ -2210,16 +2239,23 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             raw_locality_candidates,
             enrichment_locality_candidates,
         )
-        neighborhood = as_string(override.get("neighborhood")) or (
-            enrichment.semantic_neighborhood
+        semantic_neighborhood = (
+            normalize_semantic_neighborhood_label(
+                enrichment.semantic_neighborhood,
+                city_name=city_name,
+                country_name=country_name,
+            )
             if use_semantic_enrichment and enrichment.semantic_neighborhood
             else None
+        )
+        neighborhood = as_string(override.get("neighborhood")) or (
+            semantic_neighborhood
         ) or (
             locality_candidates[0] if locality_candidates else None
         )
         neighborhood_uses_enrichment = bool(
             neighborhood
-            and (neighborhood in enrichment_locality_candidates or neighborhood == enrichment.semantic_neighborhood)
+            and (neighborhood in enrichment_locality_candidates or neighborhood == semantic_neighborhood)
             and neighborhood not in raw_locality_candidates
         )
         hidden = bool(override.get("hidden", False))
@@ -3072,6 +3108,22 @@ def refresh_cached_semantic_descriptions(
     force_refresh: bool = False,
     place_selectors: Sequence[str] | None = None,
 ) -> tuple[int, int, int]:
+    return refresh_cached_semantic_enrichment(
+        enable_semantics=False,
+        enable_description=True,
+        force_description=force_refresh,
+        place_selectors=place_selectors,
+    )
+
+
+def refresh_cached_semantic_enrichment(
+    *,
+    enable_semantics: bool,
+    enable_description: bool,
+    force_semantics: bool = False,
+    force_description: bool = False,
+    place_selectors: Sequence[str] | None = None,
+) -> tuple[int, int, int]:
     normalized_place_selectors = normalize_place_selectors(place_selectors or [])
     matched_place_selectors: set[str] = set()
     cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
@@ -3116,6 +3168,7 @@ def refresh_cached_semantic_descriptions(
     changed_slugs: set[str] = set()
     for slug, place_id, place, entry, city_name, country_name in semantic_jobs:
         assert entry.place is not None
+        previous_semantics = semantic_enrichment_state(entry.place)
         previous_description = entry.place.semantic_description
         previous_signature = entry.place.semantic_description_signature
         apply_semantic_enrichment(
@@ -3124,19 +3177,33 @@ def refresh_cached_semantic_descriptions(
             city_name=city_name,
             country_name=country_name,
             existing_entry=entry,
-            enable_semantics=False,
-            enable_description=True,
-            force_description=force_refresh,
+            enable_semantics=enable_semantics,
+            enable_description=enable_description,
+            force_semantics=force_semantics,
+            force_description=force_description,
         )
+        current_semantics = semantic_enrichment_state(entry.place)
         current_description = entry.place.semantic_description
         current_signature = entry.place.semantic_description_signature
-        if current_description and (
-            current_description != previous_description or current_signature != previous_signature
-        ):
+        semantic_changed = enable_semantics and current_semantics != previous_semantics
+        description_changed = enable_description and current_description and (
+            current_description != previous_description
+            or current_signature != previous_signature
+        )
+        if semantic_changed or description_changed:
+            requested = []
+            if semantic_changed:
+                requested.append("semantic enrichment")
+            if description_changed:
+                requested.append("semantic description")
+            requested_label = " and ".join(requested)
+            print(f"Generated {requested_label} for {slug}:{place_id} [{place.name}]", flush=True)
             updated_count += 1
             changed_slugs.add(slug)
-            print(f"Generated semantic description for {slug}:{place_id} [{place.name}]", flush=True)
-        elif current_description:
+        elif (
+            (not enable_semantics or semantic_enrichment_state_is_populated(current_semantics))
+            and (not enable_description or current_description)
+        ):
             reused_count += 1
         else:
             skipped_count += 1
@@ -3145,11 +3212,27 @@ def refresh_cached_semantic_descriptions(
         save_places_cache(slug, cache_payloads[slug])
 
     print(
-        "Semantic description refresh complete: "
+        "Semantic enrichment refresh complete: "
         f"{updated_count} generated, {reused_count} reused, {skipped_count} skipped.",
         flush=True,
     )
     return updated_count, reused_count, skipped_count
+
+
+def semantic_enrichment_state(place: EnrichmentPlace) -> tuple[str | None, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    return (
+        place.semantic_neighborhood,
+        tuple(place.semantic_tags),
+        tuple(place.semantic_vibe_tags),
+        tuple(place.semantic_types),
+    )
+
+
+def semantic_enrichment_state_is_populated(
+    state: tuple[str | None, tuple[str, ...], tuple[str, ...], tuple[str, ...]],
+) -> bool:
+    neighborhood, tags, vibe_tags, types = state
+    return bool(neighborhood or tags or vibe_tags or types)
 
 
 def enrich_place_job(
@@ -4934,10 +5017,19 @@ def enrichment_input_signature(
         },
         "city_name": as_string(city_name),
         "country_name": as_string(country_name),
+        "google_maps_places": google_maps_place_scraper_policy_payload(),
         "search_query_version": 2,
     }
     serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def google_maps_place_scraper_policy_payload() -> dict[str, Any]:
+    return {
+        "llm_repair": google_maps_place_llm_repair_mode(),
+        "collect_reviews": google_maps_place_collect_reviews(),
+        "collect_about": google_maps_place_collect_about(),
+    }
 
 
 def structured_place_identity_payload(place: RawPlace) -> dict[str, str] | None:
@@ -7345,12 +7437,14 @@ def apply_semantic_enrichment(
     existing_entry: EnrichmentCacheEntry | None = None,
     enable_semantics: bool | None = None,
     enable_description: bool | None = None,
+    force_semantics: bool | None = None,
     force_description: bool | None = None,
 ) -> None:
     include_semantics = google_maps_place_semantic_llm_enabled() if enable_semantics is None else enable_semantics
     include_description = (
         google_maps_place_semantic_descriptions_enabled() if enable_description is None else enable_description
     )
+    force_semantics = False if force_semantics is None else force_semantics
     force_description = (
         google_maps_place_semantic_description_force_refresh()
         if force_description is None
@@ -7386,12 +7480,16 @@ def apply_semantic_enrichment(
         country_name=country_name,
         include_semantics=include_semantics,
         include_description=include_description and not description_reused,
-        bypass_cache=include_description and force_description,
+        bypass_cache=(include_semantics and force_semantics) or (include_description and force_description),
     )
     if repair is None:
         return
     if include_semantics:
-        neighborhood = sanitize_semantic_label(repair.get("neighborhood"), max_length=64)
+        neighborhood = normalize_semantic_neighborhood_label(
+            repair.get("neighborhood"),
+            city_name=city_name,
+            country_name=country_name,
+        )
         if neighborhood is not None:
             enrichment_place.semantic_neighborhood = neighborhood
         enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
@@ -7434,7 +7532,7 @@ def repair_semantic_enrichment_with_llm(
         raw_place=raw_place,
         city_name=city_name,
         country_name=country_name,
-        include_description=include_description,
+        include_review_signals=include_semantics or include_description,
     )
     evidence["requested_outputs"] = {
         "semantic_tags": include_semantics,
@@ -7456,11 +7554,17 @@ def repair_semantic_enrichment_with_llm(
                 "role": "system",
                 "content": (
                     "You classify saved places for a travel guide. Return only compact JSON. "
-                    "Infer neighborhood only from the address/geography evidence. Generate broad, reusable "
-                    "kebab-case tags, vibe_tags, and types when requested. Generate one concise, "
-                    "non-hype place description when requested. Do not quote or summarize review text. "
-                    "Do not expose About or review details. Prefer 3-6 tags, 2-4 vibe_tags, and "
-                    "a description under 180 characters."
+                    "Infer the guide-facing neighborhood only from address/geography evidence. Prefer common "
+                    "local area names over the smallest administrative unit. For Taiwan, village/li labels "
+                    "such as Kangle Village or Tonghua Village are usually too granular; prefer the district "
+                    "such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local "
+                    "area as the neighborhood. Do not infer Ximen, Neihu, Longshan, or similar local areas from "
+                    "map knowledge alone; if the address only says Wanhua District or a street/night-market name, "
+                    "return Wanhua. "
+                    "Generate broad, reusable kebab-case tags, vibe_tags, and types when requested. "
+                    "Generate one concise, non-hype place description when requested. Do not quote or summarize "
+                    "review text. Do not expose About or review details. Prefer 3-6 tags, 2-4 vibe_tags, "
+                    "and a description under 180 characters."
                 ),
             },
             {
@@ -7516,7 +7620,7 @@ def semantic_enrichment_evidence(
     raw_place: RawPlace,
     city_name: str | None,
     country_name: str | None,
-    include_description: bool = False,
+    include_review_signals: bool = False,
 ) -> dict[str, Any]:
     evidence: dict[str, Any] = {
         "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
@@ -7532,7 +7636,7 @@ def semantic_enrichment_evidence(
         "review_topics": enrichment_place.review_topics[:12],
         "about_sections": compact_about_sections(enrichment_place.about_sections),
     }
-    if include_description:
+    if include_review_signals:
         evidence["review_signals"] = compact_review_signals(enrichment_place.reviews)
     return evidence
 
@@ -7657,6 +7761,27 @@ def sanitize_semantic_label(value: Any, *, max_length: int) -> str | None:
         return None
     if re.search(r"\d{3,}", label):
         return None
+    return label
+
+
+def normalize_semantic_neighborhood_label(
+    value: Any,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    label = sanitize_semantic_label(value, max_length=64)
+    if label is None:
+        return None
+    country_key = normalize_locality_key(country_name)
+    city_key = normalize_locality_key(city_name)
+    if country_key == "taiwan" or city_key in {"taipei", "taipei city"}:
+        shortened = re.sub(r"\s+District$", "", label, flags=re.IGNORECASE).strip()
+        if shortened:
+            label = shortened
+    alias = SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES.get(normalize_locality_key(label))
+    if alias:
+        return alias
     return label
 
 
@@ -8128,8 +8253,14 @@ def main() -> int:
         args.refresh = True
     if args.force_semantic_descriptions and not args.refresh_semantic_descriptions:
         args.refresh_semantic_descriptions = True
+    if args.force_semantic_enrichment and not args.refresh_semantic_enrichment:
+        args.refresh_semantic_enrichment = True
     if args.enrich_place and not (
-        args.enrich or args.enrich_missing or args.refresh_enrichment or args.refresh_semantic_descriptions
+        args.enrich
+        or args.enrich_missing
+        or args.refresh_enrichment
+        or args.refresh_semantic_descriptions
+        or args.refresh_semantic_enrichment
     ):
         args.refresh_enrichment = True
 
@@ -8154,10 +8285,13 @@ def main() -> int:
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )
 
-    if args.refresh_semantic_descriptions:
+    if args.refresh_semantic_descriptions or args.refresh_semantic_enrichment:
         sync_local_csv_sources()
-        refresh_cached_semantic_descriptions(
-            force_refresh=args.force_semantic_descriptions,
+        refresh_cached_semantic_enrichment(
+            enable_semantics=args.refresh_semantic_enrichment,
+            enable_description=args.refresh_semantic_descriptions,
+            force_semantics=args.force_semantic_enrichment,
+            force_description=args.force_semantic_descriptions,
             place_selectors=args.enrich_place,
         )
 
@@ -8172,6 +8306,8 @@ def main() -> int:
         and not args.enrich
         and not args.enrich_missing
         and not args.refresh_enrichment
+        and not args.refresh_semantic_descriptions
+        and not args.refresh_semantic_enrichment
         and not args.export_cache_json
     )
     if photo_only_refresh and refresh_generated_guide_photos(

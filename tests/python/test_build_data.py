@@ -121,7 +121,7 @@ class BuildDataTests(unittest.TestCase):
             patch.object(sys, "argv", ["build_data.py", "--force-semantic-descriptions", "--enrich-place", "cid:123"]),
             patch.object(build_data, "sync_local_csv_sources") as sync_local_csv_sources,
             patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
-            patch.object(build_data, "refresh_cached_semantic_descriptions") as refresh_descriptions,
+            patch.object(build_data, "refresh_cached_semantic_enrichment") as refresh_semantics,
             patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
         ):
             result = build_data.main()
@@ -129,12 +129,33 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(result, 0)
         sync_local_csv_sources.assert_called_once()
         enrich_raw_sources.assert_not_called()
-        refresh_descriptions.assert_called_once_with(
-            force_refresh=True,
+        refresh_semantics.assert_called_once_with(
+            enable_semantics=False,
+            enable_description=True,
+            force_semantics=False,
+            force_description=True,
             place_selectors=["cid:123"],
         )
         rebuild_generated_data.assert_called_once_with(
             refresh_photos=False,
+            photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+
+    def test_main_semantic_refresh_with_photos_runs_full_rebuild(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--refresh-semantic-descriptions", "--refresh-photos"]),
+            patch.object(build_data, "sync_local_csv_sources"),
+            patch.object(build_data, "refresh_cached_semantic_enrichment"),
+            patch.object(build_data, "refresh_generated_guide_photos", return_value=True) as refresh_photos,
+            patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_photos.assert_not_called()
+        rebuild_generated_data.assert_called_once_with(
+            refresh_photos=True,
             photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
             startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         )
@@ -2833,7 +2854,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertIs(repair.call_args.kwargs["include_semantics"], True)
         self.assertIs(repair.call_args.kwargs["include_description"], False)
         self.assertIs(repair.call_args.kwargs["bypass_cache"], False)
-        self.assertEqual(enrichment.semantic_neighborhood, "Xinyi District")
+        self.assertEqual(enrichment.semantic_neighborhood, "Xinyi")
         self.assertEqual(enrichment.semantic_tags, ["tea-house", "taipei-tea"])
         self.assertEqual(enrichment.semantic_vibe_tags, ["quiet", "date-night"])
         self.assertEqual(enrichment.semantic_types, ["specialty-cafe"])
@@ -5354,6 +5375,71 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertIsNotNone(refreshed_cache["cid:111"].place.semantic_description_signature)
 
+    def test_refresh_cached_semantic_enrichment_updates_neighborhood_without_scrape(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[RawPlace(name="Ad Astra", maps_url="https://maps.google.com/?cid=111", cid="111")],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            cache_payload = {
+                "cid:111": EnrichmentCacheEntry(
+                    fetched_at="2026-05-01T00:00:00+00:00",
+                    source="google_maps_page",
+                    query="Ad Astra, Taipei, Taiwan",
+                    matched=True,
+                    place=EnrichmentPlace(
+                        display_name="Ad Astra",
+                        formatted_address=(
+                            "No. 23, Lane 45, Section 2, Zhongshan N Rd, "
+                            "Kangle Village, Zhongshan District, Taipei City, Taiwan 104"
+                        ),
+                        primary_type_display_name="Fine dining restaurant",
+                    ),
+                )
+            }
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+            ):
+                build_data.save_places_cache("taipei-taiwan", cache_payload)
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "fetch_places_enrichment") as fetch_places_enrichment,
+                patch.object(
+                    build_data,
+                    "repair_semantic_enrichment_with_llm",
+                    return_value={
+                        "neighborhood": "Zhongshan",
+                        "tags": ["fine-dining"],
+                        "vibe_tags": ["special-occasion"],
+                        "types": ["tasting-menu"],
+                    },
+                ) as repair,
+            ):
+                updated_count, reused_count, skipped_count = build_data.refresh_cached_semantic_enrichment(
+                    enable_semantics=True,
+                    enable_description=False,
+                )
+                refreshed_cache = build_data.load_places_cache("taipei-taiwan")
+
+        fetch_places_enrichment.assert_not_called()
+        repair.assert_called_once()
+        self.assertEqual((updated_count, reused_count, skipped_count), (1, 0, 0))
+        self.assertEqual(refreshed_cache["cid:111"].place.semantic_neighborhood, "Zhongshan")
+        self.assertEqual(refreshed_cache["cid:111"].place.semantic_tags, ["fine-dining"])
+
     def test_enrich_raw_sources_prioritizes_missing_entries_before_expired_refreshes(self) -> None:
         raw = RawSavedList(
             title="Tokyo",
@@ -5796,6 +5882,40 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertNotEqual(generic_signature, barcelona_signature)
         self.assertNotEqual(barcelona_signature, madrid_signature)
+
+    def test_enrichment_input_signature_includes_scraper_policy(self) -> None:
+        place = RawPlace(
+            name="Bilmonte",
+            address=None,
+            maps_url="https://www.google.com/maps/search/?api=1&query=Bilmonte",
+            cid="1343378048703211865",
+            lat=41.3894089,
+            lng=2.1636435,
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_llm_repair_mode", return_value="off"),
+            patch.object(build_data, "google_maps_place_collect_reviews", return_value=False),
+            patch.object(build_data, "google_maps_place_collect_about", return_value=False),
+        ):
+            minimal_signature = build_data.enrichment_input_signature(
+                place,
+                city_name="Barcelona",
+                country_name="Spain",
+            )
+
+        with (
+            patch.object(build_data, "google_maps_place_llm_repair_mode", return_value="dom_then_translation"),
+            patch.object(build_data, "google_maps_place_collect_reviews", return_value=True),
+            patch.object(build_data, "google_maps_place_collect_about", return_value=True),
+        ):
+            richer_signature = build_data.enrichment_input_signature(
+                place,
+                city_name="Barcelona",
+                country_name="Spain",
+            )
+
+        self.assertNotEqual(minimal_signature, richer_signature)
 
     def test_cache_refresh_reason_invalidates_legacy_unbiased_name_only_search_entry(self) -> None:
         place = RawPlace(
