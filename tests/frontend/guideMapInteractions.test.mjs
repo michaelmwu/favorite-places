@@ -47,6 +47,11 @@ describe("guide map interactions", () => {
       css,
       ".map-panel {\n    --mobile-guide-map-height: clamp(22rem, 64svh, 34rem);\n\n    gap: 0;\n    padding: 0;",
     );
+    expectCssToContain(css, ".home-map-stage {\n  position: relative;");
+    expectCssToContain(css, ".home-map-stage .home-map-actions {\n  position: absolute;");
+    expectCssToContain(css, ".map-inline-toggle {\n  min-height: 2.05rem;");
+    expectCssToContain(css, "border-radius: 999px;");
+    expectCssToContain(css, ".home-map-panel {\n    gap: 0.85rem;\n    padding: 0.85rem;");
     expectCssToContain(css, ".map-toolbar {\n    display: contents;");
     expectCssToContain(css, ".map-toggle {\n    position: absolute;\n    top: 0.85rem;");
     expectCssToContain(
@@ -210,6 +215,23 @@ describe("guide map interactions", () => {
     expectCssToContain(css, "background: color-mix(in srgb, var(--surface) 92%, white);");
     expectCssToContain(css, "color: #18457a;");
     expectCssToContain(css, "border-radius: 999px;");
+  });
+
+  it("renders a single accented recommendation block for place copy", () => {
+    const placeCard = readSource("src/components/PlaceCard.astro");
+    const css = readSource("src/styles/global.css");
+
+    expect(placeCard).toContain(
+      "const whyRecommendedHtml = renderRichText(place.why_recommended ?? place.note);",
+    );
+    expect(placeCard).toContain('class="rich-copy ui-copy place-card-description"');
+    expect(placeCard).not.toContain("place-card-copy-stack");
+    expect(placeCard).not.toContain("place-card-note");
+    expectCssToContain(css, ".place-card-description {\n    padding-left: 0.72rem;");
+    expectCssToContain(
+      css,
+      "border-left: 2px solid color-mix(in srgb, var(--accent) 28%, var(--line));",
+    );
   });
 
   it("reflows place stats by card width instead of branching on photo presence", () => {
@@ -427,6 +449,12 @@ describe("guide map interactions", () => {
       "{guidesByCountry.map(({ countryName, countryGuides, countryFlag }) => (",
     );
     expect(homeMap).toContain("data-home-guide-map");
+    expect(homeMap).toContain('class="home-map-stage"');
+    expect(homeMap).toContain("const COMPACT_HOME_MAP_MEDIA_QUERY");
+    expect(homeMap).toContain("const homeMapToggleLabel = (collapsed: boolean) => {");
+    expect(homeMap).toContain(
+      'compactHomeMapMediaQuery.addEventListener("change", syncPanelToggleLabels)',
+    );
     expect(homeMap).toContain('data-guides={JSON.stringify(mapGuides).replace(/</g, "\\\\u003c")}');
     expect(homeBrowser).toContain('root.querySelector("[data-home-guide-map]")');
     expect(homeBrowser).toContain(

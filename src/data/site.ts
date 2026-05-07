@@ -101,7 +101,6 @@ export interface SiteConfig {
     showPriceRange: boolean;
     showTopPickBadge: boolean;
     showWhyRecommended: boolean;
-    showNote: boolean;
     showAddress: boolean;
     showTags: boolean;
     maxTags: number;
@@ -216,7 +215,6 @@ const defaultSiteConfig: SiteConfig = {
     showPriceRange: true,
     showTopPickBadge: true,
     showWhyRecommended: true,
-    showNote: true,
     showAddress: true,
     showTags: true,
     maxTags: 4,

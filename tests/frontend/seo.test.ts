@@ -202,4 +202,23 @@ describe("seo helpers", () => {
     expect(itemList.numberOfItems).toBe(25);
     expect(itemList.itemListElement).toHaveLength(25);
   });
+
+  it("prefers why_recommended over note for place JSON-LD descriptions", () => {
+    const [, collectionJsonLd] = buildGuideJsonLd({
+      siteUrl: "https://favorite-places.pages.dev/",
+      pageUrl: "https://favorite-places.pages.dev/guides/tokyo-japan/",
+      description: "Guide description",
+      guide: createGuide(),
+      countryName: "Japan",
+      visiblePlaces: [
+        createPlace({
+          note: "Raw saved-list note",
+          why_recommended: "Rendered recommendation copy",
+        }),
+      ],
+    });
+
+    expect(JSON.stringify(collectionJsonLd)).toContain("Rendered recommendation copy");
+    expect(JSON.stringify(collectionJsonLd)).not.toContain("Raw saved-list note");
+  });
 });

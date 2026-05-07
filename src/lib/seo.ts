@@ -179,8 +179,8 @@ function buildPlaceEntity(place: Place): SeoJsonLd {
     name: place.name,
     ...(place.address ? { address: place.address } : {}),
     ...(place.maps_url ? { sameAs: place.maps_url } : {}),
-    ...(toPlainText(place.note ?? place.why_recommended)
-      ? { description: toPlainText(place.note ?? place.why_recommended) }
+    ...(toPlainText(place.why_recommended ?? place.note)
+      ? { description: toPlainText(place.why_recommended ?? place.note) }
       : {}),
     ...(typeof place.lat === "number" && typeof place.lng === "number"
       ? {

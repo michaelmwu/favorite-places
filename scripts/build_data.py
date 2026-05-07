@@ -2312,6 +2312,15 @@ def expand_location_tag_aliases(tags: set[str]) -> set[str]:
     return expanded
 
 
+def place_override_for_ui_copy(slug: str, place_id: str, override: dict[str, Any]) -> dict[str, Any]:
+    if "why_recommended" in override:
+        raise ValueError(
+            f"{PLACE_OVERRIDES_DIR / f'{slug}.json'} {place_id} uses unsupported "
+            "'why_recommended'; use 'note' for handwritten recommendation copy"
+        )
+    return override
+
+
 def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str, EnrichmentCacheEntry]) -> Guide:
     list_override = read_json(LIST_OVERRIDES_DIR / f"{slug}.json")
     place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
@@ -2343,7 +2352,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
 
     for place in raw.places:
         place_id = stable_place_id(place, source_type=raw.configured_source_type)
-        override = place_override_map.get(place_id, {})
+        override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
         enrichment_cache_entry = enrichment_cache.get(place_id)
         enrichment = coerce_enrichment_place(enrichment_cache_entry)
         manual_primary_category = as_string(override.get("primary_category"))
@@ -2426,10 +2435,9 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         hidden = bool(override.get("hidden", False))
         top_pick_override = as_bool(override.get("top_pick"))
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
-        note = as_string(override.get("note")) or place.note
-        why_recommended = as_string(override.get("why_recommended")) or (
-            enrichment.semantic_description if use_semantic_descriptions else None
-        )
+        manual_note = as_string(override.get("note"))
+        note = manual_note or place.note
+        why_recommended = manual_note or (enrichment.semantic_description if use_semantic_descriptions else None) or place.note
         if "vibe_tags" in override:
             override_vibe_tags = coerce_string_list(override.get("vibe_tags"))
             vibe_tags = sorted({slugify(tag) for tag in override_vibe_tags if slugify(tag)})
@@ -2606,7 +2614,6 @@ def build_place_provenance(
     manual_category = as_string(override.get("primary_category"))
     manual_note = as_string(override.get("note"))
     manual_neighborhood = as_string(override.get("neighborhood"))
-    manual_why_recommended = as_string(override.get("why_recommended"))
     manual_status = as_string(override.get("status"))
 
     provenance = PlaceProvenance()
@@ -2682,7 +2689,7 @@ def build_place_provenance(
     if normalized.why_recommended:
         provenance.why_recommended = (
             manual_place_field(normalized.why_recommended)
-            if manual_why_recommended
+            if manual_note
             else None
         )
     provenance.top_pick = (
@@ -3329,8 +3336,8 @@ def refresh_cached_semantic_enrichment(
             if not cache_entry_has_publishable_enrichment(entry) or entry is None or entry.place is None:
                 skipped_count += 1
                 continue
-            override = place_override_map.get(place_id, {})
-            suppress_description = bool(as_string(override.get("why_recommended")))
+            override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
+            suppress_description = bool(as_string(override.get("note")))
             semantic_jobs.append((slug, place_id, place, entry, city_name, country_name, suppress_description))
 
     if normalized_place_selectors:
@@ -3431,8 +3438,8 @@ def enrich_place_job(
     sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
     place = RawPlace.model_validate(place_payload)
     place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
-    override = place_override_map.get(place_id, {})
-    suppress_description = bool(as_string(override.get("why_recommended")))
+    override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
+    suppress_description = bool(as_string(override.get("note")))
     refreshed_entry = fetch_places_enrichment(
         place,
         city_name=city_name,

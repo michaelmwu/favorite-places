@@ -120,9 +120,10 @@ Guide pages default to Google Maps when `GOOGLE_MAPS_JS_API_KEY` is present at b
 ## Notes For Future Agents
 
 - Cloudflare Pages should not use its default `pip install .` auto-detection for this repo; the data pipeline depends on `uv` to resolve the vendored scraper from `vendor/gmaps-scraper`.
-- Raw place `note` should flow through as the default place note.
+- Raw place `note` should flow through as the default fallback recommendation copy.
 - Raw place `is_favorite` should flow through as the default top-pick signal.
-- Manual `note` and `top_pick` overrides still win.
+- Manual `note` is the only handwritten recommendation override and still wins over generated copy.
+- Manual `top_pick` overrides still win.
 - Manual `vibe_tags` overrides win over rule-derived browser search vibe tags.
 - Place enrichment cache entries now carry `input_signature` and `refresh_after`; invalidation is not a single global TTL anymore.
 - Raw saved-list snapshots now carry `fetched_at`, `refresh_after`, and `source_signature`; URL sources skip network refreshes until the refresh window expires unless the source config changes, while CSV sources can skip rewrites when the input hash is unchanged.
