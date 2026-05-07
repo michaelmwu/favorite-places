@@ -3288,7 +3288,11 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.semantic_source, "llm")
 
     def test_apply_semantic_enrichment_reuses_description_when_signature_matches(self) -> None:
-        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
         enrichment = EnrichmentPlace(
             display_name="Tea House",
             formatted_address="No. 12, Songgao Rd, Taipei City",
@@ -3336,7 +3340,11 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.semantic_description_signature, signature)
 
     def test_apply_semantic_enrichment_clears_stale_description_on_signature_mismatch(self) -> None:
-        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
         enrichment = EnrichmentPlace(
             display_name="Tea House",
             formatted_address="No. 12, Songgao Rd, Taipei City",
@@ -3372,8 +3380,57 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(enrichment.semantic_description_signature)
         self.assertIsNone(enrichment.semantic_source)
 
+    def test_apply_semantic_enrichment_preserves_semantic_source_when_semantics_remain_populated(self) -> None:
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+            review_topics=[{"label": "oolong", "count": 12}],
+            semantic_neighborhood="Xinyi",
+            semantic_tags=["tea-house"],
+            semantic_description="A stale generated description.",
+            semantic_description_signature="old-signature",
+            semantic_source="llm",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Tea House, Taipei, Taiwan",
+            matched=True,
+            place=enrichment,
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=False),
+            patch.object(build_data, "repair_semantic_enrichment_with_llm", return_value=None),
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                existing_entry=existing_entry,
+            )
+
+        self.assertEqual(enrichment.semantic_neighborhood, "Xinyi")
+        self.assertEqual(enrichment.semantic_tags, ["tea-house"])
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertEqual(enrichment.semantic_source, "llm")
+
     def test_apply_semantic_enrichment_force_refreshes_description(self) -> None:
-        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
         enrichment = EnrichmentPlace(
             display_name="Tea House",
             formatted_address="No. 12, Songgao Rd, Taipei City",
@@ -3423,6 +3480,39 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.semantic_description, "A fresh generated description.")
         self.assertEqual(enrichment.semantic_description_signature, signature)
         self.assertEqual(enrichment.semantic_source, "llm")
+
+    def test_apply_semantic_enrichment_suppresses_description_for_manual_override(self) -> None:
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+            semantic_description="A stale generated description.",
+            semantic_description_signature="old-signature",
+            semantic_source="llm",
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "repair_semantic_enrichment_with_llm") as repair,
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                suppress_description=True,
+            )
+
+        repair.assert_not_called()
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
 
     def test_semantic_description_signature_ignores_review_snippet_churn(self) -> None:
         raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
@@ -3481,6 +3571,68 @@ class BuildDataTests(unittest.TestCase):
                 country_name="Taiwan",
             ),
         )
+
+    def test_semantic_description_signature_changes_when_raw_note_changes(self) -> None:
+        first = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
+        second = RawPlace(
+            name="Tea House",
+            note="Good for a quick tea break before shopping.",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+            review_topics=[{"label": "oolong", "count": 12}],
+        )
+
+        self.assertNotEqual(
+            build_data.semantic_description_signature(
+                enrichment,
+                raw_place=first,
+                city_name="Taipei",
+                country_name="Taiwan",
+            ),
+            build_data.semantic_description_signature(
+                enrichment,
+                raw_place=second,
+                city_name="Taipei",
+                country_name="Taiwan",
+            ),
+        )
+
+    def test_semantic_enrichment_evidence_includes_raw_note_only_for_descriptions(self) -> None:
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(display_name="Tea House")
+
+        description_evidence = build_data.semantic_enrichment_evidence(
+            enrichment,
+            raw_place=raw_place,
+            city_name="Taipei",
+            country_name="Taiwan",
+            include_raw_note=True,
+        )
+        semantic_only_evidence = build_data.semantic_enrichment_evidence(
+            enrichment,
+            raw_place=raw_place,
+            city_name="Taipei",
+            country_name="Taiwan",
+            include_raw_note=False,
+        )
+
+        self.assertEqual(
+            description_evidence["raw_note"],
+            "Order the house oolong and stay for a quiet reset.",
+        )
+        self.assertNotIn("raw_note", semantic_only_evidence)
 
     def test_semantic_description_signature_normalizes_minor_text_churn(self) -> None:
         raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
@@ -5381,6 +5533,7 @@ class BuildDataTests(unittest.TestCase):
             country_name=None,
             google_place_id=None,
             existing_entry=None,
+            suppress_description=False,
         )
         api_fetch.assert_not_called()
         self.assertIs(entry, page_entry)
@@ -5499,6 +5652,7 @@ class BuildDataTests(unittest.TestCase):
             country_name=None,
             google_place_id=None,
             existing_entry=None,
+            suppress_description=False,
         )
         api_fetch.assert_called_once_with(
             place,
@@ -5553,6 +5707,7 @@ class BuildDataTests(unittest.TestCase):
             country_name=None,
             google_place_id=None,
             existing_entry=None,
+            suppress_description=False,
         )
         api_fetch.assert_called_once_with(
             place,
@@ -5897,6 +6052,84 @@ class BuildDataTests(unittest.TestCase):
 
         fetch_places_enrichment.assert_not_called()
         repair.assert_called_once()
+        self.assertEqual((updated_count, reused_count, skipped_count), (1, 0, 0))
+        refreshed_place = refreshed_cache["cid:111"].place
+        assert refreshed_place is not None
+        self.assertIsNone(refreshed_place.semantic_description)
+        self.assertIsNone(refreshed_place.semantic_description_signature)
+        self.assertIsNone(refreshed_place.semantic_source)
+
+    def test_refresh_cached_semantic_descriptions_skips_places_with_manual_why_recommended(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="Tea House",
+                    note="Saved-list note that should not matter once a handwritten description exists.",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            overrides_dir = tmpdir_path / "overrides" / "places"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir(parents=True)
+            overrides_dir.mkdir(parents=True)
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (overrides_dir / "taipei-taiwan.json").write_text(
+                json.dumps(
+                    {
+                        "cid:111": {
+                            "why_recommended": "Handwritten editor description.",
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            cache_payload = {
+                "cid:111": EnrichmentCacheEntry(
+                    fetched_at="2026-05-01T00:00:00+00:00",
+                    source="google_maps_page",
+                    query="Tea House, Taipei, Taiwan",
+                    matched=True,
+                    place=EnrichmentPlace(
+                        display_name="Tea House",
+                        formatted_address="No. 12, Songgao Rd, Taipei City",
+                        primary_type_display_name="Tea house",
+                        semantic_description="A stale generated description.",
+                        semantic_description_signature="old-signature",
+                        semantic_source="llm",
+                    ),
+                )
+            }
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+            ):
+                build_data.save_places_cache("taipei-taiwan", cache_payload)
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "fetch_places_enrichment") as fetch_places_enrichment,
+                patch.object(build_data, "repair_semantic_enrichment_with_llm") as repair,
+            ):
+                updated_count, reused_count, skipped_count = build_data.refresh_cached_semantic_descriptions()
+                refreshed_cache = build_data.load_places_cache("taipei-taiwan")
+
+        fetch_places_enrichment.assert_not_called()
+        repair.assert_not_called()
         self.assertEqual((updated_count, reused_count, skipped_count), (1, 0, 0))
         refreshed_place = refreshed_cache["cid:111"].place
         assert refreshed_place is not None
@@ -7335,6 +7568,53 @@ class BuildDataTests(unittest.TestCase):
         )
         jitter_sleep.assert_called_once_with(3)
         fetch_enrichment.assert_called_once()
+
+    def test_enrich_place_job_suppresses_semantic_description_for_handwritten_override(self) -> None:
+        entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="First Place, Tokyo",
+            matched=True,
+            place=EnrichmentPlace(display_name="First Place"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            overrides_dir = tmpdir_path / "overrides" / "places"
+            overrides_dir.mkdir(parents=True)
+            (overrides_dir / "tokyo-japan.json").write_text(
+                json.dumps(
+                    {
+                        "cid:111": {
+                            "why_recommended": "Handwritten editor description.",
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+                patch.object(build_data, "fetch_places_enrichment", return_value=entry) as fetch_enrichment,
+                patch("builtins.print"),
+            ):
+                build_data.enrich_place_job(
+                    "tokyo-japan",
+                    "cid:111",
+                    "First Place",
+                    "forced",
+                    {
+                        "name": "First Place",
+                        "address": "1 Example St, Tokyo",
+                        "maps_url": "https://maps.google.com/?cid=111",
+                        "cid": "111",
+                    },
+                    api_key=None,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+        self.assertTrue(fetch_enrichment.call_args.kwargs["suppress_description"])
 
     def test_enrich_place_job_preserves_previous_entry_when_refresh_degrades_to_error(self) -> None:
         previous_entry = EnrichmentCacheEntry(
