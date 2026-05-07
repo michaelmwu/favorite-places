@@ -2,7 +2,7 @@
   "cid:6924439192396309311": {
     "primary_category": "Garden",
     "neighborhood": "Shinjuku",
-    "why_recommended": "A calm outdoor stop that demonstrates non-restaurant categories.",
+    "why_recommended": "A spacious garden for slowing down between dense Tokyo neighborhoods, especially when you need a quiet reset.",
     "top_pick": true,
     "manual_rank": 30,
     "tags": ["park", "walk"],
@@ -11,15 +11,15 @@
   "cid:6924439458418082721": {
     "primary_category": "Burger restaurant",
     "neighborhood": "Harajuku",
-    "why_recommended": "A compact food example with a specific neighborhood.",
+    "why_recommended": "A straightforward Harajuku lunch stop with a tight menu, quick service, and a burger worth planning around if you are nearby.",
     "tags": ["burger", "lunch"],
     "vibe_tags": ["casual", "quick-stop"]
   },
   "cid:6924438073363786761": {
     "primary_category": "Landmark",
     "neighborhood": "Minato",
-    "note": "Classic Tokyo landmark and useful sample map pin.",
-    "why_recommended": "A visible landmark that helps verify map bounds and search results.",
+    "note": "Classic Tokyo landmark with an easy-to-spot skyline silhouette.",
+    "why_recommended": "Go for the retro Tokyo icon, city views, and a clear orientation point on the Minato side of town.",
     "top_pick": true,
     "manual_rank": 20,
     "tags": ["tower", "viewpoint"],
