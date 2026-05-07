@@ -242,6 +242,10 @@
   }
 
   @media (max-width: 719px) {
+    .ui-page-shell {
+      width: min(calc(100% - 0.5rem), var(--page-width));
+    }
+
     .ui-site-header {
       width: min(calc(100% - 0.5rem), var(--page-width));
       display: grid;
