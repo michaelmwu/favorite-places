@@ -162,6 +162,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "mypy" },
+    { name = "prek" },
     { name = "ruff" },
 ]
 

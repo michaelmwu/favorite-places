@@ -241,6 +241,11 @@ Common variables:
 - `GOOGLE_MAPS_JS_API_KEY`: browser Google Maps display key, read by Astro during render/build and embedded only when the Google map provider is active
 - `GOOGLE_PLACES_API_KEY`: server/build-time key for API-based enrichment
 - `GOOGLE_PLACES_ENRICHMENT_STRATEGY`: choose `scrape`, `api`, or `scrape_then_api` for place enrichment
+- `GOOGLE_MAPS_PLACES_LLM_REPAIR`: override site scraper repair policy with `off`, `dom`, or `dom_then_translation`
+- `GOOGLE_MAPS_PLACES_COLLECT_REVIEWS` / `GOOGLE_MAPS_PLACES_COLLECT_ABOUT`: override optional review/About panel collection
+- `GOOGLE_MAPS_PLACES_SEMANTIC_LLM`: override optional LLM semantic enrichment for neighborhood, type tags, and vibe tags
+- `GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS`: override optional LLM-generated card descriptions
+- `GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH`: force description regeneration instead of signature reuse
 - `PUBLIC_MAP_PROVIDER=leaflet`: force Leaflet/OpenStreetMap rendering
 - `PUBLIC_PLACE_PHOTOS=off`: hide place photos in the UI
 - `FAVORITE_PLACES_SITE_DIR`: point the app and Python pipeline at a non-default site pack
@@ -275,6 +280,8 @@ Enrichment is optional and cached. A normal build can run without enrichment, bu
 - `bun run fill:enrichment`: only places with no cache entry
 - `bun run fill:gaps`: missing enrichment plus missing photos
 - `bun run refresh:enrichment`: force-refresh every entry
+- `bun run refresh:semantic-enrichment`: generate or refresh LLM semantic neighborhoods, type tags, and vibe tags from existing cache evidence only, without scraping or Places API calls
+- `bun run refresh:semantic-descriptions`: generate or refresh LLM semantic descriptions from existing cache evidence only, without scraping or Places API calls
 - `bun run export:cache:json`: optional debug export of per-guide cache JSON from SQLite
 
 `GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls source selection:
@@ -284,6 +291,16 @@ Enrichment is optional and cached. A normal build can run without enrichment, bu
 - `scrape_then_api`: Google Maps place-page scraping first, then Google Places Text Search when the scraped result is blocked, limited, unmatched, or too sparse to trust
 
 The default strategy is `scrape_then_api`. The scraper path does not require a Places API key. `api` mode and the fallback leg of `scrape_then_api` require `GOOGLE_PLACES_API_KEY`.
+
+`site/enrichment.json` owns site-level scraper policy. The `google_maps_places.llm_repair` value supports `off`, `dom`, and `dom_then_translation`; the default is `dom`, which lets the scraper use optional LLM repair only for thin DOM extraction. Display translation repair is only run by `dom_then_translation`, after reusable prior display fields are applied. `google_maps_places.collect_reviews` and `collect_about` default to `false`; set them to `true` only for sites that want the heavier cache payload.
+
+`google_maps_places.semantic_llm` defaults to `false`. When enabled, the pipeline sends compact cache-only evidence to the configured OpenAI-compatible model to infer better neighborhood labels, type tags, and vibe tags. Inputs include category, address, price range, review topics, compact review signals, and About labels; generated public JSON still does not expose reviews or About sections directly. `google_maps_places.semantic_descriptions` separately enables generated card descriptions. Description reuse is keyed by a coarse semantic signature over identity and enrichment quality signals, not volatile review text; `semantic_description_force_refresh` bypasses reuse and the semantic LLM cache for intentional regeneration. If credentials are absent or the LLM call fails, deterministic locality/category/vibe rules remain the fallback.
+
+`google_maps_places.price_display` controls the card-facing price label without changing raw scraper cache fields. `source_order` can prefer `price_range`, `admission_price`, or `room_price`. Numeric `price_range` values are shown conservatively for food/drink/shopping-style categories; attraction tickets and lodging quotes should use the separate `admission_price` or `room_price` fields. `currency_mode` defaults to `raw`; `guide_local` converts to the guide country currency, and `target` converts to `target_currency`. Symbolic values preserve the price tier while numeric prices use daily cached USD exchange rates from `api.fxratesapi.com` with jsDelivr currency-api fallback; failures degrade to the raw scraper price. `max_numeric_by_source` optionally hides converted numeric values above a per-source/per-currency ceiling so reseller bundles or bad localized offers do not appear on cards as normal admission prices.
+
+`google_maps_places.neighborhood_mappings` is an ordered site-level cleanup layer for local naming conventions after deterministic and semantic neighborhood selection. Rules can match `from`, scope by `city`/`country`, optionally require `when_address_contains` or `when_candidate`, and emit `to`; per-place neighborhood overrides still take precedence.
+
+The example site opts into review and About collection in `site.example/enrichment.json` so the fixture cache exercises those fields.
 
 The API path uses Google Places Text Search with a narrow field mask and location bias around scraped coordinates.
 

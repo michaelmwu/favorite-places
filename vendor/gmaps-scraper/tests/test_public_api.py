@@ -7,13 +7,34 @@ from gmaps_scraper import (
     BrowserSessionConfig,
     HttpSessionConfig,
     ListOwner,
+    LLMRepairError,
     ParseError,
     Place,
+    PlaceAboutItem,
+    PlaceAboutSection,
     PlaceDetails,
+    PlaceExtractionDiagnostics,
+    PlaceLLMRepairRequest,
+    PlaceReview,
+    PlaceScrapeResult,
+    ReviewTopic,
     SavedList,
     ScrapeError,
+    build_maps_search_url,
+    cached_place_repairer,
+    collect_place_snapshot,
+    default_place_selector_recipe,
+    llm_cache_namespace_from_env,
+    load_place_selector_recipe,
+    needs_display_en,
+    openai_compatible_place_repairer_from_env,
+    repair_place_display_fields,
+    reusable_place_display_fields,
+    reuse_place_display_fields,
     scrape_place,
+    scrape_places,
     scrape_saved_list,
+    write_default_place_selector_recipe,
 )
 
 
@@ -21,12 +42,33 @@ class PublicApiTests(unittest.TestCase):
     def test_top_level_exports_are_importable(self) -> None:
         self.assertTrue(callable(scrape_saved_list))
         self.assertTrue(callable(scrape_place))
+        self.assertTrue(callable(scrape_places))
         self.assertEqual(BrowserSessionConfig.__name__, "BrowserSessionConfig")
         self.assertEqual(BrowserProxyConfig.__name__, "BrowserProxyConfig")
         self.assertEqual(HttpSessionConfig.__name__, "HttpSessionConfig")
+        self.assertEqual(LLMRepairError.__name__, "LLMRepairError")
         self.assertEqual(ListOwner.__name__, "ListOwner")
+        self.assertEqual(PlaceAboutItem.__name__, "PlaceAboutItem")
+        self.assertEqual(PlaceAboutSection.__name__, "PlaceAboutSection")
+        self.assertEqual(PlaceExtractionDiagnostics.__name__, "PlaceExtractionDiagnostics")
+        self.assertEqual(PlaceLLMRepairRequest.__name__, "PlaceLLMRepairRequest")
+        self.assertEqual(PlaceReview.__name__, "PlaceReview")
+        self.assertEqual(PlaceScrapeResult.__name__, "PlaceScrapeResult")
+        self.assertEqual(ReviewTopic.__name__, "ReviewTopic")
         self.assertTrue(issubclass(ParseError, RuntimeError))
         self.assertTrue(issubclass(ScrapeError, RuntimeError))
+        self.assertTrue(callable(build_maps_search_url))
+        self.assertTrue(callable(collect_place_snapshot))
+        self.assertTrue(callable(cached_place_repairer))
+        self.assertTrue(callable(default_place_selector_recipe))
+        self.assertTrue(callable(load_place_selector_recipe))
+        self.assertTrue(callable(llm_cache_namespace_from_env))
+        self.assertTrue(callable(needs_display_en))
+        self.assertTrue(callable(openai_compatible_place_repairer_from_env))
+        self.assertTrue(callable(repair_place_display_fields))
+        self.assertTrue(callable(reusable_place_display_fields))
+        self.assertTrue(callable(reuse_place_display_fields))
+        self.assertTrue(callable(write_default_place_selector_recipe))
 
     def test_saved_list_serializes_library_shape(self) -> None:
         place = Place(
@@ -125,6 +167,12 @@ class PublicApiTests(unittest.TestCase):
             rating=4.4,
             review_count=324,
             address="Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+            address_display_en=(
+                "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 "
+                "建築家会館JIA館"
+            ),
+            address_display_en_source="llm",
+            address_display_en_confidence="high",
             status="Closed · Opens 6 PM",
             website="http://www.jimbochoden.com/",
             phone="+81 3-6455-5433",
@@ -144,6 +192,26 @@ class PublicApiTests(unittest.TestCase):
             lat=35.6731762,
             lng=139.7127216,
             limited_view=True,
+            review_topics=[
+                ReviewTopic(label="pho", count=501, source="dom"),
+                ReviewTopic(label="bun bo nam bo", count=623),
+            ],
+            reviews=[
+                PlaceReview(
+                    author="Fixture Reviewer",
+                    rating=5.0,
+                    relative_time="2 months ago",
+                    text="Excellent broth.",
+                    source="dom",
+                )
+            ],
+            diagnostics=PlaceExtractionDiagnostics(
+                field_sources={"name": "dom", "review_topics": "dom"},
+                missing_fields=[],
+                quality_flags=[],
+                confidence=1.0,
+                evidence_hash="fixture",
+            ),
         )
 
         self.assertEqual(
@@ -162,6 +230,12 @@ class PublicApiTests(unittest.TestCase):
                     "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 "
                     "建築家会館ＪＩＡ館"
                 ),
+                "address_display_en": (
+                    "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 "
+                    "建築家会館JIA館"
+                ),
+                "address_display_en_source": "llm",
+                "address_display_en_confidence": "high",
                 "status": "Closed · Opens 6 PM",
                 "website": "http://www.jimbochoden.com/",
                 "phone": "+81 3-6455-5433",
@@ -182,6 +256,24 @@ class PublicApiTests(unittest.TestCase):
                 "lat": 35.6731762,
                 "lng": 139.7127216,
                 "limited_view": True,
+                "review_topics": [
+                    {"label": "pho", "count": 501},
+                    {"label": "bun bo nam bo", "count": 623},
+                ],
+                "reviews": [
+                    {
+                        "author": "Fixture Reviewer",
+                        "rating": 5.0,
+                        "relative_time": "2 months ago",
+                        "text": "Excellent broth.",
+                    }
+                ],
+                "diagnostics": {
+                    "quality_flags": [],
+                    "llm_used": False,
+                    "confidence": 1.0,
+                    "evidence_hash": "fixture",
+                },
             },
         )
 

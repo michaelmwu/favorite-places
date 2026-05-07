@@ -93,9 +93,11 @@ GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 PUBLIC_DATA_DIR = ROOT / "public" / "data"
 PLACE_PHOTOS_DIR = SITE_DIR / "public" / "place-photos"
 SITE_BUILD_HOOKS_PATH = SITE_DIR / "build_hooks.py"
+SITE_ENRICHMENT_CONFIG_PATH = SITE_DIR / "enrichment.json"
 LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = SITE_DIR / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
+PRICE_RATE_CACHE_DIR = ROOT / ".context" / "currency-rates"
 AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
@@ -132,6 +134,107 @@ PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
 MIN_PLACE_PHOTO_SOURCE_DIMENSION = 200
 PLACE_PHOTO_SOURCE_DIMENSION_RE = re.compile(r"w(?P<width>\d+)-h(?P<height>\d+)")
+PRICE_DISPLAY_SOURCE_FIELDS = ("price_range", "admission_price", "room_price")
+DEFAULT_PRICE_DISPLAY_SOURCE_ORDER = ("price_range", "admission_price", "room_price")
+NUMERIC_PRICE_RANGE_CATEGORY_HINTS = (
+    "bar",
+    "bakery",
+    "cafe",
+    "coffee",
+    "deli",
+    "dessert",
+    "drink",
+    "food",
+    "market",
+    "pub",
+    "restaurant",
+    "shop",
+    "store",
+    "tea",
+)
+PRICE_RATE_CACHE_TTL = timedelta(days=1)
+FX_RATES_API_URL = "https://api.fxratesapi.com/latest"
+FAWAZ_CURRENCY_API_URL = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json"
+PRICE_CURRENCY_SYMBOLS = {
+    "USD": "$",
+    "TWD": "NT$",
+    "JPY": "¥",
+    "SGD": "S$",
+    "HKD": "HK$",
+    "EUR": "€",
+    "GBP": "£",
+    "KRW": "₩",
+    "CNY": "¥",
+    "THB": "฿",
+    "PHP": "₱",
+    "VND": "₫",
+    "INR": "₹",
+    "AUD": "A$",
+    "CAD": "CA$",
+}
+PRICE_TOKEN_CURRENCIES = {
+    "$": "USD",
+    "US$": "USD",
+    "USD": "USD",
+    "NT$": "TWD",
+    "TWD": "TWD",
+    "¥": "JPY",
+    "JPY": "JPY",
+    "円": "JPY",
+    "SGD": "SGD",
+    "S$": "SGD",
+    "HK$": "HKD",
+    "HKD": "HKD",
+    "€": "EUR",
+    "EUR": "EUR",
+    "£": "GBP",
+    "GBP": "GBP",
+    "₩": "KRW",
+    "KRW": "KRW",
+    "CNY": "CNY",
+    "RMB": "CNY",
+    "฿": "THB",
+    "THB": "THB",
+    "₱": "PHP",
+    "PHP": "PHP",
+    "₫": "VND",
+    "VND": "VND",
+    "₹": "INR",
+    "INR": "INR",
+    "A$": "AUD",
+    "AUD": "AUD",
+    "CA$": "CAD",
+    "CAD": "CAD",
+}
+COUNTRY_CURRENCY_CODES = {
+    "australia": "AUD",
+    "canada": "CAD",
+    "china": "CNY",
+    "france": "EUR",
+    "germany": "EUR",
+    "hong kong": "HKD",
+    "india": "INR",
+    "italy": "EUR",
+    "japan": "JPY",
+    "philippines": "PHP",
+    "singapore": "SGD",
+    "south korea": "KRW",
+    "spain": "EUR",
+    "taiwan": "TWD",
+    "thailand": "THB",
+    "united kingdom": "GBP",
+    "uk": "GBP",
+    "united states": "USD",
+    "united states of america": "USD",
+    "usa": "USD",
+    "vietnam": "VND",
+}
+PRICE_AMOUNT_RE = re.compile(
+    r"(?P<currency>NT\$|HK\$|CA\$|A\$|S\$|US\$|USD|TWD|JPY|SGD|HKD|EUR|GBP|KRW|CNY|RMB|"
+    r"THB|PHP|VND|INR|AUD|CAD|[$€£¥₩₹₫฿₱円])\s*"
+    r"(?P<amount>[0-9][0-9,.\s\u00a0]*)(?P<plus>\+)?",
+    flags=re.IGNORECASE,
+)
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
 PLACES_SQLITE_SIGNATURE_VERSION = 3
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
@@ -374,6 +477,19 @@ AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES = (
     "NT",
     "ACT",
 )
+SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
+    "da an": "Da'an",
+    "daan": "Da'an",
+    "datong": "Datong",
+    "dazhi": "Dazhi",
+    "longshan temple": "Longshan Temple",
+    "marunouchi": "Marunouchi",
+    "ximen": "Ximen",
+    "ximending": "Ximending",
+    "xinyi": "Xinyi",
+    "zhongshan": "Zhongshan",
+    "zhishan": "Zhishan",
+}
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
@@ -1107,8 +1223,16 @@ try:
     from gmaps_scraper import (
         BrowserSessionConfig,
         HttpSessionConfig,
+        LLMRepairError,
         ParseError,
         ScrapeError,
+        build_maps_search_url as build_scraper_maps_search_url,
+        cached_place_repairer,
+        llm_cache_namespace_from_env,
+        needs_display_en,
+        openai_compatible_place_repairer_from_env,
+        repair_place_display_fields,
+        reusable_place_display_fields,
         scrape_place,
         scrape_saved_list,
     )
@@ -1121,6 +1245,14 @@ except ImportError:
 
     BrowserSessionConfig = None
     HttpSessionConfig = None
+    LLMRepairError = RuntimeError
+    build_scraper_maps_search_url = None
+    cached_place_repairer = None
+    llm_cache_namespace_from_env = None
+    needs_display_en = None
+    openai_compatible_place_repairer_from_env = None
+    repair_place_display_fields = None
+    reusable_place_display_fields = None
     scrape_place = None
     scrape_saved_list = None
 
@@ -1148,20 +1280,46 @@ def current_scraper_proxy() -> str | None:
     return normalized
 
 
-def scraper_session_identity_key(proxy: str | None) -> str:
+def scraper_session_identity_key(proxy: str | None, *, session_scope: str | None = None) -> str:
     if proxy is None:
-        return "direct"
-    digest = hashlib.sha256(proxy.encode("utf-8")).hexdigest()[:16]
-    return f"proxy-{digest}"
+        base_key = "direct"
+    else:
+        digest = hashlib.sha256(proxy.encode("utf-8")).hexdigest()[:16]
+        base_key = f"proxy-{digest}"
+    scope_key = scraper_session_scope_key(session_scope)
+    return f"{base_key}-{scope_key}" if scope_key else base_key
+
+
+def scraper_session_scope_key(session_scope: str | None) -> str | None:
+    normalized = as_string(session_scope)
+    if normalized is None:
+        return None
+    scope_key = re.sub(r"[^a-z0-9]+", "-", normalized.casefold()).strip("-")
+    return scope_key[:80] or None
+
+
+def scraper_place_session_scope(
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> str:
+    locality_parts = [
+        part
+        for part in (country_name, city_name)
+        if as_string(part) is not None
+    ]
+    locality = "-".join(str(part) for part in locality_parts)
+    return f"place-{locality}" if locality else "place"
 
 
 def build_scraper_session_state(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     slot_key: str = "slot-0",
     lock_path: Path | None = None,
 ) -> ScraperSessionState:
-    identity_key = scraper_session_identity_key(proxy)
+    identity_key = scraper_session_identity_key(proxy, session_scope=session_scope)
     identity_dir = SCRAPER_STATE_DIR / identity_key
     return ScraperSessionState(
         identity_key=identity_key,
@@ -1177,15 +1335,22 @@ def build_scraper_session_state(
 def ensure_scraper_session_state(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     now: datetime | None = None,
 ) -> ScraperSessionState:
     reference_time = now or datetime.now(UTC)
-    identity_key = scraper_session_identity_key(proxy)
+    identity_key = scraper_session_identity_key(proxy, session_scope=session_scope)
     identity_dir = SCRAPER_STATE_DIR / identity_key
-    sweep_stale_scraper_session_states(proxy, identity_dir=identity_dir, now=reference_time)
+    sweep_stale_scraper_session_states(
+        proxy,
+        session_scope=session_scope,
+        identity_dir=identity_dir,
+        now=reference_time,
+    )
     slot_key, lock_path = acquire_scraper_session_slot(identity_dir)
     state = build_scraper_session_state(
         proxy,
+        session_scope=session_scope,
         slot_key=slot_key,
         lock_path=lock_path,
     )
@@ -1294,12 +1459,13 @@ def should_reset_scraper_session(exc: Exception) -> bool:
 def sweep_stale_scraper_session_states(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     identity_dir: Path,
     now: datetime,
 ) -> None:
     for metadata_path in sorted(identity_dir.glob("metadata.*.json")):
         slot_key = metadata_path.stem.removeprefix("metadata.")
-        state = build_scraper_session_state(proxy, slot_key=slot_key)
+        state = build_scraper_session_state(proxy, session_scope=session_scope, slot_key=slot_key)
         if scraper_session_lock_is_active(state.lock_path):
             continue
         if scraper_session_is_stale(state, now=now):
@@ -1375,9 +1541,10 @@ def scraper_session_lock_is_active(lock_path: Path) -> bool:
 def build_scraper_sessions(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     now: datetime | None = None,
 ) -> tuple[ScraperSessionState, Any, Any]:
-    session_state = ensure_scraper_session_state(proxy, now=now)
+    session_state = ensure_scraper_session_state(proxy, session_scope=session_scope, now=now)
     return session_state, *build_scraper_configs(session_state, proxy)
 
 
@@ -1466,12 +1633,44 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force-refresh place enrichment cache entries for every place.",
     )
     parser.add_argument(
+        "--refresh-semantic-descriptions",
+        action="store_true",
+        help=(
+            "Generate or refresh LLM semantic descriptions from existing enrichment cache entries only; "
+            "does not scrape Google Maps or call the Places API."
+        ),
+    )
+    parser.add_argument(
+        "--refresh-semantic-enrichment",
+        action="store_true",
+        help=(
+            "Generate or refresh LLM semantic neighborhoods, tags, vibe tags, and types from existing enrichment "
+            "cache entries only; does not scrape Google Maps or call the Places API."
+        ),
+    )
+    parser.add_argument(
+        "--force-semantic-descriptions",
+        action="store_true",
+        help=(
+            "Force-regenerate cached LLM semantic descriptions even when their semantic signatures still match. "
+            "Implies --refresh-semantic-descriptions."
+        ),
+    )
+    parser.add_argument(
+        "--force-semantic-enrichment",
+        action="store_true",
+        help=(
+            "Force-regenerate cached LLM semantic neighborhoods and tags even when a semantic LLM cache entry exists. "
+            "Implies --refresh-semantic-enrichment."
+        ),
+    )
+    parser.add_argument(
         "--enrich-place",
         action="append",
         default=[],
         help=(
-            "Force-refresh enrichment for a specific place selector unless combined with "
-            "--enrich or --enrich-missing. Repeat to target multiple places. "
+            "Force-refresh enrichment, or refresh semantic descriptions, for a specific place selector unless combined "
+            "with --enrich or --enrich-missing. Repeat to target multiple places. "
             "Matches exact place ids, CIDs, names, Maps URLs, `cid:<value>`/`gms:<value>` "
             "aliases, and `guide-slug:<selector>` forms."
         ),
@@ -2142,9 +2341,20 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             or humanize_type_id(enrichment.primary_type)
         )
         primary_category_localized = None if manual_primary_category else enrichment.primary_type_display_name_localized
+        use_semantic_enrichment = google_maps_place_semantic_llm_enabled()
+        use_semantic_descriptions = google_maps_place_semantic_descriptions_enabled()
+        semantic_tags = [
+            tag
+            for tag in [
+                *(enrichment.semantic_tags if use_semantic_enrichment else []),
+                *(enrichment.semantic_types if use_semantic_enrichment else []),
+            ]
+            if tag
+        ]
         tags = sorted(
             {
                 *coerce_string_list(override.get("tags")),
+                *semantic_tags,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
@@ -2166,19 +2376,48 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             raw_locality_candidates,
             enrichment_locality_candidates,
         )
-        neighborhood = as_string(override.get("neighborhood")) or (
-            locality_candidates[0] if locality_candidates else None
+        semantic_neighborhood = (
+            normalize_semantic_neighborhood_label(
+                enrichment.semantic_neighborhood,
+                city_name=city_name,
+                country_name=country_name,
+            )
+            if use_semantic_enrichment and enrichment.semantic_neighborhood
+            else None
         )
+        semantic_neighborhood = refine_semantic_neighborhood_with_address_localities(
+            semantic_neighborhood,
+            locality_candidates,
+        )
+        manual_neighborhood = as_string(override.get("neighborhood"))
+        machine_neighborhood = semantic_neighborhood or (locality_candidates[0] if locality_candidates else None)
+        mapped_neighborhood = apply_site_neighborhood_mappings(
+            machine_neighborhood,
+            city_name=city_name,
+            country_name=country_name,
+            address_values=[
+                place.address,
+                enrichment.formatted_address,
+                *flatten_address_parts(enrichment.address_parts),
+            ],
+            locality_candidates=locality_candidates,
+        )
+        neighborhood = manual_neighborhood or mapped_neighborhood
         neighborhood_uses_enrichment = bool(
             neighborhood
-            and neighborhood in enrichment_locality_candidates
+            and (
+                machine_neighborhood in enrichment_locality_candidates
+                or machine_neighborhood == semantic_neighborhood
+            )
             and neighborhood not in raw_locality_candidates
         )
         hidden = bool(override.get("hidden", False))
         top_pick_override = as_bool(override.get("top_pick"))
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         note = as_string(override.get("note")) or place.note
-        why_recommended = as_string(override.get("why_recommended"))
+        why_recommended = as_string(override.get("why_recommended")) or (
+            enrichment.semantic_description if use_semantic_descriptions else None
+        )
         if "vibe_tags" in override:
             override_vibe_tags = coerce_string_list(override.get("vibe_tags"))
             vibe_tags = sorted({slugify(tag) for tag in override_vibe_tags if slugify(tag)})
@@ -2192,6 +2431,8 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 why_recommended=why_recommended,
                 top_pick=top_pick,
             )
+            if use_semantic_enrichment:
+                vibe_tags = sorted({*vibe_tags, *enrichment.semantic_vibe_tags})
         marker_icon = derive_marker_icon(
             place,
             enrichment=enrichment,
@@ -2209,7 +2450,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         if prefer_enrichment_names and enrichment.display_name:
             preferred_name = enrichment.display_name
         normalized_name = as_string(override.get("name")) or preferred_name
-        normalized_address = place.address or enrichment.formatted_address
+        normalized_address = enrichment.address_display_en or place.address or enrichment.formatted_address
         maps_url = build_public_google_maps_url(
             name=normalized_name,
             address=normalized_address,
@@ -2237,7 +2478,16 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             primary_category_localized=primary_category_localized,
             marker_icon=marker_icon,
             tags=tags,
+            visible_tags=derive_visible_place_tags(
+                tags=tags,
+                semantic_tags=semantic_tags,
+                category=primary_category,
+            ),
             vibe_tags=vibe_tags,
+            price_range=display_price_range_for_place(
+                enrichment,
+                country_name=country_name,
+            ),
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
@@ -2357,9 +2607,12 @@ def build_place_provenance(
     )
     if normalized.address:
         provenance.address = (
-            google_list_field(normalized.address, raw)
-            if raw_place.address
-            else google_places_field(normalized.address, enrichment_cache_entry)
+            google_places_field(normalized.address, enrichment_cache_entry)
+            if (
+                normalized.address == enrichment.address_display_en
+                or (not raw_place.address and normalized.address == enrichment.formatted_address)
+            )
+            else google_list_field(normalized.address, raw)
         )
     if normalized.lat is not None:
         provenance.lat = google_list_field(normalized.lat, raw)
@@ -3009,6 +3262,138 @@ def enrich_raw_sources(
         executor.shutdown(wait=True, cancel_futures=True)
 
 
+def refresh_cached_semantic_descriptions(
+    *,
+    force_refresh: bool = False,
+    place_selectors: Sequence[str] | None = None,
+) -> tuple[int, int, int]:
+    return refresh_cached_semantic_enrichment(
+        enable_semantics=False,
+        enable_description=True,
+        force_description=force_refresh,
+        place_selectors=place_selectors,
+    )
+
+
+def refresh_cached_semantic_enrichment(
+    *,
+    enable_semantics: bool,
+    enable_description: bool,
+    force_semantics: bool = False,
+    force_description: bool = False,
+    place_selectors: Sequence[str] | None = None,
+) -> tuple[int, int, int]:
+    normalized_place_selectors = normalize_place_selectors(place_selectors or [])
+    matched_place_selectors: set[str] = set()
+    cache_payloads: dict[str, dict[str, EnrichmentCacheEntry]] = {}
+    semantic_jobs: list[tuple[str, str, RawPlace, EnrichmentCacheEntry, str | None, str | None]] = []
+    updated_count = 0
+    reused_count = 0
+    skipped_count = 0
+
+    for raw_path in sorted(RAW_DIR.glob("*.json")):
+        raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+        slug = raw_path.stem
+        city_name = infer_city_name(raw.title or "")
+        country_name = infer_country_name(raw.title or "", raw)
+        cache_payload = load_places_cache(slug)
+        cache_payloads[slug] = cache_payload
+
+        for place in raw.places:
+            place_id = stable_place_id(place, source_type=raw.configured_source_type)
+            if normalized_place_selectors:
+                selector_matches = place_selector_matches(
+                    slug,
+                    place,
+                    place_id=place_id,
+                    selectors=normalized_place_selectors,
+                )
+                matched_place_selectors.update(selector_matches)
+                if not selector_matches:
+                    continue
+
+            entry = cache_payload.get(place_id)
+            if not cache_entry_has_publishable_enrichment(entry) or entry is None or entry.place is None:
+                skipped_count += 1
+                continue
+            semantic_jobs.append((slug, place_id, place, entry, city_name, country_name))
+
+    if normalized_place_selectors:
+        missing_selectors = sorted(normalized_place_selectors - matched_place_selectors)
+        if missing_selectors:
+            missing_text = ", ".join(missing_selectors)
+            raise RuntimeError(f"No configured place matched: {missing_text}")
+
+    changed_slugs: set[str] = set()
+    for slug, place_id, place, entry, city_name, country_name in semantic_jobs:
+        assert entry.place is not None
+        previous_semantics = semantic_enrichment_state(entry.place)
+        previous_description = entry.place.semantic_description
+        previous_signature = entry.place.semantic_description_signature
+        apply_semantic_enrichment(
+            entry.place,
+            raw_place=place,
+            city_name=city_name,
+            country_name=country_name,
+            existing_entry=entry,
+            enable_semantics=enable_semantics,
+            enable_description=enable_description,
+            force_semantics=force_semantics,
+            force_description=force_description,
+        )
+        current_semantics = semantic_enrichment_state(entry.place)
+        current_description = entry.place.semantic_description
+        current_signature = entry.place.semantic_description_signature
+        semantic_changed = enable_semantics and current_semantics != previous_semantics
+        description_changed = enable_description and (
+            current_description != previous_description
+            or current_signature != previous_signature
+        )
+        if semantic_changed or description_changed:
+            requested = []
+            if semantic_changed:
+                requested.append("semantic enrichment")
+            if description_changed:
+                requested.append("semantic description")
+            requested_label = " and ".join(requested)
+            print(f"Generated {requested_label} for {slug}:{place_id} [{place.name}]", flush=True)
+            updated_count += 1
+            changed_slugs.add(slug)
+        elif (
+            (not enable_semantics or semantic_enrichment_state_is_populated(current_semantics))
+            and (not enable_description or current_description)
+        ):
+            reused_count += 1
+        else:
+            skipped_count += 1
+
+    for slug in sorted(changed_slugs):
+        save_places_cache(slug, cache_payloads[slug])
+
+    print(
+        "Semantic enrichment refresh complete: "
+        f"{updated_count} generated, {reused_count} reused, {skipped_count} skipped.",
+        flush=True,
+    )
+    return updated_count, reused_count, skipped_count
+
+
+def semantic_enrichment_state(place: EnrichmentPlace) -> tuple[str | None, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    return (
+        place.semantic_neighborhood,
+        tuple(place.semantic_tags),
+        tuple(place.semantic_vibe_tags),
+        tuple(place.semantic_types),
+    )
+
+
+def semantic_enrichment_state_is_populated(
+    state: tuple[str | None, tuple[str, ...], tuple[str, ...], tuple[str, ...]],
+) -> bool:
+    neighborhood, tags, vibe_tags, types = state
+    return bool(neighborhood or tags or vibe_tags or types)
+
+
 def enrich_place_job(
     slug: str,
     place_id: str,
@@ -3034,6 +3419,7 @@ def enrich_place_job(
         country_name=country_name,
         google_place_id=existing_entry.place.google_place_id if existing_entry and existing_entry.place else None,
         api_key=api_key,
+        existing_entry=existing_entry,
     )
     merged_entry, warning = preserve_existing_enrichment(
         slug=slug,
@@ -3104,6 +3490,24 @@ def derive_place_tags(
         tags.add(normalize_tag_slug(category))
     tags.update(derive_enrichment_type_tags(enrichment))
     return sorted(tag for tag in tags if tag)
+
+
+def derive_visible_place_tags(
+    *,
+    tags: list[str],
+    semantic_tags: list[str],
+    category: str | None,
+) -> list[str]:
+    visible: list[str] = []
+    for tag in semantic_tags:
+        append_unique_tag(visible, tag)
+    if category:
+        category_tag = normalize_tag_slug(category)
+        if category_tag:
+            append_unique_tag(visible, category_tag)
+    for tag in tags:
+        append_unique_tag(visible, tag)
+    return visible
 
 
 def derive_locality_tags(
@@ -3224,6 +3628,8 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
     place.formatted_address = sanitize_place_page_formatted_address(place.formatted_address)
+    place.address_display_en = sanitize_place_page_formatted_address(place.address_display_en)
+    place.category_display_en = sanitize_enrichment_primary_category(place.category_display_en)
     place.phone = sanitize_place_page_phone(place.phone)
     place.plus_code = sanitize_place_page_plus_code(place.plus_code)
     place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
@@ -4048,7 +4454,8 @@ def normalize_locality_equivalence_key(value: str | None) -> str:
 
 
 def split_title_parts(title: str) -> list[str]:
-    cleaned = re.sub(r"[^\w\s,&/-]", "", title)
+    title_without_parentheticals = re.sub(r"\([^)]*\)", " ", title)
+    cleaned = re.sub(r"[^\w\s,&/-]", "", title_without_parentheticals)
     return [part.strip() for part in cleaned.split(",") if part.strip()]
 
 
@@ -4216,6 +4623,131 @@ def google_places_api_key() -> str | None:
 
 def google_places_enrichment_strategy() -> Literal["scrape", "api", "scrape_then_api"]:
     return PlacesSettings().google_places_enrichment_strategy
+
+
+@lru_cache(maxsize=1)
+def site_enrichment_config() -> dict[str, Any]:
+    return read_json(SITE_ENRICHMENT_CONFIG_PATH)
+
+
+def site_google_maps_place_config_value(key: str) -> Any:
+    config = site_enrichment_config()
+    google_maps_places = config.get("google_maps_places")
+    if isinstance(google_maps_places, dict) and key in google_maps_places:
+        return google_maps_places[key]
+    place_scraping = config.get("place_scraping")
+    if isinstance(place_scraping, dict) and key in place_scraping:
+        return place_scraping[key]
+    return config.get(key)
+
+
+def google_maps_place_llm_repair_mode() -> Literal["off", "dom", "dom_then_translation"]:
+    configured = PlacesSettings().google_maps_place_llm_repair
+    if configured is not None:
+        return configured
+    site_value = as_string(site_google_maps_place_config_value("llm_repair"))
+    if site_value is not None:
+        if site_value not in {"off", "dom", "dom_then_translation"}:
+            raise RuntimeError(
+                f"{SITE_ENRICHMENT_CONFIG_PATH} google_maps_places.llm_repair must be "
+                "`off`, `dom`, or `dom_then_translation`."
+            )
+        return site_value
+    return "dom"
+
+
+def google_maps_place_llm_cache_dir() -> Path:
+    configured = PlacesSettings().google_maps_place_llm_cache_dir
+    if configured:
+        path = Path(configured).expanduser()
+        return path if path.is_absolute() else ROOT / path
+    return SCRAPER_STATE_DIR / "llm-cache"
+
+
+def google_maps_place_collect_reviews() -> bool:
+    configured = PlacesSettings().google_maps_place_collect_reviews
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("collect_reviews"))
+    return bool(site_value)
+
+
+def google_maps_place_collect_about() -> bool:
+    configured = PlacesSettings().google_maps_place_collect_about
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("collect_about"))
+    return bool(site_value)
+
+
+def google_maps_place_semantic_llm_enabled() -> bool:
+    configured = PlacesSettings().google_maps_place_semantic_llm
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("semantic_llm"))
+    return bool(site_value)
+
+
+def google_maps_place_semantic_descriptions_enabled() -> bool:
+    configured = PlacesSettings().google_maps_place_semantic_descriptions
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("semantic_descriptions"))
+    return bool(site_value)
+
+
+def google_maps_place_semantic_description_force_refresh() -> bool:
+    configured = PlacesSettings().google_maps_place_semantic_description_force_refresh
+    if configured is not None:
+        return configured
+    site_value = as_bool(site_google_maps_place_config_value("semantic_description_force_refresh"))
+    return bool(site_value)
+
+
+def google_maps_place_neighborhood_mappings() -> list[dict[str, Any]]:
+    configured = site_google_maps_place_config_value("neighborhood_mappings")
+    if isinstance(configured, dict):
+        return [
+            {"from": source, "to": target}
+            for source, target in configured.items()
+            if isinstance(source, str) and isinstance(target, str)
+        ]
+    if isinstance(configured, list):
+        return [item for item in configured if isinstance(item, dict)]
+    return []
+
+
+def google_maps_place_price_display_config() -> dict[str, Any]:
+    configured = site_google_maps_place_config_value("price_display")
+    return configured if isinstance(configured, dict) else {}
+
+
+@lru_cache(maxsize=1)
+def build_place_llm_repairer() -> Any | None:
+    if (
+        cached_place_repairer is None
+        or llm_cache_namespace_from_env is None
+        or openai_compatible_place_repairer_from_env is None
+    ):
+        return None
+
+    try:
+        repairer = openai_compatible_place_repairer_from_env(
+            default_config_file=ROOT / "vendor" / "gmaps-scraper" / "llm.json",
+            local_config_file=ROOT / "llm.local.json",
+        )
+        cache_namespace = llm_cache_namespace_from_env(
+            default_config_file=ROOT / "vendor" / "gmaps-scraper" / "llm.json",
+            local_config_file=ROOT / "llm.local.json",
+        )
+    except LLMRepairError:
+        return None
+
+    return cached_place_repairer(
+        repairer,
+        cache_dir=google_maps_place_llm_cache_dir(),
+        cache_namespace=cache_namespace,
+    )
 
 
 def configured_source_path(source: SourceConfig) -> Path:
@@ -4662,10 +5194,19 @@ def enrichment_input_signature(
         },
         "city_name": as_string(city_name),
         "country_name": as_string(country_name),
+        "google_maps_places": google_maps_place_scraper_policy_payload(),
         "search_query_version": 2,
     }
     serialized = json.dumps(payload, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def google_maps_place_scraper_policy_payload() -> dict[str, Any]:
+    return {
+        "llm_repair": google_maps_place_llm_repair_mode(),
+        "collect_reviews": google_maps_place_collect_reviews(),
+        "collect_about": google_maps_place_collect_about(),
+    }
 
 
 def structured_place_identity_payload(place: RawPlace) -> dict[str, str] | None:
@@ -4795,6 +5336,10 @@ def preserve_existing_enrichment(
     if not refreshed_place.formatted_address and previous_place.formatted_address:
         refreshed_place.formatted_address = previous_place.formatted_address
         append_unique_reason(preserved_fields, "address")
+    if not refreshed_place.address_display_en and previous_place.address_display_en:
+        refreshed_place.address_display_en = previous_place.address_display_en
+        refreshed_place.address_display_en_source = previous_place.address_display_en_source
+        refreshed_place.address_display_en_confidence = previous_place.address_display_en_confidence
 
     if not refreshed_place.primary_type_display_name and previous_place.primary_type_display_name:
         refreshed_place.primary_type_display_name = previous_place.primary_type_display_name
@@ -4814,6 +5359,10 @@ def preserve_existing_enrichment(
 
     if not refreshed_place.primary_type_display_name_localized and previous_place.primary_type_display_name_localized:
         refreshed_place.primary_type_display_name_localized = previous_place.primary_type_display_name_localized
+    if not refreshed_place.category_display_en and previous_place.category_display_en:
+        refreshed_place.category_display_en = previous_place.category_display_en
+        refreshed_place.category_display_en_source = previous_place.category_display_en_source
+        refreshed_place.category_display_en_confidence = previous_place.category_display_en_confidence
 
     if not refreshed_place.business_status and previous_place.business_status:
         refreshed_place.business_status = previous_place.business_status
@@ -6152,6 +6701,60 @@ def public_photo_path(filename: str) -> str:
     return f"/place-photos/{filename}"
 
 
+def place_details_display_field_map(details: Any) -> dict[str, object]:
+    return {
+        "category": as_string(getattr(details, "category", None)),
+        "category_display_en": as_string(getattr(details, "category_display_en", None)),
+        "category_display_en_source": as_string(getattr(details, "category_display_en_source", None)),
+        "category_display_en_confidence": as_string(getattr(details, "category_display_en_confidence", None)),
+        "address": as_string(getattr(details, "address", None)),
+        "address_display_en": as_string(getattr(details, "address_display_en", None)),
+        "address_display_en_source": as_string(getattr(details, "address_display_en_source", None)),
+        "address_display_en_confidence": as_string(getattr(details, "address_display_en_confidence", None)),
+    }
+
+
+def enrichment_place_display_field_map(place: EnrichmentPlace | None) -> dict[str, object]:
+    if place is None:
+        return {}
+    return {
+        "category": place.primary_type_display_name_localized or place.primary_type_display_name,
+        "category_display_en": place.category_display_en,
+        "category_display_en_source": place.category_display_en_source,
+        "category_display_en_confidence": place.category_display_en_confidence,
+        "address": place.formatted_address,
+        "address_display_en": place.address_display_en,
+        "address_display_en_source": place.address_display_en_source,
+        "address_display_en_confidence": place.address_display_en_confidence,
+    }
+
+
+def apply_reusable_place_display_fields(
+    details: Any,
+    existing_entry: EnrichmentCacheEntry | None,
+) -> None:
+    if reusable_place_display_fields is None or existing_entry is None:
+        return
+    reusable = reusable_place_display_fields(
+        place_details_display_field_map(details),
+        enrichment_place_display_field_map(existing_entry.place),
+    )
+    for key, value in reusable.items():
+        setattr(details, key, value)
+
+
+def place_details_need_display_translation(details: Any) -> bool:
+    if needs_display_en is None:
+        return False
+    return (
+        bool(needs_display_en(as_string(getattr(details, "address", None))))
+        and as_string(getattr(details, "address_display_en", None)) is None
+    ) or (
+        bool(needs_display_en(as_string(getattr(details, "category", None))))
+        and as_string(getattr(details, "category_display_en", None)) is None
+    )
+
+
 def fetch_places_enrichment(
     place: RawPlace,
     *,
@@ -6160,6 +6763,7 @@ def fetch_places_enrichment(
     google_place_id: str | None = None,
     api_key: str | None,
     strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
+    existing_entry: EnrichmentCacheEntry | None = None,
 ) -> EnrichmentCacheEntry:
     if strategy is None:
         strategy = google_places_enrichment_strategy()
@@ -6170,6 +6774,7 @@ def fetch_places_enrichment(
             city_name=city_name,
             country_name=country_name,
             google_place_id=google_place_id,
+            existing_entry=existing_entry,
         )
 
     if strategy == "api":
@@ -6189,6 +6794,7 @@ def fetch_places_enrichment(
         city_name=city_name,
         country_name=country_name,
         google_place_id=google_place_id,
+        existing_entry=existing_entry,
     )
     if page_entry.error is None and page_entry.place is not None:
         if api_key is None or not should_fallback_to_places_api(page_entry):
@@ -6218,6 +6824,7 @@ def fetch_place_page_enrichment(
     city_name: str | None = None,
     country_name: str | None = None,
     google_place_id: str | None = None,
+    existing_entry: EnrichmentCacheEntry | None = None,
 ) -> EnrichmentCacheEntry:
     query = build_place_page_search_query(
         place,
@@ -6235,7 +6842,30 @@ def fetch_place_page_enrichment(
         )
 
     proxy = current_scraper_proxy()
-    session_state, browser_session, http_session = build_scraper_sessions(proxy)
+    session_state, browser_session, http_session = build_scraper_sessions(
+        proxy,
+        session_scope=scraper_place_session_scope(
+            city_name=city_name,
+            country_name=country_name,
+        ),
+    )
+    llm_mode = google_maps_place_llm_repair_mode()
+    llm_repairer = None if llm_mode == "off" else build_place_llm_repairer()
+    collect_reviews = google_maps_place_collect_reviews()
+    collect_about = google_maps_place_collect_about()
+
+    def scrape_for_enrichment(scrape_url: str, *, llm_tasks: Sequence[Any]) -> Any:
+        return scrape_place(
+            scrape_url,
+            headless=True,
+            browser_session=browser_session,
+            http_session=http_session,
+            llm_fallback=llm_repairer,
+            llm_tasks=llm_tasks,
+            collect_reviews=collect_reviews,
+            collect_about=collect_about,
+        )
+
     try:
         last_error: str | None = None
         saw_non_error_result = False
@@ -6246,23 +6876,13 @@ def fetch_place_page_enrichment(
             google_place_id=google_place_id,
         ):
             try:
-                details = scrape_place(
-                    scrape_url,
-                    headless=True,
-                    browser_session=browser_session,
-                    http_session=http_session,
-                )
+                details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
             except RECOVERABLE_REFRESH_ERRORS as exc:
                 if should_reset_scraper_session(exc):
                     clear_scraper_session_state(session_state)
                     browser_session, http_session = build_scraper_configs(session_state, proxy)
                     try:
-                        details = scrape_place(
-                            scrape_url,
-                            headless=True,
-                            browser_session=browser_session,
-                            http_session=http_session,
-                        )
+                        details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
                     except RECOVERABLE_REFRESH_ERRORS as retry_exc:
                         last_error = f"scrape_error:{retry_exc}"
                         continue
@@ -6272,6 +6892,25 @@ def fetch_place_page_enrichment(
 
             saw_non_error_result = True
             record_scraper_session_use(session_state, proxy=proxy)
+            apply_reusable_place_display_fields(details, existing_entry)
+            if (
+                llm_mode == "dom_then_translation"
+                and llm_repairer is not None
+                and repair_place_display_fields is not None
+                and place_details_need_display_translation(details)
+            ):
+                try:
+                    details = repair_place_display_fields(
+                        details,
+                        repairer=llm_repairer,
+                        evidence={
+                            "city": city_name,
+                            "country": country_name,
+                            "query": query,
+                        },
+                    )
+                except Exception as exc:
+                    last_error = f"display_repair_error:{exc}"
             enrichment_place = normalize_place_page_enrichment(details)
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
@@ -6280,6 +6919,13 @@ def fetch_place_page_enrichment(
             if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
                 continue
             if matched:
+                apply_semantic_enrichment(
+                    enrichment_place,
+                    raw_place=place,
+                    city_name=city_name,
+                    country_name=country_name,
+                    existing_entry=existing_entry,
+                )
                 return build_cache_entry(
                     place,
                     source="google_maps_page",
@@ -6386,9 +7032,7 @@ def score_place_page_candidate(
 ) -> int:
     score = 0
     raw_name = normalize_text(raw_place.name)
-    candidate_name = normalize_text(
-        enrichment_place.display_name or as_string(getattr(details, "name", None))
-    )
+    candidate_name = normalize_text(enrichment_place.display_name)
     raw_address = normalize_text(raw_place.address)
     candidate_address = normalize_text(
         enrichment_place.formatted_address or as_string(getattr(details, "address", None))
@@ -6437,11 +7081,9 @@ def build_place_page_candidate_urls(
         city_name=city_name,
         country_name=country_name,
     )
-    search_url = localize_google_maps_scrape_url(build_google_maps_search_url(query)) if query else None
+    search_url = build_google_maps_scrape_search_url(query) if query else None
     place_id_search_url = (
-        localize_google_maps_scrape_url(
-            build_google_maps_search_url(query, google_place_id=google_place_id)
-        )
+        build_google_maps_scrape_search_url(query, google_place_id=google_place_id)
         if query and google_place_id
         else None
     )
@@ -6478,6 +7120,23 @@ def localize_google_maps_scrape_url(url: str) -> str:
     query_pairs = [(key, value) for key, value in parse_qsl(split.query, keep_blank_values=True) if key not in {"hl", "gl"}]
     query_pairs.extend([("hl", "en"), ("gl", "us")])
     return urlunsplit(split._replace(query=urlencode(query_pairs)))
+
+
+def build_google_maps_scrape_search_url(
+    query: str,
+    *,
+    google_place_id: str | None = None,
+) -> str:
+    if build_scraper_maps_search_url is not None:
+        return build_scraper_maps_search_url(
+            query,
+            place_id=google_place_id,
+            hl="en",
+            gl="us",
+        )
+    return localize_google_maps_scrape_url(
+        build_google_maps_search_url(query, google_place_id=google_place_id)
+    )
 
 
 def should_prefer_search_place_url(maps_url: str) -> bool:
@@ -6606,6 +7265,23 @@ PLACE_PAGE_STRONG_ADDRESS_KEYWORD_RE = re.compile(
     r"square|sq|suite|ste|unit|floor|fl|plaza|parkway|pkwy|highway|hwy)\b",
     re.IGNORECASE,
 )
+PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES = {
+    "call",
+    "directions",
+    "save",
+    "saved",
+    "share",
+    "website",
+}
+
+
+def sanitize_place_page_display_name(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    if normalize_text(normalized) in PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES:
+        return None
+    return normalized
 
 
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
@@ -6816,15 +7492,19 @@ def coerce_enrichment_address_parts(value: Any) -> AddressParts | None:
 
 def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     raw_category = sanitize_enrichment_primary_category(as_string(getattr(details, "category", None)))
+    category_display_en = sanitize_enrichment_primary_category(
+        as_string(getattr(details, "category_display_en", None))
+    )
+    category_basis = category_display_en or raw_category
     primary_type = None
     types: list[str] = []
-    if raw_category is not None:
+    if category_basis is not None:
         primary_type, types = normalized_enrichment_type_ids(
-            slugify(raw_category).replace("-", "_"),
-            raw_category,
-            [slugify(raw_category).replace("-", "_")],
+            slugify(category_basis).replace("-", "_"),
+            category_basis,
+            [slugify(category_basis).replace("-", "_")],
         )
-    category = canonical_primary_category_label(primary_type=primary_type, display_name=raw_category)
+    category = canonical_primary_category_label(primary_type=primary_type, display_name=category_basis)
     category_localized = localized_primary_category_label(
         raw_display_name=raw_category,
         canonical_display_name=category,
@@ -6833,8 +7513,11 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     source_url = as_string(getattr(details, "source_url", None))
     resolved_url = as_string(getattr(details, "resolved_url", None))
     from_search_url = bool(source_url and "/maps/search/" in source_url)
-    display_name = as_string(getattr(details, "name", None))
+    display_name = sanitize_place_page_display_name(getattr(details, "name", None))
     formatted_address = sanitize_place_page_formatted_address(getattr(details, "address", None))
+    address_display_en = sanitize_place_page_formatted_address(
+        getattr(details, "address_display_en", None)
+    )
     rating = as_float(getattr(details, "rating", None))
     user_rating_count = as_int(getattr(details, "review_count", None))
     website = as_string(getattr(details, "website", None))
@@ -6878,12 +7561,21 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         google_place_id=as_string(getattr(details, "google_place_id", None)),
         display_name=display_name,
         formatted_address=formatted_address,
+        address_display_en=address_display_en,
+        address_display_en_source=as_string(getattr(details, "address_display_en_source", None)),
+        address_display_en_confidence=as_string(getattr(details, "address_display_en_confidence", None)),
         google_maps_uri=maps_uri,
         rating=rating,
         user_rating_count=user_rating_count,
+        price_range=as_string(getattr(details, "price_range", None)),
+        admission_price=as_string(getattr(details, "admission_price", None)),
+        room_price=as_string(getattr(details, "room_price", None)),
         primary_type=primary_type,
         primary_type_display_name=category,
         primary_type_display_name_localized=category_localized,
+        category_display_en=category_display_en,
+        category_display_en_source=as_string(getattr(details, "category_display_en_source", None)),
+        category_display_en_confidence=as_string(getattr(details, "category_display_en_confidence", None)),
         types=types,
         business_status=normalize_place_page_business_status(as_string(getattr(details, "status", None))),
         website=website,
@@ -6893,8 +7585,909 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         description=description,
         main_photo_url=main_photo_url,
         photo_url=photo_url,
+        review_topics=coerce_json_object_list(getattr(details, "review_topics", None)),
+        reviews=coerce_json_object_list(getattr(details, "reviews", None)),
+        about_sections=coerce_json_object_list(getattr(details, "about_sections", None)),
         limited_view=limited_view,
     )
+
+
+def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    items: list[dict[str, Any]] = []
+    for item in value:
+        if hasattr(item, "to_dict") and callable(item.to_dict):
+            payload = item.to_dict()
+        elif isinstance(item, dict):
+            payload = item
+        else:
+            continue
+        if isinstance(payload, dict):
+            compact = {str(key): val for key, val in payload.items() if val not in (None, "", [])}
+            if compact:
+                items.append(compact)
+    return items
+
+
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v1"
+
+
+def apply_semantic_enrichment(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+    existing_entry: EnrichmentCacheEntry | None = None,
+    enable_semantics: bool | None = None,
+    enable_description: bool | None = None,
+    force_semantics: bool | None = None,
+    force_description: bool | None = None,
+) -> None:
+    include_semantics = google_maps_place_semantic_llm_enabled() if enable_semantics is None else enable_semantics
+    include_description = (
+        google_maps_place_semantic_descriptions_enabled() if enable_description is None else enable_description
+    )
+    force_semantics = False if force_semantics is None else force_semantics
+    force_description = (
+        google_maps_place_semantic_description_force_refresh()
+        if force_description is None
+        else force_description
+    )
+    if not include_semantics and not include_description:
+        return
+    description_signature = semantic_description_signature(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    )
+    description_reused = False
+    previous_place = existing_entry.place if existing_entry else None
+    if (
+        include_description
+        and enrichment_place.semantic_description
+        and enrichment_place.semantic_description_signature != description_signature
+    ):
+        enrichment_place.semantic_description = None
+        enrichment_place.semantic_description_signature = None
+        enrichment_place.semantic_source = None
+    if (
+        include_description
+        and not force_description
+        and previous_place is not None
+        and previous_place.semantic_description
+        and previous_place.semantic_description_signature == description_signature
+    ):
+        enrichment_place.semantic_description = previous_place.semantic_description
+        enrichment_place.semantic_description_signature = previous_place.semantic_description_signature
+        enrichment_place.semantic_source = previous_place.semantic_source or "llm"
+        description_reused = True
+    if description_reused and not include_semantics:
+        return
+    repair = repair_semantic_enrichment_with_llm(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+        include_semantics=include_semantics,
+        include_description=include_description and not description_reused,
+        bypass_cache=(include_semantics and force_semantics) or (include_description and force_description),
+    )
+    if repair is None:
+        return
+    if include_semantics:
+        neighborhood = normalize_semantic_neighborhood_label(
+            repair.get("neighborhood"),
+            city_name=city_name,
+            country_name=country_name,
+        )
+        if neighborhood is not None:
+            enrichment_place.semantic_neighborhood = neighborhood
+        enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
+        enrichment_place.semantic_vibe_tags = normalize_semantic_tag_list(repair.get("vibe_tags"), limit=8)
+        enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
+    if include_description and not description_reused:
+        description = sanitize_semantic_description(repair.get("description"))
+        if description is not None:
+            enrichment_place.semantic_description = description
+            enrichment_place.semantic_description_signature = description_signature
+    if any(
+        (
+            enrichment_place.semantic_neighborhood,
+            enrichment_place.semantic_tags,
+            enrichment_place.semantic_vibe_tags,
+            enrichment_place.semantic_types,
+            enrichment_place.semantic_description,
+        )
+    ):
+        enrichment_place.semantic_source = "llm"
+
+
+def repair_semantic_enrichment_with_llm(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+    include_semantics: bool,
+    include_description: bool,
+    bypass_cache: bool = False,
+) -> dict[str, Any] | None:
+    if not include_semantics and not include_description:
+        return None
+    config = semantic_llm_config()
+    if config is None:
+        return None
+    evidence = semantic_enrichment_evidence(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+        include_review_signals=include_semantics or include_description,
+    )
+    evidence["requested_outputs"] = {
+        "semantic_tags": include_semantics,
+        "description": include_description,
+    }
+    evidence_hash = hashlib.sha256(
+        json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    cache_path = google_maps_place_semantic_cache_dir() / f"{config['namespace']}-{evidence_hash}.json"
+    if not bypass_cache:
+        cached = read_semantic_llm_cache(cache_path)
+        if cached is not None:
+            return cached
+
+    payload: dict[str, Any] = {
+        "model": config["model"],
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "You classify saved places for a travel guide. Return only compact JSON. "
+                    "Infer the guide-facing neighborhood only from address/geography evidence. Prefer common "
+                    "local area names over the smallest administrative unit. For Taiwan, village/li labels "
+                    "such as Kangle Village or Tonghua Village are usually too granular; prefer the district "
+                    "such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local "
+                    "area as the neighborhood. Do not infer Ximen, Neihu, Longshan, or similar local areas from "
+                    "map knowledge alone; if the address only says Wanhua District or a street/night-market name, "
+                    "return Wanhua. "
+                    "Generate broad, reusable kebab-case tags, vibe_tags, and types when requested. "
+                    "Generate one concise, non-hype place description when requested. Do not quote or summarize "
+                    "review text. Do not expose About or review details. Prefer 3-6 tags, 2-4 vibe_tags, "
+                    "and a description under 180 characters."
+                ),
+            },
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "schema": {
+                            "neighborhood": "string or null",
+                            "tags": ["major visible/search tags, kebab-case"],
+                            "vibe_tags": ["atmosphere/use-case tags, kebab-case"],
+                            "types": ["specific place type tags, kebab-case"],
+                            "description": "one concise sentence or null",
+                        },
+                        "evidence": evidence,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+        ],
+        "response_format": {"type": "json_object"},
+    }
+    try:
+        request = Request(
+            f"{config['base_url'].rstrip('/')}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {config['api_key']}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urlopen(request, timeout=45) as response:
+            response_payload = json.loads(response.read().decode("utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    content = extract_chat_message_content(response_payload)
+    if content is None:
+        return None
+    try:
+        decoded = json.loads(content)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(decoded, dict):
+        return None
+    write_semantic_llm_cache(cache_path, decoded)
+    return decoded
+
+
+def semantic_enrichment_evidence(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+    include_review_signals: bool = False,
+) -> dict[str, Any]:
+    evidence: dict[str, Any] = {
+        "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
+        "city": city_name,
+        "country": country_name,
+        "name": enrichment_place.display_name or raw_place.name,
+        "address": enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address,
+        "raw_address": enrichment_place.formatted_address or raw_place.address,
+        "category": enrichment_place.primary_type_display_name,
+        "category_localized": enrichment_place.primary_type_display_name_localized,
+        "types": enrichment_place.types[:8],
+        "price_range": enrichment_place.price_range,
+        "admission_price": enrichment_place.admission_price,
+        "room_price": enrichment_place.room_price,
+        "review_topics": enrichment_place.review_topics[:12],
+        "about_sections": compact_about_sections(enrichment_place.about_sections),
+    }
+    if include_review_signals:
+        evidence["review_signals"] = compact_review_signals(enrichment_place.reviews)
+    return evidence
+
+
+def semantic_description_signature(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> str:
+    payload = {
+        "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
+        "city": city_name,
+        "country": country_name,
+        "name": semantic_signature_text(enrichment_place.display_name or raw_place.name),
+        "address": semantic_signature_text(
+            enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
+        ),
+        "category": semantic_signature_text(enrichment_place.primary_type_display_name),
+        "types": [value for value in (semantic_signature_text(item) for item in enrichment_place.types[:8]) if value],
+        "price_range": semantic_signature_text(enrichment_place.price_range),
+        "admission_price": semantic_signature_text(enrichment_place.admission_price),
+        "room_price": semantic_signature_text(enrichment_place.room_price),
+        "rating_bucket": rating_bucket(enrichment_place.rating),
+        "review_count_bucket": review_count_bucket(enrichment_place.user_rating_count),
+        "review_topics": compact_review_topics_for_signature(enrichment_place.review_topics),
+        "about_sections": compact_about_sections_for_signature(enrichment_place.about_sections),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
+def semantic_signature_text(value: Any) -> str | None:
+    text = as_string(value)
+    if text is None:
+        return None
+    normalized = unicodedata.normalize("NFKC", text).casefold()
+    signature_chars: list[str] = []
+    for char in normalized:
+        category = unicodedata.category(char)
+        signature_chars.append(char if category[0] in {"L", "N"} else " ")
+    compact = re.sub(r"\s+", " ", "".join(signature_chars)).strip()
+    return compact or None
+
+
+def rating_bucket(value: float | None) -> float | None:
+    if value is None:
+        return None
+    return round(value * 2) / 2
+
+
+def review_count_bucket(value: int | None) -> str | None:
+    if value is None:
+        return None
+    if value < 100:
+        return str((value // 25) * 25)
+    if value < 1000:
+        return str((value // 100) * 100)
+    return str((value // 1000) * 1000)
+
+
+def compact_review_topics_for_signature(topics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for topic in topics[:12]:
+        label = semantic_signature_text(topic.get("label"))
+        if not label:
+            continue
+        count = as_int(topic.get("count"))
+        compact.append({"label": label, "count_bucket": review_count_bucket(count)})
+    return sorted(compact, key=lambda item: item["label"])
+
+
+def compact_about_sections_for_signature(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for section in sections[:8]:
+        title = semantic_signature_text(section.get("title"))
+        items = section.get("items")
+        labels: list[str] = []
+        if isinstance(items, list):
+            for item in items[:10]:
+                if isinstance(item, dict):
+                    label = semantic_signature_text(item.get("label"))
+                    if label:
+                        labels.append(label)
+        if title or labels:
+            compact.append({"title": title, "items": sorted(set(labels))})
+    return sorted(compact, key=lambda item: (item["title"] or "", item["items"]))
+
+
+def compact_about_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for section in sections[:8]:
+        title = as_string(section.get("title"))
+        items = section.get("items")
+        labels: list[str] = []
+        if isinstance(items, list):
+            for item in items[:10]:
+                if isinstance(item, dict):
+                    label = as_string(item.get("label"))
+                    if label:
+                        labels.append(label)
+        if title or labels:
+            compact.append({"title": title, "items": labels})
+    return compact
+
+
+def compact_review_signals(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    compact: list[dict[str, Any]] = []
+    for review in reviews[:5]:
+        text = as_string(review.get("text") or review.get("snippet"))
+        rating = review.get("rating")
+        if text:
+            text = text[:180]
+        if text or rating is not None:
+            compact.append({"rating": rating, "snippet": text})
+    return compact
+
+
+def sanitize_semantic_label(value: Any, *, max_length: int) -> str | None:
+    label = as_string(value)
+    if label is None or len(label) > max_length:
+        return None
+    if re.search(r"\d{3,}", label):
+        return None
+    return label
+
+
+def normalize_semantic_neighborhood_label(
+    value: Any,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    label = sanitize_semantic_label(value, max_length=64)
+    if label is None:
+        return None
+    country_key = normalize_locality_key(country_name)
+    city_key = normalize_locality_key(city_name)
+    if country_key == "taiwan" or city_key in {"taipei", "taipei city"}:
+        shortened = re.sub(r"\s+District$", "", label, flags=re.IGNORECASE).strip()
+        if shortened:
+            label = shortened
+    alias = SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES.get(normalize_locality_key(label))
+    if alias:
+        return alias
+    return label
+
+
+def refine_semantic_neighborhood_with_address_localities(
+    semantic_neighborhood: str | None,
+    locality_candidates: Sequence[str],
+) -> str | None:
+    if semantic_neighborhood is None:
+        return None
+    semantic_key = normalize_locality_key(semantic_neighborhood).replace("-", " ")
+    if len(semantic_key) < 4:
+        return semantic_neighborhood
+    for candidate in locality_candidates:
+        candidate_key = normalize_locality_key(candidate).replace("-", " ")
+        if not candidate_key or candidate_key == semantic_key:
+            continue
+        if (
+            candidate_key.endswith(semantic_key)
+            or candidate_key.startswith(f"{semantic_key} ")
+            or f" {semantic_key} " in f" {candidate_key} "
+        ):
+            return candidate
+    return semantic_neighborhood
+
+
+def apply_site_neighborhood_mappings(
+    neighborhood: str | None,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+    address_values: Sequence[str | None],
+    locality_candidates: Sequence[str],
+) -> str | None:
+    if neighborhood is None:
+        return None
+    for rule in google_maps_place_neighborhood_mappings():
+        mapped = apply_site_neighborhood_mapping_rule(
+            neighborhood,
+            rule,
+            city_name=city_name,
+            country_name=country_name,
+            address_values=address_values,
+            locality_candidates=locality_candidates,
+        )
+        if mapped is not None:
+            return mapped
+    return neighborhood
+
+
+def apply_site_neighborhood_mapping_rule(
+    neighborhood: str,
+    rule: dict[str, Any],
+    *,
+    city_name: str | None,
+    country_name: str | None,
+    address_values: Sequence[str | None],
+    locality_candidates: Sequence[str],
+) -> str | None:
+    target = sanitize_semantic_label(rule.get("to"), max_length=64)
+    if target is None:
+        return None
+    if not neighborhood_mapping_context_matches(rule.get("city"), city_name):
+        return None
+    if not neighborhood_mapping_context_matches(rule.get("country"), country_name):
+        return None
+    if not neighborhood_mapping_values_match(rule.get("from"), [neighborhood]):
+        return None
+    if "when_address_contains" in rule and not neighborhood_mapping_contains(
+        rule.get("when_address_contains"),
+        address_values,
+    ):
+        return None
+    if "when_candidate" in rule and not neighborhood_mapping_values_match(
+        rule.get("when_candidate"),
+        locality_candidates,
+    ):
+        return None
+    return target
+
+
+def neighborhood_mapping_context_matches(configured: Any, actual: str | None) -> bool:
+    values = coerce_mapping_string_list(configured)
+    if not values:
+        return True
+    actual_key = normalize_locality_key(actual)
+    return bool(actual_key and any(normalize_locality_key(value) == actual_key for value in values))
+
+
+def neighborhood_mapping_values_match(configured: Any, values: Sequence[str]) -> bool:
+    configured_values = coerce_mapping_string_list(configured)
+    if not configured_values:
+        return False
+    value_keys = {normalize_locality_key(value) for value in values if normalize_locality_key(value)}
+    return any(normalize_locality_key(value) in value_keys for value in configured_values)
+
+
+def neighborhood_mapping_contains(configured: Any, values: Sequence[str | None]) -> bool:
+    configured_values = coerce_mapping_string_list(configured)
+    if not configured_values:
+        return False
+    haystack = "\n".join(value for value in values if isinstance(value, str)).casefold()
+    return any(value.casefold() in haystack for value in configured_values)
+
+
+def coerce_mapping_string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        stripped = value.strip()
+        return [stripped] if stripped else []
+    if isinstance(value, list):
+        return [item.strip() for item in value if isinstance(item, str) and item.strip()]
+    return []
+
+
+def flatten_address_parts(address_parts: AddressParts | None) -> list[str]:
+    if not address_parts:
+        return []
+    flattened: list[str] = []
+    for part in address_parts:
+        if isinstance(part, str):
+            flattened.append(part)
+        elif isinstance(part, list):
+            flattened.extend(item for item in part if isinstance(item, str))
+    return flattened
+
+
+def display_price_range_for_place(
+    enrichment_place: EnrichmentPlace,
+    *,
+    country_name: str | None,
+) -> str | None:
+    selected_price = select_place_display_price(enrichment_place)
+    if selected_price is None:
+        return None
+    source, raw_price = selected_price
+    config = google_maps_place_price_display_config()
+    currency_mode = as_string(config.get("currency_mode")) or "raw"
+    if currency_mode == "raw":
+        display_price = raw_price
+        target_currency = None
+    elif currency_mode == "guide_local":
+        target_currency = country_currency_code(country_name)
+        display_price = (
+            normalize_price_text_to_currency(raw_price, target_currency=target_currency)
+            if target_currency is not None
+            else None
+        ) or raw_price
+    elif currency_mode == "target":
+        target_currency = as_string(config.get("target_currency"))
+        display_price = (
+            normalize_price_text_to_currency(raw_price, target_currency=target_currency)
+            if target_currency is not None
+            else None
+        ) or raw_price
+    else:
+        display_price = raw_price
+        target_currency = None
+    if not price_display_amount_is_allowed(source, display_price, target_currency=target_currency):
+        return None
+    return display_price
+
+
+def select_place_display_price(enrichment_place: EnrichmentPlace) -> tuple[str, str] | None:
+    config = google_maps_place_price_display_config()
+    configured_order = coerce_string_list(config.get("source_order"))
+    source_order = [
+        source for source in configured_order if source in PRICE_DISPLAY_SOURCE_FIELDS
+    ] or list(DEFAULT_PRICE_DISPLAY_SOURCE_ORDER)
+    values = {
+        "price_range": enrichment_place.price_range,
+        "admission_price": enrichment_place.admission_price,
+        "room_price": enrichment_place.room_price,
+    }
+    for source in source_order:
+        value = as_string(values.get(source))
+        if value is not None:
+            if source == "price_range" and not price_range_source_is_eligible(enrichment_place, value):
+                continue
+            return source, value
+    return None
+
+
+def price_display_amount_is_allowed(
+    source: str,
+    value: str,
+    *,
+    target_currency: str | None,
+) -> bool:
+    parsed = parse_price_text(value)
+    if parsed is None:
+        return True
+    parsed_currency, amounts, _suffix = parsed
+    currency = (target_currency or parsed_currency).strip().upper()
+    max_amount = price_display_max_numeric_amount(source, currency)
+    if max_amount is None:
+        return True
+    return max(amounts) <= max_amount
+
+
+def price_display_max_numeric_amount(source: str, currency: str) -> float | None:
+    config = google_maps_place_price_display_config()
+    configured = config.get("max_numeric_by_source")
+    if not isinstance(configured, dict):
+        return None
+    source_config = configured.get(source)
+    if not isinstance(source_config, dict):
+        return None
+    amount = source_config.get(currency.strip().upper())
+    return as_float(amount)
+
+
+def price_range_source_is_eligible(enrichment_place: EnrichmentPlace, value: str) -> bool:
+    category_values = [
+        enrichment_place.primary_type,
+        enrichment_place.primary_type_display_name,
+        enrichment_place.primary_type_display_name_localized,
+        *enrichment_place.types,
+    ]
+    category_text = " ".join(value for value in category_values if value).casefold()
+    if re.fullmatch(r"\${1,4}", value.strip()):
+        return any(hint in category_text for hint in NUMERIC_PRICE_RANGE_CATEGORY_HINTS)
+    if parse_price_text(value) is None:
+        return True
+    return any(hint in category_text for hint in NUMERIC_PRICE_RANGE_CATEGORY_HINTS)
+
+
+def country_currency_code(country_name: str | None) -> str | None:
+    return COUNTRY_CURRENCY_CODES.get(normalize_locality_key(country_name))
+
+
+def normalize_price_text_to_currency(value: str, *, target_currency: str) -> str | None:
+    target = target_currency.strip().upper()
+    if target not in PRICE_CURRENCY_SYMBOLS:
+        return None
+    symbolic = re.fullmatch(r"\${1,4}", value.strip())
+    if symbolic:
+        return format_symbolic_price_tier(len(symbolic.group(0)), currency=target)
+    parsed = parse_price_text(value)
+    if parsed is None:
+        return None
+    source_currency, amounts, suffix = parsed
+    if source_currency == target:
+        converted = amounts
+    else:
+        rates = load_usd_exchange_rates()
+        if rates is None:
+            return None
+        source_rate = rates.get(source_currency)
+        target_rate = rates.get(target)
+        if not source_rate or not target_rate:
+            return None
+        converted = [amount / source_rate * target_rate for amount in amounts]
+    return format_price_amounts(converted, currency=target, suffix=suffix)
+
+
+def parse_price_text(value: str) -> tuple[str, list[float], str] | None:
+    text = unicodedata.normalize("NFKC", value).replace("\u00a0", " ").strip()
+    if not text:
+        return None
+    matches = list(PRICE_AMOUNT_RE.finditer(text))
+    if not matches:
+        return None
+    first_currency = normalize_price_currency_token(matches[0].group("currency"))
+    if first_currency is None:
+        return None
+    amounts: list[float] = []
+    for match in matches:
+        currency = normalize_price_currency_token(match.group("currency")) or first_currency
+        if currency != first_currency:
+            return None
+        amount = parse_price_amount(match.group("amount"))
+        if amount is None:
+            return None
+        amounts.append(amount)
+        if len(amounts) >= 2:
+            break
+    if len(amounts) == 1:
+        tail = text[matches[0].end() :]
+        tail_match = re.search(r"^\s*[-–]\s*(?P<amount>[0-9][0-9,.\s\u00a0]*)(?P<plus>\+)?", tail)
+        if tail_match:
+            amount = parse_price_amount(tail_match.group("amount"))
+            if amount is not None:
+                amounts.append(amount)
+    return (first_currency, amounts, "+" if text.endswith("+") or matches[-1].group("plus") else "")
+
+
+def normalize_price_currency_token(value: str) -> str | None:
+    normalized = unicodedata.normalize("NFKC", value).strip().upper().replace(" ", "")
+    return PRICE_TOKEN_CURRENCIES.get(normalized)
+
+
+def parse_price_amount(value: str) -> float | None:
+    normalized = value.replace("\u00a0", "").replace(" ", "")
+    if not normalized:
+        return None
+    if "," in normalized and "." in normalized:
+        if normalized.rfind(",") > normalized.rfind("."):
+            normalized = normalized.replace(".", "").replace(",", ".")
+        else:
+            normalized = normalized.replace(",", "")
+    elif normalized.count(",") == 1 and "." not in normalized:
+        whole, fractional = normalized.split(",", 1)
+        normalized = f"{whole}.{fractional}" if len(fractional) in {1, 2} else normalized.replace(",", "")
+    elif "," in normalized and "." not in normalized:
+        if re.fullmatch(r"\d{1,3}(?:,\d{3})+", normalized):
+            normalized = normalized.replace(",", "")
+        else:
+            return None
+    elif "." in normalized and "," not in normalized and re.fullmatch(r"\d{1,3}(?:[.]\d{3})+", normalized):
+        normalized = normalized.replace(".", "")
+    try:
+        return float(normalized)
+    except ValueError:
+        return None
+
+
+def format_price_amounts(amounts: list[float], *, currency: str, suffix: str) -> str | None:
+    if not amounts:
+        return None
+    symbol = PRICE_CURRENCY_SYMBOLS[currency]
+    rounded = [round_display_price_amount(amount, currency=currency) for amount in amounts]
+    if len(rounded) >= 2 and rounded[0] != rounded[1]:
+        return f"{symbol}{format_price_number(rounded[0])}–{format_price_number(rounded[1])}{suffix}"
+    return f"{symbol}{format_price_number(rounded[0])}{suffix}"
+
+
+def format_symbolic_price_tier(count: int, *, currency: str) -> str:
+    symbol = PRICE_CURRENCY_SYMBOLS[currency]
+    if len(symbol) == 1:
+        return symbol * count
+    if symbol.endswith("$"):
+        return f"{symbol}{'$' * max(0, count - 1)}"
+    return " ".join(symbol for _ in range(count))
+
+
+def round_display_price_amount(amount: float, *, currency: str) -> int:
+    absolute = abs(amount)
+    if currency in {"JPY", "KRW", "TWD"} and absolute >= 1_000:
+        step = 100
+    elif absolute >= 1_000:
+        step = 100
+    elif absolute >= 100:
+        step = 10
+    else:
+        step = 1
+    return int(round(amount / step) * step)
+
+
+def format_price_number(value: int) -> str:
+    return f"{value:,}"
+
+
+def load_usd_exchange_rates() -> dict[str, float] | None:
+    cached = read_cached_usd_exchange_rates()
+    if cached is not None:
+        return cached
+    rates = fetch_usd_exchange_rates()
+    if rates is None:
+        return None
+    write_cached_usd_exchange_rates(rates)
+    return rates
+
+
+def read_cached_usd_exchange_rates() -> dict[str, float] | None:
+    cache_path = PRICE_RATE_CACHE_DIR / "usd.json"
+    try:
+        stat_result = cache_path.stat()
+    except FileNotFoundError:
+        return None
+    if datetime.now(UTC) - datetime.fromtimestamp(stat_result.st_mtime, tz=UTC) > PRICE_RATE_CACHE_TTL:
+        return None
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    rates = payload.get("rates")
+    if not isinstance(rates, dict):
+        return None
+    return normalize_exchange_rate_payload(rates)
+
+
+def write_cached_usd_exchange_rates(rates: dict[str, float]) -> None:
+    PRICE_RATE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    write_json(
+        PRICE_RATE_CACHE_DIR / "usd.json",
+        {"fetched_at": datetime.now(UTC).isoformat(), "base": "USD", "rates": rates},
+        compact=True,
+    )
+
+
+def fetch_usd_exchange_rates() -> dict[str, float] | None:
+    for url in (FX_RATES_API_URL, FAWAZ_CURRENCY_API_URL):
+        try:
+            with urlopen(url, timeout=20) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        rates_payload = payload.get("rates")
+        if isinstance(rates_payload, dict):
+            rates = normalize_exchange_rate_payload(rates_payload)
+        else:
+            usd_payload = payload.get("usd")
+            rates = normalize_exchange_rate_payload(usd_payload) if isinstance(usd_payload, dict) else None
+        if rates:
+            rates["USD"] = 1.0
+            return rates
+    return None
+
+
+def normalize_exchange_rate_payload(payload: dict[Any, Any]) -> dict[str, float]:
+    rates: dict[str, float] = {"USD": 1.0}
+    for key, value in payload.items():
+        if not isinstance(key, str) or not isinstance(value, int | float):
+            continue
+        currency = key.strip().upper()
+        if len(currency) == 3 and value > 0:
+            rates[currency] = float(value)
+    return rates
+
+
+def sanitize_semantic_description(value: Any) -> str | None:
+    description = as_string(value)
+    if description is None:
+        return None
+    description = re.sub(r"\s+", " ", description).strip()
+    if not description or len(description) > 240:
+        return None
+    return description
+
+
+def normalize_semantic_tag_list(value: Any, *, limit: int) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    tags: list[str] = []
+    for item in value:
+        item_text = as_string(item)
+        if item_text is None:
+            continue
+        tag = normalize_tag_slug(item_text)
+        if tag and tag not in tags:
+            tags.append(tag)
+        if len(tags) >= limit:
+            break
+    return tags
+
+
+@lru_cache(maxsize=1)
+def semantic_llm_config() -> dict[str, str] | None:
+    env = load_dotenv_values(ROOT / ".env")
+    model = os.environ.get("LLM_MODEL") or os.environ.get("OPENAI_MODEL") or env.get("LLM_MODEL") or env.get("OPENAI_MODEL")
+    api_key = os.environ.get("LLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or env.get("LLM_API_KEY") or env.get("OPENAI_API_KEY")
+    base_url = (
+        os.environ.get("LLM_BASE_URL")
+        or os.environ.get("OPENAI_BASE_URL")
+        or env.get("LLM_BASE_URL")
+        or env.get("OPENAI_BASE_URL")
+        or "https://api.openai.com/v1"
+    )
+    if not model or not api_key:
+        return None
+    namespace = hashlib.sha256(f"{base_url}:{model}:{SEMANTIC_LLM_PROMPT_VERSION}".encode("utf-8")).hexdigest()[:16]
+    return {"model": model, "api_key": api_key, "base_url": base_url, "namespace": namespace}
+
+
+def load_dotenv_values(path: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return values
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, raw_value = stripped.split("=", 1)
+        values[key.strip()] = raw_value.strip().strip("\"'")
+    return values
+
+
+def google_maps_place_semantic_cache_dir() -> Path:
+    return SCRAPER_STATE_DIR / "semantic-cache"
+
+
+def read_semantic_llm_cache(path: Path) -> dict[str, Any] | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    repair = payload.get("repair") if isinstance(payload, dict) else None
+    return repair if isinstance(repair, dict) else None
+
+
+def write_semantic_llm_cache(path: Path, repair: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"repair": repair}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def extract_chat_message_content(payload: Any) -> str | None:
+    if not isinstance(payload, dict):
+        return None
+    choices = payload.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return None
+    first = choices[0]
+    if not isinstance(first, dict):
+        return None
+    message = first.get("message")
+    if not isinstance(message, dict):
+        return None
+    return as_string(message.get("content"))
 
 
 def normalize_place_page_business_status(status: str | None) -> str | None:
@@ -7271,7 +8864,17 @@ def main() -> int:
 
     if (args.refresh_list or args.refresh_force) and not args.refresh:
         args.refresh = True
-    if args.enrich_place and not (args.enrich or args.enrich_missing or args.refresh_enrichment):
+    if args.force_semantic_descriptions and not args.refresh_semantic_descriptions:
+        args.refresh_semantic_descriptions = True
+    if args.force_semantic_enrichment and not args.refresh_semantic_enrichment:
+        args.refresh_semantic_enrichment = True
+    if args.enrich_place and not (
+        args.enrich
+        or args.enrich_missing
+        or args.refresh_enrichment
+        or args.refresh_semantic_descriptions
+        or args.refresh_semantic_enrichment
+    ):
         args.refresh_enrichment = True
 
     if args.refresh:
@@ -7295,6 +8898,16 @@ def main() -> int:
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )
 
+    if args.refresh_semantic_descriptions or args.refresh_semantic_enrichment:
+        sync_local_csv_sources()
+        refresh_cached_semantic_enrichment(
+            enable_semantics=args.refresh_semantic_enrichment,
+            enable_description=args.refresh_semantic_descriptions,
+            force_semantics=args.force_semantic_enrichment,
+            force_description=args.force_semantic_descriptions,
+            place_selectors=args.enrich_place,
+        )
+
     if args.export_cache_json:
         exported_guides = export_all_places_cache_json()
         print(f"Exported JSON cache debug files for {exported_guides} guide(s).")
@@ -7306,6 +8919,8 @@ def main() -> int:
         and not args.enrich
         and not args.enrich_missing
         and not args.refresh_enrichment
+        and not args.refresh_semantic_descriptions
+        and not args.refresh_semantic_enrichment
         and not args.export_cache_json
     )
     if photo_only_refresh and refresh_generated_guide_photos(

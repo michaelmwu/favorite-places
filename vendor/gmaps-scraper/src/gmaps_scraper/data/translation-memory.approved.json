@@ -1,0 +1,313 @@
+{
+  "entries": [
+    {
+      "source": "シンガポール",
+      "target": "Singapore",
+      "field_kinds": ["country", "city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "台北市",
+      "target": "Taipei City",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "中山區",
+      "target": "Zhongshan District",
+      "field_kinds": ["neighborhood"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "中山区",
+      "target": "Zhongshan District",
+      "field_kinds": ["neighborhood"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "康樂里",
+      "target": "Kangle Village",
+      "field_kinds": ["neighborhood"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "康楽里",
+      "target": "Kangle Village",
+      "field_kinds": ["neighborhood"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "台湾",
+      "target": "Taiwan",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "臺灣",
+      "target": "Taiwan",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "日本",
+      "target": "Japan",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "東京都",
+      "target": "Tokyo",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "東京",
+      "target": "Tokyo",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "大阪府",
+      "target": "Osaka Prefecture",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "大阪市",
+      "target": "Osaka",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "京都府",
+      "target": "Kyoto Prefecture",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "京都市",
+      "target": "Kyoto",
+      "field_kinds": ["city"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "韓国",
+      "target": "South Korea",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "대한민국",
+      "target": "South Korea",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "한남동",
+      "target": "Hannam-dong",
+      "field_kinds": ["neighborhood"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "롯데월드타워",
+      "target": "Lotte World Tower",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "(?<![A-Za-z0-9])(\\d+)\\s*지하\\s*(\\d+)\\s*층",
+      "target_template": "{1} B{2}",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "지하\\s*(\\d+)\\s*층",
+      "target_template": "B{1}",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "(?<![A-Za-z0-9])(\\d+)\\s*층",
+      "target_template": "{1}F",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "(?<![A-Za-z0-9])(\\d+)\\s*地下",
+      "target_template": "Basement #{1}",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "\\bNo\\.\\s*(\\d+)\\s*之\\s*(\\d+)\\s*號",
+      "target_template": "No. {1}-{2}",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "(?<![A-Za-z0-9])(\\d+)\\s*樓\\s*之\\s*(\\d+)",
+      "target_template": "{1}F-{2}",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "(?<![A-Za-z0-9])(\\d+)\\s*樓",
+      "target_template": "{1}F",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "kind": "pattern",
+      "source_pattern": "(?<=\\d)\\s*號\\b",
+      "target_template": "",
+      "field_kinds": ["address_component"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "タイ",
+      "target": "Thailand",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "ベトナム",
+      "target": "Vietnam",
+      "field_kinds": ["country"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "イタリア料理店",
+      "target": "Italian restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "イベント会場",
+      "target": "Event venue",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "タイ料理店",
+      "target": "Thai restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "高級料理レストラン",
+      "target": "Fine dining restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "レストラン",
+      "target": "Restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "ラーメン屋",
+      "target": "Ramen restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "和食店",
+      "target": "Japanese restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "寿司店",
+      "target": "Sushi restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "カフェ",
+      "target": "Cafe",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "ホテル",
+      "target": "Hotel",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "칵테일바",
+      "target": "Cocktail bar",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "한식당",
+      "target": "Korean restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "酒吧",
+      "target": "Bar",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    },
+    {
+      "source": "中菜館",
+      "target": "Chinese restaurant",
+      "field_kinds": ["category"],
+      "source_method": "approved",
+      "confidence": "high"
+    }
+  ]
+}

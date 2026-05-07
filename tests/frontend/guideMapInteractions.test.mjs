@@ -229,8 +229,10 @@ describe("guide map interactions", () => {
     expectCssToContain(css, ".place-card-meta-row");
     expectCssToContain(css, ".place-card-meta-stats");
     expectCssToContain(css, ".place-card-rating-pill");
-    expectCssToContain(css, "container-type: inline-size;");
-    expectCssToContain(css, "@container (min-width: 26rem)");
+    expectCssToContain(css, "grid-template-columns: auto minmax(0, 1fr);");
+    expectCssToContain(css, ".place-card-meta-row .meta-copy");
+    expectCssToContain(css, "-webkit-line-clamp: 2;");
+    expectCssToContain(css, "grid-column: 1 / -1;");
   });
 
   it("lets the collapsed map panel release width back to the places list", () => {

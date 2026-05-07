@@ -133,12 +133,63 @@ bun run enrich:data
 bun run refresh:enrichment
 ```
 
+Generate LLM semantic descriptions from existing cached enrichment without rescraping or using the Places API:
+
+```bash
+bun run refresh:semantic-enrichment
+bun run refresh:semantic-enrichment:force
+bun run refresh:semantic-descriptions
+bun run refresh:semantic-descriptions:force
+```
+
 The behavior is configurable in a few places:
 
 - `GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls enrichment source selection. Use `scrape` for scraper-only, `api` for API-only, or `scrape_then_api` for scraper first with API fallback. The default is `scrape_then_api`.
 - `GOOGLE_PLACES_API_KEY` enables API-based enrichment. It is required for `api` mode and for the fallback leg of `scrape_then_api`.
+- `site/enrichment.json` controls site-owned scraper policy. `google_maps_places.llm_repair` defaults to `dom`, while `collect_reviews` and `collect_about` default to `false` so enrichment stays compact unless a site opts into those heavier panels.
+- `GOOGLE_MAPS_PLACES_LLM_REPAIR`, `GOOGLE_MAPS_PLACES_COLLECT_REVIEWS`, and `GOOGLE_MAPS_PLACES_COLLECT_ABOUT` override the site enrichment config for automation or one-off refreshes.
 - `GMAPS_SCRAPER_PROXY` routes Google Maps list and place-page scraping through a proxy.
-- The command controls refresh scope: `fill:gaps` fills missing enrichment and photos, `enrich:data` fills missing or stale cache entries, and `refresh:enrichment` refreshes every entry.
+- The command controls refresh scope: `fill:gaps` fills missing enrichment and photos, `enrich:data` fills missing or stale cache entries, `refresh:enrichment` refreshes every entry, `refresh:semantic-enrichment` updates cached semantic neighborhoods/tags from already cached evidence, and `refresh:semantic-descriptions` only updates cached semantic descriptions from already cached enrichment evidence.
+
+Example `site/enrichment.json`:
+
+```json
+{
+  "google_maps_places": {
+    "llm_repair": "dom",
+    "collect_reviews": false,
+    "collect_about": false,
+    "semantic_llm": false,
+    "semantic_descriptions": false,
+    "semantic_description_force_refresh": false,
+    "price_display": {
+      "currency_mode": "guide_local",
+      "source_order": ["price_range", "admission_price", "room_price"],
+      "max_numeric_by_source": {
+        "admission_price": {
+          "JPY": 5000,
+          "TWD": 1000
+        }
+      }
+    },
+    "neighborhood_mappings": [
+      {
+        "city": "Taipei",
+        "country": "Taiwan",
+        "from": "Wanhua District",
+        "to": "Wanhua",
+        "when_address_contains": "Wanhua District"
+      }
+    ]
+  }
+}
+```
+
+When `semantic_llm` is enabled and LLM credentials are configured, the pipeline uses compact cache-only evidence from price range, review topics, review snippets, and About labels to infer neighborhood, type tags, and vibe tags. `semantic_descriptions` separately enables generated card descriptions. Descriptions are reused while the semantic description signature remains stable; the signature tracks major quality changes such as name/address/category changes, review topics appearing, About sections changing, price range, and coarse rating/review-count buckets. Set `semantic_description_force_refresh` when you intentionally want to regenerate descriptions even if the signature is unchanged. If the LLM is unavailable or errors, deterministic category, locality, and vibe rules still produce the guide data.
+
+`price_display` controls the card-facing price label while keeping raw scraper fields in the enrichment cache. `source_order` chooses which scraper field to display first: `price_range`, `admission_price`, or `room_price`. Numeric `price_range` values are displayed conservatively for food/drink/shopping-style categories; attraction tickets and lodging quotes should come through the separate `admission_price` or `room_price` fields. `currency_mode` supports `raw`, `guide_local`, or `target`; `target` also requires `target_currency`, such as `USD`. Symbol-only values like `$$` keep the same tier and swap the symbol, while numeric prices use cached daily USD exchange rates from `api.fxratesapi.com` with jsDelivr currency-api fallback. If rates are unavailable, the raw price is used. `max_numeric_by_source` can hide implausibly large converted values by source field and display currency, which is useful when Google surfaces reseller bundles instead of a simple admission ticket.
+
+`neighborhood_mappings` is an ordered site-level cleanup layer for local naming conventions. Each rule can scope by `city` and `country`, match a current `from` neighborhood, optionally require `when_address_contains` or `when_candidate`, and then emit `to`. Per-place `neighborhood` overrides still win over these mappings.
 
 Manual overrides always win over machine-enriched fields.
 
@@ -153,6 +204,18 @@ GOOGLE_PLACES_API_KEY=...
 
 # Enrichment source strategy: scrape, api, or scrape_then_api.
 GOOGLE_PLACES_ENRICHMENT_STRATEGY=scrape_then_api
+
+# Scraper LLM repair policy: off, dom, or dom_then_translation.
+GOOGLE_MAPS_PLACES_LLM_REPAIR=dom
+
+# Optional LLM semantic tags/neighborhoods from enriched cache evidence.
+GOOGLE_MAPS_PLACES_SEMANTIC_LLM=false
+
+# Optional LLM-generated card descriptions from enriched cache evidence.
+GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS=false
+
+# Force LLM-generated card description regeneration.
+GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH=false
 
 # Optional proxy for Google Maps list and place-page scraping.
 GMAPS_SCRAPER_PROXY=...

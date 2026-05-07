@@ -1,35 +1,578 @@
 from __future__ import annotations
 
 import json
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
+from gmaps_scraper.models import (
+    PlaceExtractionDiagnostics,
+    PlaceLLMRepairRequest,
+    PlaceScrapeResult,
+)
 from gmaps_scraper.place_scraper import (
+    _PLACE_ABOUT_TAB_CLICK_JS,
     _PLACE_JS_EXTRACTOR,
+    _PLACE_REVIEW_TAB_CLICK_JS,
+    _PLACE_REVIEW_TOPIC_JS,
+    _PLACE_SEARCH_RESULT_CLICK_JS,
     _build_place_details,
+    _build_place_details_from_snapshot,
+    _build_place_diagnostics,
+    _build_place_llm_evidence,
     _clean_category_text,
     _clean_name_text,
     _extract_address_from_lines,
+    _extract_admission_price_from_lines,
     _extract_preview_address,
     _extract_preview_coordinates,
     _extract_preview_description,
     _extract_preview_phone,
     _extract_preview_place_enrichment,
+    _extract_price_range_from_lines,
+    _extract_review_count_from_lines,
     _extract_secondary_name,
+    _hash_evidence,
+    _looks_like_google_maps_place_url,
+    _merge_llm_place_fields,
     _merge_place_sources,
     _normalize_google_place_id,
     _normalize_phone_candidate,
     _normalize_photo_url,
     _normalize_preview_website,
+    _normalize_review_topics,
+    _normalize_reviews,
+    _normalize_website,
+    _open_place_result_from_search_page,
+    _parse_price_amount,
     _parse_review_count,
+    _search_result_candidate_url,
     _seed_google_consent_cookies,
+    _should_use_llm_repair,
+    _with_google_maps_locale,
+    collect_place_snapshot,
+    scrape_places,
 )
+from gmaps_scraper.scraper import BrowserSessionConfig, HttpSessionConfig, ScrapeError
 
 
 class PlaceScraperTests(unittest.TestCase):
+    def test_build_place_details_from_snapshot_rejects_saved_list_resolution(self) -> None:
+        with self.assertRaisesRegex(ScrapeError, "saved list"):
+            _build_place_details_from_snapshot(
+                "https://maps.app.goo.gl/example",
+                snapshot={
+                    "resolved_url": (
+                        "https://www.google.com/maps/@1,2,14z/"
+                        "data=!4m3!11m2!2sShpCfVAkTaGQFUSz8UklcQ!3e3"
+                    ),
+                    "dom": {"name": "Singapore"},
+                },
+                llm_fallback=None,
+                llm_policy="on_quality_failure",
+            )
+
     def test_place_js_extractor_skips_review_scoped_photo_nodes(self) -> None:
         self.assertIn('element.closest("[data-review-id]")', _PLACE_JS_EXTRACTOR)
         self.assertIn("root.querySelectorAll(selector)", _PLACE_JS_EXTRACTOR)
         self.assertIn(r"return /(^|\W)reviews?(\W|$)/i.test(label);", _PLACE_JS_EXTRACTOR)
+
+    def test_collect_place_snapshot_can_skip_reviews_and_about_tabs(self) -> None:
+        class _FakePage:
+            url = "https://www.google.com/maps/place/Den"
+
+            def __init__(self) -> None:
+                self.evaluate_calls = 0
+
+            def goto(self, *_args: object, **_kwargs: object) -> None:
+                pass
+
+            def wait_for_load_state(self, *_args: object, **_kwargs: object) -> None:
+                pass
+
+            def wait_for_selector(self, *_args: object, **_kwargs: object) -> None:
+                pass
+
+            def wait_for_timeout(self, *_args: object, **_kwargs: object) -> None:
+                pass
+
+            def reload(self, *_args: object, **_kwargs: object) -> None:
+                pass
+
+            def screenshot(self, *, path: str, **_kwargs: object) -> None:
+                Path(path).write_bytes(b"screenshot")
+
+            def evaluate(self, script: object) -> object:
+                self.evaluate_calls += 1
+                if script == _PLACE_JS_EXTRACTOR:
+                    return {"name": "Den"}
+                return True
+
+            def close(self) -> None:
+                pass
+
+        class _FakeContext:
+            def __init__(self) -> None:
+                self.page = _FakePage()
+                self.closed = False
+
+            def new_page(self) -> _FakePage:
+                return self.page
+
+            def close(self) -> None:
+                self.closed = True
+
+        context = _FakeContext()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            screenshot_path = Path(tmp_dir) / "overview-only.png"
+            with (
+                patch(
+                    "gmaps_scraper.place_scraper._launch_browser_context",
+                    return_value=context,
+                ),
+                patch("gmaps_scraper.place_scraper._handle_google_consent"),
+                patch("gmaps_scraper.place_scraper._ensure_review_signal") as review_signal,
+                patch(
+                    "gmaps_scraper.place_scraper._collect_preview_place_enrichment",
+                    return_value={},
+                ),
+            ):
+                snapshot = collect_place_snapshot(
+                    "https://www.google.com/maps/place/Den",
+                    collect_reviews=False,
+                    collect_about=False,
+                    screenshot_path=screenshot_path,
+                )
+
+            self.assertTrue(context.closed)
+            self.assertEqual(snapshot["dom"], {"name": "Den"})
+            self.assertGreaterEqual(context.page.evaluate_calls, 2)
+            review_signal.assert_not_called()
+            self.assertEqual(screenshot_path.read_bytes(), b"screenshot")
+
+    def test_scrape_places_reuses_context_and_retries_quality_flags(self) -> None:
+        class _FakeContext:
+            def __init__(self) -> None:
+                self.closed = False
+
+            def close(self) -> None:
+                self.closed = True
+
+        context = _FakeContext()
+        snapshots = [
+            {
+                "resolved_url": "https://www.google.com/maps/place/Den",
+                "dom": {
+                    "name": "Den",
+                    "address": "Tokyo, Japan",
+                    "rating": "4.4",
+                    "review_count": "324",
+                    "limited_view": True,
+                },
+                "preview": {},
+            },
+            {
+                "resolved_url": "https://www.google.com/maps/place/Den",
+                "dom": {
+                    "name": "Den",
+                    "address": "Tokyo, Japan",
+                    "rating": "4.4",
+                    "review_count": "324",
+                },
+                "preview": {},
+            },
+        ]
+
+        with (
+            patch(
+                "gmaps_scraper.place_scraper._launch_browser_context",
+                return_value=context,
+            ) as launch_context,
+            patch(
+                "gmaps_scraper.place_scraper._collect_place_snapshot_with_context",
+                side_effect=snapshots,
+            ) as collect_snapshot,
+            patch("gmaps_scraper.place_scraper.time.sleep") as sleep,
+        ):
+            results = scrape_places(
+                ["https://www.google.com/maps/place/Den"],
+                max_retries=1,
+                retry_backoff_ms=500,
+            )
+
+        self.assertTrue(context.closed)
+        launch_context.assert_called_once()
+        self.assertEqual(collect_snapshot.call_count, 2)
+        sleep.assert_called_once_with(0.5)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].attempts, 2)
+        self.assertIsNone(results[0].error)
+        self.assertIsNotNone(results[0].place)
+        self.assertFalse(results[0].place.limited_view)
+
+    def test_scrape_places_parallel_uses_worker_scoped_session_paths(self) -> None:
+        seen_profile_dirs: list[Path | None] = []
+        seen_cookie_jar_paths: list[Path | None] = []
+
+        def fake_scrape_places_sequential(
+            place_urls: list[str],
+            **kwargs: object,
+        ) -> list[PlaceScrapeResult]:
+            browser_session = kwargs["browser_session"]
+            http_session = kwargs["http_session"]
+            self.assertIsInstance(browser_session, BrowserSessionConfig)
+            self.assertIsInstance(http_session, HttpSessionConfig)
+            seen_profile_dirs.append(browser_session.profile_dir)
+            seen_cookie_jar_paths.append(http_session.cookie_jar_path)
+            return [
+                PlaceScrapeResult(source_url=place_url, attempts=1)
+                for place_url in place_urls
+            ]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            profile_dir = Path(tmp_dir) / "session"
+            cookie_jar_path = Path(tmp_dir) / "cookies.txt"
+            with (
+                patch(
+                    "gmaps_scraper.place_scraper._scrape_places_sequential",
+                    side_effect=fake_scrape_places_sequential,
+                ),
+                patch("gmaps_scraper.place_scraper.time.sleep"),
+            ):
+                results = scrape_places(
+                    ["url-1", "url-2", "url-3"],
+                    browser_session=BrowserSessionConfig(profile_dir=profile_dir),
+                    http_session=HttpSessionConfig(cookie_jar_path=cookie_jar_path),
+                    max_concurrency=2,
+                    stagger_ms=10,
+                )
+
+        self.assertEqual(
+            sorted(path for path in seen_profile_dirs if path is not None),
+            sorted([profile_dir / "worker-1", profile_dir / "worker-2"]),
+        )
+        self.assertEqual(
+            sorted(path for path in seen_cookie_jar_paths if path is not None),
+            sorted(
+                [
+                    cookie_jar_path.parent / "cookies.worker-1.txt",
+                    cookie_jar_path.parent / "cookies.worker-2.txt",
+                ]
+            ),
+        )
+        self.assertEqual([result.source_url for result in results], ["url-1", "url-2", "url-3"])
+
+    def test_scrape_places_parallel_returns_worker_errors_per_url(self) -> None:
+        def fake_scrape_places_sequential(
+            place_urls: list[str],
+            **kwargs: object,
+        ) -> list[PlaceScrapeResult]:
+            del kwargs
+            if "bad-url" in place_urls:
+                raise RuntimeError("context launch failed")
+            return [
+                PlaceScrapeResult(source_url=place_url, attempts=1)
+                for place_url in place_urls
+            ]
+
+        with (
+            patch(
+                "gmaps_scraper.place_scraper._scrape_places_sequential",
+                side_effect=fake_scrape_places_sequential,
+            ),
+            patch("gmaps_scraper.place_scraper.time.sleep"),
+        ):
+            results = scrape_places(
+                ["ok-url", "bad-url"],
+                max_concurrency=2,
+            )
+
+        self.assertEqual(results[0].source_url, "ok-url")
+        self.assertIsNone(results[0].error)
+        self.assertEqual(results[1].source_url, "bad-url")
+        self.assertEqual(results[1].attempts, 0)
+        self.assertIn("context launch failed", results[1].error or "")
+
+    def test_scrape_places_strips_input_urls_before_scraping(self) -> None:
+        seen_urls: list[str] = []
+
+        def fake_scrape_places_sequential(
+            place_urls: list[str],
+            **kwargs: object,
+        ) -> list[PlaceScrapeResult]:
+            del kwargs
+            seen_urls.extend(place_urls)
+            return [
+                PlaceScrapeResult(source_url=place_url, attempts=1)
+                for place_url in place_urls
+            ]
+
+        with patch(
+            "gmaps_scraper.place_scraper._scrape_places_sequential",
+            side_effect=fake_scrape_places_sequential,
+        ):
+            results = scrape_places(["  https://www.google.com/maps/place/Den  ", "  "])
+
+        self.assertEqual(seen_urls, ["https://www.google.com/maps/place/Den"])
+        self.assertEqual(
+            [result.source_url for result in results],
+            ["https://www.google.com/maps/place/Den"],
+        )
+
+    def test_build_place_details_preserves_raw_price_range_and_about_sections(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Fiamma",
+            resolved_url="https://www.google.com/maps/place/Fiamma",
+            snapshot={
+                "name": "Fiamma",
+                "category": "Italian restaurant",
+                "rating": "4.8",
+                "review_count": "832",
+                "price_range": "SGD 100+",
+                "address": "1 The Knolls, Singapore 098297",
+                "about_sections": [
+                    {
+                        "title": "Accessibility",
+                        "items": [
+                            {
+                                "label": "Wheelchair accessible entrance",
+                                "aria_label": "Has wheelchair accessible entrance",
+                                "source": "about_panel",
+                            },
+                            {"label": "Wheelchair accessible parking lot"},
+                        ],
+                    }
+                ],
+            },
+        )
+
+        self.assertEqual(details.price_range, "SGD 100+")
+        self.assertEqual(
+            [section.to_dict() for section in details.about_sections],
+            [
+                {
+                    "title": "Accessibility",
+                    "items": [
+                        {
+                            "label": "Wheelchair accessible entrance",
+                            "aria_label": "Has wheelchair accessible entrance",
+                        },
+                        {"label": "Wheelchair accessible parking lot"},
+                    ],
+                }
+            ],
+        )
+
+    def test_build_place_details_accepts_symbolic_price_range(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Japan",
+            resolved_url="https://www.google.com/maps/place/Japan",
+            snapshot={
+                "name": "Japan Place",
+                "category": "Restaurant",
+                "rating": "4.5",
+                "review_count": "120",
+                "price_range": "$$",
+                "address": "Tokyo, Japan",
+            },
+        )
+
+        self.assertEqual(details.price_range, "$$")
+
+    def test_extract_price_range_from_lines_rejects_offer_quote_rows(self) -> None:
+        self.assertIsNone(
+            _extract_price_range_from_lines(
+                [
+                    "Admission · NT$100",
+                    "2 options · NT$5,293",
+                ]
+            )
+        )
+
+    def test_extract_price_range_from_lines_accepts_place_summary_rows(self) -> None:
+        self.assertEqual(
+            _extract_price_range_from_lines(
+                ["4.8 · (326) · NT$2,000+ · Fine dining restaurant"]
+            ),
+            "NT$2,000+",
+        )
+
+    def test_extract_admission_price_from_lines_accepts_localized_headings(self) -> None:
+        self.assertEqual(
+            _extract_admission_price_from_lines(
+                [
+                    "門票",
+                    "官方網站",
+                    "NT$320",
+                    "Klook",
+                    "NT$320",
+                ]
+            ),
+            "NT$320",
+        )
+
+    def test_build_place_details_summarizes_admission_prices_separately(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Shinjuku+Gyoen",
+            resolved_url="https://www.google.com/maps/place/Shinjuku+Gyoen",
+            snapshot={
+                "name": "Shinjuku Gyoen National Garden",
+                "category": "National park",
+                "rating": "4.6",
+                "review_count": "12,340",
+                "address": "11 Naitomachi, Shinjuku City, Tokyo 160-0014, Japan",
+                "admission_prices": ["NT$100.40", "NT$101.00", "NT$101.00"],
+                "body_text": "\n".join(
+                    [
+                        "Admission",
+                        "Official site",
+                        "NT$100.40",
+                        "Klook",
+                        "NT$101.00",
+                    ]
+                ),
+            },
+        )
+
+        self.assertIsNone(details.price_range)
+        self.assertEqual(details.admission_price, "NT$101.00")
+        self.assertIsNone(details.room_price)
+
+    def test_build_place_details_moves_localized_admission_price_out_of_price_range(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Tokyo+Tower",
+            resolved_url="https://www.google.com/maps/place/Tokyo+Tower",
+            snapshot={
+                "name": "Tokyo Tower",
+                "category": "Observation deck",
+                "rating": "4.5",
+                "review_count": "40,001",
+                "price_range": "NT$320",
+                "address": "4 Chome-2-8 Shibakoen, Minato City, Tokyo 105-0011, Japan",
+                "body_text": "\n".join(
+                    [
+                        "門票",
+                        "官方網站",
+                        "NT$320",
+                        "Klook",
+                        "NT$320",
+                    ]
+                ),
+            },
+        )
+
+        self.assertIsNone(details.price_range)
+        self.assertEqual(details.admission_price, "NT$320")
+
+    def test_build_place_details_uses_structural_admission_offers_before_address(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Tokyo+Tower",
+            resolved_url="https://www.google.com/maps/place/Tokyo+Tower",
+            snapshot={
+                "name": "Tokyo Tower",
+                "category": "Observation deck",
+                "rating": "4.5",
+                "review_count": "40,001",
+                "structural_offer_kind": "admission",
+                "structural_offer_prices": ["NT$320", "NT$320", "NT$420"],
+                "address": "4 Chome-2-8 Shibakoen, Minato City, Tokyo 105-0011, Japan",
+            },
+        )
+
+        self.assertEqual(details.admission_price, "NT$320")
+        self.assertIsNone(details.room_price)
+
+    def test_build_place_details_keeps_distinct_price_range_when_admission_differs(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Museum",
+            resolved_url="https://www.google.com/maps/place/Museum",
+            snapshot={
+                "name": "Museum",
+                "category": "Art museum",
+                "rating": "4.4",
+                "review_count": "1,234",
+                "price_range": "¥1,000–2,000",
+                "admission_prices": ["¥320", "¥320"],
+                "address": "Example address",
+            },
+        )
+
+        self.assertEqual(details.price_range, "¥1,000–2,000")
+        self.assertEqual(details.admission_price, "¥320")
+
+    def test_build_place_details_summarizes_room_prices_separately(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Tokyo+Prince+Hotel",
+            resolved_url="https://www.google.com/maps/place/Tokyo+Prince+Hotel",
+            snapshot={
+                "name": "Tokyo Prince Hotel",
+                "category": "Hotel",
+                "rating": "4.2",
+                "review_count": "5,481",
+                "address": "3 Chome-3-1 Shibakoen, Minato City, Tokyo 105-8560, Japan",
+                "room_prices": [
+                    "NT$5,960",
+                    "NT$6,473",
+                    "NT$7,299",
+                    "NT$7,355",
+                ],
+                "room_price_overlay": "NT$5,293",
+                "body_text": "\n".join(
+                    [
+                        "Compare prices",
+                        "Agoda",
+                        "NT$5,960",
+                        "Priceline",
+                        "NT$5,293",
+                    ]
+                ),
+            },
+        )
+
+        self.assertIsNone(details.price_range)
+        self.assertIsNone(details.admission_price)
+        self.assertEqual(details.room_price, "NT$6,473")
+
+    def test_build_place_details_uses_structural_room_offers_before_address(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Tokyo+Prince+Hotel",
+            resolved_url="https://www.google.com/maps/place/Tokyo+Prince+Hotel",
+            snapshot={
+                "name": "Tokyo Prince Hotel",
+                "category": "Hotel",
+                "rating": "4.2",
+                "review_count": "5,481",
+                "structural_offer_kind": "room",
+                "structural_offer_prices": ["NT$5,960", "NT$6,473", "NT$7,299"],
+                "address": "3 Chome-3-1 Shibakoen, Minato City, Tokyo 105-8560, Japan",
+            },
+        )
+
+        self.assertIsNone(details.admission_price)
+        self.assertEqual(details.room_price, "NT$6,473")
+
+    def test_build_place_details_orders_comma_decimal_offer_prices(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Hotel",
+            resolved_url="https://www.google.com/maps/place/Hotel",
+            snapshot={
+                "name": "Hotel",
+                "category": "Hotel",
+                "rating": "4.2",
+                "review_count": "500",
+                "address": "Example address",
+                "room_prices": ["€999,00", "€1.234,56", "€2.000,00"],
+            },
+        )
+
+        self.assertEqual(details.room_price, "€1.234,56")
+
+    def test_parse_price_amount_handles_localized_grouping(self) -> None:
+        self.assertEqual(_parse_price_amount("1.234"), 1234.0)
+        self.assertEqual(_parse_price_amount("1.234.567"), 1234567.0)
+        self.assertEqual(_parse_price_amount("1.234,56"), 1234.56)
+        self.assertEqual(_parse_price_amount("1,234.56"), 1234.56)
 
     def test_place_js_extractor_prefers_data_item_address_rows(self) -> None:
         self.assertIn('const legacy = itemValue("address");', _PLACE_JS_EXTRACTOR)
@@ -48,6 +591,49 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIn("button[data-item-id^='phone:'] .Io6YTe", _PLACE_JS_EXTRACTOR)
         self.assertIn('plus_code: itemValue("oloc")', _PLACE_JS_EXTRACTOR)
         self.assertIn("a[data-item-id='authority']", _PLACE_JS_EXTRACTOR)
+        self.assertIn("panel,\n    ].filter(Boolean);", _PLACE_JS_EXTRACTOR)
+
+    def test_place_js_extractor_collects_quote_sections_separately(self) -> None:
+        self.assertLess(
+            _PLACE_JS_EXTRACTOR.index("const collectLeafPrices ="),
+            _PLACE_JS_EXTRACTOR.index("const priceRangeValue ="),
+        )
+        self.assertLess(
+            _PLACE_JS_EXTRACTOR.index("const roomOverlayPrice ="),
+            _PLACE_JS_EXTRACTOR.index("const priceRangeValue ="),
+        )
+        self.assertIn(
+            "const headingAliases = (value) => Array.isArray(value) ? value : [value];",
+            _PLACE_JS_EXTRACTOR,
+        )
+        self.assertIn(
+            '"門票"',
+            _PLACE_JS_EXTRACTOR,
+        )
+        self.assertIn(
+            '"料金を比較"',
+            _PLACE_JS_EXTRACTOR,
+        )
+        self.assertNotIn('"overview"', _PLACE_ABOUT_TAB_CLICK_JS.lower())
+        self.assertIn("const isSearchPage =", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertIn(
+            "new URL(hrefValue, window.location.href).href",
+            _PLACE_SEARCH_RESULT_CLICK_JS,
+        )
+        self.assertIn("const detailsBoundaryTop = () => {", _PLACE_JS_EXTRACTOR)
+        self.assertIn('structural_offer_kind: structuralOffers.kind,', _PLACE_JS_EXTRACTOR)
+        self.assertIn(
+            'panel.querySelector(`[data-item-id="place-info-links:"]`)',
+            _PLACE_JS_EXTRACTOR,
+        )
+        self.assertIn('button[aria-label*=\'per night\' i]', _PLACE_JS_EXTRACTOR)
+
+    def test_review_topic_collection_can_click_review_tab_and_read_chips(self) -> None:
+        self.assertIn("button[role='tab']", _PLACE_REVIEW_TAB_CLICK_JS)
+        self.assertIn("(review|reviews|評論|クチコミ)", _PLACE_REVIEW_TAB_CLICK_JS)
+        self.assertIn("/^\\+\\d+$/.test(text)", _PLACE_REVIEW_TOPIC_JS)
+        self.assertIn("button[role='radio']", _PLACE_REVIEW_TOPIC_JS)
+        self.assertIn("button[aria-pressed]", _PLACE_REVIEW_TOPIC_JS)
 
     def test_parse_review_count_handles_suffixes(self) -> None:
         self.assertEqual(_parse_review_count("324"), 324)
@@ -55,6 +641,207 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(_parse_review_count("1.296"), 1296)
         self.assertEqual(_parse_review_count("3.6K"), 3600)
         self.assertEqual(_parse_review_count("9.4万"), 94000)
+
+    def test_extract_review_count_from_lines_prefers_place_panel_over_related_cards(
+        self,
+    ) -> None:
+        self.assertEqual(
+            _extract_review_count_from_lines(
+                [
+                    "Ad Astra",
+                    "4.8",
+                    "(326)·NT$2,000+",
+                    "Fine dining restaurant",
+                    "Review summary",
+                    "326 reviews",
+                    "People also search for",
+                    "WOW Bistro",
+                    "4.6(5,590)",
+                ]
+            ),
+            326,
+        )
+
+    def test_build_place_details_prefers_structured_review_count_over_text_fallback(
+        self,
+    ) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den",
+            snapshot={
+                "name": "Den",
+                "category": "Restaurant",
+                "review_count": "324",
+                "body_text": "\n".join(
+                    [
+                        "People also search for",
+                        "WOW Bistro",
+                        "4.6",
+                        "5,590 reviews",
+                        "Den",
+                        "324 reviews",
+                    ]
+                ),
+            },
+        )
+
+        self.assertEqual(details.review_count, 324)
+
+    def test_normalize_review_topics_extracts_filter_chips(self) -> None:
+        topics = _normalize_review_topics(
+            [
+                {"text": "pho 501", "source": "button[jsaction*='review']"},
+                {"text": "bun bo nam bo 623"},
+                {"aria_label": "Mentioned in 29 reviews: banh xeo"},
+                {"text": "sushi", "aria_label": "sushi, mentioned in 115 reviews"},
+                {"text": "Most relevant"},
+                {"text": "5 stars 89"},
+                {"text": "like 1"},
+                {"text": "michelin one-star 34"},
+            ]
+        )
+
+        self.assertEqual(
+            [topic.to_dict() for topic in topics],
+            [
+                {
+                    "label": "pho",
+                    "count": 501,
+                },
+                {"label": "bun bo nam bo", "count": 623},
+                {"label": "banh xeo", "count": 29},
+                {"label": "sushi", "count": 115},
+                {"label": "michelin one-star", "count": 34},
+            ],
+        )
+
+    def test_normalize_reviews_extracts_visible_review_snippets(self) -> None:
+        reviews = _normalize_reviews(
+            [
+                {
+                    "rating": "5 stars",
+                    "relative_time": "3 months ago",
+                    "text": "Spectacular food. More",
+                    "like_count": "Like",
+                    "source": "dom",
+                },
+                {
+                    "author": "Michael Pinkerton",
+                    "source": "dom",
+                },
+                {
+                    "author": "Gustavo Montez",
+                    "rating": "5 stars",
+                    "relative_time": "7 months ago",
+                    "text": "Nice~~~",
+                    "like_count": "1",
+                    "source": "dom",
+                },
+            ]
+        )
+
+        self.assertEqual(
+            [review.to_dict() for review in reviews],
+            [
+                {
+                    "author": "Michael Pinkerton",
+                    "rating": 5.0,
+                    "relative_time": "3 months ago",
+                    "text": "Spectacular food.",
+                },
+                {
+                    "author": "Gustavo Montez",
+                    "rating": 5.0,
+                    "relative_time": "7 months ago",
+                    "text": "Nice~~~",
+                    "like_count": 1,
+                },
+            ],
+        )
+
+    def test_llm_policy_uses_repair_only_for_quality_failures(self) -> None:
+        self.assertFalse(
+            _should_use_llm_repair(
+                "on_quality_failure",
+                PlaceExtractionDiagnostics(confidence=0.95),
+            )
+        )
+        self.assertTrue(
+            _should_use_llm_repair(
+                "on_quality_failure",
+                PlaceExtractionDiagnostics(
+                    quality_flags=["thin_place_result"],
+                    confidence=0.52,
+                ),
+            )
+        )
+
+    def test_llm_tasks_scope_quality_gate_and_request(self) -> None:
+        calls: list[PlaceLLMRepairRequest] = []
+        snapshot = {
+            "resolved_url": "https://www.google.com/maps/place/Den",
+            "dom": {
+                "name": "Den",
+                "category": "테스트카테고리",
+                "rating": "4.4",
+                "review_count": "324",
+                "address": "Tokyo, Japan",
+            },
+            "preview": {},
+        }
+
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/place/Den",
+            snapshot=snapshot,
+            llm_fallback=lambda request: calls.append(request)
+            or {"category_display_en": "Test Category"},
+            llm_policy="on_quality_failure",
+            llm_tasks=("dom_repair",),
+        )
+
+        self.assertNotEqual(details.category_display_en, "Test Category")
+        self.assertEqual(calls, [])
+
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/place/Den",
+            snapshot=snapshot,
+            llm_fallback=lambda request: calls.append(request)
+            or {"category_display_en": "Test Category"},
+            llm_policy="on_quality_failure",
+            llm_tasks=("display_translation",),
+        )
+
+        self.assertEqual(details.category_display_en, "Test Category")
+        request = calls[-1]
+        self.assertEqual(request.tasks, ["display_translation"])
+        self.assertEqual(request.diagnostics.quality_flags, ["needs_category_display_en"])
+
+    def test_build_place_details_marks_cached_repair_without_llm_use(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/place/Den",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/place/Den",
+                "dom": {
+                    "name": "Den",
+                    "category": "Restaurant",
+                    "rating": "4.4",
+                    "review_count": "324",
+                    "address": "Tokyo, Japan",
+                },
+                "preview": {},
+            },
+            llm_fallback=lambda _request: {
+                "fields": {"website": "https://example.com"},
+                "_repair_source": "cache",
+            },
+            llm_policy="always",
+        )
+
+        self.assertEqual(details.website, "https://example.com")
+        self.assertIsNotNone(details.diagnostics)
+        assert details.diagnostics is not None
+        self.assertFalse(details.diagnostics.llm_used)
+        self.assertEqual(details.diagnostics.repair_source, "cache")
 
     def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
         details = _build_place_details(
@@ -123,6 +910,119 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(details.lat, 0.0)
         self.assertEqual(details.lng, 0.0)
 
+    def test_build_place_details_rejects_fixaddress_url_addresses(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Nizami+Street",
+            resolved_url="https://www.google.com/maps/place/Nizami+Street",
+            snapshot={
+                "name": "Nizami Street",
+                "category": "Transportation",
+                "address": (
+                    "Address https://www.google.com/local/place/rap/fixaddress?"
+                    "g2lb=72971417,73155522,100805691&hl=en-CA&gl=ca"
+                ),
+                "body_text": "Nizami Street\nTransportation",
+            },
+        )
+
+        self.assertIsNone(details.address)
+
+    def test_build_place_details_accepts_locality_only_address(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Nizami+Street",
+            resolved_url="https://www.google.com/maps/place/Nizami+Street",
+            snapshot={
+                "name": "Nizami St",
+                "category": "Notable street",
+                "address": "Baku, Azerbaijan",
+                "body_text": "Nizami St\n4.7\n1,842 reviews\nNotable street",
+            },
+        )
+
+        self.assertEqual(details.address, "Baku, Azerbaijan")
+
+    def test_build_place_details_adds_english_display_address_for_known_non_latin_parts(
+        self,
+    ) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Capella",
+            resolved_url="https://www.google.com/maps/place/Capella",
+            snapshot={
+                "name": "Capella Singapore",
+                "address": "1 The Knolls, シンガポール 098297",
+                "body_text": "Capella Singapore\nHotel",
+            },
+        )
+
+        self.assertEqual(details.address, "1 The Knolls, シンガポール 098297")
+        self.assertEqual(details.address_display_en, "1 The Knolls, Singapore 098297")
+        self.assertEqual(details.address_display_en_source, "translation_memory")
+        self.assertEqual(details.address_display_en_confidence, "high")
+
+    def test_build_place_details_does_not_duplicate_latin_address_display(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/BunBo",
+            resolved_url="https://www.google.com/maps/place/BunBo",
+            snapshot={
+                "name": "Bun Bo",
+                "address": "73-75 Hàng Điếu, Phố cổ Hà Nội, Hoàn Kiếm, Hà Nội, Vietnam",
+                "body_text": "Bun Bo\nNoodle shop",
+            },
+        )
+
+        self.assertIsNone(details.address_display_en)
+
+    def test_build_place_details_adds_english_display_category_for_known_non_latin_category(
+        self,
+    ) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Fiamma",
+            resolved_url="https://www.google.com/maps/place/Fiamma",
+            snapshot={
+                "name": "Fiamma",
+                "category": "イタリア料理店",
+                "address": "1 The Knolls, Singapore 098297",
+                "body_text": "Fiamma\nイタリア料理店",
+            },
+        )
+
+        self.assertEqual(details.category, "イタリア料理店")
+        self.assertEqual(details.category_display_en, "Italian restaurant")
+        self.assertEqual(details.category_display_en_source, "translation_memory")
+        self.assertEqual(details.category_display_en_confidence, "high")
+
+    def test_build_place_details_translates_known_non_latin_address_components(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Bada",
+            resolved_url="https://www.google.com/maps/place/Bada",
+            snapshot={
+                "name": "Bada Sikdang",
+                "address": "245 2층 Itaewon-ro, 한남동 Yongsan District, Seoul, South Korea",
+                "body_text": "Bada Sikdang\nRestaurant",
+            },
+        )
+
+        self.assertEqual(
+            details.address_display_en,
+            "245 2F Itaewon-ro, Hannam-dong Yongsan District, Seoul, South Korea",
+        )
+
+    def test_build_place_details_translates_basement_address_marker_in_place(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Analogue",
+            resolved_url="https://www.google.com/maps/place/Analogue",
+            snapshot={
+                "name": "Analogue",
+                "address": "Hong Kong, Central, Lyndhurst Terrace, 48地下",
+                "body_text": "Analogue\nCocktail bar",
+            },
+        )
+
+        self.assertEqual(
+            details.address_display_en,
+            "Hong Kong, Central, Lyndhurst Terrace, Basement #48",
+        )
+
     def test_extract_address_from_lines_supports_non_japanese_addresses(self) -> None:
         self.assertEqual(
             _extract_address_from_lines(
@@ -133,6 +1033,15 @@ class PlaceScraperTests(unittest.TestCase):
                 ]
             ),
             "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+        )
+        self.assertEqual(
+            _extract_address_from_lines(
+                [
+                    "Noodle shop",
+                    "73-75 Hàng Điếu, Phố cổ Hà Nội, Hoàn Kiếm, Hà Nội, Vietnam",
+                ]
+            ),
+            "73-75 Hàng Điếu, Phố cổ Hà Nội, Hoàn Kiếm, Hà Nội, Vietnam",
         )
 
     def test_clean_name_text_preserves_names_that_start_with_open_or_closed(self) -> None:
@@ -147,8 +1056,10 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIsNone(_clean_category_text("結果"))
         self.assertEqual(_clean_category_text("Japanese restaurant"), "Japanese restaurant")
 
-    def test_clean_name_text_preserves_exact_share_name(self) -> None:
-        self.assertEqual(_clean_name_text("Share"), "Share")
+    def test_clean_name_text_rejects_ui_action_labels(self) -> None:
+        for value in ("Call", "Directions", "Save", "Saved", "Share", "Website"):
+            with self.subTest(value=value):
+                self.assertIsNone(_clean_name_text(value))
 
     def test_extract_preview_place_enrichment_backfills_core_fields(self) -> None:
         payload_data = [
@@ -386,21 +1297,40 @@ class PlaceScraperTests(unittest.TestCase):
             "26-28 Cotham Rd, Kew VIC 3101, Australia",
         )
 
+    def test_extract_preview_address_uses_cleaned_segment_from_compound_value(self) -> None:
+        self.assertEqual(
+            _extract_preview_address(
+                [
+                    "Cafe · 1600 Amphitheatre Parkway, Mountain View, CA 94043",
+                    "Cafe",
+                ]
+            ),
+            "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+        )
+
     def test_extract_preview_address_rejects_review_snippets(self) -> None:
         self.assertIsNone(
             _extract_preview_address(
                 [
                     (
-                        "The best takeout or eat in I recommend this place. We dropped in 5 minutes "
+                        "The best takeout or eat in I recommend this place. We dropped in "
+                        "5 minutes "
                         "before closing time and the owner took the initiative to cook us More"
                     ),
                     (
-                        "Fascinating 2 hours session introducing Tonga culture and history, way of life, "
-                        "using plants as herbal cues, medicine and food, traditional weapons and utensils, "
+                        "Fascinating 2 hours session introducing Tonga culture and history, "
+                        "way of life, using plants as herbal cues, medicine and food, "
+                        "traditional weapons and utensils, "
                         "and more."
                     ),
-                    "The nuggets are massive, good size burgers and probably the best for value in town",
-                    "This place has great food, good service, friendly owner, and delicious burgers",
+                    (
+                        "The nuggets are massive, good size burgers and probably the best "
+                        "for value in town"
+                    ),
+                    (
+                        "This place has great food, good service, friendly owner, and "
+                        "delicious burgers"
+                    ),
                     "good food, friendly owner",
                 ]
             )
@@ -434,7 +1364,10 @@ class PlaceScraperTests(unittest.TestCase):
             _extract_preview_address(
                 [
                     "Good Burger, 1 Main St, New York, NY 10001",
-                    "The nuggets are massive, good size burgers and probably the best for value in town",
+                    (
+                        "The nuggets are massive, good size burgers and probably the best "
+                        "for value in town"
+                    ),
                 ]
             ),
             "Good Burger, 1 Main St, New York, NY 10001",
@@ -498,6 +1431,32 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.description)
 
+    def test_build_place_details_rejects_icon_only_description_direct_value(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Bianchetto",
+            resolved_url="https://www.google.com/maps/place/Bianchetto",
+            snapshot={
+                "name": "Bianchetto",
+                "description": "\uea74",
+                "body_text": "Bianchetto\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_rejects_locality_description_direct_value(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Ad+Astra",
+            resolved_url="https://www.google.com/maps/place/Ad+Astra",
+            snapshot={
+                "name": "Ad Astra",
+                "description": "Taipei City, Zhongshan District",
+                "body_text": "Ad Astra\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
     def test_build_place_details_rejects_search_results_labels_and_rating_categories(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/search/?api=1&query=Bianchetto",
@@ -511,6 +1470,61 @@ class PlaceScraperTests(unittest.TestCase):
         )
 
         self.assertIsNone(details.name)
+
+    def test_build_place_details_rejects_ui_action_fallback_name_and_marks_diagnostics(
+        self,
+    ) -> None:
+        snapshot = {
+            "category": "Restaurant",
+            "rating": "4.5",
+            "review_count": "100",
+            "address": "Taipei City, Taiwan",
+            "body_text": "\n".join(["Share", "Saved", "Directions", "Restaurant"]),
+        }
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Share",
+            resolved_url="https://www.google.com/maps/place/Share",
+            snapshot=snapshot,
+        )
+        evidence = _build_place_llm_evidence(snapshot)
+        details.diagnostics = _build_place_diagnostics(
+            details,
+            snapshot,
+            evidence_hash=_hash_evidence(evidence),
+        )
+
+        self.assertIsNone(details.name)
+        self.assertIsNotNone(details.diagnostics)
+        assert details.diagnostics is not None
+        self.assertIn("missing_name", details.diagnostics.quality_flags)
+
+    def test_build_place_details_preserves_structured_name_that_matches_action_label(
+        self,
+    ) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Share",
+            resolved_url="https://www.google.com/maps/place/Share",
+            snapshot={
+                "name": "Share",
+                "category": "Restaurant",
+                "body_text": "\n".join(["Share", "Saved", "Directions", "Restaurant"]),
+            },
+        )
+
+        self.assertEqual(details.name, "Share")
+
+    def test_build_place_details_prefers_structured_title_over_action_lines(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Taipei+Zoo",
+            resolved_url="https://www.google.com/maps/place/Taipei+Zoo",
+            snapshot={
+                "name": "Taipei Zoo",
+                "category": "Zoo",
+                "body_text": "\n".join(["Share", "Save", "Directions", "Taipei Zoo", "Zoo"]),
+            },
+        )
+
+        self.assertEqual(details.name, "Taipei Zoo")
 
     def test_build_place_details_preserves_numeric_only_name(self) -> None:
         details = _build_place_details(
@@ -655,54 +1669,32 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertEqual(details.address, "26-28 Cotham Rd, Kew VIC 3101, Australia")
 
-    def test_build_place_details_rejects_fixaddress_urls_in_address_field(self) -> None:
+    def test_build_place_details_rejects_compacted_page_chrome_address_and_policy_description(
+        self,
+    ) -> None:
         details = _build_place_details(
-            "https://www.google.com/maps/place/Nizami+Street",
-            resolved_url="https://www.google.com/maps/place/Nizami+Street",
+            "https://www.google.com/maps/place/BunBo",
+            resolved_url="https://www.google.com/maps/place/BunBo",
             snapshot={
-                "name": "Nizami Street",
-                "category": "Transportation",
-                "address": (
-                    "Address https://www.google.com/local/place/rap/fixaddress?"
-                    "g2lb=72971417,73155522,100805691&hl=en-CA&gl=ca"
-                ),
+                "name": "Bun Bo",
+                "address": "Imagery ©2026 , Map data ©2026 JapanTermsPrivacySend Product Feedback",
+                "description": "Our policies do not permit contributions to this type of place.",
                 "body_text": "\n".join(
                     [
-                        "Nizami Street",
-                        "Transportation",
-                        "4.7 ★ · 1.8K reviews",
-                        "Address",
+                        "Bun Bo",
+                        "Noodle shop",
+                        "Imagery ©2026 , Map data ©2026 JapanTermsPrivacySend Product Feedback",
                     ]
                 ),
             },
         )
 
         self.assertIsNone(details.address)
+        self.assertIsNone(details.description)
 
-    def test_build_place_details_accepts_locality_only_address_field(self) -> None:
-        details = _build_place_details(
-            "https://www.google.com/maps/place/Nizami+Street",
-            resolved_url="https://www.google.com/maps/place/Nizami+Street",
-            snapshot={
-                "name": "Nizami St",
-                "category": "Notable street",
-                "address": "Baku, Azerbaijan",
-                "body_text": "\n".join(
-                    [
-                        "Nizami St",
-                        "4.7",
-                        "1,842 reviews",
-                        "Notable street",
-                        "Baku, Azerbaijan",
-                        "Report a problem on Nizami St",
-                    ]
-                ),
-            },
-        )
-
-        self.assertEqual(details.address, "Baku, Azerbaijan")
-
-    def test_build_place_details_rejects_invalid_snapshot_plus_code_and_falls_back_to_lines(self) -> None:
+    def test_build_place_details_rejects_invalid_snapshot_plus_code_and_falls_back_to_lines(
+        self,
+    ) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Den",
             resolved_url="https://www.google.com/maps/place/Den",
@@ -761,6 +1753,110 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIsNone(details.main_photo_url)
         self.assertIsNone(details.photo_url)
 
+    def test_open_place_result_from_search_page_waits_for_place_title(self) -> None:
+        class _FakePage:
+            def __init__(self) -> None:
+                self.waited: list[object] = []
+                self.visited: list[tuple[str, str, int]] = []
+
+            def evaluate(self, script: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return "https://www.google.com/maps/place/National+Azabu"
+                return None
+
+            def goto(self, url: str, *, wait_until: str, timeout: int) -> None:
+                self.visited.append((url, wait_until, timeout))
+
+            def wait_for_load_state(self, state: str, *, timeout: int) -> None:
+                self.waited.append(("load_state", state, timeout))
+
+            def wait_for_selector(self, selector: str, *, timeout: int, state: str) -> None:
+                self.waited.append(("selector", selector, timeout, state))
+
+        page = _FakePage()
+        with patch("gmaps_scraper.place_scraper._handle_google_consent"):
+            self.assertTrue(_open_place_result_from_search_page(page, timeout_ms=30_000))
+        self.assertEqual(
+            page.visited,
+            [
+                (
+                    "https://www.google.com/maps/place/National+Azabu?hl=en&gl=us",
+                    "domcontentloaded",
+                    30_000,
+                )
+            ],
+        )
+        self.assertIn(("load_state", "load", 10_000), page.waited)
+
+    def test_with_google_maps_locale_replaces_existing_locale(self) -> None:
+        self.assertEqual(
+            _with_google_maps_locale(
+                "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=ja&gl=jp"
+            ),
+            "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=en&gl=us",
+        )
+
+    def test_open_place_result_from_search_page_rejects_non_google_place_urls(self) -> None:
+        class _FakePage:
+            def __init__(self) -> None:
+                self.visited: list[str] = []
+
+            def evaluate(self, _script: object) -> object:
+                return "https://example.com/maps/place/National+Azabu"
+
+            def wait_for_timeout(self, _value: int) -> None:
+                pass
+
+            def goto(self, url: str, **_kwargs: object) -> None:
+                self.visited.append(url)
+
+        page = _FakePage()
+        self.assertFalse(_open_place_result_from_search_page(page, timeout_ms=30_000))
+        self.assertEqual(page.visited, [])
+
+    def test_looks_like_google_maps_place_url_accepts_google_tlds_only(self) -> None:
+        self.assertTrue(
+            _looks_like_google_maps_place_url(
+                "https://www.google.co.jp/maps/place/National+Azabu"
+            )
+        )
+        self.assertTrue(
+            _looks_like_google_maps_place_url(
+                "https://maps.google.com/maps/place/National+Azabu"
+            )
+        )
+        self.assertFalse(
+            _looks_like_google_maps_place_url(
+                "https://example.com/maps/place/National+Azabu"
+            )
+        )
+        self.assertFalse(
+            _looks_like_google_maps_place_url(
+                "https://www.google.com.example.com/maps/place/National+Azabu"
+            )
+        )
+
+    def test_search_result_candidate_url_stops_polling_on_place_page_sentinel(self) -> None:
+        class _FakePage:
+            def __init__(self) -> None:
+                self.evaluate_calls = 0
+                self.wait_calls = 0
+                self.evaluated_scripts: list[object] = []
+
+            def evaluate(self, script: object) -> object:
+                self.evaluate_calls += 1
+                self.evaluated_scripts.append(script)
+                return False
+
+            def wait_for_timeout(self, _value: int) -> None:
+                self.wait_calls += 1
+
+        page = _FakePage()
+        self.assertIsNone(_search_result_candidate_url(page, timeout_ms=30_000))
+        self.assertEqual(page.evaluate_calls, 1)
+        self.assertEqual(page.evaluated_scripts, [_PLACE_SEARCH_RESULT_CLICK_JS])
+        self.assertEqual(page.wait_calls, 0)
+
     def test_extract_secondary_name_aborts_when_rating_line_follows_name(self) -> None:
         self.assertIsNone(
             _extract_secondary_name(
@@ -782,6 +1878,23 @@ class PlaceScraperTests(unittest.TestCase):
             "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
         )
 
+    def test_normalize_photo_url_rejects_google_static_map_urls(self) -> None:
+        self.assertIsNone(
+            _normalize_photo_url(
+                "https://maps.google.com/maps/api/staticmap?center=35.6530036,139.7223467"
+            )
+        )
+        self.assertIsNone(
+            _normalize_photo_url(
+                "https://www.google.com/maps/api/staticmap?center=35.6530036,139.7223467"
+            )
+        )
+        self.assertIsNone(
+            _normalize_photo_url(
+                "https://maps.googleapis.com/maps/api/staticmap?center=35.6530036,139.7223467"
+            )
+        )
+
     def test_normalize_preview_website_rejects_streetview_thumbnail_urls(self) -> None:
         self.assertIsNone(
             _normalize_preview_website(
@@ -793,6 +1906,13 @@ class PlaceScraperTests(unittest.TestCase):
                 "https://inline.app/booking/foo?utm_source=ig"
             )
         )
+
+    def test_normalize_website_rejects_non_http_urls(self) -> None:
+        self.assertEqual(_normalize_website("https://example.com"), "https://example.com")
+        self.assertEqual(_normalize_website("http://example.com"), "http://example.com")
+        self.assertIsNone(_normalize_website("javascript:alert(1)"))
+        self.assertIsNone(_normalize_website("mailto:test@example.com"))
+        self.assertIsNone(_normalize_website("example.com"))
 
     def test_merge_place_sources_only_backfills_missing_fields(self) -> None:
         merged = _merge_place_sources(
@@ -816,6 +1936,63 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(merged["website"], "http://www.jimbochoden.com/")
         self.assertEqual(merged["phone"], "+81 3-6455-5433")
         self.assertTrue(merged["limited_view"])
+
+    def test_merge_llm_place_fields_only_backfills_cleaned_missing_fields(self) -> None:
+        merged = _merge_llm_place_fields(
+            {
+                "name": "Den",
+                "website": "https://example.com",
+                "address": "bad page chrome",
+                "field_sources": {"name": "dom", "website": "dom", "address": "dom"},
+                "review_topics": [{"text": "sushi, mentioned in 115 reviews"}],
+                "about_sections": [
+                    {
+                        "title": "Service options",
+                        "items": [{"label": "Dine-in"}],
+                    }
+                ],
+            },
+            {
+                "name": "Other Den",
+                "website": "example.com",
+                "address": "2 Chome Jingumae, Tokyo, Japan",
+                "reviews": [{"author": "Fake", "text": "Invented"}],
+                "review_topics": [
+                    {"label": "sushi", "count": 115},
+                    {"label": "sushi", "count": 999},
+                    {"label": "ramen", "count": 20},
+                ],
+                "about_sections": [
+                    {
+                        "title": "Service options",
+                        "items": [
+                            {"label": "Dine-in"},
+                            {"label": "Delivery"},
+                        ],
+                    }
+                ],
+            },
+            current_fields={
+                "name": "Den",
+                "website": "https://example.com",
+                "address": None,
+                "reviews": [],
+                "review_topics": [],
+                "about_sections": [],
+            },
+        )
+
+        self.assertEqual(merged["name"], "Den")
+        self.assertEqual(merged["website"], "https://example.com")
+        self.assertEqual(merged["address"], "2 Chome Jingumae, Tokyo, Japan")
+        self.assertNotIn("reviews", merged)
+        self.assertEqual(merged["review_topics"], [{"label": "sushi", "count": 115}])
+        self.assertEqual(
+            merged["about_sections"],
+            [{"title": "Service options", "items": [{"label": "Dine-in"}]}],
+        )
+        self.assertEqual(merged["field_sources"]["address"], "llm")
+        self.assertEqual(merged["field_sources"]["review_topics"], "llm")
 
     def test_seed_google_consent_cookies_uses_page_context(self) -> None:
         class _FakeContext:

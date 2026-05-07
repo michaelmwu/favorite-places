@@ -98,11 +98,13 @@ export interface SiteConfig {
     showNeighborhood: boolean;
     showRating: boolean;
     showReviewCount: boolean;
+    showPriceRange: boolean;
     showTopPickBadge: boolean;
     showWhyRecommended: boolean;
     showNote: boolean;
     showAddress: boolean;
     showTags: boolean;
+    maxTags: number;
     showStatus: boolean;
     bestHitLabel: string;
     topPickLabel: string;
@@ -211,11 +213,13 @@ const defaultSiteConfig: SiteConfig = {
     showNeighborhood: true,
     showRating: true,
     showReviewCount: true,
+    showPriceRange: true,
     showTopPickBadge: true,
     showWhyRecommended: true,
     showNote: true,
     showAddress: true,
     showTags: true,
+    maxTags: 4,
     showStatus: true,
     bestHitLabel: "Popular",
     topPickLabel: "Top pick",

@@ -8,6 +8,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from gmaps_scraper.models import PlaceDetails, PlaceExtractionDiagnostics
 from gmaps_scraper.parser import (
     JSONValue,
     _candidate_nodes,
@@ -19,6 +20,7 @@ from gmaps_scraper.parser import (
     _parse_candidate_node,
     _walk_json,
 )
+from gmaps_scraper.selector_recipes import write_default_place_selector_recipe
 from gmaps_scraper.url_tools import extract_list_id
 
 
@@ -146,6 +148,53 @@ def write_debug_dump(
         },
         "candidates": manifest_candidates,
         "places": place_entries,
+    }
+    summary_path = output_dir / "summary.json"
+    _write_json(summary_path, summary)
+    return summary_path
+
+
+def write_place_debug_dump(
+    place_url: str,
+    *,
+    resolved_url: str | None,
+    snapshot: dict[str, object],
+    merged_snapshot: dict[str, object],
+    details: PlaceDetails,
+    evidence: dict[str, object],
+    diagnostics: PlaceExtractionDiagnostics,
+    output_dir: Path,
+) -> Path:
+    """Write place scrape artifacts plus a compact reusable selector recipe."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    artifacts_dir = output_dir / "artifacts"
+    artifacts_dir.mkdir(exist_ok=True)
+
+    _write_json(output_dir / "place-output.json", details.to_dict())
+    _write_json(output_dir / "diagnostics.json", diagnostics.to_dict(include_debug=True))
+    _write_json(output_dir / "llm-evidence.json", evidence)
+    _write_json(artifacts_dir / "snapshot.json", snapshot)
+    _write_json(artifacts_dir / "merged-snapshot.json", merged_snapshot)
+    write_default_place_selector_recipe(output_dir / "selector-recipe.json")
+
+    summary = {
+        "source_url": place_url,
+        "resolved_url": resolved_url,
+        "place": details.to_dict(),
+        "artifact_files": {
+            "place_output": "place-output.json",
+            "diagnostics": "diagnostics.json",
+            "llm_evidence": "llm-evidence.json",
+            "snapshot": "artifacts/snapshot.json",
+            "merged_snapshot": "artifacts/merged-snapshot.json",
+            "selector_recipe": "selector-recipe.json",
+        },
+        "evidence_counts": {
+            "text_lines": _list_len(evidence.get("text_lines")),
+            "dom_candidates": _list_len(evidence.get("dom_candidates")),
+            "review_topic_candidates": _list_len(evidence.get("review_topic_candidates")),
+            "review_candidates": _list_len(evidence.get("review_candidates")),
+        },
     }
     summary_path = output_dir / "summary.json"
     _write_json(summary_path, summary)
@@ -285,6 +334,10 @@ def _collect_strings(node: JSONValue) -> list[str]:
 
 def _write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def _list_len(value: object) -> int:
+    return len(value) if isinstance(value, list) else 0
 
 
 def _serialize(node: JSONValue) -> str:

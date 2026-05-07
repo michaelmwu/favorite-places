@@ -20,7 +20,7 @@
     --radius-lg: 8px;
     --radius-md: 6px;
     --radius-sm: 5px;
-    --page-width: 1280px;
+    --page-width: 1440px;
   }
 }
 
@@ -1221,10 +1221,18 @@
 
   .place-card-meta-row {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.45rem 0.55rem;
+  }
+
+  .place-card-meta-row .meta-copy {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.34;
   }
 
   .place-card-marker {
@@ -1243,7 +1251,7 @@
 
   .place-card-meta-stats {
     align-items: center;
-    flex-basis: 100%;
+    grid-column: 1 / -1;
   }
 
   .place-card-address {
@@ -1298,13 +1306,28 @@
     -webkit-line-clamp: 3;
   }
 
+  .place-card-description {
+    padding-left: 0.72rem;
+    border-left: 2px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+    color: color-mix(in srgb, var(--muted) 88%, var(--ink));
+    font-size: 0.94rem;
+    line-height: 1.48;
+  }
+
   .place-card-tags {
     width: 100%;
+    gap: 0.38rem;
   }
 
   .place-card-tags .tag-pill {
     min-width: 0;
     max-width: 100%;
+    min-height: 1.72rem;
+    padding: 0.08rem 0.48rem;
+    border-radius: 0.72rem;
+    background: color-mix(in srgb, var(--surface-strong) 60%, var(--surface));
+    font-size: 0.72rem;
+    line-height: 1.05;
     white-space: nowrap;
   }
 
@@ -1368,14 +1391,6 @@
   .place-card-map-link:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
-  }
-
-  @container (min-width: 26rem) {
-    .place-card-meta-stats {
-      flex-basis: 100%;
-      margin-left: 0;
-      justify-content: flex-start;
-    }
   }
 
   @container (min-width: 34rem) {
@@ -3122,7 +3137,7 @@
     }
   }
 
-  @media (min-width: 1480px) {
+  @media (min-width: 1760px) {
     .browse-layout[data-map-collapsed="true"] .card-grid[data-kind="places"] {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }

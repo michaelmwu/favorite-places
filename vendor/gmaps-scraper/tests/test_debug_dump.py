@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from gmaps_scraper.debug_dump import write_debug_dump
+from gmaps_scraper.debug_dump import write_debug_dump, write_place_debug_dump
+from gmaps_scraper.models import PlaceDetails, PlaceExtractionDiagnostics
 
 _LIST_URL = (
     "https://www.google.com/maps/@35.6501307,139.6868459,15z/"
@@ -66,3 +67,45 @@ class DebugDumpTests(unittest.TestCase):
             place_summary = json.loads(place_summary_path.read_text(encoding="utf-8"))
             self.assertEqual(place_summary["name"], "Northwind Cafe")
             self.assertIn("Fixture note: order the sampler", place_summary["strings"])
+
+    def test_writes_place_debug_dump_and_selector_recipe(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            details = PlaceDetails(
+                source_url="https://www.google.com/maps/place/Fiamma",
+                resolved_url="https://www.google.com/maps/place/Fiamma/@1.2492482,103.8244513,17z",
+                name="Fiamma",
+                category="イタリア料理店",
+                category_display_en="Italian restaurant",
+                category_display_en_source="translation_memory",
+                category_display_en_confidence="high",
+                rating=4.8,
+                review_count=832,
+                address="1 The Knolls, Singapore 098297",
+            )
+            diagnostics = PlaceExtractionDiagnostics(
+                field_sources={"name": "dom", "category_display_en": "translation_memory"},
+                confidence=1.0,
+                evidence_hash="fixture",
+            )
+            details.diagnostics = diagnostics
+
+            summary_path = write_place_debug_dump(
+                details.source_url,
+                resolved_url=details.resolved_url,
+                snapshot={"dom": {"name": "Fiamma"}, "preview": {}},
+                merged_snapshot={"name": "Fiamma"},
+                details=details,
+                evidence={"text_lines": ["Fiamma"], "review_topic_candidates": []},
+                diagnostics=diagnostics,
+                output_dir=Path(tmp_dir),
+            )
+
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            self.assertEqual(summary["place"]["category_display_en"], "Italian restaurant")
+            self.assertTrue((Path(tmp_dir) / "selector-recipe.json").exists())
+            recipe = json.loads((Path(tmp_dir) / "selector-recipe.json").read_text())
+            self.assertIn("name", recipe["selectors"])
+            self.assertNotIn("title", recipe["selectors"])
+            self.assertIn("review_count", recipe["selectors"])
+            self.assertNotIn("address icon row fallback", recipe["selectors"]["address"])
+            self.assertIn("review_topic_chip", recipe["selectors"])

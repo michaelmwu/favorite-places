@@ -27,6 +27,40 @@ class PlacesSettings(BaseSettings):
         default="scrape_then_api",
         validation_alias=AliasChoices("GOOGLE_PLACES_ENRICHMENT_STRATEGY"),
     )
+    google_maps_place_llm_repair: Literal["off", "dom", "dom_then_translation"] | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_LLM_REPAIR", "GMAPS_PLACES_LLM_REPAIR"),
+    )
+    google_maps_place_llm_cache_dir: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_LLM_CACHE_DIR", "GMAPS_PLACES_LLM_CACHE_DIR"),
+    )
+    google_maps_place_collect_reviews: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_COLLECT_REVIEWS", "GMAPS_PLACES_COLLECT_REVIEWS"),
+    )
+    google_maps_place_collect_about: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_COLLECT_ABOUT", "GMAPS_PLACES_COLLECT_ABOUT"),
+    )
+    google_maps_place_semantic_llm: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_MAPS_PLACES_SEMANTIC_LLM", "GMAPS_PLACES_SEMANTIC_LLM"),
+    )
+    google_maps_place_semantic_descriptions: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS",
+            "GMAPS_PLACES_SEMANTIC_DESCRIPTIONS",
+        ),
+    )
+    google_maps_place_semantic_description_force_refresh: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH",
+            "GMAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH",
+        ),
+    )
 
 
 class SourceConfig(PipelineModel):
@@ -138,12 +172,21 @@ class EnrichmentPlace(PipelineModel):
     google_place_resource_name: str | None = None
     display_name: str | None = None
     formatted_address: str | None = None
+    address_display_en: str | None = None
+    address_display_en_source: str | None = None
+    address_display_en_confidence: str | None = None
     google_maps_uri: str | None = None
     rating: float | None = None
     user_rating_count: int | None = None
+    price_range: str | None = None
+    admission_price: str | None = None
+    room_price: str | None = None
     primary_type: str | None = None
     primary_type_display_name: str | None = None
     primary_type_display_name_localized: str | None = None
+    category_display_en: str | None = None
+    category_display_en_source: str | None = None
+    category_display_en_confidence: str | None = None
     types: list[str] = Field(default_factory=list)
     business_status: str | None = None
     website: str | None = None
@@ -153,6 +196,16 @@ class EnrichmentPlace(PipelineModel):
     description: str | None = None
     main_photo_url: str | None = None
     photo_url: str | None = None
+    review_topics: list[dict[str, Any]] = Field(default_factory=list)
+    reviews: list[dict[str, Any]] = Field(default_factory=list)
+    about_sections: list[dict[str, Any]] = Field(default_factory=list)
+    semantic_neighborhood: str | None = None
+    semantic_tags: list[str] = Field(default_factory=list)
+    semantic_vibe_tags: list[str] = Field(default_factory=list)
+    semantic_types: list[str] = Field(default_factory=list)
+    semantic_description: str | None = None
+    semantic_description_signature: str | None = None
+    semantic_source: str | None = None
     limited_view: bool = False
 
 
@@ -244,7 +297,9 @@ class NormalizedPlace(PipelineModel):
     primary_category_localized: str | None = None
     marker_icon: MarkerIcon = "default"
     tags: list[str] = Field(default_factory=list)
+    visible_tags: list[str] = Field(default_factory=list)
     vibe_tags: list[str] = Field(default_factory=list)
+    price_range: str | None = None
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None

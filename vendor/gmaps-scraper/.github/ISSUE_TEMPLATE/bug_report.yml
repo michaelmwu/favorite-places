@@ -1,0 +1,53 @@
+name: Bug Report
+description: Report a bug in Google Maps saved-list or place scraping.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    attributes:
+      label: Provide environment information
+      description: |
+        Run these commands from the project root and paste the results in a code block:
+        ```bash
+        uv run python --version
+        uv tree
+        ```
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Google Maps URL
+      description: Provide the saved-list or place URL that triggered the problem.
+      placeholder: https://www.google.com/maps/@.../data=!4m3!11m2!2sLIST_ID!3e3
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Command or API call
+      description: Paste the exact CLI command or Python snippet you ran, including flags such as `--kind` or `--fetch-mode`.
+      placeholder: |
+        uv run gmaps-scraper "https://maps.app.goo.gl/..." --kind list --fetch-mode auto
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: Describe what broke and what you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Observed output or traceback
+      description: Paste the JSON output, parser failure, traceback, or other concrete error details.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction details
+      description: List the steps needed to reproduce the issue. Include whether it reproduces with `auto`, `curl`, or `browser` fetch mode if you checked.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any extra context here, such as consent screens, region-specific behavior, or sanitized payload snippets that help explain the failure.

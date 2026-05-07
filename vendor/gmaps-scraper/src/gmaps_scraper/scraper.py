@@ -328,6 +328,8 @@ def _launch_browser_context(
     launch_kwargs: dict[str, Any] = {
         "headless": headless,
         "humanize": True,
+        "locale": "en-US",
+        "extra_http_headers": {"Accept-Language": "en-US,en;q=0.9"},
     }
     if browser_session is not None and browser_session.proxy is not None:
         launch_kwargs["proxy"] = browser_session.proxy
