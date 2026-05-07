@@ -6758,13 +6758,6 @@ def fetch_place_page_enrichment(
                 except Exception as exc:
                     last_error = f"display_repair_error:{exc}"
             enrichment_place = normalize_place_page_enrichment(details)
-            apply_semantic_enrichment(
-                enrichment_place,
-                raw_place=place,
-                city_name=city_name,
-                country_name=country_name,
-                existing_entry=existing_entry,
-            )
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
                 continue
@@ -6772,6 +6765,13 @@ def fetch_place_page_enrichment(
             if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
                 continue
             if matched:
+                apply_semantic_enrichment(
+                    enrichment_place,
+                    raw_place=place,
+                    city_name=city_name,
+                    country_name=country_name,
+                    existing_entry=existing_entry,
+                )
                 return build_cache_entry(
                     place,
                     source="google_maps_page",

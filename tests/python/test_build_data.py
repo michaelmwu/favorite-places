@@ -1201,6 +1201,78 @@ class BuildDataTests(unittest.TestCase):
         assert entry.place is not None
         self.assertEqual(entry.place.display_name, "Sister Midnight")
 
+    def test_fetch_place_page_enrichment_skips_semantics_for_rejected_candidates(self) -> None:
+        place = RawPlace(
+            name="Sister Midnight",
+            address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+            maps_url="https://maps.google.com/?cid=5180951040094558101",
+            lat=48.8814703,
+            lng=2.340862,
+        )
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            if "/maps/search/" in url:
+                return SimpleNamespace(
+                    source_url=url,
+                    resolved_url="https://www.google.com/maps/place/Another+Bar/@48.88,2.34,17z",
+                    name="Another Bar",
+                    category="Cocktail bar",
+                    rating=4.7,
+                    review_count=321,
+                    address="1 Different Street, 75009 Paris, France",
+                    located_in=None,
+                    status=None,
+                    website="https://wrong.example/",
+                    phone="+33 1 42 00 00 00",
+                    plus_code=None,
+                    description=None,
+                    lat=48.8905,
+                    lng=2.3305,
+                    limited_view=False,
+                )
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url=(
+                    "https://www.google.com/maps/place/Sister+Midnight/"
+                    "@48.8814703,2.340862,17z/data=!3m1!4b1"
+                ),
+                name="Sister Midnight",
+                category="Cocktail bar",
+                rating=4.7,
+                review_count=321,
+                address="4 Rue Viollet-le-Duc, 75009 Paris, France",
+                located_in=None,
+                status=None,
+                website="https://sistermidnightparis.com/",
+                phone="+33 1 42 00 00 00",
+                plus_code=None,
+                description=None,
+                lat=48.8814703,
+                lng=2.340862,
+                limited_view=False,
+            )
+
+        semantic_calls: list[str | None] = []
+
+        def fake_apply_semantic_enrichment(enrichment_place, **_: object) -> None:
+            semantic_calls.append(enrichment_place.display_name)
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "apply_semantic_enrichment", side_effect=fake_apply_semantic_enrichment),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertTrue(entry.matched)
+        self.assertEqual(semantic_calls, ["Sister Midnight"])
+
     def test_fetch_place_page_enrichment_skips_search_result_with_junk_address(self) -> None:
         place = RawPlace(
             name="Global Village",
