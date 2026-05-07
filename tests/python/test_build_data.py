@@ -2580,10 +2580,10 @@ class BuildDataTests(unittest.TestCase):
 
     def test_normalize_guide_applies_site_neighborhood_mapping_rules(self) -> None:
         raw = RawSavedList(
-            title="Tokyo, Japan",
+            title="Taipei, Taiwan",
             places=[
                 RawPlace(
-                    name="Higashiazabu Amamoto",
+                    name="Wang’s Broth",
                     maps_url="https://maps.google.com/?cid=111",
                     cid="111",
                 ),
@@ -2593,13 +2593,14 @@ class BuildDataTests(unittest.TestCase):
         enrichment_cache = {
             place_id: EnrichmentCacheEntry(
                 fetched_at="2026-05-01T00:00:00+00:00",
-                query="Higashiazabu Amamoto, Tokyo, Japan",
+                query="Wang’s Broth, Taipei, Taiwan",
                 matched=True,
                 source="google_maps_page",
                 place=EnrichmentPlace(
-                    display_name="Higashiazabu Amamoto",
-                    formatted_address="1 Chome-7-9 Higashiazabu, Minato City, Tokyo 106-0044, Japan",
-                    primary_type_display_name="Sushi restaurant",
+                    display_name="Wang’s Broth",
+                    formatted_address="No. 17-4, Huaxi St, Wanhua District, Taipei City, Taiwan 108",
+                    primary_type_display_name="Deli",
+                    semantic_neighborhood="Wanhua District",
                 ),
             ),
         }
@@ -2619,21 +2620,22 @@ class BuildDataTests(unittest.TestCase):
                     "google_maps_place_neighborhood_mappings",
                     return_value=[
                         {
-                            "city": "Tokyo",
-                            "from": "Higashiazabu",
-                            "to": "Azabujuban",
-                            "when_address_contains": "Higashiazabu",
+                            "city": "Taipei",
+                            "country": "Taiwan",
+                            "from": "Wanhua District",
+                            "to": "Wanhua",
+                            "when_address_contains": "Wanhua District",
                         }
                     ],
                 ),
             ):
                 guide = build_data.normalize_guide(
-                    "tokyo-japan",
+                    "taipei-taiwan",
                     raw,
                     enrichment_cache=enrichment_cache,
                 )
 
-        self.assertEqual(guide.places[0].neighborhood, "Azabujuban")
+        self.assertEqual(guide.places[0].neighborhood, "Wanhua")
 
     def test_normalize_guide_excludes_permanently_closed_places_from_ui_counts(self) -> None:
         raw = RawSavedList(

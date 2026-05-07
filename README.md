@@ -164,10 +164,11 @@ Example `site/enrichment.json`:
     "semantic_description_force_refresh": false,
     "neighborhood_mappings": [
       {
-        "city": "Tokyo",
-        "from": "Higashiazabu",
-        "to": "Azabujuban",
-        "when_address_contains": "Higashiazabu"
+        "city": "Taipei",
+        "country": "Taiwan",
+        "from": "Wanhua District",
+        "to": "Wanhua",
+        "when_address_contains": "Wanhua District"
       }
     ]
   }
