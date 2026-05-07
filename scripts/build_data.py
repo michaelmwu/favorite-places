@@ -97,6 +97,7 @@ SITE_ENRICHMENT_CONFIG_PATH = SITE_DIR / "enrichment.json"
 LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
 PLACE_OVERRIDES_DIR = SITE_DIR / "overrides" / "places"
 SCRAPER_STATE_DIR = ROOT / ".context" / "gmaps-scraper"
+PRICE_RATE_CACHE_DIR = ROOT / ".context" / "currency-rates"
 AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
@@ -133,6 +134,107 @@ PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
 MIN_PLACE_PHOTO_SOURCE_DIMENSION = 200
 PLACE_PHOTO_SOURCE_DIMENSION_RE = re.compile(r"w(?P<width>\d+)-h(?P<height>\d+)")
+PRICE_DISPLAY_SOURCE_FIELDS = ("price_range", "admission_price", "room_price")
+DEFAULT_PRICE_DISPLAY_SOURCE_ORDER = ("price_range", "admission_price", "room_price")
+NUMERIC_PRICE_RANGE_CATEGORY_HINTS = (
+    "bar",
+    "bakery",
+    "cafe",
+    "coffee",
+    "deli",
+    "dessert",
+    "drink",
+    "food",
+    "market",
+    "pub",
+    "restaurant",
+    "shop",
+    "store",
+    "tea",
+)
+PRICE_RATE_CACHE_TTL = timedelta(days=1)
+FX_RATES_API_URL = "https://api.fxratesapi.com/latest"
+FAWAZ_CURRENCY_API_URL = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json"
+PRICE_CURRENCY_SYMBOLS = {
+    "USD": "$",
+    "TWD": "NT$",
+    "JPY": "¥",
+    "SGD": "S$",
+    "HKD": "HK$",
+    "EUR": "€",
+    "GBP": "£",
+    "KRW": "₩",
+    "CNY": "¥",
+    "THB": "฿",
+    "PHP": "₱",
+    "VND": "₫",
+    "INR": "₹",
+    "AUD": "A$",
+    "CAD": "CA$",
+}
+PRICE_TOKEN_CURRENCIES = {
+    "$": "USD",
+    "US$": "USD",
+    "USD": "USD",
+    "NT$": "TWD",
+    "TWD": "TWD",
+    "¥": "JPY",
+    "JPY": "JPY",
+    "円": "JPY",
+    "SGD": "SGD",
+    "S$": "SGD",
+    "HK$": "HKD",
+    "HKD": "HKD",
+    "€": "EUR",
+    "EUR": "EUR",
+    "£": "GBP",
+    "GBP": "GBP",
+    "₩": "KRW",
+    "KRW": "KRW",
+    "CNY": "CNY",
+    "RMB": "CNY",
+    "฿": "THB",
+    "THB": "THB",
+    "₱": "PHP",
+    "PHP": "PHP",
+    "₫": "VND",
+    "VND": "VND",
+    "₹": "INR",
+    "INR": "INR",
+    "A$": "AUD",
+    "AUD": "AUD",
+    "CA$": "CAD",
+    "CAD": "CAD",
+}
+COUNTRY_CURRENCY_CODES = {
+    "australia": "AUD",
+    "canada": "CAD",
+    "china": "CNY",
+    "france": "EUR",
+    "germany": "EUR",
+    "hong kong": "HKD",
+    "india": "INR",
+    "italy": "EUR",
+    "japan": "JPY",
+    "philippines": "PHP",
+    "singapore": "SGD",
+    "south korea": "KRW",
+    "spain": "EUR",
+    "taiwan": "TWD",
+    "thailand": "THB",
+    "united kingdom": "GBP",
+    "uk": "GBP",
+    "united states": "USD",
+    "united states of america": "USD",
+    "usa": "USD",
+    "vietnam": "VND",
+}
+PRICE_AMOUNT_RE = re.compile(
+    r"(?P<currency>NT\$|HK\$|CA\$|A\$|S\$|US\$|USD|TWD|JPY|SGD|HKD|EUR|GBP|KRW|CNY|RMB|"
+    r"THB|PHP|VND|INR|AUD|CAD|[$€£¥₩₹₫฿₱円])\s*"
+    r"(?P<amount>[0-9][0-9,.\s\u00a0]*)(?P<plus>\+)?",
+    flags=re.IGNORECASE,
+)
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
 PLACES_SQLITE_SIGNATURE_VERSION = 3
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
@@ -2347,7 +2449,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 category=primary_category,
             ),
             vibe_tags=vibe_tags,
-            price_range=enrichment.price_range,
+            price_range=display_price_range_for_place(
+                enrichment,
+                country_name=country_name,
+            ),
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
@@ -4572,6 +4677,11 @@ def google_maps_place_neighborhood_mappings() -> list[dict[str, Any]]:
     if isinstance(configured, list):
         return [item for item in configured if isinstance(item, dict)]
     return []
+
+
+def google_maps_place_price_display_config() -> dict[str, Any]:
+    configured = site_google_maps_place_config_value("price_display")
+    return configured if isinstance(configured, dict) else {}
 
 
 @lru_cache(maxsize=1)
@@ -7414,6 +7524,8 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         rating=rating,
         user_rating_count=user_rating_count,
         price_range=as_string(getattr(details, "price_range", None)),
+        admission_price=as_string(getattr(details, "admission_price", None)),
+        room_price=as_string(getattr(details, "room_price", None)),
         primary_type=primary_type,
         primary_type_display_name=category,
         primary_type_display_name_localized=category_localized,
@@ -7662,6 +7774,8 @@ def semantic_enrichment_evidence(
         "category_localized": enrichment_place.primary_type_display_name_localized,
         "types": enrichment_place.types[:8],
         "price_range": enrichment_place.price_range,
+        "admission_price": enrichment_place.admission_price,
+        "room_price": enrichment_place.room_price,
         "review_topics": enrichment_place.review_topics[:12],
         "about_sections": compact_about_sections(enrichment_place.about_sections),
     }
@@ -7688,6 +7802,8 @@ def semantic_description_signature(
         "category": semantic_signature_text(enrichment_place.primary_type_display_name),
         "types": [value for value in (semantic_signature_text(item) for item in enrichment_place.types[:8]) if value],
         "price_range": semantic_signature_text(enrichment_place.price_range),
+        "admission_price": semantic_signature_text(enrichment_place.admission_price),
+        "room_price": semantic_signature_text(enrichment_place.room_price),
         "rating_bucket": rating_bucket(enrichment_place.rating),
         "review_count_bucket": review_count_bucket(enrichment_place.user_rating_count),
         "review_topics": compact_review_topics_for_signature(enrichment_place.review_topics),
@@ -7934,6 +8050,258 @@ def flatten_address_parts(address_parts: AddressParts | None) -> list[str]:
         elif isinstance(part, list):
             flattened.extend(item for item in part if isinstance(item, str))
     return flattened
+
+
+def display_price_range_for_place(
+    enrichment_place: EnrichmentPlace,
+    *,
+    country_name: str | None,
+) -> str | None:
+    raw_price = select_place_display_price(enrichment_place)
+    if raw_price is None:
+        return None
+    config = google_maps_place_price_display_config()
+    currency_mode = as_string(config.get("currency_mode")) or "raw"
+    if currency_mode == "raw":
+        return raw_price
+    if currency_mode == "guide_local":
+        target_currency = country_currency_code(country_name)
+    elif currency_mode == "target":
+        target_currency = as_string(config.get("target_currency"))
+    else:
+        return raw_price
+    if target_currency is None:
+        return raw_price
+    return normalize_price_text_to_currency(raw_price, target_currency=target_currency) or raw_price
+
+
+def select_place_display_price(enrichment_place: EnrichmentPlace) -> str | None:
+    config = google_maps_place_price_display_config()
+    configured_order = coerce_string_list(config.get("source_order"))
+    source_order = [
+        source for source in configured_order if source in PRICE_DISPLAY_SOURCE_FIELDS
+    ] or list(DEFAULT_PRICE_DISPLAY_SOURCE_ORDER)
+    values = {
+        "price_range": enrichment_place.price_range,
+        "admission_price": enrichment_place.admission_price,
+        "room_price": enrichment_place.room_price,
+    }
+    for source in source_order:
+        value = as_string(values.get(source))
+        if value is not None:
+            if source == "price_range" and not price_range_source_is_eligible(enrichment_place, value):
+                continue
+            return value
+    return None
+
+
+def price_range_source_is_eligible(enrichment_place: EnrichmentPlace, value: str) -> bool:
+    if re.fullmatch(r"\${1,4}", value.strip()):
+        return True
+    if parse_price_text(value) is None:
+        return True
+    category_values = [
+        enrichment_place.primary_type,
+        enrichment_place.primary_type_display_name,
+        enrichment_place.primary_type_display_name_localized,
+        *enrichment_place.types,
+    ]
+    category_text = " ".join(value for value in category_values if value).casefold()
+    return any(hint in category_text for hint in NUMERIC_PRICE_RANGE_CATEGORY_HINTS)
+
+
+def country_currency_code(country_name: str | None) -> str | None:
+    return COUNTRY_CURRENCY_CODES.get(normalize_locality_key(country_name))
+
+
+def normalize_price_text_to_currency(value: str, *, target_currency: str) -> str | None:
+    target = target_currency.strip().upper()
+    if target not in PRICE_CURRENCY_SYMBOLS:
+        return None
+    symbolic = re.fullmatch(r"\${1,4}", value.strip())
+    if symbolic:
+        return format_symbolic_price_tier(len(symbolic.group(0)), currency=target)
+    parsed = parse_price_text(value)
+    if parsed is None:
+        return None
+    source_currency, amounts, suffix = parsed
+    if source_currency == target:
+        converted = amounts
+    else:
+        rates = load_usd_exchange_rates()
+        if rates is None:
+            return None
+        source_rate = rates.get(source_currency)
+        target_rate = rates.get(target)
+        if not source_rate or not target_rate:
+            return None
+        converted = [amount / source_rate * target_rate for amount in amounts]
+    return format_price_amounts(converted, currency=target, suffix=suffix)
+
+
+def parse_price_text(value: str) -> tuple[str, list[float], str] | None:
+    text = unicodedata.normalize("NFKC", value).replace("\u00a0", " ").strip()
+    if not text:
+        return None
+    matches = list(PRICE_AMOUNT_RE.finditer(text))
+    if not matches:
+        return None
+    first_currency = normalize_price_currency_token(matches[0].group("currency"))
+    if first_currency is None:
+        return None
+    amounts: list[float] = []
+    for match in matches:
+        currency = normalize_price_currency_token(match.group("currency")) or first_currency
+        if currency != first_currency:
+            return None
+        amount = parse_price_amount(match.group("amount"))
+        if amount is None:
+            return None
+        amounts.append(amount)
+        if len(amounts) >= 2:
+            break
+    if len(amounts) == 1:
+        tail = text[matches[0].end() :]
+        tail_match = re.search(r"^\s*[-–]\s*(?P<amount>[0-9][0-9,.\s\u00a0]*)(?P<plus>\+)?", tail)
+        if tail_match:
+            amount = parse_price_amount(tail_match.group("amount"))
+            if amount is not None:
+                amounts.append(amount)
+    return (first_currency, amounts, "+" if text.endswith("+") or matches[-1].group("plus") else "")
+
+
+def normalize_price_currency_token(value: str) -> str | None:
+    normalized = unicodedata.normalize("NFKC", value).strip().upper().replace(" ", "")
+    return PRICE_TOKEN_CURRENCIES.get(normalized)
+
+
+def parse_price_amount(value: str) -> float | None:
+    normalized = value.replace("\u00a0", "").replace(" ", "")
+    if not normalized:
+        return None
+    if "," in normalized and "." in normalized:
+        if normalized.rfind(",") > normalized.rfind("."):
+            normalized = normalized.replace(".", "").replace(",", ".")
+        else:
+            normalized = normalized.replace(",", "")
+    elif normalized.count(",") == 1 and "." not in normalized:
+        whole, fractional = normalized.split(",", 1)
+        normalized = f"{whole}.{fractional}" if len(fractional) in {1, 2} else normalized.replace(",", "")
+    elif "," in normalized and "." not in normalized:
+        if re.fullmatch(r"\d{1,3}(?:,\d{3})+", normalized):
+            normalized = normalized.replace(",", "")
+        else:
+            return None
+    elif "." in normalized and "," not in normalized and re.fullmatch(r"\d{1,3}(?:[.]\d{3})+", normalized):
+        normalized = normalized.replace(".", "")
+    try:
+        return float(normalized)
+    except ValueError:
+        return None
+
+
+def format_price_amounts(amounts: list[float], *, currency: str, suffix: str) -> str | None:
+    if not amounts:
+        return None
+    symbol = PRICE_CURRENCY_SYMBOLS[currency]
+    rounded = [round_display_price_amount(amount, currency=currency) for amount in amounts]
+    if len(rounded) >= 2 and rounded[0] != rounded[1]:
+        return f"{symbol}{format_price_number(rounded[0])}–{format_price_number(rounded[1])}{suffix}"
+    return f"{symbol}{format_price_number(rounded[0])}{suffix}"
+
+
+def format_symbolic_price_tier(count: int, *, currency: str) -> str:
+    symbol = PRICE_CURRENCY_SYMBOLS[currency]
+    if len(symbol) == 1:
+        return symbol * count
+    if symbol.endswith("$"):
+        return f"{symbol}{'$' * max(0, count - 1)}"
+    return " ".join(symbol for _ in range(count))
+
+
+def round_display_price_amount(amount: float, *, currency: str) -> int:
+    absolute = abs(amount)
+    if currency in {"JPY", "KRW", "TWD"} and absolute >= 1_000:
+        step = 100
+    elif absolute >= 1_000:
+        step = 100
+    elif absolute >= 100:
+        step = 10
+    else:
+        step = 1
+    return int(round(amount / step) * step)
+
+
+def format_price_number(value: int) -> str:
+    return f"{value:,}"
+
+
+def load_usd_exchange_rates() -> dict[str, float] | None:
+    cached = read_cached_usd_exchange_rates()
+    if cached is not None:
+        return cached
+    rates = fetch_usd_exchange_rates()
+    if rates is None:
+        return None
+    write_cached_usd_exchange_rates(rates)
+    return rates
+
+
+def read_cached_usd_exchange_rates() -> dict[str, float] | None:
+    cache_path = PRICE_RATE_CACHE_DIR / "usd.json"
+    try:
+        stat_result = cache_path.stat()
+    except FileNotFoundError:
+        return None
+    if datetime.now(UTC) - datetime.fromtimestamp(stat_result.st_mtime, tz=UTC) > PRICE_RATE_CACHE_TTL:
+        return None
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    rates = payload.get("rates")
+    if not isinstance(rates, dict):
+        return None
+    return normalize_exchange_rate_payload(rates)
+
+
+def write_cached_usd_exchange_rates(rates: dict[str, float]) -> None:
+    PRICE_RATE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    write_json(
+        PRICE_RATE_CACHE_DIR / "usd.json",
+        {"fetched_at": datetime.now(UTC).isoformat(), "base": "USD", "rates": rates},
+        compact=True,
+    )
+
+
+def fetch_usd_exchange_rates() -> dict[str, float] | None:
+    for url in (FX_RATES_API_URL, FAWAZ_CURRENCY_API_URL):
+        try:
+            with urlopen(url, timeout=20) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        rates_payload = payload.get("rates")
+        if isinstance(rates_payload, dict):
+            rates = normalize_exchange_rate_payload(rates_payload)
+        else:
+            usd_payload = payload.get("usd")
+            rates = normalize_exchange_rate_payload(usd_payload) if isinstance(usd_payload, dict) else None
+        if rates:
+            rates["USD"] = 1.0
+            return rates
+    return None
+
+
+def normalize_exchange_rate_payload(payload: dict[Any, Any]) -> dict[str, float]:
+    rates: dict[str, float] = {"USD": 1.0}
+    for key, value in payload.items():
+        if not isinstance(key, str) or not isinstance(value, int | float):
+            continue
+        currency = key.strip().upper()
+        if len(currency) == 3 and value > 0:
+            rates[currency] = float(value)
+    return rates
 
 
 def sanitize_semantic_description(value: Any) -> str | None:

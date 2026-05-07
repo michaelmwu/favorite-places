@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import statistics
 import time
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -217,6 +218,12 @@ _PRICE_RANGE_PATTERN = re.compile(
     r"(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\$|HK\$|CA\$|A\$)?"
     r"\s*[0-9][0-9,.\s\u00a0]*)?"
     r")(?=\s|$|·)",
+    flags=re.IGNORECASE,
+)
+_NUMERIC_PRICE_PATTERN = re.compile(
+    r"(?<!\S)(?P<currency>"
+    r"(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\$|HK\$|CA\$|A\$)"
+    r")\s*(?P<amount>[0-9][0-9,.\s\u00a0]*)(?=\s|$|·)",
     flags=re.IGNORECASE,
 )
 _PLACE_JS_EXTRACTOR = r"""
@@ -571,22 +578,109 @@ _PLACE_JS_EXTRACTOR = r"""
     }
     return topics;
   };
+  const priceSymbols = "(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\\$|HK\\$|CA\\$|A\\$)";
+  const pricePattern = new RegExp(
+    "(?:^|\\s|·)((?:\\${1,4})|" + priceSymbols
+      + "\\s*[0-9][0-9,.\u00a0\\s]*(?:\\+|[-–]\\s*" + priceSymbols
+      + "?\\s*[0-9][0-9,.\u00a0\\s]*)?)",
+    "i",
+  );
+  const exactNumericPricePattern = new RegExp(
+    "^" + priceSymbols + "\\s*[0-9][0-9,.\u00a0\\s]*$",
+    "i",
+  );
+  const extractPrice = (value) => {
+    const text = cleanLine(value);
+    const match = text.match(pricePattern);
+    if (!match?.[1]) {
+      return null;
+    }
+    return cleanLine(match[1].replace(/\u00a0/g, " "));
+  };
+  const looksLikePriceRangeText = (value) => {
+    const text = cleanLine(value);
+    if (!text) {
+      return false;
+    }
+    if (/^\${1,4}$/.test(text)) {
+      return true;
+    }
+    return text.includes("·") && pricePattern.test(text);
+  };
+  const sectionRootByHeading = (headingText) => {
+    const expected = headingText.toLowerCase();
+    for (const heading of panel.querySelectorAll("h2, h3, [role='heading']")) {
+      const text = cleanLine(heading.innerText || heading.textContent || "").toLowerCase();
+      if (text !== expected) {
+        continue;
+      }
+      return (
+        heading.closest(".m6QErb, section, [role='region'], [data-section-id]")
+        || heading.parentElement
+        || null
+      );
+    }
+    return null;
+  };
+  const collectLeafPrices = (root) => {
+    if (!root) {
+      return [];
+    }
+    const prices = [];
+    const seen = new Set();
+    for (const element of root.querySelectorAll("*")) {
+      const text = cleanLine(element.innerText || element.textContent || "");
+      if (!text || text.length > 48) {
+        continue;
+      }
+      if (
+        Array.from(element.children).some(
+          (child) => cleanLine(child.innerText || child.textContent || "") === text,
+        )
+      ) {
+        continue;
+      }
+      const price = extractPrice(text);
+      if (!price || price !== text || !exactNumericPricePattern.test(price)) {
+        continue;
+      }
+      if (seen.has(price)) {
+        continue;
+      }
+      seen.add(price);
+      prices.push(price);
+    }
+    return prices;
+  };
+  const roomOverlayPrice = () => {
+    const selectors = [
+      ".rlmNhf button[aria-label]",
+      "button[aria-label*='per night' i]",
+      "button[aria-label*='prices from' i]",
+    ];
+    for (const selector of selectors) {
+      for (const element of document.querySelectorAll(selector)) {
+        const price = extractPrice(element.getAttribute("aria-label") || "");
+        if (price && exactNumericPricePattern.test(price)) {
+          return price;
+        }
+      }
+    }
+    return null;
+  };
   const priceRangeValue = () => {
-    const symbols = "(?:[$€£¥₩₹₫฿₱₦₺₴₽]|SGD|USD|EUR|GBP|JPY|TWD|NT\\$|HK\\$|CA\\$|A\\$)";
-    const pattern = new RegExp(
-      "(?:^|\\s|·)((?:\\${1,4})|" + symbols
-        + "\\s*[0-9][0-9,.\u00a0\\s]*(?:\\+|[-–]\\s*" + symbols
-        + "?\\s*[0-9][0-9,.\u00a0\\s]*)?)",
-      "i",
-    );
     const roots = [
       panel.querySelector(".dmRWX"),
       panel.querySelector(".F7nice")?.parentElement,
+      panel.querySelector(".F7nice"),
       panel,
     ].filter(Boolean);
     for (const root of roots) {
       const text = cleanLine(root.innerText || root.textContent || "");
-      const match = text.match(pattern);
+      if (!looksLikePriceRangeText(text)) {
+        continue;
+      }
+      const match = text.match(pricePattern);
       if (match?.[1]) {
         return cleanLine(match[1].replace(/\u00a0/g, " "));
       }
@@ -620,6 +714,9 @@ _PLACE_JS_EXTRACTOR = r"""
     ]),
     plus_code: itemValue("oloc"),
     review_topics: collectReviewTopics(),
+    admission_prices: collectLeafPrices(sectionRootByHeading("Admission")),
+    room_prices: collectLeafPrices(sectionRootByHeading("Compare prices")),
+    room_price_overlay: roomOverlayPrice(),
     dom_candidates: collectDomCandidates(),
     main_photo_url: mainPhotoUrl,
     photo_url: photoUrl,
@@ -1543,6 +1640,9 @@ def _build_place_details(
         review_count=_resolve_review_count(snapshot, combined_lines),
         price_range=_clean_price_range_text(snapshot.get("price_range"))
         or _extract_price_range_from_lines(combined_lines),
+        admission_price=_summarize_offer_prices(snapshot.get("admission_prices")),
+        room_price=_summarize_offer_prices(snapshot.get("room_prices"))
+        or _clean_numeric_price_text(snapshot.get("room_price_overlay")),
         # Structural DOM data is primary. Text-line fallback is a last resort
         # for preview/limited payloads and is intentionally conservative.
         address=address,
@@ -2017,6 +2117,8 @@ def _place_detail_values(details: PlaceDetails) -> dict[str, object]:
         "rating": details.rating,
         "review_count": details.review_count,
         "price_range": details.price_range,
+        "admission_price": details.admission_price,
+        "room_price": details.room_price,
         "address": details.address,
         "address_display_en": details.address_display_en,
         "address_display_en_source": details.address_display_en_source,
@@ -2526,10 +2628,117 @@ def _clean_price_range_text(value: object) -> str | None:
 
 def _extract_price_range_from_lines(lines: list[str]) -> str | None:
     for line in lines:
+        if not _looks_like_price_range_line(line):
+            continue
         normalized = _clean_price_range_text(line)
         if normalized is not None:
             return normalized
     return None
+
+
+def _looks_like_price_range_line(value: object) -> bool:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return False
+    if re.fullmatch(r"\${1,4}", normalized):
+        return True
+    if "·" not in normalized:
+        return False
+    if _PRICE_RANGE_PATTERN.search(normalized) is None:
+        return False
+    if _CATEGORY_SUFFIX_PATTERN.search(normalized) is not None:
+        return True
+    if re.search(r"(?:reviews?|評論|クチコミ)", normalized, re.IGNORECASE):
+        return True
+    return (
+        re.search(r"^[0-5](?:[.,][0-9])?\s*(?:[·⋅]|★|stars?\b)", normalized, re.IGNORECASE)
+        is not None
+        and re.search(r"\([0-9][0-9,.\s]*\)", normalized) is not None
+    )
+
+
+def _clean_numeric_price_text(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None or len(normalized) > 80:
+        return None
+    normalized = normalized.replace("\u00a0", " ")
+    match = _NUMERIC_PRICE_PATTERN.search(normalized)
+    if match is None:
+        return None
+    return _clean_text(match.group(0))
+
+
+def _summarize_offer_prices(value: object) -> str | None:
+    if not isinstance(value, list):
+        return None
+    parsed_candidates: list[tuple[str, float, str]] = []
+    for raw_candidate in value:
+        price_text = _clean_numeric_price_text(raw_candidate)
+        if price_text is None:
+            continue
+        parsed = _parse_numeric_price(price_text)
+        if parsed is None:
+            continue
+        parsed_candidates.append(parsed)
+    if not parsed_candidates:
+        return None
+
+    currency_counts: dict[str, int] = {}
+    for currency, _amount, _display in parsed_candidates:
+        currency_counts[currency] = currency_counts.get(currency, 0) + 1
+    primary_currency = max(currency_counts.items(), key=lambda item: item[1])[0]
+    currency_candidates = [
+        candidate for candidate in parsed_candidates if candidate[0] == primary_currency
+    ]
+    median_amount = statistics.median(amount for _currency, amount, _display in currency_candidates)
+    best_currency, best_amount, best_display = min(
+        currency_candidates,
+        key=lambda candidate: (abs(candidate[1] - median_amount), candidate[1]),
+    )
+    del best_currency, best_amount
+    return best_display
+
+
+def _parse_numeric_price(value: str) -> tuple[str, float, str] | None:
+    match = _NUMERIC_PRICE_PATTERN.search(value)
+    if match is None:
+        return None
+    currency = match.group("currency").upper().replace(" ", "")
+    amount = _parse_price_amount(match.group("amount"))
+    if amount is None:
+        return None
+    return (currency, amount, value)
+
+
+def _parse_price_amount(value: str) -> float | None:
+    normalized = value.replace("\u00a0", "").replace(" ", "")
+    if not normalized:
+        return None
+    if "," in normalized and "." in normalized:
+        if normalized.rfind(",") > normalized.rfind("."):
+            normalized = normalized.replace(".", "").replace(",", ".")
+        else:
+            normalized = normalized.replace(",", "")
+    elif normalized.count(",") == 1 and "." not in normalized:
+        whole, fractional = normalized.split(",", 1)
+        if len(fractional) in {1, 2}:
+            normalized = f"{whole}.{fractional}"
+        else:
+            normalized = normalized.replace(",", "")
+    elif "," in normalized and "." not in normalized:
+        if re.fullmatch(r"\d{1,3}(?:,\d{3})+", normalized):
+            normalized = normalized.replace(",", "")
+        else:
+            return None
+    elif "." in normalized and "," not in normalized:
+        if re.fullmatch(r"\d{1,3}(?:[.]\d{3})+", normalized):
+            normalized = normalized.replace(".", "")
+    else:
+        normalized = normalized.replace(",", "")
+    try:
+        return float(normalized)
+    except ValueError:
+        return None
 
 
 def _extract_plus_code_from_lines(lines: list[str]) -> str | None:

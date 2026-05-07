@@ -2995,6 +2995,99 @@ class BuildDataTests(unittest.TestCase):
             ["omakase", "date-night", "sushi-restaurant", "tokyo", "restaurant", "food", "ginza"],
         )
 
+    def test_normalize_price_text_to_currency_preserves_symbolic_tier(self) -> None:
+        self.assertEqual(
+            build_data.normalize_price_text_to_currency("$$$", target_currency="JPY"),
+            "¥¥¥",
+        )
+        self.assertEqual(
+            build_data.normalize_price_text_to_currency("$$$", target_currency="TWD"),
+            "NT$$$",
+        )
+
+    def test_normalize_price_text_to_currency_converts_numeric_ranges(self) -> None:
+        with patch.object(
+            build_data,
+            "load_usd_exchange_rates",
+            return_value={"USD": 1.0, "TWD": 30.0, "JPY": 150.0},
+        ):
+            self.assertEqual(
+                build_data.normalize_price_text_to_currency("NT$1–200", target_currency="TWD"),
+                "NT$1–200",
+            )
+            self.assertEqual(
+                build_data.normalize_price_text_to_currency("NT$200–400", target_currency="JPY"),
+                "¥1,000–2,000",
+            )
+
+    def test_display_price_range_for_place_uses_configured_source_order_and_guide_currency(self) -> None:
+        enrichment = EnrichmentPlace(
+            price_range=None,
+            admission_price="NT$100",
+            room_price="NT$5,293",
+        )
+
+        with (
+            patch.object(
+                build_data,
+                "google_maps_place_price_display_config",
+                return_value={
+                    "currency_mode": "guide_local",
+                    "source_order": ["price_range", "admission_price", "room_price"],
+                },
+            ),
+            patch.object(
+                build_data,
+                "load_usd_exchange_rates",
+                return_value={"USD": 1.0, "TWD": 30.0, "JPY": 150.0},
+            ),
+        ):
+            self.assertEqual(
+                build_data.display_price_range_for_place(enrichment, country_name="Japan"),
+                "¥500",
+            )
+
+    def test_display_price_range_for_place_skips_numeric_attraction_price_range(self) -> None:
+        enrichment = EnrichmentPlace(
+            price_range="NT$4,909",
+            admission_price=None,
+            primary_type_display_name="Observation deck",
+            types=["tourist_attraction"],
+        )
+
+        with patch.object(
+            build_data,
+            "google_maps_place_price_display_config",
+            return_value={"currency_mode": "guide_local"},
+        ):
+            self.assertIsNone(
+                build_data.display_price_range_for_place(enrichment, country_name="Japan")
+            )
+
+    def test_display_price_range_for_place_keeps_numeric_restaurant_price_range(self) -> None:
+        enrichment = EnrichmentPlace(
+            price_range="NT$200–400",
+            primary_type_display_name="Restaurant",
+            types=["restaurant"],
+        )
+
+        with (
+            patch.object(
+                build_data,
+                "google_maps_place_price_display_config",
+                return_value={"currency_mode": "guide_local"},
+            ),
+            patch.object(
+                build_data,
+                "load_usd_exchange_rates",
+                return_value={"USD": 1.0, "TWD": 30.0, "JPY": 150.0},
+            ),
+        ):
+            self.assertEqual(
+                build_data.display_price_range_for_place(enrichment, country_name="Japan"),
+                "¥1,000–2,000",
+            )
+
     def test_apply_semantic_enrichment_uses_optional_llm_response(self) -> None:
         enrichment = EnrichmentPlace(
             display_name="Tea House",

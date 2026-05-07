@@ -10,7 +10,8 @@ place enrichment, and debugging when Google Maps' page structure changes.
 
 - Saved list metadata, owner/collaborators, and place entries
 - Place facts such as name, category, rating, review count, address, website,
-  phone, plus code, coordinates, price range, and photos
+  phone, plus code, coordinates, Google price range, summarized admission or
+  lodging quotes, and photos
 - Review topic chips with Google-provided mention counts
 - Visible review snippets
 - About-tab sections such as `Accessibility` and `Service options`

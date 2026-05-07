@@ -162,6 +162,10 @@ Example `site/enrichment.json`:
     "semantic_llm": false,
     "semantic_descriptions": false,
     "semantic_description_force_refresh": false,
+    "price_display": {
+      "currency_mode": "guide_local",
+      "source_order": ["price_range", "admission_price", "room_price"]
+    },
     "neighborhood_mappings": [
       {
         "city": "Taipei",
@@ -176,6 +180,8 @@ Example `site/enrichment.json`:
 ```
 
 When `semantic_llm` is enabled and LLM credentials are configured, the pipeline uses compact cache-only evidence from price range, review topics, review snippets, and About labels to infer neighborhood, type tags, and vibe tags. `semantic_descriptions` separately enables generated card descriptions. Descriptions are reused while the semantic description signature remains stable; the signature tracks major quality changes such as name/address/category changes, review topics appearing, About sections changing, price range, and coarse rating/review-count buckets. Set `semantic_description_force_refresh` when you intentionally want to regenerate descriptions even if the signature is unchanged. If the LLM is unavailable or errors, deterministic category, locality, and vibe rules still produce the guide data.
+
+`price_display` controls the card-facing price label while keeping raw scraper fields in the enrichment cache. `source_order` chooses which scraper field to display first: `price_range`, `admission_price`, or `room_price`. Numeric `price_range` values are displayed conservatively for food/drink/shopping-style categories; attraction tickets and lodging quotes should come through the separate `admission_price` or `room_price` fields. `currency_mode` supports `raw`, `guide_local`, or `target`; `target` also requires `target_currency`, such as `USD`. Symbol-only values like `$$` keep the same tier and swap the symbol, while numeric prices use cached daily USD exchange rates from `api.fxratesapi.com` with jsDelivr currency-api fallback. If rates are unavailable, the raw price is used.
 
 `neighborhood_mappings` is an ordered site-level cleanup layer for local naming conventions. Each rule can scope by `city` and `country`, match a current `from` neighborhood, optionally require `when_address_contains` or `when_candidate`, and then emit `to`. Per-place `neighborhood` overrides still win over these mappings.
 

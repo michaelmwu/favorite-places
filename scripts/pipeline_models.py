@@ -179,6 +179,8 @@ class EnrichmentPlace(PipelineModel):
     rating: float | None = None
     user_rating_count: int | None = None
     price_range: str | None = None
+    admission_price: str | None = None
+    room_price: str | None = None
     primary_type: str | None = None
     primary_type_display_name: str | None = None
     primary_type_display_name_localized: str | None = None

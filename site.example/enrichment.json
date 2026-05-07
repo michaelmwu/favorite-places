@@ -6,6 +6,10 @@
     "semantic_llm": true,
     "semantic_descriptions": true,
     "semantic_description_force_refresh": false,
+    "price_display": {
+      "currency_mode": "guide_local",
+      "source_order": ["price_range", "admission_price", "room_price"]
+    },
     "neighborhood_mappings": [
       {
         "city": "Taipei",
