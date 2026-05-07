@@ -2248,6 +2248,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             if use_semantic_enrichment and enrichment.semantic_neighborhood
             else None
         )
+        semantic_neighborhood = refine_semantic_neighborhood_with_address_localities(
+            semantic_neighborhood,
+            locality_candidates,
+        )
         neighborhood = as_string(override.get("neighborhood")) or (
             semantic_neighborhood
         ) or (
@@ -7783,6 +7787,28 @@ def normalize_semantic_neighborhood_label(
     if alias:
         return alias
     return label
+
+
+def refine_semantic_neighborhood_with_address_localities(
+    semantic_neighborhood: str | None,
+    locality_candidates: Sequence[str],
+) -> str | None:
+    if semantic_neighborhood is None:
+        return None
+    semantic_key = normalize_locality_key(semantic_neighborhood).replace("-", " ")
+    if len(semantic_key) < 4:
+        return semantic_neighborhood
+    for candidate in locality_candidates:
+        candidate_key = normalize_locality_key(candidate).replace("-", " ")
+        if not candidate_key or candidate_key == semantic_key:
+            continue
+        if (
+            candidate_key.endswith(semantic_key)
+            or candidate_key.startswith(f"{semantic_key} ")
+            or f" {semantic_key} " in f" {candidate_key} "
+        ):
+            return candidate
+    return semantic_neighborhood
 
 
 def sanitize_semantic_description(value: Any) -> str | None:

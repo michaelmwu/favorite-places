@@ -2531,6 +2531,53 @@ class BuildDataTests(unittest.TestCase):
         assert guide.places[0].provenance.neighborhood is not None
         self.assertEqual(guide.places[0].provenance.neighborhood.source, "google_maps_page")
 
+    def test_normalize_guide_prefers_specific_address_locality_over_broad_semantic_parent(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Higashiazabu Amamoto",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                query="Higashiazabu Amamoto, Tokyo, Japan",
+                matched=True,
+                source="google_maps_page",
+                place=EnrichmentPlace(
+                    display_name="Higashiazabu Amamoto",
+                    formatted_address="1 Chome-7-9 Higashiazabu, Minato City, Tokyo 106-0044, Japan",
+                    primary_type_display_name="Sushi restaurant",
+                    semantic_neighborhood="Azabu",
+                ),
+            ),
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=True),
+            ):
+                guide = build_data.normalize_guide(
+                    "tokyo-japan",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(guide.places[0].neighborhood, "Higashiazabu")
+
     def test_normalize_guide_excludes_permanently_closed_places_from_ui_counts(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
