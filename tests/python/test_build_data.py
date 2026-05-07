@@ -53,6 +53,15 @@ class BuildDataTests(unittest.TestCase):
         with patch.object(build_data.os, "cpu_count", return_value=16):
             self.assertEqual(build_data.default_refresh_workers(), 4)
 
+    def test_resolve_scraper_state_dir_prefers_explicit_env(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            with patch.dict(
+                "os.environ",
+                {build_data.SCRAPER_STATE_DIR_ENV: tmpdir},
+                clear=False,
+            ):
+                self.assertEqual(build_data.resolve_scraper_state_dir(), Path(tmpdir).resolve())
+
     def test_parser_uses_auto_refresh_worker_default(self) -> None:
         parser = build_data.build_parser()
         args = parser.parse_args([])
