@@ -6,6 +6,14 @@
     "semantic_llm": true,
     "semantic_descriptions": true,
     "semantic_description_force_refresh": false,
-    "neighborhood_mappings": []
+    "neighborhood_mappings": [
+      {
+        "city": "Tokyo",
+        "country": "Japan",
+        "from": "Higashiazabu",
+        "to": "Azabujuban",
+        "when_address_contains": "Higashiazabu"
+      }
+    ]
   }
 }
