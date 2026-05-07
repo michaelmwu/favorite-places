@@ -28,6 +28,7 @@ export const siteConfig = {
   },
   guide: {
     fallbackDescription: "Saved places for this city.",
+    showAuthor: true,
     sidebarContent: ["Guide aside content can come from config or `site/content/templates/`."],
     topPicksEyebrow: "Favorites",
     topPicksHeading: "Top suggestions",
@@ -38,6 +39,7 @@ export const siteConfig = {
   },
   guideCard: {
     showDescription: true,
+    showAuthor: true,
     showTags: true,
     maxTags: 4,
     showPlaceCount: true,

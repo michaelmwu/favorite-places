@@ -84,10 +84,19 @@ export interface Place {
   provenance: PlaceProvenance;
 }
 
+export interface ListAuthor {
+  name: string;
+  photo_url?: string | null;
+  photo_path?: string | null;
+  avatar_mode?: "photo" | "initials" | "icon" | null;
+  profile_id?: string | null;
+}
+
 export interface Guide {
   slug: string;
   title: string;
   description: string | null;
+  author?: ListAuthor | null;
   source_url: string | null;
   list_id: string | null;
   country_name: string;
@@ -110,6 +119,7 @@ export interface GuideManifest {
   slug: string;
   title: string;
   description: string | null;
+  author?: ListAuthor | null;
   country_name: string;
   country_code: string | null;
   center_lat: number | null;

@@ -38,6 +38,7 @@ try:
         EnrichmentPlace,
         Guide,
         GuideManifest,
+        ListAuthor,
         MarkerIcon,
         NormalizedPlace,
         PlacesSettings,
@@ -54,6 +55,7 @@ except ModuleNotFoundError:
         EnrichmentPlace,
         Guide,
         GuideManifest,
+        ListAuthor,
         MarkerIcon,
         NormalizedPlace,
         PlacesSettings,
@@ -104,6 +106,7 @@ GENERATED_DIR = ROOT / "src" / "data" / "generated"
 GENERATED_LISTS_DIR = GENERATED_DIR / "lists"
 PUBLIC_DATA_DIR = ROOT / "public" / "data"
 PLACE_PHOTOS_DIR = SITE_DIR / "public" / "place-photos"
+AUTHOR_PHOTOS_DIR = SITE_DIR / "public" / "author-photos"
 SITE_BUILD_HOOKS_PATH = SITE_DIR / "build_hooks.py"
 SITE_ENRICHMENT_CONFIG_PATH = SITE_DIR / "enrichment.json"
 LIST_OVERRIDES_DIR = SITE_DIR / "overrides" / "lists"
@@ -144,6 +147,8 @@ PHOTO_DOWNLOAD_TIMEOUT_SECONDS = 20
 PHOTO_CARD_WIDTH = 800
 PHOTO_CARD_HEIGHT = 600
 PHOTO_CARD_QUALITY = 78
+AUTHOR_PHOTO_SIZE = 160
+AUTHOR_PHOTO_QUALITY = 82
 MIN_PLACE_PHOTO_SOURCE_DIMENSION = 200
 PLACE_PHOTO_SOURCE_DIMENSION_RE = re.compile(r"w(?P<width>\d+)-h(?P<height>\d+)")
 PRICE_DISPLAY_SOURCE_FIELDS = ("price_range", "admission_price", "room_price")
@@ -1917,6 +1922,8 @@ def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedLis
         if source.title and not payload.title:
             payload.title = source.title
         stamp_raw_saved_list(payload, source, source_signature=raw_source_signature(source))
+        if not list_author_is_overridden(source.slug):
+            payload.owner = sync_list_author_photo(source.slug, payload.owner)
         return payload
     finally:
         release_scraper_session_lock(session_state)
@@ -2327,6 +2334,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
 
     title = as_string(list_override.get("title")) or raw.title or slug.replace("-", " ").title()
     description = as_string(list_override.get("description")) or raw.description
+    author = guide_author_for_ui(raw, list_override=list_override)
     description = transform_guide_description_with_site_hook(
         description,
         slug=slug,
@@ -2574,6 +2582,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         slug=slug,
         title=title,
         description=description,
+        author=author,
         source_url=raw.source_url,
         list_id=raw.list_id,
         country_name=country_name or "Unknown",
@@ -2979,6 +2988,7 @@ def summarize_guide(guide: Guide) -> GuideManifest:
         slug=guide.slug,
         title=guide.title,
         description=guide.description,
+        author=guide.author,
         country_name=guide.country_name,
         country_code=guide.country_code,
         center_lat=guide.center_lat,
@@ -4579,6 +4589,48 @@ def normalize_text_blocks(value: str | None) -> str | None:
     normalized = re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", normalized)
     normalized = normalized.strip()
     return normalized or None
+
+
+def coerce_list_author(value: Any) -> ListAuthor | None:
+    if value is None:
+        return None
+    if isinstance(value, ListAuthor):
+        return value
+    if isinstance(value, str):
+        normalized = as_string(value)
+        return ListAuthor(name=normalized) if normalized else None
+    if isinstance(value, dict):
+        name = as_string(value.get("name"))
+        if not name:
+            return None
+        return ListAuthor(
+            name=name,
+            photo_url=as_string(value.get("photo_url")),
+            photo_path=as_string(value.get("photo_path")),
+            avatar_mode=normalize_author_avatar_mode(value.get("avatar_mode")),
+            profile_id=as_string(value.get("profile_id")),
+        )
+    return None
+
+
+def normalize_author_avatar_mode(value: Any) -> Literal["photo", "initials", "icon"] | None:
+    normalized = as_string(value)
+    if normalized in {"photo", "initials", "icon"}:
+        return normalized
+    return None
+
+
+def list_author_is_overridden(slug: str) -> bool:
+    list_override = read_json(LIST_OVERRIDES_DIR / f"{slug}.json")
+    return "author" in list_override or "owner" in list_override
+
+
+def guide_author_for_ui(raw: RawSavedList, *, list_override: dict[str, Any]) -> ListAuthor | None:
+    if "author" in list_override:
+        return coerce_list_author(list_override.get("author"))
+    if "owner" in list_override:
+        return coerce_list_author(list_override.get("owner"))
+    return raw.owner
 
 
 def load_raw_saved_list(path: Path) -> RawSavedList | None:
@@ -6293,6 +6345,69 @@ def cached_place_photo_url(cache_entry: EnrichmentCacheEntry | None) -> str | No
     return cache_entry.place.main_photo_url or cache_entry.place.photo_url
 
 
+def sync_list_author_photo(slug: str, author: ListAuthor | None) -> ListAuthor | None:
+    if author is None or not author.photo_url:
+        return author
+    if author.photo_path:
+        existing_path = public_asset_absolute_path(author.photo_path)
+        if existing_path is not None and existing_path.exists():
+            return author
+
+    photo_path = download_list_author_photo(slug, author.photo_url)
+    if photo_path is None:
+        return author
+    return author.model_copy(update={"photo_path": photo_path})
+
+
+def download_list_author_photo(slug: str, photo_url: str) -> str | None:
+    AUTHOR_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
+    photo_prefix = canonical_author_photo_stem(slug, photo_url)
+    filename = f"{photo_prefix}.webp"
+    output_path = AUTHOR_PHOTOS_DIR / filename
+    if output_path.exists():
+        return public_author_photo_path(filename)
+
+    try:
+        request = Request(
+            photo_url,
+            headers={"User-Agent": "Mozilla/5.0 favorite-places author photo fetch"},
+        )
+        with urlopen(request, timeout=PHOTO_DOWNLOAD_TIMEOUT_SECONDS) as response:
+            content = response.read()
+            if not content:
+                return None
+            content_type = response_content_type(response)
+    except (HTTPError, URLError, OSError) as exc:
+        print(f"WARNING: Failed to download author photo for {slug} from {photo_url}: {exc}", flush=True)
+        return None
+
+    optimized_content = optimize_author_photo_asset(content, content_type=content_type)
+    if optimized_content is None:
+        return None
+
+    temp_path = AUTHOR_PHOTOS_DIR / f".{filename}.tmp"
+    temp_path.write_bytes(optimized_content)
+    temp_path.replace(output_path)
+
+    author_prefix = f"{safe_author_photo_stem(slug)}-"
+    for stale_path in AUTHOR_PHOTOS_DIR.glob(f"{author_prefix}*.webp"):
+        if stale_path.name == filename or stale_path.name.startswith("."):
+            continue
+        stale_path.unlink(missing_ok=True)
+
+    return public_author_photo_path(filename)
+
+
+def safe_author_photo_stem(slug: str) -> str:
+    sanitized = re.sub(r"[^A-Za-z0-9._-]+", "-", slug).strip("-._")
+    return sanitized or "author"
+
+
+def canonical_author_photo_stem(slug: str, photo_url: str) -> str:
+    photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
+    return f"{safe_author_photo_stem(slug)}-{photo_hash}"
+
+
 def populate_place_photos_for_guides(
     guides: list[Guide],
     *,
@@ -6721,12 +6836,46 @@ def optimize_place_photo_asset(
         return None, None
 
 
+def optimize_author_photo_asset(content: bytes, *, content_type: str | None) -> bytes | None:
+    try:
+        with Image.open(io.BytesIO(content)) as image:
+            image.load()
+            working = ImageOps.exif_transpose(image)
+            resized = ImageOps.fit(
+                working,
+                (AUTHOR_PHOTO_SIZE, AUTHOR_PHOTO_SIZE),
+                method=Image.Resampling.LANCZOS,
+                centering=(0.5, 0.5),
+            )
+            if resized.mode != "RGB":
+                resized = resized.convert("RGB")
+
+            output = io.BytesIO()
+            resized.save(
+                output,
+                format="WEBP",
+                quality=AUTHOR_PHOTO_QUALITY,
+                method=6,
+            )
+            return output.getvalue()
+    except (OSError, UnidentifiedImageError) as exc:
+        print(
+            f"WARNING: Failed to optimize downloaded author photo ({content_type or 'unknown'}): {exc}",
+            flush=True,
+        )
+        return None
+
+
 def image_supports_webp() -> bool:
     return bool(features.check("webp"))
 
 
 def public_photo_path(filename: str) -> str:
     return f"/place-photos/{filename}"
+
+
+def public_author_photo_path(filename: str) -> str:
+    return f"/author-photos/{filename}"
 
 
 def place_details_display_field_map(details: Any) -> dict[str, object]:

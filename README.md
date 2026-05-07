@@ -88,6 +88,8 @@ Supported sources:
 
 Google My Maps URLs are not supported yet.
 
+For Google Maps URL sources, raw snapshots preserve the list `owner` object, including `name`, `photo_url`, `photo_path`, `avatar_mode`, and `profile_id`, plus any `collaborators` the scraper can recover. When the scraped owner is the effective published author, source refresh downloads a square local author image into `site/public/author-photos/` and stores its `photo_path`. Guide list overrides can optionally set, replace, or suppress the generated guide `author`; use `photo_path` to point at a site-owned image under `site/public/`, or set `avatar_mode` to `photo`, `initials`, or `icon`.
+
 ## Build Your Data
 
 Refresh configured sources and rebuild generated site data:

@@ -22,6 +22,7 @@ from scripts.pipeline_models import (
     EnrichmentCacheEntry,
     EnrichmentPlace,
     Guide,
+    ListAuthor,
     NormalizedPlace,
     RawPlace,
     RawSavedList,
@@ -30,6 +31,161 @@ from scripts.pipeline_models import (
 
 
 class BuildDataTests(unittest.TestCase):
+    def test_raw_saved_list_keeps_owner_metadata_from_json(self) -> None:
+        saved_list = RawSavedList.model_validate(
+            {
+                "title": "Tokyo, Japan",
+                "owner": {
+                    "name": "Curator Name",
+                    "photo_url": "https://example.com/curator.jpg",
+                    "photo_path": "/author-photos/curator.webp",
+                    "avatar_mode": "photo",
+                    "profile_id": "curator-id",
+                },
+                "collaborators": [
+                    {
+                        "name": "Second Curator",
+                        "photo_url": "https://example.com/second.jpg",
+                    }
+                ],
+                "places": [],
+            }
+        )
+
+        self.assertIsNotNone(saved_list.owner)
+        assert saved_list.owner is not None
+        self.assertEqual(saved_list.owner.name, "Curator Name")
+        self.assertEqual(saved_list.owner.photo_url, "https://example.com/curator.jpg")
+        self.assertEqual(saved_list.owner.photo_path, "/author-photos/curator.webp")
+        self.assertEqual(saved_list.owner.avatar_mode, "photo")
+        self.assertEqual(saved_list.owner.profile_id, "curator-id")
+        self.assertEqual(len(saved_list.collaborators), 1)
+        self.assertEqual(saved_list.collaborators[0].name, "Second Curator")
+        self.assertEqual(saved_list.collaborators[0].photo_url, "https://example.com/second.jpg")
+
+    def test_normalize_guide_uses_raw_owner_as_author(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            owner=ListAuthor(
+                name="Curator Name",
+                photo_url="https://example.com/curator.jpg",
+                profile_id="curator-id",
+            ),
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                )
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        self.assertIsNotNone(guide.author)
+        assert guide.author is not None
+        self.assertEqual(guide.author.name, "Curator Name")
+        self.assertEqual(guide.author.photo_url, "https://example.com/curator.jpg")
+        self.assertEqual(guide.author.profile_id, "curator-id")
+
+    def test_normalize_guide_allows_author_override(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            owner=ListAuthor(name="Original Curator"),
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                )
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {
+                    "author": {
+                        "name": "Override Curator",
+                        "photo_path": "/author-photos/override.svg",
+                        "avatar_mode": "photo",
+                    }
+                }
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        self.assertIsNotNone(guide.author)
+        assert guide.author is not None
+        self.assertEqual(guide.author.name, "Override Curator")
+        self.assertEqual(guide.author.photo_path, "/author-photos/override.svg")
+        self.assertEqual(guide.author.avatar_mode, "photo")
+
+    def test_normalize_guide_author_override_does_not_merge_raw_photo(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            owner=ListAuthor(
+                name="Original Curator",
+                photo_url="https://example.com/original.jpg",
+                photo_path="/author-photos/original.webp",
+            ),
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                )
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {"author": {"name": "Override Curator", "avatar_mode": "initials"}}
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        self.assertIsNotNone(guide.author)
+        assert guide.author is not None
+        self.assertEqual(guide.author.name, "Override Curator")
+        self.assertEqual(guide.author.avatar_mode, "initials")
+        self.assertIsNone(guide.author.photo_url)
+        self.assertIsNone(guide.author.photo_path)
+
+    def test_sync_list_author_photo_downloads_local_photo_path(self) -> None:
+        author = ListAuthor(name="Curator Name", photo_url="https://example.com/curator.jpg")
+
+        with patch.object(
+            build_data,
+            "download_list_author_photo",
+            return_value="/author-photos/tokyo-japan-example.webp",
+        ) as download_photo:
+            synced = build_data.sync_list_author_photo("tokyo-japan", author)
+
+        self.assertIsNotNone(synced)
+        assert synced is not None
+        self.assertEqual(synced.photo_path, "/author-photos/tokyo-japan-example.webp")
+        download_photo.assert_called_once_with("tokyo-japan", "https://example.com/curator.jpg")
+
+    def test_list_author_override_skips_scraped_owner_photo_download(self) -> None:
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {"author": "Example Curator"}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            self.assertTrue(build_data.list_author_is_overridden("tokyo-japan"))
+
     def test_format_duration_seconds_formats_short_and_long_values(self) -> None:
         self.assertEqual(build_data.format_duration_seconds(9.34), "9.3s")
         self.assertEqual(build_data.format_duration_seconds(68.25), "1m 08.3s")

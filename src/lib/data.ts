@@ -43,6 +43,7 @@ function summarizeGuide(guide: Guide): GuideManifest {
     slug: guide.slug,
     title: guide.title,
     description: guide.description,
+    author: guide.author,
     country_name: getDisplayCountryName(guide),
     country_code: guide.country_code,
     center_lat: guide.center_lat ?? null,

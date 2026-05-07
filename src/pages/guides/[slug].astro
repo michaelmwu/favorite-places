@@ -5,6 +5,7 @@ import Layout from "../../components/Layout.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import SectionHeading from "../../components/ui/SectionHeading.astro";
 import { siteConfig } from "../../data/site";
+import { getAuthorAvatarMode, getAuthorInitials } from "../../lib/authorAvatar";
 import { getDisplayCountryName, getGuides } from "../../lib/data";
 import { getGuideAsideHtml, getTemplateHtml } from "../../lib/heroAsideContent";
 import {
@@ -117,6 +118,10 @@ const areaFilters = areaFilterGroups.primary;
 const broaderAreaFilters = areaFilterGroups.secondary;
 const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
 const displayCountryName = getDisplayCountryName(guide);
+const guideAuthorName = guide.author?.name?.trim() || null;
+const guideAuthorAvatarMode = getAuthorAvatarMode(guide.author);
+const guideAuthorPhotoUrl = guideAuthorAvatarMode === "photo" ? guide.author?.photo_path?.trim() || null : null;
+const guideAuthorInitials = guideAuthorAvatarMode === "initials" ? getAuthorInitials(guideAuthorName) : null;
 const explicitTypes = [
   ...visiblePlaces.reduce((typeCounts, place) => {
     if (place.primary_category) {
@@ -253,6 +258,36 @@ const guideJsonLd = [
             <p class="lede ui-lede">{siteConfig.guide.fallbackDescription}</p>
           )
         }
+        {siteConfig.guide.showAuthor && guideAuthorName && (
+          <div class="guide-author guide-author--hero">
+            <span class="guide-author-mark" aria-hidden="true">
+              <svg class={`guide-author-icon${guideAuthorPhotoUrl || guideAuthorInitials ? " guide-author-icon--hidden" : ""}`} viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" data-author-fallback>
+                <path
+                  d="M12 6.5a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4ZM5.8 19.2c.75-2.8 3.05-4.35 6.2-4.35s5.45 1.55 6.2 4.35"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.9"
+                />
+              </svg>
+              {guideAuthorPhotoUrl && (
+                <img
+                  class="guide-author-photo"
+                  src={guideAuthorPhotoUrl}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  onerror="this.parentElement?.querySelector('[data-author-fallback]')?.classList.remove('guide-author-icon--hidden'); this.remove()"
+                />
+              )}
+              {guideAuthorInitials && <span class="guide-author-initials">{guideAuthorInitials}</span>}
+            </span>
+            <span class="guide-author-copy">
+              <span class="guide-author-label">{siteConfig.guide.authorLabel}</span>
+              <span class="guide-author-name">{guideAuthorName}</span>
+            </span>
+          </div>
+        )}
         <div class="hero-meta ui-meta-row">
           <span class="stat-pill ui-pill">{guide.place_count} places</span>
           {guide.source_url && (

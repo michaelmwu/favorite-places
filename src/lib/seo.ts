@@ -214,6 +214,20 @@ export function buildGuideJsonLd({
     position: index + 1,
     item: buildPlaceEntity(place),
   }));
+  const guideAuthor = guide.author?.name?.trim()
+    ? {
+        "@type": "Person",
+        name: normalizeWhitespace(guide.author.name),
+        ...(guide.author.photo_path || guide.author.photo_url
+          ? {
+              image: new URL(
+                guide.author.photo_path ?? guide.author.photo_url ?? "",
+                siteUrl,
+              ).toString(),
+            }
+          : {}),
+      }
+    : null;
 
   return [
     {
@@ -244,6 +258,7 @@ export function buildGuideJsonLd({
       isPartOf: {
         "@id": `${siteUrl}#website`,
       },
+      ...(guideAuthor ? { author: guideAuthor } : {}),
       about: {
         "@type": "Place",
         name: [guide.city_name, countryName].filter(Boolean).join(", "),
