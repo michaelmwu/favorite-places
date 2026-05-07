@@ -132,6 +132,9 @@ export default defineConfig({
       fs: {
         allow: [ROOT, siteDir],
       },
+      watch: {
+        ignored: ["**/vendor/gmaps-scraper/.venv/**"],
+      },
     },
   },
 });
