@@ -296,6 +296,8 @@ The default strategy is `scrape_then_api`. The scraper path does not require a P
 
 `google_maps_places.semantic_llm` defaults to `false`. When enabled, the pipeline sends compact cache-only evidence to the configured OpenAI-compatible model to infer better neighborhood labels, type tags, and vibe tags. Inputs include category, address, price range, review topics, compact review signals, and About labels; generated public JSON still does not expose reviews or About sections directly. `google_maps_places.semantic_descriptions` separately enables generated card descriptions. Description reuse is keyed by a coarse semantic signature over identity and enrichment quality signals, not volatile review text; `semantic_description_force_refresh` bypasses reuse and the semantic LLM cache for intentional regeneration. If credentials are absent or the LLM call fails, deterministic locality/category/vibe rules remain the fallback.
 
+`google_maps_places.neighborhood_mappings` is an ordered site-level cleanup layer for local naming conventions after deterministic and semantic neighborhood selection. Rules can match `from`, scope by `city`/`country`, optionally require `when_address_contains` or `when_candidate`, and emit `to`; per-place neighborhood overrides still take precedence.
+
 The example site opts into review and About collection in `site.example/enrichment.json` so the fixture cache exercises those fields.
 
 The API path uses Google Places Text Search with a narrow field mask and location bias around scraped coordinates.

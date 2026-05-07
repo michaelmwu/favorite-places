@@ -2252,14 +2252,26 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             semantic_neighborhood,
             locality_candidates,
         )
-        neighborhood = as_string(override.get("neighborhood")) or (
-            semantic_neighborhood
-        ) or (
-            locality_candidates[0] if locality_candidates else None
+        manual_neighborhood = as_string(override.get("neighborhood"))
+        machine_neighborhood = semantic_neighborhood or (locality_candidates[0] if locality_candidates else None)
+        mapped_neighborhood = apply_site_neighborhood_mappings(
+            machine_neighborhood,
+            city_name=city_name,
+            country_name=country_name,
+            address_values=[
+                place.address,
+                enrichment.formatted_address,
+                *flatten_address_parts(enrichment.address_parts),
+            ],
+            locality_candidates=locality_candidates,
         )
+        neighborhood = manual_neighborhood or mapped_neighborhood
         neighborhood_uses_enrichment = bool(
             neighborhood
-            and (neighborhood in enrichment_locality_candidates or neighborhood == semantic_neighborhood)
+            and (
+                machine_neighborhood in enrichment_locality_candidates
+                or machine_neighborhood == semantic_neighborhood
+            )
             and neighborhood not in raw_locality_candidates
         )
         hidden = bool(override.get("hidden", False))
@@ -4547,6 +4559,19 @@ def google_maps_place_semantic_description_force_refresh() -> bool:
         return configured
     site_value = as_bool(site_google_maps_place_config_value("semantic_description_force_refresh"))
     return bool(site_value)
+
+
+def google_maps_place_neighborhood_mappings() -> list[dict[str, Any]]:
+    configured = site_google_maps_place_config_value("neighborhood_mappings")
+    if isinstance(configured, dict):
+        return [
+            {"from": source, "to": target}
+            for source, target in configured.items()
+            if isinstance(source, str) and isinstance(target, str)
+        ]
+    if isinstance(configured, list):
+        return [item for item in configured if isinstance(item, dict)]
+    return []
 
 
 @lru_cache(maxsize=1)
@@ -7809,6 +7834,106 @@ def refine_semantic_neighborhood_with_address_localities(
         ):
             return candidate
     return semantic_neighborhood
+
+
+def apply_site_neighborhood_mappings(
+    neighborhood: str | None,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+    address_values: Sequence[str | None],
+    locality_candidates: Sequence[str],
+) -> str | None:
+    if neighborhood is None:
+        return None
+    for rule in google_maps_place_neighborhood_mappings():
+        mapped = apply_site_neighborhood_mapping_rule(
+            neighborhood,
+            rule,
+            city_name=city_name,
+            country_name=country_name,
+            address_values=address_values,
+            locality_candidates=locality_candidates,
+        )
+        if mapped is not None:
+            return mapped
+    return neighborhood
+
+
+def apply_site_neighborhood_mapping_rule(
+    neighborhood: str,
+    rule: dict[str, Any],
+    *,
+    city_name: str | None,
+    country_name: str | None,
+    address_values: Sequence[str | None],
+    locality_candidates: Sequence[str],
+) -> str | None:
+    target = sanitize_semantic_label(rule.get("to"), max_length=64)
+    if target is None:
+        return None
+    if not neighborhood_mapping_context_matches(rule.get("city"), city_name):
+        return None
+    if not neighborhood_mapping_context_matches(rule.get("country"), country_name):
+        return None
+    if not neighborhood_mapping_values_match(rule.get("from"), [neighborhood]):
+        return None
+    if "when_address_contains" in rule and not neighborhood_mapping_contains(
+        rule.get("when_address_contains"),
+        address_values,
+    ):
+        return None
+    if "when_candidate" in rule and not neighborhood_mapping_values_match(
+        rule.get("when_candidate"),
+        locality_candidates,
+    ):
+        return None
+    return target
+
+
+def neighborhood_mapping_context_matches(configured: Any, actual: str | None) -> bool:
+    values = coerce_mapping_string_list(configured)
+    if not values:
+        return True
+    actual_key = normalize_locality_key(actual)
+    return bool(actual_key and any(normalize_locality_key(value) == actual_key for value in values))
+
+
+def neighborhood_mapping_values_match(configured: Any, values: Sequence[str]) -> bool:
+    configured_values = coerce_mapping_string_list(configured)
+    if not configured_values:
+        return False
+    value_keys = {normalize_locality_key(value) for value in values if normalize_locality_key(value)}
+    return any(normalize_locality_key(value) in value_keys for value in configured_values)
+
+
+def neighborhood_mapping_contains(configured: Any, values: Sequence[str | None]) -> bool:
+    configured_values = coerce_mapping_string_list(configured)
+    if not configured_values:
+        return False
+    haystack = "\n".join(value for value in values if isinstance(value, str)).casefold()
+    return any(value.casefold() in haystack for value in configured_values)
+
+
+def coerce_mapping_string_list(value: Any) -> list[str]:
+    if isinstance(value, str):
+        stripped = value.strip()
+        return [stripped] if stripped else []
+    if isinstance(value, list):
+        return [item.strip() for item in value if isinstance(item, str) and item.strip()]
+    return []
+
+
+def flatten_address_parts(address_parts: AddressParts | None) -> list[str]:
+    if not address_parts:
+        return []
+    flattened: list[str] = []
+    for part in address_parts:
+        if isinstance(part, str):
+            flattened.append(part)
+        elif isinstance(part, list):
+            flattened.extend(item for item in part if isinstance(item, str))
+    return flattened
 
 
 def sanitize_semantic_description(value: Any) -> str | None:

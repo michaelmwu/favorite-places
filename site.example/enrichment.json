@@ -5,6 +5,7 @@
     "collect_about": true,
     "semantic_llm": true,
     "semantic_descriptions": true,
-    "semantic_description_force_refresh": false
+    "semantic_description_force_refresh": false,
+    "neighborhood_mappings": []
   }
 }

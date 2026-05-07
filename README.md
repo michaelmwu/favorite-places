@@ -161,12 +161,22 @@ Example `site/enrichment.json`:
     "collect_about": false,
     "semantic_llm": false,
     "semantic_descriptions": false,
-    "semantic_description_force_refresh": false
+    "semantic_description_force_refresh": false,
+    "neighborhood_mappings": [
+      {
+        "city": "Tokyo",
+        "from": "Higashiazabu",
+        "to": "Azabujuban",
+        "when_address_contains": "Higashiazabu"
+      }
+    ]
   }
 }
 ```
 
 When `semantic_llm` is enabled and LLM credentials are configured, the pipeline uses compact cache-only evidence from price range, review topics, review snippets, and About labels to infer neighborhood, type tags, and vibe tags. `semantic_descriptions` separately enables generated card descriptions. Descriptions are reused while the semantic description signature remains stable; the signature tracks major quality changes such as name/address/category changes, review topics appearing, About sections changing, price range, and coarse rating/review-count buckets. Set `semantic_description_force_refresh` when you intentionally want to regenerate descriptions even if the signature is unchanged. If the LLM is unavailable or errors, deterministic category, locality, and vibe rules still produce the guide data.
+
+`neighborhood_mappings` is an ordered site-level cleanup layer for local naming conventions. Each rule can scope by `city` and `country`, match a current `from` neighborhood, optionally require `when_address_contains` or `when_candidate`, and then emit `to`. Per-place `neighborhood` overrides still win over these mappings.
 
 Manual overrides always win over machine-enriched fields.
 
