@@ -177,6 +177,91 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(synced.photo_path, "/author-photos/tokyo-japan-example.webp")
         download_photo.assert_called_once_with("tokyo-japan", "https://example.com/curator.jpg")
 
+    def test_download_list_author_photo_uses_optimizer_extension(self) -> None:
+        class FakeHeaders:
+            def get_content_type(self) -> str:
+                return "image/png"
+
+        class FakeResponse:
+            headers = FakeHeaders()
+
+            def read(self) -> bytes:
+                return b"source-image"
+
+            def __enter__(self) -> "FakeResponse":
+                return self
+
+            def __exit__(self, exc_type, exc, tb) -> bool:
+                return False
+
+        photo_url = "https://example.com/curator.jpg"
+        photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
+        with TemporaryDirectory() as tmpdir:
+            author_photo_dir = Path(tmpdir)
+            expected_path = author_photo_dir / f"tokyo--{photo_hash}.jpg"
+            with (
+                patch.object(build_data, "AUTHOR_PHOTOS_DIR", author_photo_dir),
+                patch.object(build_data, "urlopen", return_value=FakeResponse()),
+                patch.object(build_data, "optimize_author_photo_asset", return_value=(b"optimized", ".jpg")),
+            ):
+                result = build_data.download_list_author_photo("tokyo", photo_url)
+
+            self.assertEqual(result, f"/author-photos/{expected_path.name}")
+            self.assertEqual(expected_path.read_bytes(), b"optimized")
+
+    def test_author_photo_stale_cleanup_does_not_match_slug_prefixes(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            author_photo_dir = Path(tmpdir)
+            keep_path = author_photo_dir / "tokyo--keep.webp"
+            same_slug_current = author_photo_dir / "tokyo--stale.webp"
+            same_slug_current_jpg = author_photo_dir / "tokyo--stale.jpg"
+            same_slug_legacy = author_photo_dir / "tokyo-123456789abc.webp"
+            prefixed_slug_current = author_photo_dir / "tokyo-japan--stale.webp"
+            prefixed_slug_legacy = author_photo_dir / "tokyo-japan-123456789abc.webp"
+            for path in [
+                keep_path,
+                same_slug_current,
+                same_slug_current_jpg,
+                same_slug_legacy,
+                prefixed_slug_current,
+                prefixed_slug_legacy,
+            ]:
+                path.write_bytes(b"image")
+
+            with patch.object(build_data, "AUTHOR_PHOTOS_DIR", author_photo_dir):
+                stale_names = {
+                    path.name
+                    for path in build_data.stale_author_photo_paths("tokyo", keep_filename=keep_path.name)
+                }
+
+        self.assertEqual(
+            stale_names,
+            {
+                same_slug_current.name,
+                same_slug_current_jpg.name,
+                same_slug_legacy.name,
+            },
+        )
+
+    def test_optimize_author_photo_asset_falls_back_to_jpeg_without_webp(self) -> None:
+        source = BytesIO()
+        Image.new("RGB", (500, 300), color=(160, 80, 40)).save(source, format="PNG")
+
+        with patch.object(build_data, "image_supports_webp", return_value=False):
+            optimized_content, extension = build_data.optimize_author_photo_asset(
+                source.getvalue(),
+                content_type="image/png",
+            )
+
+        self.assertIsNotNone(optimized_content)
+        self.assertEqual(extension, ".jpg")
+        assert optimized_content is not None
+        with Image.open(BytesIO(optimized_content)) as optimized_image:
+            self.assertEqual(
+                optimized_image.size,
+                (build_data.AUTHOR_PHOTO_SIZE, build_data.AUTHOR_PHOTO_SIZE),
+            )
+
     def test_list_author_override_skips_scraped_owner_photo_download(self) -> None:
         def read_json_side_effect(path: Path) -> dict[str, object]:
             if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":

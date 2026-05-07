@@ -20,7 +20,7 @@ export function getAuthorInitials(name: string | null | undefined): string {
   const initials =
     words.length === 1 ? words[0].slice(0, 2) : [words[0][0], words[words.length - 1][0]];
 
-  return initials.join("").toLocaleUpperCase();
+  return initials.join("").toUpperCase();
 }
 
 export function getAuthorAvatarMode(author: ListAuthor | null | undefined): AuthorAvatarMode {

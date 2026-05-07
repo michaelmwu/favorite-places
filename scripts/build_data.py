@@ -6361,11 +6361,10 @@ def sync_list_author_photo(slug: str, author: ListAuthor | None) -> ListAuthor |
 
 def download_list_author_photo(slug: str, photo_url: str) -> str | None:
     AUTHOR_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
-    photo_prefix = canonical_author_photo_stem(slug, photo_url)
-    filename = f"{photo_prefix}.webp"
-    output_path = AUTHOR_PHOTOS_DIR / filename
-    if output_path.exists():
-        return public_author_photo_path(filename)
+    photo_stem = canonical_author_photo_stem(slug, photo_url)
+    existing_path = existing_author_photo_path(photo_stem)
+    if existing_path is not None:
+        return public_author_photo_path(existing_path.name)
 
     try:
         request = Request(
@@ -6381,21 +6380,44 @@ def download_list_author_photo(slug: str, photo_url: str) -> str | None:
         print(f"WARNING: Failed to download author photo for {slug} from {photo_url}: {exc}", flush=True)
         return None
 
-    optimized_content = optimize_author_photo_asset(content, content_type=content_type)
-    if optimized_content is None:
+    optimized_content, extension = optimize_author_photo_asset(content, content_type=content_type)
+    if optimized_content is None or extension is None:
         return None
 
+    filename = f"{photo_stem}{extension}"
+    output_path = AUTHOR_PHOTOS_DIR / filename
     temp_path = AUTHOR_PHOTOS_DIR / f".{filename}.tmp"
     temp_path.write_bytes(optimized_content)
     temp_path.replace(output_path)
 
-    author_prefix = f"{safe_author_photo_stem(slug)}-"
-    for stale_path in AUTHOR_PHOTOS_DIR.glob(f"{author_prefix}*.webp"):
-        if stale_path.name == filename or stale_path.name.startswith("."):
-            continue
+    for stale_path in stale_author_photo_paths(slug, keep_filename=filename):
         stale_path.unlink(missing_ok=True)
 
     return public_author_photo_path(filename)
+
+
+def existing_author_photo_path(photo_stem: str) -> Path | None:
+    for extension in (".webp", ".jpg"):
+        photo_path = AUTHOR_PHOTOS_DIR / f"{photo_stem}{extension}"
+        if photo_path.exists():
+            return photo_path
+    return None
+
+
+def stale_author_photo_paths(slug: str, *, keep_filename: str) -> list[Path]:
+    if not AUTHOR_PHOTOS_DIR.exists():
+        return []
+
+    safe_slug = safe_author_photo_stem(slug)
+    current_prefix = f"{safe_slug}--"
+    legacy_pattern = re.compile(rf"^{re.escape(safe_slug)}-[0-9a-f]{{12}}\.(?:webp|jpg)$")
+    stale_paths: list[Path] = []
+    for stale_path in AUTHOR_PHOTOS_DIR.iterdir():
+        if stale_path.name == keep_filename or stale_path.name.startswith(".") or not stale_path.is_file():
+            continue
+        if stale_path.name.startswith(current_prefix) or legacy_pattern.fullmatch(stale_path.name):
+            stale_paths.append(stale_path)
+    return stale_paths
 
 
 def safe_author_photo_stem(slug: str) -> str:
@@ -6405,7 +6427,7 @@ def safe_author_photo_stem(slug: str) -> str:
 
 def canonical_author_photo_stem(slug: str, photo_url: str) -> str:
     photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
-    return f"{safe_author_photo_stem(slug)}-{photo_hash}"
+    return f"{safe_author_photo_stem(slug)}--{photo_hash}"
 
 
 def populate_place_photos_for_guides(
@@ -6836,7 +6858,11 @@ def optimize_place_photo_asset(
         return None, None
 
 
-def optimize_author_photo_asset(content: bytes, *, content_type: str | None) -> bytes | None:
+def optimize_author_photo_asset(
+    content: bytes,
+    *,
+    content_type: str | None,
+) -> tuple[bytes, str] | tuple[None, None]:
     try:
         with Image.open(io.BytesIO(content)) as image:
             image.load()
@@ -6847,23 +6873,34 @@ def optimize_author_photo_asset(content: bytes, *, content_type: str | None) -> 
                 method=Image.Resampling.LANCZOS,
                 centering=(0.5, 0.5),
             )
-            if resized.mode != "RGB":
-                resized = resized.convert("RGB")
 
             output = io.BytesIO()
+            if image_supports_webp():
+                if resized.mode not in {"RGB", "RGBA"}:
+                    resized = resized.convert("RGB")
+                resized.save(
+                    output,
+                    format="WEBP",
+                    quality=AUTHOR_PHOTO_QUALITY,
+                    method=6,
+                )
+                return output.getvalue(), ".webp"
+
+            if resized.mode != "RGB":
+                resized = resized.convert("RGB")
             resized.save(
                 output,
-                format="WEBP",
+                format="JPEG",
                 quality=AUTHOR_PHOTO_QUALITY,
-                method=6,
+                optimize=True,
             )
-            return output.getvalue()
+            return output.getvalue(), ".jpg"
     except (OSError, UnidentifiedImageError) as exc:
         print(
             f"WARNING: Failed to optimize downloaded author photo ({content_type or 'unknown'}): {exc}",
             flush=True,
         )
-        return None
+        return None, None
 
 
 def image_supports_webp() -> bool:
