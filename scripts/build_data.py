@@ -7689,7 +7689,8 @@ def apply_semantic_enrichment(
     ):
         enrichment_place.semantic_description = None
         enrichment_place.semantic_description_signature = None
-        enrichment_place.semantic_source = None
+        if not semantic_enrichment_state_is_populated(semantic_enrichment_state(enrichment_place)):
+            enrichment_place.semantic_source = None
     if (
         include_description
         and not force_description

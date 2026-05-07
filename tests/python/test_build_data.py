@@ -3380,6 +3380,51 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(enrichment.semantic_description_signature)
         self.assertIsNone(enrichment.semantic_source)
 
+    def test_apply_semantic_enrichment_preserves_semantic_source_when_semantics_remain_populated(self) -> None:
+        raw_place = RawPlace(
+            name="Tea House",
+            note="Order the house oolong and stay for a quiet reset.",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+            review_topics=[{"label": "oolong", "count": 12}],
+            semantic_neighborhood="Xinyi",
+            semantic_tags=["tea-house"],
+            semantic_description="A stale generated description.",
+            semantic_description_signature="old-signature",
+            semantic_source="llm",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Tea House, Taipei, Taiwan",
+            matched=True,
+            place=enrichment,
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=False),
+            patch.object(build_data, "repair_semantic_enrichment_with_llm", return_value=None),
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                existing_entry=existing_entry,
+            )
+
+        self.assertEqual(enrichment.semantic_neighborhood, "Xinyi")
+        self.assertEqual(enrichment.semantic_tags, ["tea-house"])
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertEqual(enrichment.semantic_source, "llm")
+
     def test_apply_semantic_enrichment_force_refreshes_description(self) -> None:
         raw_place = RawPlace(
             name="Tea House",
