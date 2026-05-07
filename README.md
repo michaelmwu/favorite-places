@@ -57,7 +57,7 @@ Edit:
 - `site/config.ts` for site name, nav, copy, labels, map provider, and display options
 - `site/theme.css` for colors, fonts, spacing, and custom styling
 - `site/list_sources.json` for your Google Maps list sources
-- `site/overrides/` for handwritten descriptions, tags, notes, top picks, and ranking
+- `site/overrides/` for handwritten notes, tags, top picks, and ranking
 - `site/content/templates/` for optional trusted HTML insertion points
 - `site/public/` for logos, favicons, and site-owned assets
 

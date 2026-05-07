@@ -2,7 +2,7 @@
   "cid:3765761221328423815": {
     "primary_category": "Landmark",
     "neighborhood": "Xinyi",
-    "why_recommended": "Still the easiest big-view landmark in Taipei, with shopping, food, and transit wrapped around the tower.",
+    "note": "Still the easiest big-view landmark in Taipei, with shopping, food, and transit wrapped around the tower.",
     "top_pick": true,
     "manual_rank": 20,
     "tags": ["skyline", "viewpoint"],
@@ -11,7 +11,7 @@
   "cid:3765761343429964031": {
     "primary_category": "Seafood market",
     "neighborhood": "Zhongshan",
-    "why_recommended": "A polished seafood market setup for sushi, grilled seafood, and an easy Zhongshan lunch when you want options without a long plan.",
+    "note": "A polished seafood market setup for sushi, grilled seafood, and an easy Zhongshan lunch when you want options without a long plan.",
     "top_pick": true,
     "manual_rank": 10,
     "tags": ["seafood", "market"],

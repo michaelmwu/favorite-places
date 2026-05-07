@@ -32,8 +32,7 @@ const filterTagTokens = JSON.stringify(displayTags.map(getTagComparisonValue));
 const filterVibeTagTokens = JSON.stringify(displayVibeTags.map(getTagComparisonValue));
 const localityPathTokens = JSON.stringify((place.locality_path ?? []).map(getTagComparisonValue));
 const neighborhoodToken = getTagComparisonValue(place.neighborhood ?? "");
-const whyRecommendedHtml = renderRichText(place.why_recommended);
-const noteHtml = renderRichText(place.note);
+const whyRecommendedHtml = renderRichText(place.why_recommended ?? place.note);
 const placePhotosEnabled = (import.meta.env.PUBLIC_PLACE_PHOTOS || "on").toLowerCase() !== "off";
 const hasPhoto = Boolean(siteConfig.placeCard.showPhoto && placePhotosEnabled && place.main_photo_path);
 const ratingValue = typeof place.rating === "number" ? place.rating : null;
@@ -115,8 +114,8 @@ const isTemporarilyClosed = siteConfig.placeCard.showStatus && place.status === 
   data-search={[
     place.name,
     place.address ?? "",
-    place.note ?? "",
     place.why_recommended ?? "",
+    place.note ?? "",
     place.primary_category ?? "",
     place.neighborhood ?? "",
     (place.locality_path ?? []).join(" "),
@@ -213,7 +212,6 @@ const isTemporarilyClosed = siteConfig.placeCard.showStatus && place.status === 
   {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && (
     <p class="rich-copy ui-copy place-card-description" set:html={whyRecommendedHtml} />
   )}
-  {siteConfig.placeCard.showNote && noteHtml && <p class="small-copy ui-copy ui-copy--sm rich-copy" set:html={noteHtml} />}
   {siteConfig.placeCard.showAddress && place.address && (
     <div class="place-card-address" title={place.address}>
       <span class="place-card-address-icon" aria-hidden="true">

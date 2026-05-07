@@ -2534,6 +2534,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(first_place.primary_category, "Bakery")
         self.assertEqual(first_place.marker_icon, "bakery")
         self.assertEqual(first_place.note, "Manual note")
+        self.assertEqual(first_place.why_recommended, "Manual note")
         self.assertEqual(
             first_place.maps_url,
             "https://www.google.com/maps/search/?api=1&query=Coffee+House%2C+1+Shibuya%2C+Tokyo%2C+Japan",
@@ -2552,6 +2553,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(first_place.provenance.maps_url.source, "google_places")
         self.assertEqual(first_place.provenance.primary_category.source, "manual")
         self.assertEqual(first_place.provenance.note.source, "manual")
+        self.assertEqual(first_place.provenance.why_recommended.source, "manual")
         self.assertEqual(first_place.provenance.top_pick.source, "manual")
         self.assertEqual(first_place.provenance.status.source, "google_places")
         self.assertEqual(
@@ -2566,6 +2568,38 @@ class BuildDataTests(unittest.TestCase):
             },
         )
         self.assertTrue(hidden_place.hidden)
+
+    def test_normalize_guide_rejects_manual_why_recommended_override(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            place_overrides_dir = tmpdir_path / "places"
+            place_overrides_dir.mkdir()
+            (place_overrides_dir / "tokyo-japan.json").write_text(
+                json.dumps(
+                    {
+                        place_id: {
+                            "why_recommended": "Unsupported handwritten description.",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir):
+                with self.assertRaisesRegex(ValueError, "use 'note' for handwritten recommendation copy"):
+                    build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
 
     def test_normalize_guide_prefers_display_address_over_raw_saved_list_address(self) -> None:
         raw = RawSavedList(
@@ -6059,13 +6093,13 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(refreshed_place.semantic_description_signature)
         self.assertIsNone(refreshed_place.semantic_source)
 
-    def test_refresh_cached_semantic_descriptions_skips_places_with_manual_why_recommended(self) -> None:
+    def test_refresh_cached_semantic_descriptions_skips_places_with_manual_note(self) -> None:
         raw = RawSavedList(
             title="Taipei, Taiwan",
             places=[
                 RawPlace(
                     name="Tea House",
-                    note="Saved-list note that should not matter once a handwritten description exists.",
+                    note="Saved-list note that should not matter once a handwritten note exists.",
                     maps_url="https://maps.google.com/?cid=111",
                     cid="111",
                 )
@@ -6087,7 +6121,7 @@ class BuildDataTests(unittest.TestCase):
                 json.dumps(
                     {
                         "cid:111": {
-                            "why_recommended": "Handwritten editor description.",
+                            "note": "Handwritten editor description.",
                         }
                     },
                     ensure_ascii=False,
@@ -7569,7 +7603,7 @@ class BuildDataTests(unittest.TestCase):
         jitter_sleep.assert_called_once_with(3)
         fetch_enrichment.assert_called_once()
 
-    def test_enrich_place_job_suppresses_semantic_description_for_handwritten_override(self) -> None:
+    def test_enrich_place_job_suppresses_semantic_description_for_handwritten_note(self) -> None:
         entry = EnrichmentCacheEntry(
             fetched_at="2026-04-20T00:00:00+00:00",
             query="First Place, Tokyo",
@@ -7585,7 +7619,7 @@ class BuildDataTests(unittest.TestCase):
                 json.dumps(
                     {
                         "cid:111": {
-                            "why_recommended": "Handwritten editor description.",
+                            "note": "Handwritten editor description.",
                         }
                     },
                     ensure_ascii=False,

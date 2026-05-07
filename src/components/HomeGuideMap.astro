@@ -41,24 +41,33 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
           <p class="small-copy" data-home-map-summary>
             Showing {mapGuides.length} guide{mapGuides.length === 1 ? "" : "s"} on the map.
           </p>
-          <div class="home-map-actions">
-            <button class="map-inline-toggle" type="button" data-home-map-reset hidden>
-              Reset map
-            </button>
-            <button class="map-inline-toggle" type="button" data-home-map-toggle aria-expanded="true">
-              Hide map
-            </button>
-          </div>
         </div>
       </div>
 
-      <div
-        class="guide-map"
-        data-home-guide-map
-        data-map-provider={mapProvider}
-        data-google-maps-api-key={googleMapsApiKey}
-        data-guides={JSON.stringify(mapGuides).replace(/</g, "\\u003c")}
-      />
+      <div class="home-map-stage">
+        <div class="home-map-actions">
+          <button class="map-inline-toggle" type="button" data-home-map-reset hidden>
+            Reset map
+          </button>
+          <button
+            class="map-inline-toggle"
+            type="button"
+            data-home-map-toggle
+            aria-expanded="true"
+            aria-label="Hide map"
+          >
+            Hide map
+          </button>
+        </div>
+
+        <div
+          class="guide-map"
+          data-home-guide-map
+          data-map-provider={mapProvider}
+          data-google-maps-api-key={googleMapsApiKey}
+          data-guides={JSON.stringify(mapGuides).replace(/</g, "\\u003c")}
+        />
+      </div>
 
       <noscript>
         <div class="map-fallback">
@@ -166,6 +175,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   }
 
   const HOME_MAP_COLLAPSED_KEY = "favoritePlacesHomeMapCollapsed";
+  const COMPACT_HOME_MAP_MEDIA_QUERY = "(max-width: 719px)";
   const WORLD_MAP_MAX_LATITUDE = 85.05112878;
   const WORLD_MAP_MIN_ZOOM = 0;
   const WORLD_MAP_MIN_LONGITUDE = -180;
@@ -188,6 +198,7 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     __favoritePlacesGoogleMapsLoader?: Promise<unknown>;
     google?: unknown;
   };
+  const compactHomeMapMediaQuery = window.matchMedia(COMPACT_HOME_MAP_MEDIA_QUERY);
   const getThemeValue = (name: string, fallback: string) => {
     const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     return value || fallback;
@@ -238,6 +249,14 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
   const markerLabelUnits = (label: string) => Array.from(label).length;
 
   const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+  const homeMapToggleLabel = (collapsed: boolean) => {
+    if (compactHomeMapMediaQuery.matches) {
+      return collapsed ? "Show" : "Hide";
+    }
+
+    return collapsed ? "Show map" : "Hide map";
+  };
 
   const guideBoundsLiteral = (guides: HomeMapGuide[]): LatLngBoundsLiteral | null => {
     if (guides.length === 0) return null;
@@ -866,8 +885,9 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
     panel.dataset.collapsed = collapsed ? "true" : "false";
 
     if (button) {
-      button.textContent = collapsed ? "Show map" : "Hide map";
+      button.textContent = homeMapToggleLabel(collapsed);
       button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      button.setAttribute("aria-label", collapsed ? "Show map" : "Hide map");
     }
 
     if (persist) {
@@ -881,6 +901,17 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
         );
       }, 180);
     }
+  };
+
+  const syncPanelToggleLabels = () => {
+    document.querySelectorAll<HTMLElement>("[data-home-map-panel]").forEach((panel) => {
+      const button = panel.querySelector<HTMLButtonElement>("[data-home-map-toggle]");
+      if (!button) return;
+
+      const collapsed = panel.dataset.collapsed === "true";
+      button.textContent = homeMapToggleLabel(collapsed);
+      button.setAttribute("aria-label", collapsed ? "Show map" : "Hide map");
+    });
   };
 
   const initPanels = () => {
@@ -916,6 +947,8 @@ const mapGuides = guides.filter((guide) => Number.isFinite(guide.lat) && Number.
       element.dispatchEvent(new CustomEvent("favorite-places:home-map-panel-opened"));
     });
   });
+
+  compactHomeMapMediaQuery.addEventListener("change", syncPanelToggleLabels);
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initMaps, { once: true });
