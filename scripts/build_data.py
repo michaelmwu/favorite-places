@@ -1280,20 +1280,46 @@ def current_scraper_proxy() -> str | None:
     return normalized
 
 
-def scraper_session_identity_key(proxy: str | None) -> str:
+def scraper_session_identity_key(proxy: str | None, *, session_scope: str | None = None) -> str:
     if proxy is None:
-        return "direct"
-    digest = hashlib.sha256(proxy.encode("utf-8")).hexdigest()[:16]
-    return f"proxy-{digest}"
+        base_key = "direct"
+    else:
+        digest = hashlib.sha256(proxy.encode("utf-8")).hexdigest()[:16]
+        base_key = f"proxy-{digest}"
+    scope_key = scraper_session_scope_key(session_scope)
+    return f"{base_key}-{scope_key}" if scope_key else base_key
+
+
+def scraper_session_scope_key(session_scope: str | None) -> str | None:
+    normalized = as_string(session_scope)
+    if normalized is None:
+        return None
+    scope_key = re.sub(r"[^a-z0-9]+", "-", normalized.casefold()).strip("-")
+    return scope_key[:80] or None
+
+
+def scraper_place_session_scope(
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> str:
+    locality_parts = [
+        part
+        for part in (country_name, city_name)
+        if as_string(part) is not None
+    ]
+    locality = "-".join(str(part) for part in locality_parts)
+    return f"place-{locality}" if locality else "place"
 
 
 def build_scraper_session_state(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     slot_key: str = "slot-0",
     lock_path: Path | None = None,
 ) -> ScraperSessionState:
-    identity_key = scraper_session_identity_key(proxy)
+    identity_key = scraper_session_identity_key(proxy, session_scope=session_scope)
     identity_dir = SCRAPER_STATE_DIR / identity_key
     return ScraperSessionState(
         identity_key=identity_key,
@@ -1309,15 +1335,22 @@ def build_scraper_session_state(
 def ensure_scraper_session_state(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     now: datetime | None = None,
 ) -> ScraperSessionState:
     reference_time = now or datetime.now(UTC)
-    identity_key = scraper_session_identity_key(proxy)
+    identity_key = scraper_session_identity_key(proxy, session_scope=session_scope)
     identity_dir = SCRAPER_STATE_DIR / identity_key
-    sweep_stale_scraper_session_states(proxy, identity_dir=identity_dir, now=reference_time)
+    sweep_stale_scraper_session_states(
+        proxy,
+        session_scope=session_scope,
+        identity_dir=identity_dir,
+        now=reference_time,
+    )
     slot_key, lock_path = acquire_scraper_session_slot(identity_dir)
     state = build_scraper_session_state(
         proxy,
+        session_scope=session_scope,
         slot_key=slot_key,
         lock_path=lock_path,
     )
@@ -1426,12 +1459,13 @@ def should_reset_scraper_session(exc: Exception) -> bool:
 def sweep_stale_scraper_session_states(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     identity_dir: Path,
     now: datetime,
 ) -> None:
     for metadata_path in sorted(identity_dir.glob("metadata.*.json")):
         slot_key = metadata_path.stem.removeprefix("metadata.")
-        state = build_scraper_session_state(proxy, slot_key=slot_key)
+        state = build_scraper_session_state(proxy, session_scope=session_scope, slot_key=slot_key)
         if scraper_session_lock_is_active(state.lock_path):
             continue
         if scraper_session_is_stale(state, now=now):
@@ -1507,9 +1541,10 @@ def scraper_session_lock_is_active(lock_path: Path) -> bool:
 def build_scraper_sessions(
     proxy: str | None,
     *,
+    session_scope: str | None = None,
     now: datetime | None = None,
 ) -> tuple[ScraperSessionState, Any, Any]:
-    session_state = ensure_scraper_session_state(proxy, now=now)
+    session_state = ensure_scraper_session_state(proxy, session_scope=session_scope, now=now)
     return session_state, *build_scraper_configs(session_state, proxy)
 
 
@@ -2415,7 +2450,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         if prefer_enrichment_names and enrichment.display_name:
             preferred_name = enrichment.display_name
         normalized_name = as_string(override.get("name")) or preferred_name
-        normalized_address = place.address or enrichment.address_display_en or enrichment.formatted_address
+        normalized_address = enrichment.address_display_en or place.address or enrichment.formatted_address
         maps_url = build_public_google_maps_url(
             name=normalized_name,
             address=normalized_address,
@@ -2572,9 +2607,12 @@ def build_place_provenance(
     )
     if normalized.address:
         provenance.address = (
-            google_list_field(normalized.address, raw)
-            if raw_place.address
-            else google_places_field(normalized.address, enrichment_cache_entry)
+            google_places_field(normalized.address, enrichment_cache_entry)
+            if (
+                normalized.address == enrichment.address_display_en
+                or (not raw_place.address and normalized.address == enrichment.formatted_address)
+            )
+            else google_list_field(normalized.address, raw)
         )
     if normalized.lat is not None:
         provenance.lat = google_list_field(normalized.lat, raw)
@@ -6804,7 +6842,13 @@ def fetch_place_page_enrichment(
         )
 
     proxy = current_scraper_proxy()
-    session_state, browser_session, http_session = build_scraper_sessions(proxy)
+    session_state, browser_session, http_session = build_scraper_sessions(
+        proxy,
+        session_scope=scraper_place_session_scope(
+            city_name=city_name,
+            country_name=country_name,
+        ),
+    )
     llm_mode = google_maps_place_llm_repair_mode()
     llm_repairer = None if llm_mode == "off" else build_place_llm_repairer()
     collect_reviews = google_maps_place_collect_reviews()
@@ -7603,6 +7647,14 @@ def apply_semantic_enrichment(
     previous_place = existing_entry.place if existing_entry else None
     if (
         include_description
+        and enrichment_place.semantic_description
+        and enrichment_place.semantic_description_signature != description_signature
+    ):
+        enrichment_place.semantic_description = None
+        enrichment_place.semantic_description_signature = None
+        enrichment_place.semantic_source = None
+    if (
+        include_description
         and not force_description
         and previous_place is not None
         and previous_place.semantic_description
@@ -8057,25 +8109,38 @@ def display_price_range_for_place(
     *,
     country_name: str | None,
 ) -> str | None:
-    raw_price = select_place_display_price(enrichment_place)
-    if raw_price is None:
+    selected_price = select_place_display_price(enrichment_place)
+    if selected_price is None:
         return None
+    source, raw_price = selected_price
     config = google_maps_place_price_display_config()
     currency_mode = as_string(config.get("currency_mode")) or "raw"
     if currency_mode == "raw":
-        return raw_price
-    if currency_mode == "guide_local":
+        display_price = raw_price
+        target_currency = None
+    elif currency_mode == "guide_local":
         target_currency = country_currency_code(country_name)
+        display_price = (
+            normalize_price_text_to_currency(raw_price, target_currency=target_currency)
+            if target_currency is not None
+            else None
+        ) or raw_price
     elif currency_mode == "target":
         target_currency = as_string(config.get("target_currency"))
+        display_price = (
+            normalize_price_text_to_currency(raw_price, target_currency=target_currency)
+            if target_currency is not None
+            else None
+        ) or raw_price
     else:
-        return raw_price
-    if target_currency is None:
-        return raw_price
-    return normalize_price_text_to_currency(raw_price, target_currency=target_currency) or raw_price
+        display_price = raw_price
+        target_currency = None
+    if not price_display_amount_is_allowed(source, display_price, target_currency=target_currency):
+        return None
+    return display_price
 
 
-def select_place_display_price(enrichment_place: EnrichmentPlace) -> str | None:
+def select_place_display_price(enrichment_place: EnrichmentPlace) -> tuple[str, str] | None:
     config = google_maps_place_price_display_config()
     configured_order = coerce_string_list(config.get("source_order"))
     source_order = [
@@ -8091,15 +8156,40 @@ def select_place_display_price(enrichment_place: EnrichmentPlace) -> str | None:
         if value is not None:
             if source == "price_range" and not price_range_source_is_eligible(enrichment_place, value):
                 continue
-            return value
+            return source, value
     return None
 
 
+def price_display_amount_is_allowed(
+    source: str,
+    value: str,
+    *,
+    target_currency: str | None,
+) -> bool:
+    parsed = parse_price_text(value)
+    if parsed is None:
+        return True
+    parsed_currency, amounts, _suffix = parsed
+    currency = (target_currency or parsed_currency).strip().upper()
+    max_amount = price_display_max_numeric_amount(source, currency)
+    if max_amount is None:
+        return True
+    return max(amounts) <= max_amount
+
+
+def price_display_max_numeric_amount(source: str, currency: str) -> float | None:
+    config = google_maps_place_price_display_config()
+    configured = config.get("max_numeric_by_source")
+    if not isinstance(configured, dict):
+        return None
+    source_config = configured.get(source)
+    if not isinstance(source_config, dict):
+        return None
+    amount = source_config.get(currency.strip().upper())
+    return as_float(amount)
+
+
 def price_range_source_is_eligible(enrichment_place: EnrichmentPlace, value: str) -> bool:
-    if re.fullmatch(r"\${1,4}", value.strip()):
-        return True
-    if parse_price_text(value) is None:
-        return True
     category_values = [
         enrichment_place.primary_type,
         enrichment_place.primary_type_display_name,
@@ -8107,6 +8197,10 @@ def price_range_source_is_eligible(enrichment_place: EnrichmentPlace, value: str
         *enrichment_place.types,
     ]
     category_text = " ".join(value for value in category_values if value).casefold()
+    if re.fullmatch(r"\${1,4}", value.strip()):
+        return any(hint in category_text for hint in NUMERIC_PRICE_RANGE_CATEGORY_HINTS)
+    if parse_price_text(value) is None:
+        return True
     return any(hint in category_text for hint in NUMERIC_PRICE_RANGE_CATEGORY_HINTS)
 
 
