@@ -1025,15 +1025,25 @@ _PLACE_ABOUT_TAB_CLICK_JS = r"""
 """
 _PLACE_SEARCH_RESULT_CLICK_JS = r"""
 () => {
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const searchResultTitleLabels = new Set([
+    "result",
+    "results",
+    "search result",
+    "search results",
+    "結果",
+    "検索結果",
+  ]);
+  const isSearchResultTitle = (value) => searchResultTitleLabels.has(cleanLine(value).toLowerCase());
   const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
   for (const selector of titleSelectors) {
     const element = document.querySelector(selector);
-    if (element?.innerText?.trim()) {
+    const title = cleanLine(element?.innerText || element?.textContent || "");
+    if (title && !isSearchResultTitle(title)) {
       return false;
     }
   }
 
-  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
   const normalize = (value) => cleanLine(value)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")

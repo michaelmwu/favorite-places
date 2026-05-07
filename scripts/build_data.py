@@ -502,6 +502,13 @@ SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
     "zhongshan": "Zhongshan",
     "zhishan": "Zhishan",
 }
+SEMANTIC_NEIGHBORHOOD_UPPERCASE_TOKENS = {
+    "cbd",
+    "dc",
+    "dtla",
+    "la",
+    "nyc",
+}
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
@@ -1688,6 +1695,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--skip-enrichment-source-refresh",
+        action="store_true",
+        help=(
+            "Do not refresh affected raw Google Maps source lists before place-page enrichment. "
+            "Use this when you explicitly want enrichment to run against the existing raw snapshot."
+        ),
+    )
+    parser.add_argument(
         "--refresh-photos",
         action="store_true",
         help="Download missing local optimized place photos from cached enrichment photo URLs.",
@@ -2370,7 +2385,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 *(enrichment.semantic_tags if use_semantic_enrichment else []),
                 *(enrichment.semantic_types if use_semantic_enrichment else []),
             ]
-            if tag
+            if semantic_tag_slug_is_usable(tag)
         ]
         tags = sorted(
             {
@@ -2470,7 +2485,10 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         if prefer_enrichment_names and enrichment.display_name:
             preferred_name = enrichment.display_name
         normalized_name = as_string(override.get("name")) or preferred_name
-        normalized_address = enrichment.address_display_en or place.address or enrichment.formatted_address
+        normalized_address = normalize_guide_display_address(
+            enrichment.address_display_en or enrichment.formatted_address or place.address,
+            country_name=country_name,
+        )
         maps_url = build_public_google_maps_url(
             name=normalized_name,
             address=normalized_address,
@@ -2528,6 +2546,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             primary_category_localized=primary_category_localized,
             tags=tags,
             city_name=city_name,
+            country_name=country_name,
             neighborhood_uses_enrichment=neighborhood_uses_enrichment,
             top_pick_override=top_pick_override,
             status=status,
@@ -2605,6 +2624,7 @@ def build_place_provenance(
     primary_category_localized: str | None,
     tags: list[str],
     city_name: str | None,
+    country_name: str | None,
     neighborhood_uses_enrichment: bool,
     top_pick_override: bool | None,
     status: str,
@@ -2625,11 +2645,19 @@ def build_place_provenance(
         else google_list_field(normalized.name, raw)
     )
     if normalized.address:
+        enrichment_display_address = normalize_guide_display_address(
+            enrichment.address_display_en,
+            country_name=country_name,
+        )
+        enrichment_formatted_address = normalize_guide_display_address(
+            enrichment.formatted_address,
+            country_name=country_name,
+        )
         provenance.address = (
             google_places_field(normalized.address, enrichment_cache_entry)
             if (
-                normalized.address == enrichment.address_display_en
-                or (not raw_place.address and normalized.address == enrichment.formatted_address)
+                normalized.address == enrichment_display_address
+                or normalized.address == enrichment_formatted_address
             )
             else google_list_field(normalized.address, raw)
         )
@@ -3279,6 +3307,31 @@ def enrich_raw_sources(
         raise
     finally:
         executor.shutdown(wait=True, cancel_futures=True)
+
+
+def enrichment_source_refresh_lists(place_selectors: Sequence[str] | None) -> list[str]:
+    normalized_place_selectors = normalize_place_selectors(list(place_selectors or []))
+    if not normalized_place_selectors:
+        return []
+
+    refresh_slugs = {
+        selector.removeprefix("guide-slug:")
+        for selector in normalized_place_selectors
+        if selector.startswith("guide-slug:") and selector.removeprefix("guide-slug:")
+    }
+    for raw_path in sorted(RAW_DIR.glob("*.json")):
+        raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+        for place in raw.places:
+            place_id = stable_place_id(place, source_type=raw.configured_source_type)
+            if place_selector_matches(
+                raw_path.stem,
+                place,
+                place_id=place_id,
+                selectors=normalized_place_selectors,
+            ):
+                refresh_slugs.add(raw_path.stem)
+                break
+    return sorted(refresh_slugs)
 
 
 def refresh_cached_semantic_descriptions(
@@ -7356,6 +7409,57 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
     return normalized if looks_like_place_page_formatted_address(normalized) else None
 
 
+def normalize_guide_display_address(value: Any, *, country_name: str | None) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    country_key = normalize_locality_key(country_name)
+    if country_key == "taiwan" or re.search(r"\bTaiwan\b|台灣|台湾", normalized, flags=re.IGNORECASE):
+        normalized = normalize_taiwan_guide_display_address(normalized)
+    return re.sub(r"\s+", " ", normalized).strip() or None
+
+
+def normalize_taiwan_guide_display_address(address: str) -> str:
+    parts = [part.strip() for part in address.split(",") if part.strip()]
+    if len(parts) >= 3 and re.fullmatch(r"\d{3}", parts[0]) and normalize_locality_key(parts[1]) == "taiwan":
+        postal_code = parts[0]
+        parts = [*reversed(parts[2:]), f"Taiwan {postal_code}"]
+    else:
+        parts = [normalize_taiwan_street_number_part(part) for part in parts]
+    parts = [normalize_taiwan_street_number_part(part) for part in parts]
+    return ", ".join(part for part in parts if part)
+
+
+def normalize_taiwan_street_number_part(part: str) -> str:
+    normalized = re.sub(r"\s+", " ", part).strip()
+    duplicate_match = re.fullmatch(
+        r"No\.?\s*(?P<number>\d+[A-Za-z-]*)\s+No\.?\s*(?P=number)號(?P<suffix>[A-Za-z0-9-]*)",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if duplicate_match:
+        return format_taiwan_street_number(
+            duplicate_match.group("number"),
+            duplicate_match.group("suffix"),
+        )
+    number_match = re.fullmatch(
+        r"(?:No\.?\s*)?(?P<number>\d+[A-Za-z-]*)號(?P<suffix>[A-Za-z0-9-]*)",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if number_match:
+        return format_taiwan_street_number(number_match.group("number"), number_match.group("suffix"))
+    return normalized
+
+
+def format_taiwan_street_number(number: str, suffix: str | None = None) -> str:
+    normalized_number = number.strip()
+    normalized_suffix = (suffix or "").strip()
+    if normalized_suffix:
+        return f"No. {normalized_number}, {normalized_suffix}"
+    return f"No. {normalized_number}"
+
+
 def looks_like_place_page_review_snippet(value: str) -> bool:
     if has_place_page_address_marker(value):
         return False
@@ -7644,7 +7748,7 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
     return items
 
 
-SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v2"
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v3"
 
 
 def apply_semantic_enrichment(
@@ -7797,7 +7901,10 @@ def repair_semantic_enrichment_with_llm(
                 "content": (
                     "You classify saved places for a travel guide. Return only compact JSON. "
                     "Infer the guide-facing neighborhood only from address/geography evidence. Prefer common "
-                    "local area names over the smallest administrative unit. For Taiwan, village/li labels "
+                    "local area names over the smallest administrative unit. The neighborhood must be a "
+                    "human-facing display label, not a tag or slug: use normal local display casing such as "
+                    "Perth CBD, Northbridge, or Margaret River; preserve acronyms like CBD; never return "
+                    "kebab-case, snake_case, or all-lowercase labels. For Taiwan, village/li labels "
                     "such as Kangle Village or Tonghua Village are usually too granular; prefer the district "
                     "such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local "
                     "area as the neighborhood. Do not infer Ximen, Neihu, Longshan, or similar local areas from "
@@ -8033,10 +8140,40 @@ def normalize_semantic_neighborhood_label(
         shortened = re.sub(r"\s+District$", "", label, flags=re.IGNORECASE).strip()
         if shortened:
             label = shortened
-    alias = SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES.get(normalize_locality_key(label))
+    alias = SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES.get(semantic_neighborhood_comparison_key(label))
+    if alias:
+        return alias
+    label = display_case_semantic_neighborhood_label(label)
+    alias = SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES.get(semantic_neighborhood_comparison_key(label))
     if alias:
         return alias
     return label
+
+
+def semantic_neighborhood_comparison_key(value: str | None) -> str:
+    return normalize_locality_key(value).replace("-", " ")
+
+
+def display_case_semantic_neighborhood_label(label: str) -> str:
+    normalized = re.sub(r"\s+", " ", label.replace("_", " ").strip())
+    slug_like = bool(re.fullmatch(r"[a-z0-9]+(?:[-_][a-z0-9]+)+", label.strip()))
+    if slug_like:
+        normalized = re.sub(r"[-_]+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    if not normalized or not normalized.isascii():
+        return normalized
+    if not slug_like and normalized != normalized.lower() and normalized != normalized.upper():
+        return normalized
+    return " ".join(display_case_semantic_neighborhood_word(word) for word in normalized.split(" "))
+
+
+def display_case_semantic_neighborhood_word(word: str) -> str:
+    lower_word = word.lower()
+    if lower_word in SEMANTIC_NEIGHBORHOOD_UPPERCASE_TOKENS:
+        return lower_word.upper()
+    if not lower_word:
+        return word
+    return f"{lower_word[0].upper()}{lower_word[1:]}"
 
 
 def refine_semantic_neighborhood_with_address_localities(
@@ -8045,13 +8182,15 @@ def refine_semantic_neighborhood_with_address_localities(
 ) -> str | None:
     if semantic_neighborhood is None:
         return None
-    semantic_key = normalize_locality_key(semantic_neighborhood).replace("-", " ")
+    semantic_key = semantic_neighborhood_comparison_key(semantic_neighborhood)
     if len(semantic_key) < 4:
         return semantic_neighborhood
     for candidate in locality_candidates:
-        candidate_key = normalize_locality_key(candidate).replace("-", " ")
-        if not candidate_key or candidate_key == semantic_key:
+        candidate_key = semantic_neighborhood_comparison_key(candidate)
+        if not candidate_key:
             continue
+        if candidate_key == semantic_key:
+            return candidate
         if (
             candidate_key.endswith(semantic_key)
             or candidate_key.startswith(f"{semantic_key} ")
@@ -8474,11 +8613,19 @@ def normalize_semantic_tag_list(value: Any, *, limit: int) -> list[str]:
         if item_text is None:
             continue
         tag = normalize_tag_slug(item_text)
-        if tag and tag not in tags:
+        if semantic_tag_slug_is_usable(tag) and tag not in tags:
             tags.append(tag)
         if len(tags) >= limit:
             break
     return tags
+
+
+def semantic_tag_slug_is_usable(tag: str | None) -> bool:
+    if not tag or tag == "item":
+        return False
+    if len(tag) == 1 and tag.isalpha():
+        return False
+    return True
 
 
 @lru_cache(maxsize=1)
@@ -8944,6 +9091,23 @@ def main() -> int:
             refresh_retry_backoff_seconds=args.refresh_retry_backoff_seconds,
             refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
         )
+
+    if (
+        (args.enrich or args.enrich_missing or args.refresh_enrichment)
+        and not args.refresh
+        and not args.skip_enrichment_source_refresh
+    ):
+        enrichment_refresh_lists = enrichment_source_refresh_lists(args.enrich_place)
+        if enrichment_refresh_lists or (args.refresh_enrichment and not args.enrich_place):
+            refresh_raw_sources(
+                headed=args.headed,
+                force_refresh=bool(enrichment_refresh_lists),
+                refresh_lists=enrichment_refresh_lists,
+                refresh_workers=args.refresh_workers,
+                refresh_retries=args.refresh_retries,
+                refresh_retry_backoff_seconds=args.refresh_retry_backoff_seconds,
+                refresh_startup_jitter_seconds=args.refresh_startup_jitter_seconds,
+            )
 
     if args.enrich or args.enrich_missing or args.refresh_enrichment:
         sync_local_csv_sources()
