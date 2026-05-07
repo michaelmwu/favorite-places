@@ -153,6 +153,14 @@ class RawPlace(PipelineModel):
     maps_place_token: str | None = None
 
 
+class ListAuthor(PipelineModel):
+    name: str
+    photo_url: str | None = None
+    photo_path: str | None = None
+    avatar_mode: Literal["photo", "initials", "icon"] | None = None
+    profile_id: str | None = None
+
+
 class RawSavedList(PipelineModel):
     fetched_at: str | None = None
     refresh_after: str | None = None
@@ -164,6 +172,8 @@ class RawSavedList(PipelineModel):
     list_id: str | None = None
     title: str | None = None
     description: str | None = None
+    owner: ListAuthor | None = None
+    collaborators: list[ListAuthor] = Field(default_factory=list)
     places: list[RawPlace] = Field(default_factory=list)
 
 
@@ -315,6 +325,7 @@ class Guide(PipelineModel):
     slug: str
     title: str
     description: str | None = None
+    author: ListAuthor | None = None
     source_url: str | None = None
     list_id: str | None = None
     country_name: str
@@ -337,6 +348,7 @@ class GuideManifest(PipelineModel):
     slug: str
     title: str
     description: str | None = None
+    author: ListAuthor | None = None
     country_name: str
     country_code: str | None = None
     center_lat: float | None = None

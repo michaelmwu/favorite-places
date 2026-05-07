@@ -203,6 +203,29 @@ describe("seo helpers", () => {
     expect(itemList.itemListElement).toHaveLength(25);
   });
 
+  it("includes guide author metadata in guide JSON-LD when available", () => {
+    const [, collectionPage] = buildGuideJsonLd({
+      siteUrl: "https://favorite-places.pages.dev/",
+      pageUrl: "https://favorite-places.pages.dev/guides/tokyo-japan/",
+      description: "Guide description",
+      guide: createGuide({
+        author: {
+          name: "Curator Name",
+          photo_path: "/author-photos/curator.webp",
+          photo_url: "https://example.com/curator.jpg",
+        },
+      }),
+      countryName: "Japan",
+      visiblePlaces: [],
+    });
+
+    expect((collectionPage as Record<string, unknown>).author).toEqual({
+      "@type": "Person",
+      name: "Curator Name",
+      image: "https://favorite-places.pages.dev/author-photos/curator.webp",
+    });
+  });
+
   it("prefers why_recommended over note for place JSON-LD descriptions", () => {
     const [, collectionJsonLd] = buildGuideJsonLd({
       siteUrl: "https://favorite-places.pages.dev/",

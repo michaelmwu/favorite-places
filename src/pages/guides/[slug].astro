@@ -1,5 +1,6 @@
 ---
 
+import AuthorByline from "../../components/AuthorByline.astro";
 import GuideMap from "../../components/GuideMap.astro";
 import Layout from "../../components/Layout.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
@@ -117,6 +118,7 @@ const areaFilters = areaFilterGroups.primary;
 const broaderAreaFilters = areaFilterGroups.secondary;
 const displayGuideTags = getDisplayGuideTags(guide.list_tags, placeTagGuideContext);
 const displayCountryName = getDisplayCountryName(guide);
+const guideAuthorName = guide.author?.name?.trim() || null;
 const explicitTypes = [
   ...visiblePlaces.reduce((typeCounts, place) => {
     if (place.primary_category) {
@@ -253,6 +255,7 @@ const guideJsonLd = [
             <p class="lede ui-lede">{siteConfig.guide.fallbackDescription}</p>
           )
         }
+        {siteConfig.guide.showAuthor && guide.author && guideAuthorName && <AuthorByline author={guide.author} label={siteConfig.guide.authorLabel} variant="hero" />}
         <div class="hero-meta ui-meta-row">
           <span class="stat-pill ui-pill">{guide.place_count} places</span>
           {guide.source_url && (

@@ -4,6 +4,7 @@ import { siteConfig } from "../data/site";
 import { getDisplayGuideTags, normalizeTagValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
 import type { GuideManifest } from "../lib/types";
+import AuthorByline from "./AuthorByline.astro";
 
 interface Props {
   guide: GuideManifest;
@@ -16,9 +17,11 @@ const displayGuideTags = getDisplayGuideTags(guide.list_tags, {
   countryCode: guide.country_code,
   countryName: guide.country_name,
 });
+const guideAuthorName = guide.author?.name?.trim() || null;
 const guideSearchText = [
   guide.title,
   guide.description,
+  guideAuthorName,
   guide.country_name,
   guide.country_code,
   guide.city_name,
@@ -97,9 +100,10 @@ const guideDisplayTitle = trimCountryFromTitle(guide.title);
     </div>
   )}
 
-  {siteConfig.guideCard.showPlaceCount && (
+  {(siteConfig.guideCard.showPlaceCount || (siteConfig.guideCard.showAuthor && guideAuthorName)) && (
     <div class="guide-card-footer ui-card-footer">
       <div class="stats-row ui-meta-row">
+        {siteConfig.guideCard.showAuthor && guide.author && guideAuthorName && <AuthorByline author={guide.author} label={siteConfig.guideCard.authorLabel} variant="card" />}
         {siteConfig.guideCard.showPlaceCount && (
           <span class="count-chip guide-card-place-count">
             <strong>{guide.place_count}</strong>

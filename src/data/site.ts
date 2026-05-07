@@ -50,6 +50,8 @@ export interface SiteConfig {
   };
   guide: {
     fallbackDescription: string;
+    showAuthor: boolean;
+    authorLabel: string;
     sidebarContent: string[];
     backLinkLabel: string;
     sourceListLabel: string;
@@ -86,6 +88,8 @@ export interface SiteConfig {
   guideCard: {
     showDescription: boolean;
     fallbackDescription: string;
+    showAuthor: boolean;
+    authorLabel: string;
     showTags: boolean;
     maxTags: number;
     showPlaceCount: boolean;
@@ -164,6 +168,8 @@ const defaultSiteConfig: SiteConfig = {
   },
   guide: {
     fallbackDescription: "Saved places for this city.",
+    showAuthor: false,
+    authorLabel: "By",
     sidebarContent: [],
     backLinkLabel: "Back to all guides",
     sourceListLabel: "View source list",
@@ -200,6 +206,8 @@ const defaultSiteConfig: SiteConfig = {
   guideCard: {
     showDescription: true,
     fallbackDescription: "Saved places for this guide.",
+    showAuthor: false,
+    authorLabel: "By",
     showTags: true,
     maxTags: 4,
     showPlaceCount: true,

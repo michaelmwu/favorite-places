@@ -1,5 +1,9 @@
 {
   "description": "A tiny public Google Maps list used by the template demo. It exercises source sync, country filters, guide maps, and place cards.",
+  "author": {
+    "name": "Another Author",
+    "avatar_mode": "initials"
+  },
   "country_name": "Taiwan",
   "country_code": "TW",
   "list_tags": ["landmarks", "seafood", "example"],

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Example curator avatar">
+  <path
+    d="M49 105c8-20 22-30 31-30s23 10 31 30"
+    fill="none"
+    stroke="#8e342b"
+    stroke-linecap="round"
+    stroke-width="10"
+  />
+  <circle
+    cx="80"
+    cy="58"
+    r="18"
+    fill="none"
+    stroke="#8e342b"
+    stroke-width="10"
+  />
+</svg>

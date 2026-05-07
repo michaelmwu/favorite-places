@@ -1,0 +1,55 @@
+---
+
+import { getAuthorAvatarMode, getAuthorInitials } from "../lib/authorAvatar";
+import type { ListAuthor } from "../lib/types";
+
+interface Props {
+  author: ListAuthor;
+  label: string;
+  variant: "card" | "hero";
+}
+
+const { author, label, variant } = Astro.props;
+const authorName = author.name.trim();
+const avatarMode = getAuthorAvatarMode(author);
+const photoUrl = avatarMode === "photo" ? author.photo_path?.trim() || null : null;
+const initials = avatarMode === "initials" ? getAuthorInitials(authorName) : null;
+---
+
+<span class={`guide-author guide-author--${variant}`}>
+  <span class="guide-author-mark" aria-hidden="true">
+    <svg
+      class={`guide-author-icon${photoUrl || initials ? " guide-author-icon--hidden" : ""}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      data-author-fallback
+    >
+      <path
+        d="M12 6.5a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4ZM5.8 19.2c.75-2.8 3.05-4.35 6.2-4.35s5.45 1.55 6.2 4.35"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.9"
+      />
+    </svg>
+    {
+      photoUrl && (
+        <img
+          class="guide-author-photo"
+          src={photoUrl}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onerror="this.parentElement?.querySelector('[data-author-fallback]')?.classList.remove('guide-author-icon--hidden'); this.remove()"
+        />
+      )
+    }
+    {initials && <span class="guide-author-initials">{initials}</span>}
+  </span>
+  <span class="guide-author-copy">
+    <span class="guide-author-label">{label}</span>
+    <span class="guide-author-name">{authorName}</span>
+  </span>
+</span>

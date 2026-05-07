@@ -383,6 +383,117 @@
     background: color-mix(in srgb, var(--surface-strong) 54%, var(--surface));
   }
 
+  .guide-author {
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .guide-author-mark {
+    position: relative;
+    display: inline-grid;
+    width: 1.65rem;
+    height: 1.65rem;
+    flex: 0 0 auto;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--surface) 82%, white),
+        color-mix(in srgb, var(--accent-soft) 42%, var(--surface))
+      ),
+      var(--surface);
+    color: var(--accent-strong);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 78%, transparent);
+  }
+
+  .guide-author-icon {
+    width: 0.98rem;
+    height: 0.98rem;
+  }
+
+  .guide-author-icon--hidden {
+    display: none;
+  }
+
+  .guide-author-photo {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .guide-author-initials {
+    color: var(--accent-strong);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+  }
+
+  .guide-author-copy {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.35rem;
+    row-gap: 0.08rem;
+  }
+
+  .guide-author-label {
+    flex: 0 0 auto;
+    color: color-mix(in srgb, var(--muted) 78%, var(--ink));
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: inherit;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .guide-author-name {
+    color: var(--ink);
+    font-size: inherit;
+    font-weight: 900;
+    overflow-wrap: anywhere;
+  }
+
+  .guide-author--hero {
+    margin-top: -0.15rem;
+    font-size: 0.95rem;
+  }
+
+  .guide-author--hero .guide-author-mark {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .guide-author--hero .guide-author-icon {
+    width: 1.08rem;
+    height: 1.08rem;
+  }
+
+  .guide-author--hero .guide-author-initials {
+    font-size: 0.78rem;
+  }
+
+  .guide-author--card {
+    flex: 1 1 12rem;
+    color: var(--muted);
+  }
+
+  .guide-card-footer .stats-row {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .country-browser {
     margin-bottom: 1rem;
     position: sticky;
