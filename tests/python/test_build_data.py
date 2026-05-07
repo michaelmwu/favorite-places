@@ -5488,6 +5488,7 @@ class BuildDataTests(unittest.TestCase):
             country_name=None,
             google_place_id=None,
             existing_entry=None,
+            suppress_description=False,
         )
         api_fetch.assert_not_called()
         self.assertIs(entry, page_entry)
@@ -5606,6 +5607,7 @@ class BuildDataTests(unittest.TestCase):
             country_name=None,
             google_place_id=None,
             existing_entry=None,
+            suppress_description=False,
         )
         api_fetch.assert_called_once_with(
             place,
@@ -5660,6 +5662,7 @@ class BuildDataTests(unittest.TestCase):
             country_name=None,
             google_place_id=None,
             existing_entry=None,
+            suppress_description=False,
         )
         api_fetch.assert_called_once_with(
             place,
