@@ -163,7 +163,11 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(guide.author.photo_path)
 
     def test_sync_list_author_photo_downloads_local_photo_path(self) -> None:
-        author = ListAuthor(name="Curator Name", photo_url="https://example.com/curator.jpg")
+        author = ListAuthor(
+            name="Curator Name",
+            photo_url="https://example.com/curator.jpg",
+            profile_id="curator-id",
+        )
 
         with patch.object(
             build_data,
@@ -175,7 +179,11 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNotNone(synced)
         assert synced is not None
         self.assertEqual(synced.photo_path, "/author-photos/tokyo-japan-example.webp")
-        download_photo.assert_called_once_with("tokyo-japan", "https://example.com/curator.jpg")
+        download_photo.assert_called_once_with(
+            "tokyo-japan",
+            "https://example.com/curator.jpg",
+            profile_id="curator-id",
+        )
 
     def test_download_list_author_photo_uses_optimizer_extension(self) -> None:
         class FakeHeaders:
@@ -198,7 +206,39 @@ class BuildDataTests(unittest.TestCase):
         photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
         with TemporaryDirectory() as tmpdir:
             author_photo_dir = Path(tmpdir)
-            expected_path = author_photo_dir / f"tokyo--{photo_hash}.jpg"
+            expected_path = author_photo_dir / f"profile-curator-id--{photo_hash}.jpg"
+            with (
+                patch.object(build_data, "AUTHOR_PHOTOS_DIR", author_photo_dir),
+                patch.object(build_data, "urlopen", return_value=FakeResponse()),
+                patch.object(build_data, "optimize_author_photo_asset", return_value=(b"optimized", ".jpg")),
+            ):
+                result = build_data.download_list_author_photo("tokyo", photo_url, profile_id="curator-id")
+
+            self.assertEqual(result, f"/author-photos/{expected_path.name}")
+            self.assertEqual(expected_path.read_bytes(), b"optimized")
+
+    def test_download_list_author_photo_falls_back_to_photo_hash_without_profile_id(self) -> None:
+        class FakeHeaders:
+            def get_content_type(self) -> str:
+                return "image/png"
+
+        class FakeResponse:
+            headers = FakeHeaders()
+
+            def read(self) -> bytes:
+                return b"source-image"
+
+            def __enter__(self) -> "FakeResponse":
+                return self
+
+            def __exit__(self, exc_type, exc, tb) -> bool:
+                return False
+
+        photo_url = "https://example.com/curator.jpg"
+        photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
+        with TemporaryDirectory() as tmpdir:
+            author_photo_dir = Path(tmpdir)
+            expected_path = author_photo_dir / f"photo-{photo_hash}.jpg"
             with (
                 patch.object(build_data, "AUTHOR_PHOTOS_DIR", author_photo_dir),
                 patch.object(build_data, "urlopen", return_value=FakeResponse()),
