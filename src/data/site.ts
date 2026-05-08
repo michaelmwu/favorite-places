@@ -246,9 +246,11 @@ const defaultSiteConfig: SiteConfig = {
 };
 
 function mergeSiteConfig(config: SiteConfigInput): SiteConfig {
+  const { guideCard: legacyGuideCard, ...rootConfig } = config;
+
   return {
     ...defaultSiteConfig,
-    ...config,
+    ...rootConfig,
     favicon: config.favicon === undefined ? defaultSiteConfig.favicon : config.favicon,
     logo: config.logo === undefined ? defaultSiteConfig.logo : config.logo,
     navLinks: config.navLinks ?? defaultSiteConfig.navLinks,
@@ -257,7 +259,7 @@ function mergeSiteConfig(config: SiteConfigInput): SiteConfig {
       ...config.home,
       guideCard: {
         ...defaultSiteConfig.home.guideCard,
-        ...config.guideCard,
+        ...legacyGuideCard,
         ...config.home?.guideCard,
       },
     },

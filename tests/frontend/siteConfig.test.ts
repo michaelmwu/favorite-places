@@ -18,6 +18,7 @@ describe("site config merging", () => {
     expect(siteConfig.home.guideCard.showDescription).toBe(false);
     expect(siteConfig.home.guideCard.maxTags).toBe(2);
     expect(siteConfig.home.guideCard.trimCountryFromTitle).toBe(false);
+    expect("guideCard" in siteConfig).toBe(false);
   });
 
   it("lets nested home guideCard config override legacy config", async () => {
