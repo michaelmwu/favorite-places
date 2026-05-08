@@ -10,11 +10,11 @@
   "title": "Taipei, Taiwan (Example) 🇹🇼",
   "description": null,
   "owner": {
-    "name": "Michael Wu",
-    "photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjW_i8-Eyr6conUhZ6tzGGlFe76mQTGeURI9NKDlca0FzlN0GY0Kjg",
+    "name": "Example Curator",
+    "photo_url": null,
     "photo_path": null,
     "avatar_mode": null,
-    "profile_id": "104356373423434804635"
+    "profile_id": null
   },
   "collaborators": [],
   "places": [

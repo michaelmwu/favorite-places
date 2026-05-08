@@ -71,6 +71,8 @@ def localize_maps_url(
     original locale.
     """
     parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return url
     host = (parsed.hostname or "").lower()
     if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
         return url

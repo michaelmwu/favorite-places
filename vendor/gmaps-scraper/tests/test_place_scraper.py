@@ -1671,6 +1671,31 @@ class PlaceScraperTests(unittest.TestCase):
             ],
         )
 
+    def test_build_place_details_preserves_search_result_fields(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Taipei+Zoo",
+            resolved_url="https://www.google.com/maps/place/Taipei+Zoo",
+            snapshot={
+                "name": "Taipei Zoo",
+                "search_result_description": "Sizable zoo with a gondola & kids' area",
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
+                "body_text": "Taipei Zoo",
+            },
+        )
+
+        self.assertEqual(
+            details.search_result_description,
+            "Sizable zoo with a gondola & kids' area",
+        )
+        self.assertEqual(
+            details.search_result_url,
+            "https://www.google.com/maps/place/Taipei+Zoo",
+        )
+        self.assertEqual(
+            details.to_dict()["search_result_description"],
+            "Sizable zoo with a gondola & kids' area",
+        )
+
     def test_build_place_details_rejects_invalid_address_parts(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Den",
@@ -1835,7 +1860,10 @@ class PlaceScraperTests(unittest.TestCase):
 
         page = _FakePage()
         with patch("gmaps_scraper.place_scraper._handle_google_consent") as consent_mock:
-            self.assertEqual(_open_place_result_from_search_page(page, timeout_ms=30_000), {})
+            self.assertEqual(
+                _open_place_result_from_search_page(page, timeout_ms=30_000),
+                {"opened_from_search_result": True},
+            )
         self.assertEqual(page.visited, [])
         self.assertEqual(page.clicked, [(20, 40)])
         self.assertEqual(page.detail_checks, 2)
@@ -1872,7 +1900,10 @@ class PlaceScraperTests(unittest.TestCase):
 
         page = _FakePage()
         with patch("gmaps_scraper.place_scraper._handle_google_consent") as consent_mock:
-            self.assertEqual(_open_place_result_from_search_page(page, timeout_ms=30_000), {})
+            self.assertEqual(
+                _open_place_result_from_search_page(page, timeout_ms=30_000),
+                {"opened_from_search_result": True},
+            )
         self.assertEqual(
             page.visited,
             [
@@ -1885,6 +1916,40 @@ class PlaceScraperTests(unittest.TestCase):
         )
         self.assertEqual(page.detail_checks, 1)
         self.assertEqual(consent_mock.call_count, 2)
+
+    def test_open_place_result_from_search_page_preserves_card_details_on_goto_failure(
+        self,
+    ) -> None:
+        class _FakePage:
+            def evaluate(self, script: object, *_args: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return {
+                        "href": "https://www.google.com/maps/place/Taipei+Zoo",
+                        "name": "Taipei Zoo",
+                        "review_count": "76,998",
+                        "search_result_description": "Sizable zoo with a gondola & kids' area",
+                    }
+                if script == _PLACE_SEARCH_RESULT_OPEN_JS:
+                    return {}
+                return None
+
+            def goto(self, _url: str, *, wait_until: str, timeout: int) -> None:
+                assert wait_until == "domcontentloaded"
+                assert timeout == 30_000
+                raise RuntimeError("navigation blocked")
+
+            def wait_for_timeout(self, _value: int) -> None:
+                pass
+
+        self.assertEqual(
+            _open_place_result_from_search_page(_FakePage(), timeout_ms=30_000),
+            {
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
+                "name": "Taipei Zoo",
+                "review_count": "76,998",
+                "search_result_description": "Sizable zoo with a gondola & kids' area",
+            },
+        )
 
     def test_open_place_result_from_search_page_rejects_non_google_place_urls(self) -> None:
         class _FakePage:
@@ -1905,6 +1970,16 @@ class PlaceScraperTests(unittest.TestCase):
         page = _FakePage()
         self.assertFalse(_open_place_result_from_search_page(page, timeout_ms=30_000))
         self.assertEqual(page.visited, [])
+
+    def test_search_result_candidate_js_decodes_place_id_safely(self) -> None:
+        self.assertIn("safeDecodeURIComponent", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertNotIn(
+            "decodeURIComponent(placeIdMatch[1])",
+            _PLACE_SEARCH_RESULT_CLICK_JS,
+        )
+
+    def test_place_js_extractor_keeps_place_page_description_selectors(self) -> None:
+        self.assertIn('description: firstText([".WeS02d", ".PYvSYb"])', _PLACE_JS_EXTRACTOR)
 
     def test_looks_like_google_maps_place_url_accepts_google_tlds_only(self) -> None:
         self.assertTrue(

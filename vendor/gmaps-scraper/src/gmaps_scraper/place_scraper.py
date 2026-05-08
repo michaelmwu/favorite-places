@@ -964,6 +964,7 @@ _PLACE_JS_EXTRACTOR = r"""
       "button[data-item-id^='phone:']",
     ]),
     plus_code: itemValue("oloc"),
+    description: firstText([".WeS02d", ".PYvSYb"]),
     review_topics: collectReviewTopics(),
     admission_prices: collectLeafPrices(sectionRootByHeading([
       "Admission",
@@ -1254,6 +1255,32 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
     }
     return {category: null, address: null};
   };
+  const findDescriptionLine = (lines, excludedValues) => {
+    const excluded = new Set(excludedValues.map(cleanLine).filter(Boolean));
+    return lines.find((line) => {
+      const text = cleanLine(line);
+      if (!text || excluded.has(text)) {
+        return false;
+      }
+      if (text.includes("·") || parseCardRating(text) || parseCardReviewCount(text)) {
+        return false;
+      }
+      if (/^(open|closed|temporarily closed|website|directions|saved in)\b/i.test(text)) {
+        return false;
+      }
+      if (/^[+()\d\s.-]{7,}$/.test(text)) {
+        return false;
+      }
+      return text.length >= 12;
+    }) || null;
+  };
+  const safeDecodeURIComponent = (value) => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  };
   const candidateDetails = (article, href, label) => {
     const lines = textLines(article);
     const starLabel = cleanLine(
@@ -1267,15 +1294,20 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
       || lines.map(parseCardReviewCount).find(Boolean)
       || null;
     const categoryAddress = parseCardCategoryAddress(lines);
+    const name = cleanSearchLabel(label);
     const placeIdMatch = href.match(/!19s([^!?&]+)/) || href.match(/!1s([^!?&]+)/);
     return {
       href,
-      google_place_id: placeIdMatch?.[1] ? decodeURIComponent(placeIdMatch[1]) : null,
-      name: cleanSearchLabel(label),
+      google_place_id: placeIdMatch?.[1] ? safeDecodeURIComponent(placeIdMatch[1]) : null,
+      name,
       rating,
       review_count: reviewCount,
       category: categoryAddress.category,
       address: categoryAddress.address,
+      search_result_description: findDescriptionLine(
+        lines,
+        [name, categoryAddress.category, categoryAddress.address],
+      ),
       body_text: lines.join("\n"),
     };
   };
@@ -2093,6 +2125,7 @@ def _open_place_result_from_search_page(
     candidate = _search_result_candidate(page, timeout_ms=timeout_ms)
     if candidate is None:
         return None
+    snapshot = _search_result_snapshot(candidate)
     target_url = (
         candidate
         if isinstance(candidate, str)
@@ -2107,7 +2140,7 @@ def _open_place_result_from_search_page(
         try:
             page.goto(target_url, wait_until="domcontentloaded", timeout=timeout_ms)
         except Exception:
-            return None
+            return snapshot
         _handle_google_consent(page, timeout_ms=timeout_ms)
         try:
             page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
@@ -2115,8 +2148,9 @@ def _open_place_result_from_search_page(
             pass
         _handle_google_consent(page, timeout_ms=timeout_ms)
     if not _wait_for_place_detail_title(page, timeout_ms=min(timeout_ms, 12_000)):
-        return None
-    return _search_result_snapshot(candidate)
+        return snapshot
+    snapshot["opened_from_search_result"] = True
+    return snapshot
 
 
 def _click_search_result_candidate(page: Any, target_url: str, *, timeout_ms: int) -> bool:
@@ -2196,6 +2230,9 @@ def _search_result_snapshot(candidate: str | Mapping[str, object]) -> dict[str, 
     if not isinstance(candidate, Mapping):
         return {}
     snapshot: dict[str, object] = {}
+    href = _clean_text(candidate.get("href"))
+    if href is not None:
+        snapshot["search_result_url"] = href
     for key in (
         "google_place_id",
         "name",
@@ -2203,6 +2240,7 @@ def _search_result_snapshot(candidate: str | Mapping[str, object]) -> dict[str, 
         "review_count",
         "category",
         "address",
+        "search_result_description",
         "body_text",
     ):
         value = candidate.get(key)
@@ -2367,6 +2405,10 @@ def _build_place_details(
         or _extract_plus_code_from_lines(combined_lines),
         address_parts=_extract_address_parts(snapshot.get("address_parts")),
         description=_extract_description(snapshot, combined_lines),
+        search_result_description=_clean_description_text(
+            snapshot.get("search_result_description")
+        ),
+        search_result_url=_clean_text(snapshot.get("search_result_url")),
         main_photo_url=_normalize_photo_url(snapshot.get("main_photo_url")),
         photo_url=_normalize_photo_url(snapshot.get("photo_url")),
         lat=lat,
@@ -2845,6 +2887,8 @@ def _place_detail_values(details: PlaceDetails) -> dict[str, object]:
         "plus_code": details.plus_code,
         "address_parts": details.address_parts,
         "description": details.description,
+        "search_result_description": details.search_result_description,
+        "search_result_url": details.search_result_url,
         "main_photo_url": details.main_photo_url,
         "photo_url": details.photo_url,
         "lat": details.lat,
