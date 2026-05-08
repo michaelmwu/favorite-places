@@ -3874,9 +3874,11 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.display_name = sanitize_place_page_display_name(place.display_name)
     place.formatted_address = sanitize_place_page_formatted_address(place.formatted_address)
     place.address_display_en = sanitize_place_page_formatted_address(place.address_display_en)
     place.category_display_en = sanitize_enrichment_primary_category(place.category_display_en)
+    place.description = sanitize_place_page_description(place.description)
     place.phone = sanitize_place_page_phone(place.phone)
     place.plus_code = sanitize_place_page_plus_code(place.plus_code)
     place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
@@ -8060,6 +8062,55 @@ def sanitize_place_page_display_name(value: Any) -> str | None:
     return normalized
 
 
+PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE = re.compile(
+    r"\b(?:i|i['’](?:m|d|ve)|my|me|we|we['’](?:re|d|ve)|our|us)\b",
+    re.IGNORECASE,
+)
+PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
+    "arrived",
+    "attended",
+    "came",
+    "celebrate",
+    "celebrated",
+    "chose",
+    "cost",
+    "enjoyed",
+    "felt",
+    "found",
+    "ordered",
+    "reserve",
+    "reserved",
+    "return",
+    "returned",
+    "saw",
+    "seen",
+    "spent",
+    "stopped by",
+    "think",
+    "tried",
+    "visited",
+    "went",
+)
+
+
+def sanitize_place_page_description(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    if looks_like_place_page_first_person_description(normalized):
+        return None
+    return normalized
+
+
+def looks_like_place_page_first_person_description(value: str) -> bool:
+    if len(value.split()) < 12:
+        return False
+    lowered = value.casefold()
+    if PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE.search(lowered) is None:
+        return False
+    return any(marker in lowered for marker in PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS)
+
+
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
     normalized = as_string(value)
     if normalized is None:
@@ -8364,13 +8415,16 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     ):
         formatted_address = sanitize_place_page_formatted_address(plus_code)
     description = as_string(getattr(details, "description", None))
-    search_result_description = as_string(getattr(details, "search_result_description", None))
+    search_result_description = sanitize_place_page_description(
+        getattr(details, "search_result_description", None)
+    )
     search_result_url = as_string(getattr(details, "search_result_url", None))
     if formatted_address is None:
         description_address = sanitize_place_page_formatted_address(description)
         if description_address is not None:
             formatted_address = description_address
             description = None
+    description = sanitize_place_page_description(description)
     main_photo_url = sanitize_place_photo_url(getattr(details, "main_photo_url", None))
     photo_url = sanitize_place_photo_url(getattr(details, "photo_url", None))
     if from_search_url and not resolved_google_maps_url_is_place_page(resolved_url):

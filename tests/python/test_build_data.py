@@ -1943,6 +1943,34 @@ class BuildDataTests(unittest.TestCase):
         assert entry.place is not None
         self.assertEqual(entry.place.display_name, "McDonald's Shibuya")
 
+    def test_normalize_place_page_enrichment_rejects_ui_display_name_and_review_description(self) -> None:
+        details = SimpleNamespace(
+            source_url="https://www.google.com/maps/search/?api=1&query=Onsen",
+            resolved_url=None,
+            name="Share",
+            category="Outdoor bath",
+            rating=4.1,
+            review_count=265,
+            address="20 Obamacho Marina, Unzen, Nagasaki 854-0517, Japan",
+            located_in=None,
+            status=None,
+            website=None,
+            phone=None,
+            plus_code=None,
+            description=(
+                "After six p.m. You can reserve this onsen privately for one hour at a time. "
+                "It cost ¥2000 yen to reserve it. I think during normal hours it is cheaper."
+            ),
+            lat=32.728,
+            lng=130.207,
+            limited_view=False,
+        )
+
+        enrichment = build_data.normalize_place_page_enrichment(details)
+
+        self.assertIsNone(enrichment.display_name)
+        self.assertIsNone(enrichment.description)
+
     def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_match_lacks_description(self) -> None:
         place = RawPlace(
             name="Taipei 101",
