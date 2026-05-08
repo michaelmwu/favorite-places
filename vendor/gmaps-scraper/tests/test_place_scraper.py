@@ -1054,6 +1054,22 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.address)
 
+    def test_build_place_details_rejects_travel_product_address(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Nalati+Grassland",
+            resolved_url="https://www.google.com/maps/search/?api=1&query=Nalati+Grassland",
+            snapshot={
+                "name": "Nalati Grassland",
+                "category": "National park",
+                "rating": "4.5",
+                "review_count": "133",
+                "address": "8-Day Ili Pastoral RV Adventure (Duku Highway Crossing)",
+                "body_text": "Nalati Grassland\nNational park",
+            },
+        )
+
+        self.assertIsNone(details.address)
+
     def test_build_place_details_accepts_locality_only_address(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Nizami+Street",
@@ -1383,6 +1399,12 @@ class PlaceScraperTests(unittest.TestCase):
                 "We visited in mid-April, and many of the roses were in bloom."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "Amazing quality loved the Kusama exhibit; I’ve seen her work elsewhere, "
+                "but the way it’s displayed here takes it to the next level."
+            )
+        )
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(
@@ -1399,6 +1421,10 @@ class PlaceScraperTests(unittest.TestCase):
             ),
             "Our team provides thoughtful care and we strive to make every visit feel easy.",
         )
+
+    def test_clean_description_text_rejects_option_only_amenity_labels(self) -> None:
+        self.assertIsNone(_clean_description_text("· \ue5ca Dogs allowed \ue5cc"))
+        self.assertIsNone(_clean_description_text("Onsite services"))
 
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [

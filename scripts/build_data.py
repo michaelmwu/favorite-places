@@ -505,6 +505,14 @@ AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES = (
     "NT",
     "ACT",
 )
+SUBNATIONAL_LOCALITY_ALIASES = AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES + (
+    "Xinjiang",
+    "Xinjiang Uygur Autonomous Region",
+    "Xinjiang Uyghur Autonomous Region",
+    "新疆",
+    "新疆维吾尔自治区",
+    "新疆維吾爾自治區",
+)
 SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
     "da an": "Da'an",
     "daan": "Da'an",
@@ -4491,6 +4499,8 @@ def normalize_address_locality_part(part: str) -> str | None:
 
     if not candidate or is_country_locality(candidate):
         return None
+    if is_subnational_locality(candidate):
+        return None
     if is_subnational_locality_abbreviation(candidate):
         return None
     if is_explicit_subnational_locality_label(candidate):
@@ -4612,7 +4622,7 @@ def get_subnational_locality_keys() -> set[str]:
         value = getattr(subdivision, "name", None)
         if value:
             subdivision_names.add(value)
-    subdivision_names.update(AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES)
+    subdivision_names.update(SUBNATIONAL_LOCALITY_ALIASES)
 
     SUBNATIONAL_LOCALITY_KEYS = {
         normalize_locality_key(name)
@@ -7893,6 +7903,7 @@ PLACE_PAGE_URL_LIKE_RE = re.compile(
     r"(?:https?://|www\.|/(?:search|maps|url|local)(?:[/?#]|$))",
     re.IGNORECASE,
 )
+PLACE_PAGE_TRAVEL_PRODUCT_ADDRESS_RE = re.compile(r"\b\d+\s*[-–]\s*day\b", re.IGNORECASE)
 PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
 PLACE_PAGE_REGION_CODE_RE = re.compile(r"[A-Z]{2,3}")
 PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
@@ -7978,6 +7989,8 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS):
         return None
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS):
+        return None
+    if PLACE_PAGE_TRAVEL_PRODUCT_ADDRESS_RE.search(normalized) is not None:
         return None
     if looks_like_place_page_review_snippet(normalized):
         return None

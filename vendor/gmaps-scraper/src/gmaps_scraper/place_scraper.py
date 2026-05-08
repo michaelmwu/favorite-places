@@ -118,7 +118,8 @@ _DESCRIPTION_STOP_SUBSTRINGS = (
 _DESCRIPTION_SERVICE_OPTION_SEGMENT_PATTERN = re.compile(
     r"^(?:[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]\s*)?"
     r"(?:dine-?in|takeout|delivery|curbside pickup|kerbside pickup|"
-    r"no-contact delivery|drive-through|drive thru|takeaway|reservations?)$",
+    r"no-contact delivery|drive-through|drive thru|takeaway|reservations?|"
+    r"dogs allowed|onsite services?)$",
     re.IGNORECASE,
 )
 _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
@@ -153,6 +154,8 @@ _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "went",
     "found",
     "felt",
+    "saw",
+    "seen",
     "chose",
     "celebrate",
     "celebrated",
@@ -264,6 +267,7 @@ _URL_LIKE_PATTERN = re.compile(
     r"(?:https?://|www\.|/(?:search|maps|url|local)(?:[/?#]|$))",
     re.IGNORECASE,
 )
+_TRAVEL_PRODUCT_ADDRESS_PATTERN = re.compile(r"\b\d+\s*[-–]\s*day\b", re.IGNORECASE)
 # Locality-only addresses can legitimately contain periods in abbreviations
 # like "St. Louis" or "D.C."; prose with arbitrary periods is rejected later.
 _LOCALITY_ABBREVIATION_PERIOD_PATTERN = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
@@ -3172,6 +3176,8 @@ def _clean_address_text(value: object) -> str | None:
         return None
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
         return None
+    if _TRAVEL_PRODUCT_ADDRESS_PATTERN.search(normalized) is not None:
+        return None
     if _looks_like_review_snippet(normalized):
         return None
     if _ADDRESS_ENTITY_TOKEN_PATTERN.fullmatch(normalized):
@@ -3325,6 +3331,8 @@ def _looks_like_address_line(line: str) -> bool:
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
         return False
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
+        return False
+    if _TRAVEL_PRODUCT_ADDRESS_PATTERN.search(line) is not None:
         return False
     if "saved in" in lowered or "report a problem" in lowered:
         return False

@@ -2341,6 +2341,22 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertIsNone(enrichment.formatted_address)
 
+    def test_normalize_place_page_enrichment_rejects_travel_product_address(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Nalati+Grassland",
+                resolved_url="https://www.google.com/maps/search/?api=1&query=Nalati+Grassland",
+                name="Nalati Grassland",
+                category="National park",
+                rating=4.5,
+                review_count=133,
+                address="8-Day Ili Pastoral RV Adventure (Duku Highway Crossing)",
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(enrichment.formatted_address)
+
     def test_normalize_place_page_enrichment_keeps_description_after_search_resolves_to_place(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -4868,6 +4884,8 @@ class BuildDataTests(unittest.TestCase):
             ("Rte de la Piscine", "Monaco", "Monaco"),
             ("County Antrim", "Belfast", "Northern Ireland"),
             ("TX", "Austin", "United States"),
+            ("Xinjiang", "Urumqi", "China"),
+            ("新疆维吾尔自治区", "Urumqi", "China"),
         ]
         for value, city_name, country_name in cases:
             with self.subTest(value=value):
