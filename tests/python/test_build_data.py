@@ -5843,7 +5843,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertTrue(entry.matched)
         self.assertEqual(entry.place.display_name, "Cantina OK!")
 
-    def test_fetch_place_page_enrichment_retries_limited_view_without_reputation_after_candidate_queue(self) -> None:
+    def test_fetch_place_page_enrichment_retries_limited_view_without_review_count_after_candidate_queue(self) -> None:
         place = RawPlace(
             name="Cantina OK!",
             address="Council Pl, Sydney NSW 2000, Australia",
@@ -5900,6 +5900,65 @@ class BuildDataTests(unittest.TestCase):
             scrape_attempts,
             ["https://example.com/first", "https://example.com/second", "https://example.com/first"],
         )
+        clear_session.assert_called_once()
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.user_rating_count, 512)
+
+    def test_fetch_place_page_enrichment_retries_sparse_search_result_without_review_count(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK!",
+        )
+        search_url = "https://www.google.com/maps/search/?api=1&query=Cantina+OK!"
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(
+            scrape_url: str,
+            *,
+            headless: bool,
+            browser_session: object,
+            http_session: object,
+            llm_fallback: object,
+            llm_tasks: tuple[str, ...],
+            collect_reviews: bool,
+            collect_about: bool,
+        ) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            if len(scrape_attempts) == 1:
+                return SimpleNamespace(
+                    source_url=scrape_url,
+                    resolved_url=scrape_url,
+                    name="Cantina OK!",
+                    category="Cocktail bar",
+                    rating=4.4,
+                    address=None,
+                    limited_view=True,
+                )
+            return SimpleNamespace(
+                source_url=scrape_url,
+                resolved_url="https://www.google.com/maps/place/Cantina+OK!/@-33.87,151.20,17z",
+                name="Cantina OK!",
+                category="Cocktail bar",
+                rating=4.8,
+                review_count=512,
+                address="Council Pl, Sydney NSW 2000, Australia",
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_place_page_candidate_urls", return_value=[search_url]),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state") as clear_session,
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(scrape_attempts, [search_url, search_url])
         clear_session.assert_called_once()
         self.assertTrue(entry.matched)
         assert entry.place is not None

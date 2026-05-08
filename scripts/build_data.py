@@ -7087,12 +7087,6 @@ def fetch_place_page_enrichment(
     llm_repairer = None if llm_mode == "off" else build_place_llm_repairer()
     collect_reviews = google_maps_place_collect_reviews()
     collect_about = google_maps_place_collect_about()
-    candidate_urls = build_place_page_candidate_urls(
-        place,
-        city_name=city_name,
-        country_name=country_name,
-        google_place_id=google_place_id,
-    )
 
     def scrape_for_enrichment(scrape_url: str, *, llm_tasks: Sequence[Any]) -> Any:
         return scrape_place(
@@ -7145,9 +7139,10 @@ def fetch_place_page_enrichment(
             except Exception as exc:
                 last_error = f"display_repair_error:{exc}"
         enrichment_place = normalize_place_page_enrichment(details)
+        should_retry = should_retry_limited_place_page_result(details, enrichment_place)
         source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
         if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
-            return None, False
+            return None, should_retry
 
         matched = place_page_has_meaningful_enrichment(details, enrichment_place)
         if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
@@ -7163,11 +7158,17 @@ def fetch_place_page_enrichment(
                 suppress_description=suppress_description,
             )
             return enrichment_place, False
-        return None, should_retry_limited_place_page_result(details, enrichment_place)
+        return None, should_retry
 
     try:
         last_error: str | None = None
         saw_non_error_result = False
+        candidate_urls = build_place_page_candidate_urls(
+            place,
+            city_name=city_name,
+            country_name=country_name,
+            google_place_id=google_place_id,
+        )
         retry_urls: list[str] = []
         for scrape_url in candidate_urls:
             enrichment_place, should_retry = process_scrape_url(scrape_url)
