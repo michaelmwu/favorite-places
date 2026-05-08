@@ -25,6 +25,13 @@ export const siteConfig = {
     searchPlaceholder: "Search seafood, sunrise, markets, coffee",
     showHeroStats: true,
     showMap: true,
+    guideCard: {
+      showDescription: true,
+      showAuthor: true,
+      showTags: true,
+      maxTags: 4,
+      showPlaceCount: true,
+    },
   },
   guide: {
     fallbackDescription: "Saved places for this city.",
@@ -36,13 +43,6 @@ export const siteConfig = {
     bestHitsHeading: "Best hits",
     browseEyebrow: "Browse",
     placesHeading: "Places",
-  },
-  guideCard: {
-    showDescription: true,
-    showAuthor: true,
-    showTags: true,
-    maxTags: 4,
-    showPlaceCount: true,
   },
   placeCard: {
     showPhoto: true,

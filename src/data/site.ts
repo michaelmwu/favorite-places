@@ -1,5 +1,105 @@
 import { siteConfig as configuredSiteConfig } from "favorite-places:site-config";
 
+interface GuideCardConfig {
+  showDescription: boolean;
+  fallbackDescription: string;
+  showAuthor: boolean;
+  authorLabel: string;
+  showTags: boolean;
+  maxTags: number;
+  showPlaceCount: boolean;
+  trimCountryFromTitle: boolean;
+}
+
+interface HomeConfig {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  highlightsHeading: string;
+  highlights: string[];
+  guidesEyebrow: string;
+  guidesHeading: string;
+  guidesLinkText: string | null;
+  searchPlaceholder: string;
+  showHero: boolean;
+  showHeroStats: boolean;
+  showGuideBrowser: boolean;
+  showGuideBrowserControls: boolean;
+  showMap: boolean;
+  showCountrySections: boolean;
+  searchLabel: string;
+  showingLabel: string;
+  nearMeLabel: string;
+  countriesLabel: string;
+  allCountriesLabel: string;
+  emptyStateText: string;
+  searchResultsEyebrow: string;
+  searchResultsHeading: string;
+  searchResultsGroupedLabel: string;
+  searchResultsIndividualLabel: string;
+  searchResultsEmptyText: string;
+  guideCard: GuideCardConfig;
+}
+
+interface GuideConfig {
+  fallbackDescription: string;
+  showAuthor: boolean;
+  authorLabel: string;
+  sidebarContent: string[];
+  backLinkLabel: string;
+  sourceListLabel: string;
+  topPicksEyebrow: string;
+  topPicksHeading: string;
+  bestHitsEyebrow: string;
+  bestHitsHeading: string;
+  browseEyebrow: string;
+  placesHeading: string;
+  showTopPicks: boolean;
+  showBestHits: boolean;
+  showGuideTags: boolean;
+  listTagsHeading: string;
+  searchLabel: string;
+  searchHint: string;
+  searchPlaceholder: string;
+  areaLabel: string;
+  broaderAreaLabel: string;
+  typeLabel: string;
+  popularTagsLabel: string;
+  popularTagsHint: string;
+  allFilterLabel: string;
+  resultsSortLabel: string;
+  sortCuratedLabel: string;
+  sortNearMeLabel: string;
+  sortRatingLabel: string;
+  sortNameLabel: string;
+  sortNeighborhoodLabel: string;
+  locationSortFallbackText: string;
+  resetMapLabel: string;
+  mapFilteredText: string;
+  emptyStateText: string;
+}
+
+interface PlaceCardConfig {
+  showPhoto: boolean;
+  showMapLink: boolean;
+  showCategory: boolean;
+  showNeighborhood: boolean;
+  showRating: boolean;
+  showReviewCount: boolean;
+  showPriceRange: boolean;
+  showTopPickBadge: boolean;
+  showWhyRecommended: boolean;
+  showAddress: boolean;
+  showTags: boolean;
+  maxTags: number;
+  showStatus: boolean;
+  bestHitLabel: string;
+  topPickLabel: string;
+  mapsLabel: string;
+  savedPlaceLabel: string;
+  photoPlaceholderFallback: string;
+}
+
 export interface SiteConfig {
   siteName: string;
   ownerName: string;
@@ -20,113 +120,22 @@ export interface SiteConfig {
     href: string;
   }[];
   mapProvider: "auto" | "google" | "leaflet";
-  home: {
-    eyebrow: string;
-    title: string;
-    intro: string;
-    highlightsHeading: string;
-    highlights: string[];
-    guidesEyebrow: string;
-    guidesHeading: string;
-    guidesLinkText: string | null;
-    searchPlaceholder: string;
-    showHero: boolean;
-    showHeroStats: boolean;
-    showGuideBrowser: boolean;
-    showGuideBrowserControls: boolean;
-    showMap: boolean;
-    showCountrySections: boolean;
-    searchLabel: string;
-    showingLabel: string;
-    nearMeLabel: string;
-    countriesLabel: string;
-    allCountriesLabel: string;
-    emptyStateText: string;
-    searchResultsEyebrow: string;
-    searchResultsHeading: string;
-    searchResultsGroupedLabel: string;
-    searchResultsIndividualLabel: string;
-    searchResultsEmptyText: string;
-  };
-  guide: {
-    fallbackDescription: string;
-    showAuthor: boolean;
-    authorLabel: string;
-    sidebarContent: string[];
-    backLinkLabel: string;
-    sourceListLabel: string;
-    topPicksEyebrow: string;
-    topPicksHeading: string;
-    bestHitsEyebrow: string;
-    bestHitsHeading: string;
-    browseEyebrow: string;
-    placesHeading: string;
-    showTopPicks: boolean;
-    showBestHits: boolean;
-    showGuideTags: boolean;
-    listTagsHeading: string;
-    searchLabel: string;
-    searchHint: string;
-    searchPlaceholder: string;
-    areaLabel: string;
-    broaderAreaLabel: string;
-    typeLabel: string;
-    popularTagsLabel: string;
-    popularTagsHint: string;
-    allFilterLabel: string;
-    resultsSortLabel: string;
-    sortCuratedLabel: string;
-    sortNearMeLabel: string;
-    sortRatingLabel: string;
-    sortNameLabel: string;
-    sortNeighborhoodLabel: string;
-    locationSortFallbackText: string;
-    resetMapLabel: string;
-    mapFilteredText: string;
-    emptyStateText: string;
-  };
-  guideCard: {
-    showDescription: boolean;
-    fallbackDescription: string;
-    showAuthor: boolean;
-    authorLabel: string;
-    showTags: boolean;
-    maxTags: number;
-    showPlaceCount: boolean;
-    trimCountryFromTitle: boolean;
-  };
-  placeCard: {
-    showPhoto: boolean;
-    showMapLink: boolean;
-    showCategory: boolean;
-    showNeighborhood: boolean;
-    showRating: boolean;
-    showReviewCount: boolean;
-    showPriceRange: boolean;
-    showTopPickBadge: boolean;
-    showWhyRecommended: boolean;
-    showAddress: boolean;
-    showTags: boolean;
-    maxTags: number;
-    showStatus: boolean;
-    bestHitLabel: string;
-    topPickLabel: string;
-    mapsLabel: string;
-    savedPlaceLabel: string;
-    photoPlaceholderFallback: string;
-  };
+  home: HomeConfig;
+  guide: GuideConfig;
+  placeCard: PlaceCardConfig;
 }
 
 export type SiteConfigInput = Partial<
-  Omit<SiteConfig, "favicon" | "logo" | "navLinks" | "home" | "guide" | "guideCard" | "placeCard">
+  Omit<SiteConfig, "favicon" | "logo" | "navLinks" | "home" | "guide" | "placeCard">
 > & {
   favicon?: SiteConfig["favicon"];
   logo?: SiteConfig["logo"];
   navLinks?: SiteConfig["navLinks"];
-  home?: Partial<SiteConfig["home"]>;
-  guide?: Partial<SiteConfig["guide"]>;
-  guideCard?: Partial<SiteConfig["guideCard"]>;
-  placeCard?: Partial<SiteConfig["placeCard"]>;
+  home?: Partial<Omit<HomeConfig, "guideCard">> & {
+    guideCard?: Partial<GuideCardConfig>;
+  };
+  guide?: Partial<GuideConfig>;
+  placeCard?: Partial<PlaceCardConfig>;
 };
 
 const defaultSiteConfig: SiteConfig = {
@@ -165,6 +174,16 @@ const defaultSiteConfig: SiteConfig = {
     searchResultsGroupedLabel: "By country",
     searchResultsIndividualLabel: "Individual",
     searchResultsEmptyText: "No matching places. Try a broader search.",
+    guideCard: {
+      showDescription: true,
+      fallbackDescription: "Saved places for this guide.",
+      showAuthor: true,
+      authorLabel: "By",
+      showTags: true,
+      maxTags: 4,
+      showPlaceCount: true,
+      trimCountryFromTitle: true,
+    },
   },
   guide: {
     fallbackDescription: "Saved places for this city.",
@@ -203,16 +222,6 @@ const defaultSiteConfig: SiteConfig = {
     mapFilteredText: "Filtered to the visible map area.",
     emptyStateText: "No matches. Try a broader search or clear the tag filter.",
   },
-  guideCard: {
-    showDescription: true,
-    fallbackDescription: "Saved places for this guide.",
-    showAuthor: true,
-    authorLabel: "By",
-    showTags: true,
-    maxTags: 4,
-    showPlaceCount: true,
-    trimCountryFromTitle: true,
-  },
   placeCard: {
     showPhoto: true,
     showMapLink: true,
@@ -245,14 +254,14 @@ function mergeSiteConfig(config: SiteConfigInput): SiteConfig {
     home: {
       ...defaultSiteConfig.home,
       ...config.home,
+      guideCard: {
+        ...defaultSiteConfig.home.guideCard,
+        ...config.home?.guideCard,
+      },
     },
     guide: {
       ...defaultSiteConfig.guide,
       ...config.guide,
-    },
-    guideCard: {
-      ...defaultSiteConfig.guideCard,
-      ...config.guideCard,
     },
     placeCard: {
       ...defaultSiteConfig.placeCard,
