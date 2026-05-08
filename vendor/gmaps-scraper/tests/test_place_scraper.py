@@ -1439,6 +1439,12 @@ class PlaceScraperTests(unittest.TestCase):
                 "A wonderful place to unwind and enjoy nature. Highly recommended for families."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "Just an overrated place. Tiktok and instagram made it famous but I didn’t "
+                "feel like it is a must visit spot."
+            )
+        )
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(

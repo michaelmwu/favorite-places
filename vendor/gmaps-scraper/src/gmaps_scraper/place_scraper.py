@@ -144,6 +144,10 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
 )
 _DESCRIPTION_REVIEW_PROSE_MARKERS = (
     "highly recommended",
+    "instagram",
+    "must visit",
+    "overrated",
+    "tiktok",
     "your children",
     "your kids",
     "you should",

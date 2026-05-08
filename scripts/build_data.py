@@ -3554,7 +3554,12 @@ def refresh_cached_semantic_enrichment(
             raise RuntimeError(f"No configured place matched: {missing_text}")
 
     changed_slugs: set[str] = set()
+    pending_save_slug: str | None = None
     for slug, place_id, place, entry, city_name, country_name, suppress_description in semantic_jobs:
+        if pending_save_slug is not None and slug != pending_save_slug:
+            save_places_cache(pending_save_slug, cache_payloads[pending_save_slug])
+            pending_save_slug = None
+
         assert entry.place is not None
         previous_semantics = semantic_enrichment_state(entry.place)
         previous_description = entry.place.semantic_description
@@ -3590,6 +3595,7 @@ def refresh_cached_semantic_enrichment(
             print(f"Generated {requested_label} for {slug}:{place_id} [{place.name}]", flush=True)
             updated_count += 1
             changed_slugs.add(slug)
+            pending_save_slug = slug
         elif (
             (not enable_semantics or semantic_enrichment_state_is_populated(current_semantics))
             and (not enable_description or current_description)
@@ -3598,8 +3604,8 @@ def refresh_cached_semantic_enrichment(
         else:
             skipped_count += 1
 
-    for slug in sorted(changed_slugs):
-        save_places_cache(slug, cache_payloads[slug])
+    if pending_save_slug is not None:
+        save_places_cache(pending_save_slug, cache_payloads[pending_save_slug])
 
     print(
         "Semantic enrichment refresh complete: "
@@ -3848,10 +3854,11 @@ def localized_primary_category_label(
     sanitized_display_name = sanitize_enrichment_primary_category(raw_display_name)
     if (
         sanitized_display_name is None
-        or canonical_display_name is None
         or looks_english_category_label(sanitized_display_name)
     ):
         return None
+    if canonical_display_name is None:
+        return sanitized_display_name
     if (
         canonical_display_name
         and normalize_type_lookup_text(sanitized_display_name) == normalize_type_lookup_text(canonical_display_name)
@@ -3865,6 +3872,8 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
         return None
 
     raw_display_name = place.primary_type_display_name_localized or place.primary_type_display_name
+    if place.primary_type is not None and normalize_enrichment_type_tag(place.primary_type) is None:
+        raw_display_name = None
     canonical_display_name = canonical_primary_category_label(
         primary_type=place.primary_type,
         display_name=place.primary_type_display_name,
@@ -3876,6 +3885,7 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.primary_type, place.types = normalize_enrichment_place_type_fields(place)
     place.display_name = sanitize_place_page_display_name(place.display_name)
     place.formatted_address = sanitize_place_page_formatted_address(place.formatted_address)
     place.address_display_en = sanitize_place_page_formatted_address(place.address_display_en)
@@ -3974,6 +3984,14 @@ def normalized_enrichment_type_ids(
     return (
         specific_tags[0].replace("-", "_"),
         [tag.replace("-", "_") for tag in expanded_type_tags],
+    )
+
+
+def normalize_enrichment_place_type_fields(place: EnrichmentPlace) -> tuple[str | None, list[str]]:
+    return normalized_enrichment_type_ids(
+        place.primary_type,
+        place.primary_type_display_name,
+        place.types,
     )
 
 
@@ -8096,9 +8114,27 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
 )
 PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS = (
     "highly recommended",
+    "instagram",
+    "must visit",
+    "overrated",
+    "tiktok",
     "your children",
     "your kids",
     "you should",
+)
+PLACE_PAGE_REVIEW_DESCRIPTION_MARKER_RE = re.compile(
+    "|".join(
+        rf"(?<![\w-]){re.escape(marker).replace(r'\\ ', r'\\s+')}(?![\w-])"
+        for marker in PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS
+    ),
+    re.IGNORECASE,
+)
+PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE = re.compile(
+    "|".join(
+        rf"(?<![\w-]){re.escape(marker).replace(r'\\ ', r'\\s+')}(?![\w-])"
+        for marker in PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS
+    ),
+    re.IGNORECASE,
 )
 
 
@@ -8118,8 +8154,7 @@ def sanitize_place_page_description(value: Any) -> str | None:
 def looks_like_place_page_review_description(value: str) -> bool:
     if len(value.split()) < 12:
         return False
-    lowered = value.casefold()
-    return any(marker in lowered for marker in PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS)
+    return PLACE_PAGE_REVIEW_DESCRIPTION_MARKER_RE.search(value) is not None
 
 
 def looks_like_place_page_first_person_description(value: str) -> bool:
@@ -8128,7 +8163,7 @@ def looks_like_place_page_first_person_description(value: str) -> bool:
     lowered = value.casefold()
     if PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE.search(lowered) is None:
         return False
-    return any(marker in lowered for marker in PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS)
+    return PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE.search(value) is not None
 
 
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
@@ -8603,6 +8638,16 @@ def apply_semantic_enrichment(
         bypass_cache=(include_semantics and force_semantics) or (include_description and force_description),
     )
     if repair is None:
+        if include_description and not description_reused:
+            description = fallback_semantic_description(
+                enrichment_place,
+                raw_place=raw_place,
+                city_name=city_name,
+            )
+            if description is not None:
+                enrichment_place.semantic_description = description
+                enrichment_place.semantic_description_signature = description_signature
+                enrichment_place.semantic_source = "fallback"
         return
     if include_semantics:
         neighborhood = normalize_semantic_neighborhood_label(
@@ -8617,6 +8662,12 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
     if include_description and not description_reused:
         description = sanitize_semantic_description(repair.get("description"))
+        if description is None:
+            description = fallback_semantic_description(
+                enrichment_place,
+                raw_place=raw_place,
+                city_name=city_name,
+            )
         if description is not None:
             enrichment_place.semantic_description = description
             enrichment_place.semantic_description_signature = description_signature
@@ -8630,6 +8681,69 @@ def apply_semantic_enrichment(
         )
     ):
         enrichment_place.semantic_source = "llm"
+
+
+def fallback_semantic_description(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+) -> str | None:
+    name = as_string(enrichment_place.display_name) or as_string(raw_place.name)
+    if name is None:
+        return None
+    category = as_string(enrichment_place.primary_type_display_name)
+    location = fallback_semantic_description_location(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+    )
+    if category and location:
+        description = f"{name} is {indefinite_article(category)} {category.lower()} in {location}."
+    elif category:
+        description = f"{name} is {indefinite_article(category)} {category.lower()}."
+    elif location:
+        description = f"{name} is a saved place in {location}."
+    else:
+        return None
+    return sanitize_semantic_description(description)
+
+
+def fallback_semantic_description_location(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+) -> str | None:
+    address = enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
+    for locality in infer_address_localities(address, city_name=city_name):
+        locality_key = normalize_locality_key(locality)
+        if (
+            locality_key
+            and locality_key != normalize_locality_key(city_name)
+            and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
+        ):
+            return locality
+    return as_string(city_name)
+
+
+def fallback_semantic_description_locality_is_usable(
+    locality: str,
+    *,
+    city_name: str | None,
+) -> bool:
+    normalized = " ".join(locality.split())
+    if not normalized:
+        return False
+    if re.search(r"^\+?\s*photos?\b", normalized, flags=re.IGNORECASE):
+        return False
+    if " - " in normalized and city_name and normalize_locality_key(city_name) in normalize_locality_key(normalized):
+        return False
+    return True
+
+
+def indefinite_article(value: str) -> str:
+    return "an" if value[:1].lower() in {"a", "e", "i", "o", "u"} else "a"
 
 
 def repair_semantic_enrichment_with_llm(
@@ -8921,7 +9035,14 @@ def normalize_semantic_neighborhood_label(
     label = sanitize_semantic_label(value, max_length=64)
     if label is None:
         return None
-    label = normalize_semantic_neighborhood_part(label)
+    if semantic_neighborhood_label_has_site_mapping_source(
+        label,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        label = re.sub(r"\s+", " ", label.strip()).strip(" -−ー－/()[]{}.")
+    else:
+        label = normalize_semantic_neighborhood_part(label)
     if label is None:
         return None
     country_key = normalize_locality_key(country_name)
@@ -8959,8 +9080,6 @@ def normalize_semantic_neighborhood_part(label: str) -> str | None:
     candidate = re.sub(r"\s+", " ", label.strip()).strip(" -−ー－/()[]{}.")
     if not candidate:
         return None
-    if not is_saint_prefixed_semantic_neighborhood(candidate):
-        return None
     if is_country_locality(candidate):
         return None
     if is_subnational_locality(candidate) or is_subnational_locality_abbreviation(candidate):
@@ -8969,11 +9088,27 @@ def normalize_semantic_neighborhood_part(label: str) -> str | None:
         return None
     if is_building_or_unit_part(candidate):
         return None
-    if re.search(r"\d", candidate):
+    if re.search(r"\d{3,}", candidate):
         return None
     if semantic_neighborhood_has_non_saint_street_marker(candidate):
         return None
     return candidate
+
+
+def semantic_neighborhood_label_has_site_mapping_source(
+    label: str,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> bool:
+    for rule in google_maps_place_neighborhood_mappings():
+        if not site_mapping_context_matches(rule.get("city"), city_name):
+            continue
+        if not site_mapping_context_matches(rule.get("country"), country_name):
+            continue
+        if site_mapping_values_match(rule.get("from"), [label]):
+            return True
+    return False
 
 
 def is_saint_prefixed_semantic_neighborhood(candidate: str) -> bool:
@@ -9811,8 +9946,13 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
         primary_type=primary_type,
         display_name=raw_primary_type_display_name,
     )
+    raw_localized_display_name = (
+        raw_primary_type_display_name
+        if primary_type is None or normalize_enrichment_type_tag(primary_type) is not None
+        else None
+    )
     primary_type_display_name_localized = localized_primary_category_label(
-        raw_display_name=raw_primary_type_display_name,
+        raw_display_name=raw_localized_display_name,
         canonical_display_name=primary_type_display_name,
     )
     primary_type, types = normalized_enrichment_type_ids(
