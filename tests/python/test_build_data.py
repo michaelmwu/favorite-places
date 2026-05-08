@@ -4886,6 +4886,8 @@ class BuildDataTests(unittest.TestCase):
             ("TX", "Austin", "United States"),
             ("Xinjiang", "Urumqi", "China"),
             ("新疆维吾尔自治区", "Urumqi", "China"),
+            ("Sichuan", "Chengdu", "China"),
+            ("四川省", "Chengdu", "China"),
         ]
         for value, city_name, country_name in cases:
             with self.subTest(value=value):

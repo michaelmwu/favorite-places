@@ -1405,6 +1405,12 @@ class PlaceScraperTests(unittest.TestCase):
                 "but the way it’s displayed here takes it to the next level."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "There are many Sichuan Opera Theatre Houses but so far this is the most "
+                "professional show I have attended. Was a bit skeptical at first."
+            )
+        )
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(
@@ -1425,6 +1431,14 @@ class PlaceScraperTests(unittest.TestCase):
     def test_clean_description_text_rejects_option_only_amenity_labels(self) -> None:
         self.assertIsNone(_clean_description_text("· \ue5ca Dogs allowed \ue5cc"))
         self.assertIsNone(_clean_description_text("Onsite services"))
+
+    def test_clean_description_text_strips_trailing_google_maps_glyph(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Large museum showcasing ancient pottery, Buddhist art & exhibits. \ue5cc"
+            ),
+            "Large museum showcasing ancient pottery, Buddhist art & exhibits.",
+        )
 
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [

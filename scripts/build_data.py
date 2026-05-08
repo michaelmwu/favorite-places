@@ -512,6 +512,9 @@ SUBNATIONAL_LOCALITY_ALIASES = AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES + (
     "新疆",
     "新疆维吾尔自治区",
     "新疆維吾爾自治區",
+    "Sichuan",
+    "四川",
+    "四川省",
 )
 SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
     "da an": "Da'an",

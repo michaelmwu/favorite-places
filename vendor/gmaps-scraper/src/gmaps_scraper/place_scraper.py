@@ -145,6 +145,7 @@ _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN = re.compile(
 )
 _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "visited",
+    "attended",
     "ordered",
     "enjoyed",
     "stopped by",
@@ -3679,10 +3680,11 @@ def _strip_description_service_options(value: str) -> str | None:
     while last_non_service_index >= 0 and is_service_segment[last_non_service_index]:
         last_non_service_index -= 1
 
+    kept_segments = cleaned_segments[: last_non_service_index + 1]
+    trimmed = " · ".join(kept_segments).strip()
     if last_non_service_index < len(cleaned_segments) - 1:
-        trimmed = " · ".join(cleaned_segments[: last_non_service_index + 1]).strip(" .")
-        return trimmed or None
-    return value
+        trimmed = trimmed.strip(" .")
+    return trimmed or None
 
 
 def _clean_description_segment(value: str) -> str | None:
@@ -3692,7 +3694,7 @@ def _clean_description_segment(value: str) -> str | None:
     normalized = normalized.strip("·•⋅ ").strip()
     normalized = re.sub(r"^[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]+\s*", "", normalized)
     normalized = re.sub(r"\s*[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]+$", "", normalized)
-    normalized = normalized.strip(" .")
+    normalized = normalized.strip()
     return normalized or None
 
 
