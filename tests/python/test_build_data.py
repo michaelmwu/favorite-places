@@ -6237,6 +6237,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(build_data.humanize_type_id("adults_only_boutique_hotel"))
         self.assertIsNone(build_data.humanize_type_id("beer"))
         self.assertIsNone(build_data.humanize_type_id("free_breakfast"))
+        self.assertIsNone(build_data.humanize_type_id("transportation"))
         self.assertIsNone(build_data.humanize_type_id("free_wi_fi"))
 
     def test_normalize_enrichment_match_drops_weather_category(self) -> None:
@@ -6269,6 +6270,25 @@ class BuildDataTests(unittest.TestCase):
                 "primaryType": "beer",
                 "primaryTypeDisplayName": {"text": "Beer"},
                 "types": ["beer"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertIsNone(place.primary_type_display_name_localized)
+        self.assertEqual(place.types, [])
+
+    def test_normalize_enrichment_match_drops_transportation_category(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "test-id",
+                "name": "places/test-id",
+                "displayName": {"text": "Jægersborggade"},
+                "formattedAddress": "2200 Copenhagen, Denmark",
+                "googleMapsUri": "https://maps.google.com/?cid=1",
+                "primaryType": "transportation",
+                "primaryTypeDisplayName": {"text": "Transportation"},
+                "types": ["transportation"],
             }
         )
 
@@ -6358,6 +6378,8 @@ class BuildDataTests(unittest.TestCase):
             ("Moe's Original BBQ", "Barbecue restaurant", "650 Broadway, Bangor, ME 04401", "Bangor"),
             ("Berghain | Panorama Bar", "Night club", "Am Wriezener bhf, 10243 Berlin, Germany", "Berlin"),
             ("DDR Museum", "Museum", "Vera Britain Ufer, Karl-Liebknecht-Str. 1, 10178 Berlin, Germany", "Berlin"),
+            ("Exotic Garden of Monaco", "Garden", "62 Bd du Jardin Exotique, 98000 Monaco", "Monaco"),
+            ("gerhard's café monaco", "Bar", "42 Quai Jean-Charles Rey, 98000 Monaco", "Monaco"),
         ]
 
         for name, category, address, city_name in cases:
@@ -6373,6 +6395,47 @@ class BuildDataTests(unittest.TestCase):
                 )
 
                 self.assertTrue(description.endswith(f" in {city_name}."))
+
+    def test_fallback_semantic_description_strips_short_region_code_from_locality(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Faro di Punta Carena",
+                primary_type_display_name="Historical landmark",
+                formatted_address="Str. Faro di Carena, 80071 Anacapri NA, Italy",
+            ),
+            raw_place=RawPlace(name="Faro di Punta Carena", maps_url="https://maps.example/faro", address=None),
+            city_name="Capri",
+        )
+
+        self.assertEqual(description, "Faro di Punta Carena is a historical landmark in Anacapri.")
+
+    def test_fallback_semantic_description_prefers_plus_code_locality_for_bad_address(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Scala Fenicia",
+                primary_type_display_name="Tourist attraction",
+                formatted_address="plattl, 7c, 39054 Renon BZ, Italy",
+                plus_code="H64H+H7 Anacapri, Metropolitan City of Naples, Italy",
+            ),
+            raw_place=RawPlace(name="Scala Fenicia", maps_url="https://maps.example/scala", address=None),
+            city_name="Capri",
+        )
+
+        self.assertEqual(description, "Scala Fenicia is a tourist attraction in Anacapri.")
+
+    def test_fallback_semantic_description_does_not_use_broader_plus_code_region(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Belvedere Tragara",
+                primary_type_display_name="Observation deck",
+                formatted_address="Via Tragara, 80073 Capri NA, Italy",
+                plus_code="G7W2+42 Capri, Metropolitan City of Naples, Italy",
+            ),
+            raw_place=RawPlace(name="Belvedere Tragara", maps_url="https://maps.example/belvedere", address=None),
+            city_name="Capri",
+        )
+
+        self.assertEqual(description, "Belvedere Tragara is an observation deck in Capri.")
 
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [

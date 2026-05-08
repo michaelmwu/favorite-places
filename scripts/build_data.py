@@ -906,6 +906,7 @@ INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$"),
     re.compile(r"^adults(?:_|-)only(?:_|-).*$"),
     re.compile(r"^beer$"),
+    re.compile(r"^transportation$"),
     re.compile(r"^(?:light|heavy|mostly|partly)(?:_|-)(?:rain|snow|cloudy|sunny)$"),
     re.compile(r"^free(?:_|-)breakfast$"),
     re.compile(r"^free(?:_|-)?wi(?:_|-)?fi$"),
@@ -919,6 +920,7 @@ INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$", re.IGNORECASE),
     re.compile(r"^adults\s+only\b", re.IGNORECASE),
     re.compile(r"^beer$", re.IGNORECASE),
+    re.compile(r"^transportation$", re.IGNORECASE),
     re.compile(r"^(?:light|heavy|mostly|partly)\s+(?:rain|snow|cloudy|sunny)$", re.IGNORECASE),
     re.compile(r"^free\s+breakfast$", re.IGNORECASE),
     re.compile(r"^free\s+wi-?fi$", re.IGNORECASE),
@@ -4407,6 +4409,7 @@ def normalize_address_locality_part(part: str) -> str | None:
     candidate = strip_leading_numeric_locality_prefix(candidate)
     candidate = strip_leading_locality_preposition(candidate)
     candidate = strip_country_locality_prefix(candidate)
+    candidate = strip_trailing_short_region_code(candidate)
     candidate = strip_subnational_locality_suffix(candidate)
 
     if not candidate or is_country_locality(candidate):
@@ -4459,6 +4462,10 @@ def strip_leading_numeric_locality_prefix(candidate: str) -> str:
 
 def strip_leading_locality_preposition(candidate: str) -> str:
     return re.sub(r"^(?:at|near)\s+", "", candidate, flags=re.IGNORECASE).strip()
+
+
+def strip_trailing_short_region_code(candidate: str) -> str:
+    return re.sub(r"\s+[A-Z]{2}$", "", candidate).strip(" -−ー－/()[]{}.")
 
 
 def strip_subnational_locality_suffix(candidate: str) -> str:
@@ -4598,10 +4605,10 @@ def is_street_or_block_part(candidate: str) -> bool:
     return bool(
         re.search(
             (
-                r"\b(?:chome|丁目|st|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
-                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|placa|plaça|pl|bajada|"
+                r"\b(?:chome|丁目|st|str|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|placa|plaça|pl|bajada|"
                 r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
-                r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.|p\.\s*º)\s"
+                r"|^(?:c/|c\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.\s*º)\s"
             ),
             candidate,
             flags=re.IGNORECASE,
@@ -8287,6 +8294,14 @@ def fallback_semantic_description_location(
     raw_place: RawPlace,
     city_name: str | None,
 ) -> str | None:
+    for locality in infer_plus_code_localities(enrichment_place.plus_code, city_name=city_name):
+        locality_key = normalize_locality_key(locality)
+        if (
+            locality_key
+            and locality_key != normalize_locality_key(city_name)
+            and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
+        ):
+            return locality
     address = enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
     for locality in infer_address_localities(address, city_name=city_name):
         locality_key = normalize_locality_key(locality)
@@ -8297,6 +8312,18 @@ def fallback_semantic_description_location(
         ):
             return locality
     return as_string(city_name)
+
+
+def infer_plus_code_localities(plus_code: str | None, *, city_name: str | None) -> list[str]:
+    normalized = as_string(plus_code)
+    if normalized is None:
+        return []
+    match = re.match(r"^[A-Z0-9]{4,}\+[A-Z0-9]{2,}\s+(.+)$", normalized.strip(), flags=re.IGNORECASE)
+    if match is None:
+        return []
+    first_part = match.group(1).split(",", 1)[0]
+    locality = normalize_address_locality_part(first_part)
+    return [locality] if locality else []
 
 
 def fallback_semantic_description_locality_is_usable(
@@ -8310,6 +8337,8 @@ def fallback_semantic_description_locality_is_usable(
     if re.search(r"^\+?\s*photos?\b", normalized, flags=re.IGNORECASE):
         return False
     if re.search(r"\b(?:centrico|habitaciones?|bedrooms?|ascensor|wifi|air\s*conditioning|\bac\b)\b", normalized, flags=re.IGNORECASE):
+        return False
+    if normalize_locality_key(normalized) == "plattl":
         return False
     if re.search(r"\b(?:broadway|bhf|bahnhof|ufer)\b", normalized, flags=re.IGNORECASE):
         return False
@@ -8700,10 +8729,10 @@ def semantic_neighborhood_has_non_saint_street_marker(candidate: str) -> bool:
     return bool(
         re.search(
             (
-                r"\b(?:chome|丁目|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
-                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|placa|plaça|pl|bajada|"
+                r"\b(?:chome|丁目|str|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|placa|plaça|pl|bajada|"
                 r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
-                r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.|p\.\s*º)\s"
+                r"|^(?:c/|c\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.\s*º)\s"
             ),
             candidate,
             flags=re.IGNORECASE,
