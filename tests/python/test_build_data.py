@@ -3462,6 +3462,138 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertTrue(hidden_place.hidden)
 
+    def test_normalize_guide_combines_google_description_and_note_without_semantic_copy(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    note="Saved-list note from the curator.",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-01T00:00:00+00:00",
+                query="Coffee House, Tokyo",
+                place=EnrichmentPlace(
+                    description="Google place description.",
+                    primary_type_display_name="Coffee shop",
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+                patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            ):
+                guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertEqual(
+            guide.places[0].why_recommended,
+            "Google place description.\n\nSaved-list note from the curator.",
+        )
+        self.assertEqual(guide.places[0].note, "Saved-list note from the curator.")
+
+    def test_normalize_guide_uses_search_result_description_as_description_backup(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    note="Saved-list note from the curator.",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-01T00:00:00+00:00",
+                query="Coffee House, Tokyo",
+                place=EnrichmentPlace(
+                    search_result_description="Search-result place description.",
+                    primary_type_display_name="Coffee shop",
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+                patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            ):
+                guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertEqual(
+            guide.places[0].why_recommended,
+            "Search-result place description.\n\nSaved-list note from the curator.",
+        )
+
+    def test_normalize_guide_prefers_semantic_description_over_deterministic_description_fallback(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    note="Saved-list note from the curator.",
+                    maps_url="https://maps.google.com/?cid=1",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-04-01T00:00:00+00:00",
+                query="Coffee House, Tokyo",
+                place=EnrichmentPlace(
+                    description="Google place description.",
+                    search_result_description="Search-result place description.",
+                    semantic_description="LLM semantic description.",
+                    primary_type_display_name="Coffee shop",
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+                patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            ):
+                guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache=enrichment_cache)
+
+        self.assertEqual(guide.places[0].why_recommended, "LLM semantic description.")
+
     def test_normalize_guide_rejects_manual_why_recommended_override(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
@@ -3926,6 +4058,249 @@ class BuildDataTests(unittest.TestCase):
                 )
 
         self.assertEqual(guide.places[0].neighborhood, "Wanhua")
+
+    def test_normalize_guide_applies_site_neighborhood_mapping_alias_lists(self) -> None:
+        raw = RawSavedList(
+            title="Montreal, Canada",
+            places=[
+                RawPlace(
+                    name="Plateau Cafe",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                query="Plateau Cafe, Montreal, Canada",
+                matched=True,
+                source="google_maps_page",
+                place=EnrichmentPlace(
+                    display_name="Plateau Cafe",
+                    formatted_address="100 Mont-Royal Ave E, Montréal, QC, Canada",
+                    primary_type_display_name="Cafe",
+                    semantic_neighborhood="Le Plateau",
+                ),
+            ),
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=True),
+                patch.object(
+                    build_data,
+                    "google_maps_place_neighborhood_mappings",
+                    return_value=[
+                        {
+                            "city": "Montreal",
+                            "country": "Canada",
+                            "from": ["The Plateau", "Le Plateau"],
+                            "to": "Plateau",
+                        }
+                    ],
+                ),
+            ):
+                guide = build_data.normalize_guide(
+                    "montreal-canada",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(guide.places[0].neighborhood, "Plateau")
+
+    def test_normalize_guide_applies_site_category_mapping_rules(self) -> None:
+        raw = RawSavedList(
+            title="Montreal, Canada",
+            places=[
+                RawPlace(
+                    name="Kitano Shokudo",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                query="Kitano Shokudo, Montreal, Canada",
+                matched=True,
+                source="google_maps_page",
+                place=EnrichmentPlace(
+                    display_name="Kitano Shokudo",
+                    primary_type_display_name="Authentic Japanese restaurant",
+                ),
+            ),
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(
+                    build_data,
+                    "google_maps_place_category_mappings",
+                    return_value=[
+                        {
+                            "city": "Montreal",
+                            "country": "Canada",
+                            "from": "Authentic Japanese restaurant",
+                            "to": "Japanese restaurant",
+                        }
+                    ],
+                ),
+            ):
+                guide = build_data.normalize_guide(
+                    "montreal-canada",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(guide.places[0].primary_category, "Japanese restaurant")
+        self.assertIn("japanese-restaurant", guide.places[0].tags)
+        self.assertNotIn("authentic-japanese-restaurant", guide.places[0].tags)
+
+    def test_normalize_guide_keeps_category_tag_when_mapping_preserves_slug(self) -> None:
+        raw = RawSavedList(
+            title="Montreal, Canada",
+            places=[
+                RawPlace(
+                    name="Cafe",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                query="Cafe, Montreal, Canada",
+                matched=True,
+                source="google_maps_page",
+                place=EnrichmentPlace(
+                    display_name="Cafe",
+                    primary_type_display_name="coffee shop",
+                ),
+            ),
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(
+                    build_data,
+                    "google_maps_place_category_mappings",
+                    return_value=[
+                        {
+                            "city": "Montreal",
+                            "country": "Canada",
+                            "from": "coffee shop",
+                            "to": "Coffee Shop",
+                        }
+                    ],
+                ),
+            ):
+                guide = build_data.normalize_guide(
+                    "montreal-canada",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(guide.places[0].primary_category, "Coffee Shop")
+        self.assertIn("coffee-shop", guide.places[0].tags)
+
+    def test_normalize_guide_preserves_manual_tags_when_category_mapping_prunes_source_tag(self) -> None:
+        raw = RawSavedList(
+            title="Montreal, Canada",
+            places=[
+                RawPlace(
+                    name="Kitano Shokudo",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                query="Kitano Shokudo, Montreal, Canada",
+                matched=True,
+                source="google_maps_page",
+                place=EnrichmentPlace(
+                    display_name="Kitano Shokudo",
+                    primary_type_display_name="Authentic Japanese restaurant",
+                ),
+            ),
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            (place_overrides_dir / "montreal-canada.json").write_text(
+                json.dumps(
+                    {
+                        place_id: {
+                            "tags": ["authentic-japanese-restaurant", "izakaya"],
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(
+                    build_data,
+                    "google_maps_place_category_mappings",
+                    return_value=[
+                        {
+                            "city": "Montreal",
+                            "country": "Canada",
+                            "from": "Authentic Japanese restaurant",
+                            "to": "Japanese restaurant",
+                        }
+                    ],
+                ),
+            ):
+                guide = build_data.normalize_guide(
+                    "montreal-canada",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(guide.places[0].primary_category, "Japanese restaurant")
+        self.assertIn("japanese-restaurant", guide.places[0].tags)
+        self.assertIn("authentic-japanese-restaurant", guide.places[0].tags)
+        self.assertIn("izakaya", guide.places[0].tags)
 
     def test_normalize_guide_excludes_permanently_closed_places_from_ui_counts(self) -> None:
         raw = RawSavedList(
@@ -6763,6 +7138,8 @@ class BuildDataTests(unittest.TestCase):
             patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
             patch.object(build_data, "record_scraper_session_use"),
             patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "google_maps_place_collect_reviews", return_value=True),
+            patch.object(build_data, "google_maps_place_collect_about", return_value=True),
             patch.object(build_data, "scrape_place", return_value=details) as scrape,
         ):
             entry = build_data.fetch_place_page_enrichment(place)

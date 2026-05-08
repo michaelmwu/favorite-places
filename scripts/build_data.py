@@ -2385,12 +2385,35 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         enrichment_cache_entry = enrichment_cache.get(place_id)
         enrichment = coerce_enrichment_place(enrichment_cache_entry)
         manual_primary_category = as_string(override.get("primary_category"))
-        primary_category = (
-            manual_primary_category
-            or enrichment.primary_type_display_name
-            or humanize_type_id(enrichment.primary_type)
+        machine_primary_category = enrichment.primary_type_display_name or humanize_type_id(enrichment.primary_type)
+        mapped_primary_category = apply_site_category_mappings(
+            machine_primary_category,
+            city_name=city_name,
+            country_name=country_name,
         )
-        primary_category_localized = None if manual_primary_category else enrichment.primary_type_display_name_localized
+        primary_category = manual_primary_category or mapped_primary_category
+        machine_primary_category_tag = (
+            normalize_tag_slug(machine_primary_category) if machine_primary_category else None
+        )
+        mapped_primary_category_tag = (
+            normalize_tag_slug(mapped_primary_category) if mapped_primary_category else None
+        )
+        category_mapping_replaces_tag = bool(
+            not manual_primary_category
+            and machine_primary_category_tag
+            and mapped_primary_category_tag
+            and mapped_primary_category_tag != machine_primary_category_tag
+        )
+        mapped_primary_category_source_tag = (
+            machine_primary_category_tag
+            if category_mapping_replaces_tag
+            else None
+        )
+        primary_category_localized = (
+            None
+            if manual_primary_category or category_mapping_replaces_tag
+            else enrichment.primary_type_display_name_localized
+        )
         use_semantic_enrichment = google_maps_place_semantic_llm_enabled()
         use_semantic_descriptions = google_maps_place_semantic_descriptions_enabled()
         semantic_tags = [
@@ -2399,15 +2422,23 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
                 *(enrichment.semantic_tags if use_semantic_enrichment else []),
                 *(enrichment.semantic_types if use_semantic_enrichment else []),
             ]
-            if semantic_tag_slug_is_usable(tag)
+            if semantic_tag_slug_is_usable(tag) and tag != mapped_primary_category_source_tag
         ]
+        place_override_tags = coerce_string_list(override.get("tags"))
         tags = sorted(
             {
-                *coerce_string_list(override.get("tags")),
+                *place_override_tags,
                 *semantic_tags,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
+        if mapped_primary_category_source_tag:
+            tags = sorted(
+                {
+                    *place_override_tags,
+                    *(tag for tag in tags if tag != mapped_primary_category_source_tag),
+                }
+            )
         raw_locality_candidates = infer_address_localities(
             place.address,
             city_name=city_name,
@@ -2800,7 +2831,7 @@ def build_tag_provenance(
             source_place_field(tag, primary_category_field),
             priority=30 if primary_category_field and primary_category_field.source == "manual" else 20,
         )
-    for tag in derive_enrichment_type_tags(enrichment):
+    for tag in derive_enrichment_type_tags(enrichment, category=primary_category):
         put_tag(tag, google_places_field(tag, enrichment_cache_entry), priority=20)
 
     return [ranked_fields[tag][1] for tag in tags if tag in ranked_fields]
@@ -3601,7 +3632,7 @@ def derive_place_tags(
     )
     if category:
         tags.add(normalize_tag_slug(category))
-    tags.update(derive_enrichment_type_tags(enrichment))
+    tags.update(derive_enrichment_type_tags(enrichment, category=category))
     return sorted(tag for tag in tags if tag)
 
 
@@ -3639,16 +3670,16 @@ def derive_locality_tags(
     if not locality_tags:
         return []
 
-    has_specific_enrichment = bool(category or derive_enrichment_type_tags(enrichment))
+    has_specific_enrichment = bool(category or derive_enrichment_type_tags(enrichment, category=category))
     if has_specific_enrichment:
         return locality_tags[:1]
     return locality_tags[:2]
 
 
-def derive_enrichment_type_tags(enrichment: EnrichmentPlace) -> list[str]:
+def derive_enrichment_type_tags(enrichment: EnrichmentPlace, *, category: str | None = None) -> list[str]:
     _primary_type, type_ids = normalized_enrichment_type_ids(
         enrichment.primary_type,
-        enrichment.primary_type_display_name,
+        category or enrichment.primary_type_display_name,
         enrichment.types,
     )
     return [type_id.replace("_", "-") for type_id in type_ids]
@@ -4876,6 +4907,19 @@ def google_maps_place_semantic_description_force_refresh() -> bool:
 
 def google_maps_place_neighborhood_mappings() -> list[dict[str, Any]]:
     configured = site_google_maps_place_config_value("neighborhood_mappings")
+    if isinstance(configured, dict):
+        return [
+            {"from": source, "to": target}
+            for source, target in configured.items()
+            if isinstance(source, str) and isinstance(target, str)
+        ]
+    if isinstance(configured, list):
+        return [item for item in configured if isinstance(item, dict)]
+    return []
+
+
+def google_maps_place_category_mappings() -> list[dict[str, Any]]:
+    configured = site_google_maps_place_config_value("category_mappings")
     if isinstance(configured, dict):
         return [
             {"from": source, "to": target}
@@ -8350,7 +8394,11 @@ def repair_semantic_enrichment_with_llm(
                     "local area names over the smallest administrative unit. The neighborhood must be a "
                     "human-facing display label, not a tag or slug: use normal local display casing such as "
                     "Perth CBD, Northbridge, or Margaret River; preserve acronyms like CBD; never return "
-                    "kebab-case, snake_case, or all-lowercase labels. For Taiwan, village/li labels "
+                    "kebab-case, snake_case, all-lowercase labels, or labels with stray spaces inside words. "
+                    "For English-language guides, return the common English-facing neighborhood label when "
+                    "one exists; use established English names rather than mechanically preserving local-language "
+                    "administrative labels. "
+                    "For Taiwan, village/li labels "
                     "such as Kangle Village or Tonghua Village are usually too granular; prefer the district "
                     "such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local "
                     "area as the neighborhood. Do not infer Ximen, Neihu, Longshan, or similar local areas from "
@@ -8432,12 +8480,12 @@ def semantic_enrichment_evidence(
         "raw_address": enrichment_place.formatted_address or raw_place.address,
         "category": enrichment_place.primary_type_display_name,
         "category_localized": enrichment_place.primary_type_display_name_localized,
+        "google_maps_description": enrichment_place.description,
+        "search_result_description": enrichment_place.search_result_description,
         "types": enrichment_place.types[:8],
         "price_range": enrichment_place.price_range,
         "admission_price": enrichment_place.admission_price,
         "room_price": enrichment_place.room_price,
-        "google_maps_description": enrichment_place.description,
-        "search_result_description": enrichment_place.search_result_description,
         "review_topics": enrichment_place.review_topics[:12],
         "about_sections": compact_about_sections(enrichment_place.about_sections),
     }
@@ -8465,12 +8513,12 @@ def semantic_description_signature(
             enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
         ),
         "category": semantic_signature_text(enrichment_place.primary_type_display_name),
+        "google_maps_description": semantic_signature_text(enrichment_place.description),
+        "search_result_description": semantic_signature_text(enrichment_place.search_result_description),
         "types": [value for value in (semantic_signature_text(item) for item in enrichment_place.types[:8]) if value],
         "price_range": semantic_signature_text(enrichment_place.price_range),
         "admission_price": semantic_signature_text(enrichment_place.admission_price),
         "room_price": semantic_signature_text(enrichment_place.room_price),
-        "google_maps_description": semantic_signature_text(enrichment_place.description),
-        "search_result_description": semantic_signature_text(enrichment_place.search_result_description),
         "rating_bucket": rating_bucket(enrichment_place.rating),
         "review_count_bucket": review_count_bucket(enrichment_place.user_rating_count),
         "review_topics": compact_review_topics_for_signature(enrichment_place.review_topics),
@@ -8688,18 +8736,18 @@ def apply_site_neighborhood_mapping_rule(
     target = sanitize_semantic_label(rule.get("to"), max_length=64)
     if target is None:
         return None
-    if not neighborhood_mapping_context_matches(rule.get("city"), city_name):
+    if not site_mapping_context_matches(rule.get("city"), city_name):
         return None
-    if not neighborhood_mapping_context_matches(rule.get("country"), country_name):
+    if not site_mapping_context_matches(rule.get("country"), country_name):
         return None
-    if not neighborhood_mapping_values_match(rule.get("from"), [neighborhood]):
+    if not site_mapping_values_match(rule.get("from"), [neighborhood]):
         return None
-    if "when_address_contains" in rule and not neighborhood_mapping_contains(
+    if "when_address_contains" in rule and not site_mapping_contains(
         rule.get("when_address_contains"),
         address_values,
     ):
         return None
-    if "when_candidate" in rule and not neighborhood_mapping_values_match(
+    if "when_candidate" in rule and not site_mapping_values_match(
         rule.get("when_candidate"),
         locality_candidates,
     ):
@@ -8707,7 +8755,46 @@ def apply_site_neighborhood_mapping_rule(
     return target
 
 
-def neighborhood_mapping_context_matches(configured: Any, actual: str | None) -> bool:
+def apply_site_category_mappings(
+    category: str | None,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    if category is None:
+        return None
+    for rule in google_maps_place_category_mappings():
+        mapped = apply_site_category_mapping_rule(
+            category,
+            rule,
+            city_name=city_name,
+            country_name=country_name,
+        )
+        if mapped is not None:
+            return mapped
+    return category
+
+
+def apply_site_category_mapping_rule(
+    category: str,
+    rule: dict[str, Any],
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    target = sanitize_enrichment_primary_category(rule.get("to"))
+    if target is None:
+        return None
+    if not site_mapping_context_matches(rule.get("city"), city_name):
+        return None
+    if not site_mapping_context_matches(rule.get("country"), country_name):
+        return None
+    if not site_mapping_values_match(rule.get("from"), [category]):
+        return None
+    return target
+
+
+def site_mapping_context_matches(configured: Any, actual: str | None) -> bool:
     values = coerce_mapping_string_list(configured)
     if not values:
         return True
@@ -8715,7 +8802,7 @@ def neighborhood_mapping_context_matches(configured: Any, actual: str | None) ->
     return bool(actual_key and any(normalize_locality_key(value) == actual_key for value in values))
 
 
-def neighborhood_mapping_values_match(configured: Any, values: Sequence[str]) -> bool:
+def site_mapping_values_match(configured: Any, values: Sequence[str]) -> bool:
     configured_values = coerce_mapping_string_list(configured)
     if not configured_values:
         return False
@@ -8723,7 +8810,7 @@ def neighborhood_mapping_values_match(configured: Any, values: Sequence[str]) ->
     return any(normalize_locality_key(value) in value_keys for value in configured_values)
 
 
-def neighborhood_mapping_contains(configured: Any, values: Sequence[str | None]) -> bool:
+def site_mapping_contains(configured: Any, values: Sequence[str | None]) -> bool:
     configured_values = coerce_mapping_string_list(configured)
     if not configured_values:
         return False
