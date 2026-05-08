@@ -884,6 +884,71 @@ class PlaceScraperTests(unittest.TestCase):
             "search_result",
         )
 
+    def test_build_place_details_prefers_preview_over_search_card_fallback(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/place/Pooles+Temple",
+                "dom": {"name": "Pooles Temple"},
+                "search_result": {
+                    "name": "Pooles Temple",
+                    "category": "Event venue",
+                    "review_count": "16",
+                    "address": "Hay St &, Cathedral Ave",
+                    "opened_from_search_result": True,
+                },
+                "preview": {
+                    "category": "Bar",
+                    "review_count": "32",
+                    "address": (
+                        "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, "
+                        "2 Chome−3−18 建築家会館ＪＩＡ館"
+                    ),
+                },
+            },
+            llm_fallback=None,
+            llm_policy="never",
+        )
+
+        self.assertEqual(details.category, "Bar")
+        self.assertEqual(details.review_count, 32)
+        self.assertEqual(
+            details.address,
+            "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+        )
+        assert details.diagnostics is not None
+        self.assertEqual(details.diagnostics.field_sources.get("category"), "preview")
+
+    def test_build_place_details_prefers_selected_card_when_search_open_fails(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+                "dom": {
+                    "name": "Wrong Visible Result",
+                    "category": "Restaurant",
+                    "review_count": "999",
+                    "address": "Wrong Address",
+                },
+                "search_result": {
+                    "name": "Pooles Temple",
+                    "category": "Event venue",
+                    "review_count": "16",
+                    "address": "Hay St &, Cathedral Ave",
+                },
+                "preview": {},
+            },
+            llm_fallback=None,
+            llm_policy="never",
+        )
+
+        self.assertEqual(details.name, "Pooles Temple")
+        self.assertEqual(details.category, "Event venue")
+        self.assertEqual(details.review_count, 16)
+        self.assertEqual(details.address, "Hay St &, Cathedral Ave")
+        assert details.diagnostics is not None
+        self.assertEqual(details.diagnostics.field_sources.get("name"), "search_result")
+
     def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Den",

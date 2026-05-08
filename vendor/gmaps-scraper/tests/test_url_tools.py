@@ -85,6 +85,18 @@ class UrlToolsTests(unittest.TestCase):
             "ftp://google.com/maps/place/Tokyo+Tower?hl=ja&gl=jp",
         )
 
+    def test_localize_maps_url_leaves_non_maps_google_url_unchanged(self) -> None:
+        self.assertEqual(
+            localize_maps_url("https://www.google.com/search?q=Tokyo+Tower&hl=ja&gl=jp"),
+            "https://www.google.com/search?q=Tokyo+Tower&hl=ja&gl=jp",
+        )
+
+    def test_localize_maps_url_accepts_maps_google_host_without_maps_path(self) -> None:
+        self.assertEqual(
+            localize_maps_url("https://maps.google.com/?q=Tokyo+Tower&hl=ja&gl=jp"),
+            "https://maps.google.com/?q=Tokyo+Tower&hl=en&gl=us",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

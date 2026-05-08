@@ -1626,12 +1626,23 @@ def _build_place_details_from_snapshot(
         if isinstance(snapshot.get("search_result"), Mapping)
         else {},
     )
-    merged_snapshot = _merge_place_sources(
-        dom_snapshot,
-        search_result_snapshot,
-        secondary_source="search_result",
-    )
-    merged_snapshot = _merge_place_sources(merged_snapshot, preview_snapshot)
+    if search_result_snapshot and not _to_bool(
+        search_result_snapshot.get("opened_from_search_result")
+    ):
+        # The page is still a search results list, so DOM may describe a
+        # different visible card. Prefer richer preview data, then the selected
+        # card, and only use search-page DOM as a last resort.
+        merged_snapshot = _merge_ordered_place_sources(
+            (preview_snapshot, "preview"),
+            (search_result_snapshot, "search_result"),
+            (dom_snapshot, "dom"),
+        )
+    else:
+        merged_snapshot = _merge_ordered_place_sources(
+            (dom_snapshot, "dom"),
+            (preview_snapshot, "preview"),
+            (search_result_snapshot, "search_result"),
+        )
     details = _build_place_details(
         place_url,
         resolved_url=resolved_url,
@@ -2468,6 +2479,15 @@ def _merge_place_sources(
             merged[key] = value
             field_sources[key] = secondary_source
     merged["field_sources"] = field_sources
+    return merged
+
+
+def _merge_ordered_place_sources(
+    *sources: tuple[Mapping[str, object], str],
+) -> dict[str, object]:
+    merged: dict[str, object] = {}
+    for snapshot, source in sources:
+        merged = _merge_place_sources(merged, snapshot, secondary_source=source)
     return merged
 
 

@@ -76,6 +76,8 @@ def localize_maps_url(
     host = (parsed.hostname or "").lower()
     if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
         return url
+    if not host.startswith("maps.google.") and not parsed.path.startswith("/maps/"):
+        return url
     query_pairs = [
         (key, value)
         for key, value in parse_qsl(parsed.query, keep_blank_values=True)
