@@ -1374,6 +1374,14 @@ class PlaceScraperTests(unittest.TestCase):
             "We serve seasonal Italian dishes and cocktails in a relaxed dining room.",
         )
 
+    def test_clean_description_text_keeps_owner_style_marketing_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Our team provides thoughtful care and we strive to make every visit feel easy."
+            ),
+            "Our team provides thoughtful care and we strive to make every visit feel easy.",
+        )
+
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [
             [

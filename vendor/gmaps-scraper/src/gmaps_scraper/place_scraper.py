@@ -126,8 +126,6 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
     "we're thrilled",
     "we apologize",
     "contact us",
-    "our team",
-    "we strive to",
     "we took",
     "we got",
     "we decided",
@@ -160,12 +158,6 @@ _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "celebrated",
     "return",
     "returned",
-    "staff",
-    "service",
-    "menu",
-    "food",
-    "drinks",
-    "public toilets",
 )
 _SEARCH_RESULTS_LABELS = {
     "result",
