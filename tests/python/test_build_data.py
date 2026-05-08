@@ -406,6 +406,8 @@ class BuildDataTests(unittest.TestCase):
     def test_main_treats_enrich_place_as_targeted_refresh(self) -> None:
         with (
             patch.object(sys, "argv", ["build_data.py", "--enrich-place", "cid:123"]),
+            patch.object(build_data, "enrichment_source_refresh_lists", return_value=[]),
+            patch.object(build_data, "refresh_raw_sources") as refresh_raw_sources,
             patch.object(build_data, "sync_local_csv_sources"),
             patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
             patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
@@ -413,6 +415,7 @@ class BuildDataTests(unittest.TestCase):
             result = build_data.main()
 
         self.assertEqual(result, 0)
+        refresh_raw_sources.assert_not_called()
         enrich_raw_sources.assert_called_once_with(
             force_refresh=True,
             missing_only=False,
@@ -425,6 +428,53 @@ class BuildDataTests(unittest.TestCase):
             photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
             startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         )
+
+    def test_main_refreshes_affected_source_before_targeted_enrichment(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--enrich-place", "guide-slug:tokyo-japan"]),
+            patch.object(build_data, "enrichment_source_refresh_lists", return_value=["tokyo-japan"]),
+            patch.object(build_data, "refresh_raw_sources") as refresh_raw_sources,
+            patch.object(build_data, "sync_local_csv_sources"),
+            patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
+            patch.object(build_data, "rebuild_generated_data"),
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_raw_sources.assert_called_once_with(
+            headed=False,
+            force_refresh=True,
+            refresh_lists=["tokyo-japan"],
+            refresh_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            refresh_retries=build_data.DEFAULT_REFRESH_RETRIES,
+            refresh_retry_backoff_seconds=build_data.DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS,
+            refresh_startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+        enrich_raw_sources.assert_called_once()
+
+    def test_main_can_skip_source_refresh_before_targeted_enrichment(self) -> None:
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "build_data.py",
+                    "--skip-enrichment-source-refresh",
+                    "--enrich-place",
+                    "guide-slug:tokyo-japan",
+                ],
+            ),
+            patch.object(build_data, "enrichment_source_refresh_lists") as refresh_lists,
+            patch.object(build_data, "refresh_raw_sources") as refresh_raw_sources,
+            patch.object(build_data, "sync_local_csv_sources"),
+            patch.object(build_data, "enrich_raw_sources"),
+            patch.object(build_data, "rebuild_generated_data"),
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_lists.assert_not_called()
+        refresh_raw_sources.assert_not_called()
 
     def test_main_force_semantic_descriptions_runs_cache_only_pass(self) -> None:
         with (
@@ -3392,7 +3442,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("specialty", first_place.tags)
         self.assertIn("tokyo", first_place.tags)
         self.assertEqual(first_place.provenance.name.source, "google_list")
-        self.assertEqual(first_place.provenance.address.source, "google_list")
+        self.assertEqual(first_place.provenance.address.source, "google_places")
         self.assertEqual(first_place.provenance.maps_url.source, "google_places")
         self.assertEqual(first_place.provenance.primary_category.source, "manual")
         self.assertEqual(first_place.provenance.note.source, "manual")
@@ -3621,6 +3671,59 @@ class BuildDataTests(unittest.TestCase):
         assert guide.places[0].provenance.address is not None
         self.assertEqual(guide.places[0].provenance.address.source, "google_maps_page")
         self.assertIn("No.+12%2C+Songgao+Rd", guide.places[0].maps_url)
+
+    def test_normalize_guide_prefers_enriched_formatted_address_over_raw_address(self) -> None:
+        raw = RawSavedList(
+            title="Yilan, Taiwan",
+            places=[
+                RawPlace(
+                    name="Coming Home Bar",
+                    address="260, Taiwan, Yilan County, Yilan City, Nongquan Rd, 110號1F",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Coming Home Bar, Yilan, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Coming Home Bar",
+                    formatted_address=(
+                        "260, Taiwan, Yilan County, Yilan City, "
+                        "Minquan Village, Nongquan Rd, 110號1F"
+                    ),
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "yilan-taiwan",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(
+            guide.places[0].address,
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+        self.assertIsNotNone(guide.places[0].provenance.address)
+        assert guide.places[0].provenance.address is not None
+        self.assertEqual(guide.places[0].provenance.address.source, "google_maps_page")
 
     def test_place_vibe_tags_can_be_manually_overridden(self) -> None:
         raw = RawSavedList(
@@ -4290,6 +4393,84 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.semantic_types, ["specialty-cafe"])
         self.assertEqual(enrichment.semantic_source, "llm")
 
+    def test_normalize_semantic_neighborhood_display_cases_slug_outputs(self) -> None:
+        cases = {
+            "perth-cbd": "Perth CBD",
+            "perth_cbd": "Perth CBD",
+            "margaret-river": "Margaret River",
+            "northbridge": "Northbridge",
+            "PERTH CBD": "Perth CBD",
+            "CBD": "CBD",
+            "da-an": "Da'an",
+        }
+        for value, expected in cases.items():
+            with self.subTest(value=value):
+                self.assertEqual(
+                    build_data.normalize_semantic_neighborhood_label(
+                        value,
+                        city_name="Perth",
+                        country_name="Australia",
+                    ),
+                    expected,
+                )
+
+    def test_refine_semantic_neighborhood_prefers_address_candidate_casing(self) -> None:
+        self.assertEqual(
+            build_data.refine_semantic_neighborhood_with_address_localities(
+                "perth-cbd",
+                ["Perth CBD"],
+            ),
+            "Perth CBD",
+        )
+        self.assertEqual(
+            build_data.refine_semantic_neighborhood_with_address_localities(
+                "phố cổ hà nội",
+                ["Phố cổ Hà Nội"],
+            ),
+            "Phố cổ Hà Nội",
+        )
+
+    def test_apply_semantic_enrichment_display_cases_llm_neighborhood_slug(self) -> None:
+        enrichment = EnrichmentPlace(
+            display_name="Wine Bar",
+            formatted_address="Perth CBD, Perth WA, Australia",
+            primary_type_display_name="Wine bar",
+        )
+        raw_place = RawPlace(name="Wine Bar", maps_url="https://maps.example/wine")
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=False),
+            patch.object(
+                build_data,
+                "repair_semantic_enrichment_with_llm",
+                return_value={
+                    "neighborhood": "perth-cbd",
+                    "tags": ["wine-bar"],
+                    "vibe_tags": ["date-night"],
+                    "types": ["bar"],
+                },
+            ),
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Perth",
+                country_name="Australia",
+            )
+
+        self.assertEqual(enrichment.semantic_neighborhood, "Perth CBD")
+
+    def test_normalize_semantic_tag_list_drops_noise_tags(self) -> None:
+        self.assertEqual(
+            build_data.normalize_semantic_tag_list(
+                ["scallion pancake", "q", "蔥油餅", "street food"],
+                limit=8,
+            ),
+            ["scallion-pancake", "street-food"],
+        )
+
     def test_apply_semantic_enrichment_reuses_description_when_signature_matches(self) -> None:
         raw_place = RawPlace(
             name="Tea House",
@@ -4812,6 +4993,40 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.display_name)
         self.assertEqual(place.primary_type_display_name, "Zoo")
         self.assertEqual(place.formatted_address, "No. 30號, Section 2, Xinguang Rd")
+
+    def test_normalize_guide_display_address_formats_taiwan_postal_prefix(self) -> None:
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "260, Taiwan, Yilan County, Yilan City, Minquan Village, Nongquan Rd, 110號1F",
+                country_name="Taiwan",
+            ),
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+
+    def test_normalize_guide_display_address_formats_localized_taiwan_postal_prefix(self) -> None:
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "260, 台灣, Yilan County, Yilan City, Minquan Village, Nongquan Rd, 110號1F",
+                country_name="Taiwan",
+            ),
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "260, 台湾, Yilan County, Yilan City, Minquan Village, Nongquan Rd, 110號1F",
+                country_name="Taiwan",
+            ),
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+
+    def test_normalize_guide_display_address_collapses_taiwan_duplicate_number(self) -> None:
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "No. 6 No. 6號, Lane 47, Section 3, Dafu Rd, Zhuangwei Township, Yilan County, 263",
+                country_name="Taiwan",
+            ),
+            "No. 6, Lane 47, Section 3, Dafu Rd, Zhuangwei Township, Yilan County, 263",
+        )
 
     def test_normalize_place_page_enrichment_sanitizes_suspicious_addresses(self) -> None:
         chrome = build_data.normalize_place_page_enrichment(
