@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_WORKTREE_DEV_BASE_PORT,
   DEFAULT_WORKTREE_DEV_PORT_SPAN,
+  isBrowserUnsafePort,
   resolveWorktreeDevPort,
   worktreePathKey,
 } from "../../scripts/worktree_dev_port.mjs";
@@ -17,6 +18,7 @@ describe("worktree dev port", () => {
     expect(first.port).toBeLessThan(
       DEFAULT_WORKTREE_DEV_BASE_PORT + DEFAULT_WORKTREE_DEV_PORT_SPAN,
     );
+    expect(isBrowserUnsafePort(first.port)).toBe(false);
   });
 
   it("uses configured base port and span for the deterministic offset", () => {
@@ -33,6 +35,7 @@ describe("worktree dev port", () => {
     expect(config.port).toBe(5100 + config.offset);
     expect(config.offset).toBeGreaterThanOrEqual(0);
     expect(config.offset).toBeLessThan(50);
+    expect(isBrowserUnsafePort(config.port)).toBe(false);
   });
 
   it("lets an explicit worktree port override the derived port", () => {
@@ -67,6 +70,33 @@ describe("worktree dev port", () => {
 
     expect(config.port).toBe(6400);
     expect(config.usingExplicitPort).toBe(true);
+  });
+
+  it("skips browser-unsafe ports when deriving a worktree port", () => {
+    const config = resolveWorktreeDevPort({
+      env: {
+        WORKTREE_DEV_BASE_PORT: "5059",
+        WORKTREE_DEV_PORT_SPAN: "4",
+      },
+      worktreeRoot: "/repo/zeta",
+    });
+
+    expect(config.port).toBeGreaterThanOrEqual(5059);
+    expect(config.port).toBeLessThan(5063);
+    expect([5059, 5062]).toContain(config.port);
+    expect(isBrowserUnsafePort(config.port)).toBe(false);
+  });
+
+  it("fails when a configured derivation range only contains browser-unsafe ports", () => {
+    expect(() =>
+      resolveWorktreeDevPort({
+        env: {
+          WORKTREE_DEV_BASE_PORT: "5060",
+          WORKTREE_DEV_PORT_SPAN: "2",
+        },
+        worktreeRoot: "/repo/eta",
+      }),
+    ).toThrow(/browser-safe port/);
   });
 
   it("normalizes paths into a filesystem-root-relative key", () => {
