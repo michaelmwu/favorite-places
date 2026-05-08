@@ -1309,6 +1309,7 @@ class PlaceScraperTests(unittest.TestCase):
                     "area, gondola & shuttle train."
                 ),
                 "search_result_description": "Sizable zoo with a gondola & kids' area",
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
                 "body_text": "Taipei Zoo\nZoo",
             },
         )
@@ -1324,6 +1325,24 @@ class PlaceScraperTests(unittest.TestCase):
             details.search_result_description,
             "Sizable zoo with a gondola & kids' area",
         )
+        self.assertEqual(details.search_result_url, "https://www.google.com/maps/place/Taipei+Zoo")
+
+    def test_build_place_details_rejects_seo_title_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Taipei+101",
+            resolved_url="https://www.google.com/maps/place/Taipei+101",
+            snapshot={
+                "name": "Taipei 101",
+                "category": "Shopping mall",
+                "description": (
+                    "The Executive Centre - Taipei 101 Tower | Coworking Space, "
+                    "Serviced & Virtual Offices and Workspace"
+                ),
+                "body_text": "Taipei 101\nShopping mall",
+            },
+        )
+
+        self.assertIsNone(details.description)
 
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [
@@ -1954,8 +1973,33 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(
             snapshot,
             {
-                "opened_from_search_result": True,
                 "search_result_description": "Sizable zoo with a gondola & kids' area",
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
+                "opened_from_search_result": True,
+            },
+        )
+
+    def test_open_place_result_from_search_page_returns_candidate_on_click_fail(self) -> None:
+        class _FakePage:
+            def evaluate(self, script: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return {
+                        "href": "https://www.google.com/maps/place/Taipei+Zoo",
+                        "search_result_description": "Sizable zoo with a gondola & kids' area",
+                    }
+                return None
+
+            def goto(self, *_args: object, **_kwargs: object) -> None:
+                raise RuntimeError("blocked")
+
+        page = _FakePage()
+        snapshot = _open_place_result_from_search_page(page, timeout_ms=30_000)
+
+        self.assertEqual(
+            snapshot,
+            {
+                "search_result_description": "Sizable zoo with a gondola & kids' area",
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
             },
         )
 

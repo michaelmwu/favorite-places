@@ -3459,11 +3459,13 @@ def enrich_place_job(
     place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
     override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
     suppress_description = bool(as_string(override.get("note")))
+    override_google_place_id = as_string(override.get("google_place_id"))
     refreshed_entry = fetch_places_enrichment(
         place,
         city_name=city_name,
         country_name=country_name,
-        google_place_id=existing_entry.place.google_place_id if existing_entry and existing_entry.place else None,
+        google_place_id=override_google_place_id
+        or (existing_entry.place.google_place_id if existing_entry and existing_entry.place else None),
         api_key=api_key,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
@@ -5432,6 +5434,7 @@ def merge_page_place_into_api_entry(
         "plus_code",
         "description",
         "search_result_description",
+        "search_result_url",
         "main_photo_url",
         "photo_url",
     ):
@@ -7178,6 +7181,7 @@ def fetch_place_page_enrichment(
         last_error: str | None = None
         saw_non_error_result = False
         deferred_matched_entry: EnrichmentCacheEntry | None = None
+        retry_urls: list[str] = []
         candidate_urls = build_place_page_candidate_urls(
             place,
             city_name=city_name,
@@ -7222,31 +7226,101 @@ def fetch_place_page_enrichment(
                 except Exception as exc:
                     last_error = f"display_repair_error:{exc}"
             enrichment_place = normalize_place_page_enrichment(details)
+            should_retry = should_retry_limited_place_page_result(details, enrichment_place)
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
+                if should_retry:
+                    deferred_matched_entry = build_cache_entry(
+                        place,
+                        source="google_maps_page",
+                        query=query,
+                        city_name=city_name,
+                        country_name=country_name,
+                        matched=True,
+                        score=STRONG_MATCH_SCORE,
+                        enrichment_place=enrichment_place,
+                    )
+                    retry_urls.append(scrape_url)
                 continue
             matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+            if not matched:
+                if should_retry:
+                    deferred_matched_entry = build_cache_entry(
+                        place,
+                        source="google_maps_page",
+                        query=query,
+                        city_name=city_name,
+                        country_name=country_name,
+                        matched=True,
+                        score=STRONG_MATCH_SCORE,
+                        enrichment_place=enrichment_place,
+                    )
+                    retry_urls.append(scrape_url)
+                continue
             if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
                 continue
-            if matched:
-                deferred_entry = build_cache_entry(
-                    place,
-                    source="google_maps_page",
-                    query=query,
-                    city_name=city_name,
-                    country_name=country_name,
-                    matched=True,
-                    score=STRONG_MATCH_SCORE,
-                    enrichment_place=enrichment_place,
-                )
-                if (
-                    as_string(getattr(details, "source_url", None))
-                    and "/maps/search/" in as_string(getattr(details, "source_url", None))
-                    and not enrichment_place.description
-                    and index + 1 < len(candidate_urls)
-                    and "/maps/place/" in candidate_urls[index + 1]
-                ):
-                    deferred_matched_entry = deferred_entry
+            deferred_entry = build_cache_entry(
+                place,
+                source="google_maps_page",
+                query=query,
+                city_name=city_name,
+                country_name=country_name,
+                matched=True,
+                score=STRONG_MATCH_SCORE,
+                enrichment_place=enrichment_place,
+            )
+            search_result_url = localize_google_maps_scrape_url(
+                as_string(getattr(details, "search_result_url", None)) or ""
+            )
+            if (
+                search_result_url
+                and search_result_url not in candidate_urls
+                and not enrichment_place.description
+            ):
+                candidate_urls.insert(index + 1, search_result_url)
+                deferred_matched_entry = deferred_entry
+                continue
+            if (
+                as_string(getattr(details, "source_url", None))
+                and "/maps/search/" in as_string(getattr(details, "source_url", None))
+                and not enrichment_place.description
+                and index + 1 < len(candidate_urls)
+                and "/maps/place/" in candidate_urls[index + 1]
+            ):
+                deferred_matched_entry = deferred_entry
+                continue
+            apply_semantic_enrichment(
+                enrichment_place,
+                raw_place=place,
+                city_name=city_name,
+                country_name=country_name,
+                existing_entry=existing_entry,
+                raw_note=place.note,
+                suppress_description=suppress_description,
+            )
+            return deferred_entry
+        if retry_urls:
+            clear_scraper_session_state(session_state)
+            browser_session, http_session = build_scraper_configs(session_state, proxy)
+            for scrape_url in dedupe_urls(retry_urls):
+                try:
+                    details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
+                except RECOVERABLE_REFRESH_ERRORS as exc:
+                    last_error = f"scrape_error:{exc}"
+                    continue
+                saw_non_error_result = True
+                record_scraper_session_use(session_state, proxy=proxy)
+                apply_reusable_place_display_fields(details, existing_entry)
+                enrichment_place = normalize_place_page_enrichment(details)
+                if should_retry_limited_place_page_result(details, enrichment_place):
+                    continue
+                source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
+                if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
+                    continue
+                matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+                if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
+                    continue
+                if not matched:
                     continue
                 apply_semantic_enrichment(
                     enrichment_place,
@@ -7257,7 +7331,16 @@ def fetch_place_page_enrichment(
                     raw_note=place.note,
                     suppress_description=suppress_description,
                 )
-                return deferred_entry
+                return build_cache_entry(
+                    place,
+                    source="google_maps_page",
+                    query=query,
+                    city_name=city_name,
+                    country_name=country_name,
+                    matched=True,
+                    score=STRONG_MATCH_SCORE,
+                    enrichment_place=enrichment_place,
+                )
         if deferred_matched_entry is not None and deferred_matched_entry.place is not None:
             apply_semantic_enrichment(
                 deferred_matched_entry.place,
@@ -7334,6 +7417,8 @@ def place_page_has_meaningful_enrichment(
         or enrichment_place.plus_code
         or enrichment_place.description
     )
+    if should_retry_limited_place_page_result(details, enrichment_place):
+        return False
     if has_identity and (has_reputation or has_contact_or_context):
         return True
     if (
@@ -7345,6 +7430,15 @@ def place_page_has_meaningful_enrichment(
     return not bool(getattr(details, "limited_view", False)) and bool(
         has_reputation and enrichment_place.formatted_address
     )
+
+
+def should_retry_limited_place_page_result(
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    if not bool(getattr(details, "limited_view", False)):
+        return False
+    return enrichment_place.user_rating_count is None
 
 
 def place_page_candidate_is_confident_match(
@@ -7862,6 +7956,7 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         formatted_address = sanitize_place_page_formatted_address(plus_code)
     description = as_string(getattr(details, "description", None))
     search_result_description = as_string(getattr(details, "search_result_description", None))
+    search_result_url = as_string(getattr(details, "search_result_url", None))
     if formatted_address is None:
         description_address = sanitize_place_page_formatted_address(description)
         if description_address is not None:
@@ -7919,6 +8014,7 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
         address_parts=coerce_enrichment_address_parts(getattr(details, "address_parts", None)),
         description=description,
         search_result_description=search_result_description,
+        search_result_url=search_result_url,
         main_photo_url=main_photo_url,
         photo_url=photo_url,
         review_topics=coerce_json_object_list(getattr(details, "review_topics", None)),

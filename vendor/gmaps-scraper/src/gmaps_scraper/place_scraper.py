@@ -1032,9 +1032,13 @@ _PLACE_ABOUT_TAB_CLICK_JS = r"""
 _PLACE_SEARCH_RESULT_CLICK_JS = r"""
 () => {
   const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
+  const queryUrl = new URL(window.location.href);
+  const isSearchPage = /\/maps\/search(?:\/|$)/i.test(queryUrl.pathname)
+    || queryUrl.searchParams.has("query")
+    || queryUrl.searchParams.has("query_place_id");
   for (const selector of titleSelectors) {
     const element = document.querySelector(selector);
-    if (element?.innerText?.trim()) {
+    if (!isSearchPage && element?.innerText?.trim()) {
       return false;
     }
   }
@@ -1045,10 +1049,6 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
     .replace(/[^\p{L}\p{N}]+/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
-  const queryUrl = new URL(window.location.href);
-  const isSearchPage = /\/maps\/search(?:\/|$)/i.test(queryUrl.pathname)
-    || queryUrl.searchParams.has("query")
-    || queryUrl.searchParams.has("query_place_id");
   if (!isSearchPage) {
     return false;
   }
@@ -1843,10 +1843,11 @@ def _open_place_result_from_search_page(page: Any, *, timeout_ms: int) -> dict[s
     target_url = cast(str, candidate["href"])
     if not _looks_like_google_maps_place_url(target_url):
         return None
+    snapshot = _search_result_snapshot(candidate)
     try:
         page.goto(target_url, wait_until="domcontentloaded", timeout=timeout_ms)
     except Exception:
-        return None
+        return snapshot
     _handle_google_consent(page, timeout_ms=timeout_ms)
     try:
         page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
@@ -1855,8 +1856,13 @@ def _open_place_result_from_search_page(page: Any, *, timeout_ms: int) -> dict[s
     try:
         page.wait_for_selector(_TITLE_SELECTOR, timeout=min(timeout_ms, 10_000), state="attached")
     except Exception:
-        return None
-    snapshot: dict[str, object] = {"opened_from_search_result": True}
+        return snapshot
+    snapshot["opened_from_search_result"] = True
+    return snapshot
+
+
+def _search_result_snapshot(candidate: Mapping[str, object]) -> dict[str, object]:
+    snapshot: dict[str, object] = {"search_result_url": cast(str, candidate["href"])}
     description = _clean_description_text(candidate.get("search_result_description"))
     if description is not None:
         snapshot["search_result_description"] = description
@@ -1904,6 +1910,13 @@ def _looks_like_google_maps_place_url(value: str) -> bool:
     if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
         return False
     return parsed.path.startswith("/maps/place/")
+
+
+def _clean_google_maps_place_url(value: object) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None or not _looks_like_google_maps_place_url(normalized):
+        return None
+    return normalized
 
 
 def _collect_review_panel_snapshot(page: Any, *, timeout_ms: int) -> dict[str, object]:
@@ -2044,6 +2057,7 @@ def _build_place_details(
         address_parts=_extract_address_parts(snapshot.get("address_parts")),
         description=_extract_description(snapshot, combined_lines),
         search_result_description=_clean_description_text(snapshot.get("search_result_description")),
+        search_result_url=_clean_google_maps_place_url(snapshot.get("search_result_url")),
         main_photo_url=_normalize_photo_url(snapshot.get("main_photo_url")),
         photo_url=_normalize_photo_url(snapshot.get("photo_url")),
         lat=lat,
@@ -2517,6 +2531,7 @@ def _place_detail_values(details: PlaceDetails) -> dict[str, object]:
         "address_parts": details.address_parts,
         "description": details.description,
         "search_result_description": details.search_result_description,
+        "search_result_url": details.search_result_url,
         "main_photo_url": details.main_photo_url,
         "photo_url": details.photo_url,
         "lat": details.lat,
@@ -3183,6 +3198,8 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
         return None
+    if _looks_like_seo_title_description(normalized):
+        return None
     if not any(character.isalnum() for character in normalized):
         return None
     if _normalize_phone_candidate(normalized) is not None:
@@ -3195,6 +3212,17 @@ def _clean_description_text(value: object) -> str | None:
     ):
         return None
     return normalized
+
+
+def _looks_like_seo_title_description(value: str) -> bool:
+    return bool(
+        re.search(r"\s[|]\s", value)
+        and re.search(
+            r"\b(office|workspace|serviced|virtual|official|website)\b",
+            value,
+            re.IGNORECASE,
+        )
+    )
 
 
 def _looks_like_description_address_text(value: str) -> bool:

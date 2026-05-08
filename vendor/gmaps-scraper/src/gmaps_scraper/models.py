@@ -298,6 +298,7 @@ class PlaceDetails:
     address_parts: AddressParts | None = None
     description: str | None = None
     search_result_description: str | None = None
+    search_result_url: str | None = None
     secondary_name: str | None = None
     lat: float | None = None
     lng: float | None = None
@@ -338,6 +339,7 @@ class PlaceDetails:
             "address_parts": self.address_parts,
             "description": self.description,
             "search_result_description": self.search_result_description,
+            "search_result_url": self.search_result_url,
             "main_photo_url": self.main_photo_url,
             "photo_url": self.photo_url,
             "secondary_name": self.secondary_name,
