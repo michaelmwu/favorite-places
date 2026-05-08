@@ -1411,6 +1411,12 @@ class PlaceScraperTests(unittest.TestCase):
                 "professional show I have attended. Was a bit skeptical at first."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "Beautiful view from the cellar and there’s access to the gallery below. "
+                "We arrived late so couldn’t do the tasting."
+            )
+        )
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(
@@ -1431,6 +1437,13 @@ class PlaceScraperTests(unittest.TestCase):
     def test_clean_description_text_rejects_option_only_amenity_labels(self) -> None:
         self.assertIsNone(_clean_description_text("· \ue5ca Dogs allowed \ue5cc"))
         self.assertIsNone(_clean_description_text("Onsite services"))
+
+    def test_clean_description_text_rejects_policy_prompt_without_period(self) -> None:
+        self.assertIsNone(
+            _clean_description_text(
+                "Our policies do not permit contributions to this type of place"
+            )
+        )
 
     def test_clean_description_text_strips_trailing_google_maps_glyph(self) -> None:
         self.assertEqual(

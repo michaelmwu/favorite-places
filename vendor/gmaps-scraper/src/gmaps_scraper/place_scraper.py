@@ -110,6 +110,9 @@ _DESCRIPTION_STOP_MARKERS = {
     "get the most out of google maps",
     "our policies do not permit contributions to this type of place.",
 }
+_DESCRIPTION_STOP_MARKER_KEYS = {
+    marker.casefold().strip(" .") for marker in _DESCRIPTION_STOP_MARKERS
+}
 _DESCRIPTION_STOP_SUBSTRINGS = (
     "mark as temporarily closed",
     "remove this place",
@@ -146,6 +149,7 @@ _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN = re.compile(
 _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "visited",
     "attended",
+    "arrived",
     "ordered",
     "enjoyed",
     "stopped by",
@@ -3635,7 +3639,7 @@ def _clean_description_text(value: object) -> str | None:
     if normalized is None:
         return None
     lowered = normalized.lower()
-    if lowered in _DESCRIPTION_STOP_MARKERS:
+    if lowered in _DESCRIPTION_STOP_MARKERS or lowered.strip(" .") in _DESCRIPTION_STOP_MARKER_KEYS:
         return None
     if any(marker in lowered for marker in _DESCRIPTION_STOP_SUBSTRINGS):
         return None

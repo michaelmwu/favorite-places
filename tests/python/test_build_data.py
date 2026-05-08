@@ -4888,6 +4888,8 @@ class BuildDataTests(unittest.TestCase):
             ("新疆维吾尔自治区", "Urumqi", "China"),
             ("Sichuan", "Chengdu", "China"),
             ("四川省", "Chengdu", "China"),
+            ("Donostia", "Bilbao and San Sebastian", "Spain"),
+            ("Donostia / San Sebastián", "Bilbao and San Sebastian", "Spain"),
         ]
         for value, city_name, country_name in cases:
             with self.subTest(value=value):

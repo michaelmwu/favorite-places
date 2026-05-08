@@ -598,6 +598,12 @@ LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
 }
+LOCALITY_EQUIVALENCE_ALIASES: dict[str, str] = {
+    "donostia": "san sebastian",
+    "donostia san sebastián": "san sebastian",
+    "donostia san sebastian": "san sebastian",
+    "san sebastián": "san sebastian",
+}
 BROKEN_TAG_NORMALIZATION_MAP: dict[str, str] = {
     "gen-ve": "geneve",
 }
@@ -4439,12 +4445,12 @@ def infer_address_parts_localities(
             continue
         candidate_key = normalize_locality_key(normalized_candidate)
         city_key = normalize_locality_key(city_name)
-        city_equivalence_key = normalize_locality_equivalence_key(city_name)
+        city_equivalence_keys = normalize_locality_scope_equivalence_keys(city_name)
         candidate_equivalence_key = normalize_locality_equivalence_key(normalized_candidate)
         if (
             not candidate_key
             or candidate_key == city_key
-            or (city_equivalence_key and candidate_equivalence_key == city_equivalence_key)
+            or candidate_equivalence_key in city_equivalence_keys
             or is_subnational_locality(normalized_candidate)
         ):
             continue
@@ -4462,7 +4468,7 @@ def infer_address_localities(address: str | None, *, city_name: str | None = Non
 @lru_cache(maxsize=None)
 def _infer_address_localities_cached(address: str, city_name: str | None) -> tuple[str, ...]:
     city_key = normalize_locality_key(city_name)
-    city_equivalence_key = normalize_locality_equivalence_key(city_name)
+    city_equivalence_keys = normalize_locality_scope_equivalence_keys(city_name)
     neighborhoods: list[str] = []
     subcities: list[str] = []
 
@@ -4472,7 +4478,7 @@ def _infer_address_localities_cached(address: str, city_name: str | None) -> tup
             continue
         key = normalize_locality_key(candidate)
         equivalent_key = normalize_locality_equivalence_key(candidate)
-        if not key or key == city_key or (city_equivalence_key and equivalent_key == city_equivalence_key):
+        if not key or key == city_key or equivalent_key in city_equivalence_keys:
             continue
         if is_subnational_locality(candidate):
             continue
@@ -4713,11 +4719,25 @@ def normalize_locality_equivalence_key(value: str | None) -> str:
     key = normalize_locality_key(value)
     if not key:
         return ""
-    return re.sub(
+    key = re.sub(
         r"\s+(?:main\s+island|islands|island|city|ward|district|borough|county|prefecture|province|state|region|gu|ku)$",
         "",
         key,
     ).strip()
+    return LOCALITY_EQUIVALENCE_ALIASES.get(key, key)
+
+
+def normalize_locality_scope_equivalence_keys(value: str | None) -> set[str]:
+    normalized = as_string(value)
+    if normalized is None:
+        return set()
+    keys = {key for key in [normalize_locality_equivalence_key(normalized)] if key}
+    title_without_parentheticals = re.sub(r"\([^)]*\)", " ", normalized)
+    for part in re.split(r"\s+(?:and|&)\s+|/", title_without_parentheticals, flags=re.IGNORECASE):
+        key = normalize_locality_equivalence_key(part)
+        if key:
+            keys.add(key)
+    return keys
 
 
 def split_title_parts(title: str) -> list[str]:
@@ -8775,12 +8795,12 @@ def normalize_semantic_neighborhood_label(
     city_key = normalize_locality_key(city_name)
     label_key = normalize_locality_key(label)
     label_equivalence_key = normalize_locality_equivalence_key(label)
-    city_equivalence_key = normalize_locality_equivalence_key(city_name)
+    city_equivalence_keys = normalize_locality_scope_equivalence_keys(city_name)
     country_equivalence_key = normalize_locality_equivalence_key(country_name)
     if (
         label_key == country_key
         or label_key == city_key
-        or (city_equivalence_key and label_equivalence_key == city_equivalence_key)
+        or label_equivalence_key in city_equivalence_keys
         or (country_equivalence_key and label_equivalence_key == country_equivalence_key)
     ):
         return None
