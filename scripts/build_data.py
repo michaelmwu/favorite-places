@@ -2392,18 +2392,26 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             country_name=country_name,
         )
         primary_category = manual_primary_category or mapped_primary_category
+        machine_primary_category_tag = (
+            normalize_tag_slug(machine_primary_category) if machine_primary_category else None
+        )
+        mapped_primary_category_tag = (
+            normalize_tag_slug(mapped_primary_category) if mapped_primary_category else None
+        )
+        category_mapping_replaces_tag = bool(
+            not manual_primary_category
+            and machine_primary_category_tag
+            and mapped_primary_category_tag
+            and mapped_primary_category_tag != machine_primary_category_tag
+        )
         mapped_primary_category_source_tag = (
-            normalize_tag_slug(machine_primary_category)
-            if (
-                not manual_primary_category
-                and machine_primary_category
-                and mapped_primary_category != machine_primary_category
-            )
+            machine_primary_category_tag
+            if category_mapping_replaces_tag
             else None
         )
         primary_category_localized = (
             None
-            if manual_primary_category or mapped_primary_category != machine_primary_category
+            if manual_primary_category or category_mapping_replaces_tag
             else enrichment.primary_type_display_name_localized
         )
         use_semantic_enrichment = google_maps_place_semantic_llm_enabled()
@@ -8466,14 +8474,12 @@ def semantic_enrichment_evidence(
         "raw_address": enrichment_place.formatted_address or raw_place.address,
         "category": enrichment_place.primary_type_display_name,
         "category_localized": enrichment_place.primary_type_display_name_localized,
-        "google_description": enrichment_place.description,
+        "google_maps_description": enrichment_place.description,
         "search_result_description": enrichment_place.search_result_description,
         "types": enrichment_place.types[:8],
         "price_range": enrichment_place.price_range,
         "admission_price": enrichment_place.admission_price,
         "room_price": enrichment_place.room_price,
-        "google_maps_description": enrichment_place.description,
-        "search_result_description": enrichment_place.search_result_description,
         "review_topics": enrichment_place.review_topics[:12],
         "about_sections": compact_about_sections(enrichment_place.about_sections),
     }
@@ -8501,14 +8507,12 @@ def semantic_description_signature(
             enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
         ),
         "category": semantic_signature_text(enrichment_place.primary_type_display_name),
-        "google_description": semantic_signature_text(enrichment_place.description),
+        "google_maps_description": semantic_signature_text(enrichment_place.description),
         "search_result_description": semantic_signature_text(enrichment_place.search_result_description),
         "types": [value for value in (semantic_signature_text(item) for item in enrichment_place.types[:8]) if value],
         "price_range": semantic_signature_text(enrichment_place.price_range),
         "admission_price": semantic_signature_text(enrichment_place.admission_price),
         "room_price": semantic_signature_text(enrichment_place.room_price),
-        "google_maps_description": semantic_signature_text(enrichment_place.description),
-        "search_result_description": semantic_signature_text(enrichment_place.search_result_description),
         "rating_bucket": rating_bucket(enrichment_place.rating),
         "review_count_bucket": review_count_bucket(enrichment_place.user_rating_count),
         "review_topics": compact_review_topics_for_signature(enrichment_place.review_topics),

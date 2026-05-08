@@ -131,6 +131,7 @@ export type SiteConfigInput = Partial<
   favicon?: SiteConfig["favicon"];
   logo?: SiteConfig["logo"];
   navLinks?: SiteConfig["navLinks"];
+  guideCard?: Partial<GuideCardConfig>;
   home?: Partial<Omit<HomeConfig, "guideCard">> & {
     guideCard?: Partial<GuideCardConfig>;
   };
@@ -256,6 +257,7 @@ function mergeSiteConfig(config: SiteConfigInput): SiteConfig {
       ...config.home,
       guideCard: {
         ...defaultSiteConfig.home.guideCard,
+        ...config.guideCard,
         ...config.home?.guideCard,
       },
     },
