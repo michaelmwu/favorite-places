@@ -5814,6 +5814,29 @@ class BuildDataTests(unittest.TestCase):
     def test_humanize_type_id_rejects_generic_item(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("item"))
 
+    def test_humanize_type_id_rejects_weather_and_amenity_noise(self) -> None:
+        self.assertIsNone(build_data.humanize_type_id("light_rain"))
+        self.assertIsNone(build_data.humanize_type_id("free_breakfast"))
+
+    def test_normalize_enrichment_match_drops_weather_category(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "test-id",
+                "name": "places/test-id",
+                "displayName": {"text": "Christianshavn"},
+                "formattedAddress": "Copenhagen, Denmark",
+                "googleMapsUri": "https://maps.google.com/?cid=1",
+                "primaryType": "light_rain",
+                "primaryTypeDisplayName": {"text": "Light rain"},
+                "types": ["light_rain"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertIsNone(place.primary_type_display_name_localized)
+        self.assertEqual(place.types, [])
+
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [
             ("Bar Rooster", "bar"),
@@ -6567,6 +6590,13 @@ class BuildDataTests(unittest.TestCase):
                 "Nice",
                 {"nice"},
                 {"prom-des-anglais"},
+                None,
+            ),
+            (
+                "P.º del Tránsito, s/n, 45002 Toledo, Spain",
+                "Toledo",
+                {"toledo"},
+                {"paseo-del-transito"},
                 None,
             ),
         ]

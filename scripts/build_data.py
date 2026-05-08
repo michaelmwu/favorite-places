@@ -1018,10 +1018,20 @@ GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
 )
 INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+-reviews?$"),
+    re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$"),
+    re.compile(r"^(?:light|heavy|mostly|partly)(?:_|-)(?:rain|snow|cloudy|sunny)$"),
+    re.compile(r"^free(?:_|-)breakfast$"),
+    re.compile(r"^breakfast(?:_|-)included$"),
+    re.compile(r"^free(?:_|-)cancellation(?:_|-).*$"),
+    re.compile(r"^floor(?:_|-)\d+$"),
 )
 INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+\s+reviews?$", re.IGNORECASE),
     re.compile(r"^floor\s+\d+$", re.IGNORECASE),
+    re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$", re.IGNORECASE),
+    re.compile(r"^(?:light|heavy|mostly|partly)\s+(?:rain|snow|cloudy|sunny)$", re.IGNORECASE),
+    re.compile(r"^free\s+breakfast$", re.IGNORECASE),
+    re.compile(r"^breakfast\s+included$", re.IGNORECASE),
     re.compile(r"^free cancellation\b", re.IGNORECASE),
 )
 PARENT_TYPE_TAG_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -4663,9 +4673,9 @@ def is_street_or_block_part(candidate: str) -> bool:
         re.search(
             (
                 r"\b(?:chome|丁目|st|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
-                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|pg|placa|plaça|pl|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|placa|plaça|pl|bajada|"
                 r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
-                r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.)\s"
+                r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.|p\.\s*º)\s"
             ),
             candidate,
             flags=re.IGNORECASE,
