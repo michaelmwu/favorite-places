@@ -1274,6 +1274,11 @@ except ImportError:
     scrape_place = None
     scrape_saved_list = None
 
+try:
+    from gmaps_scraper import localize_maps_url as localize_scraper_maps_url
+except ImportError:
+    localize_scraper_maps_url = None
+
 RECOVERABLE_REFRESH_ERRORS = (ScrapeError, ParseError)
 
 
@@ -7231,6 +7236,29 @@ def fetch_place_page_enrichment(
             )
             retry_urls.append(scrape_url)
 
+        def prepare_details_for_normalization(details: Any) -> Any:
+            nonlocal last_error
+            apply_reusable_place_display_fields(details, existing_entry)
+            if (
+                llm_mode == "dom_then_translation"
+                and llm_repairer is not None
+                and repair_place_display_fields is not None
+                and place_details_need_display_translation(details)
+            ):
+                try:
+                    return repair_place_display_fields(
+                        details,
+                        repairer=llm_repairer,
+                        evidence={
+                            "city": city_name,
+                            "country": country_name,
+                            "query": query,
+                        },
+                    )
+                except Exception as exc:
+                    last_error = f"display_repair_error:{exc}"
+            return details
+
         for index, scrape_url in enumerate(candidate_urls):
             try:
                 details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
@@ -7249,25 +7277,7 @@ def fetch_place_page_enrichment(
 
             saw_non_error_result = True
             record_scraper_session_use(session_state, proxy=proxy)
-            apply_reusable_place_display_fields(details, existing_entry)
-            if (
-                llm_mode == "dom_then_translation"
-                and llm_repairer is not None
-                and repair_place_display_fields is not None
-                and place_details_need_display_translation(details)
-            ):
-                try:
-                    details = repair_place_display_fields(
-                        details,
-                        repairer=llm_repairer,
-                        evidence={
-                            "city": city_name,
-                            "country": country_name,
-                            "query": query,
-                        },
-                    )
-                except Exception as exc:
-                    last_error = f"display_repair_error:{exc}"
+            details = prepare_details_for_normalization(details)
             enrichment_place = normalize_place_page_enrichment(details)
             should_retry = should_retry_limited_place_page_result(details, enrichment_place)
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
@@ -7334,7 +7344,7 @@ def fetch_place_page_enrichment(
                     continue
                 saw_non_error_result = True
                 record_scraper_session_use(session_state, proxy=proxy)
-                apply_reusable_place_display_fields(details, existing_entry)
+                details = prepare_details_for_normalization(details)
                 enrichment_place = normalize_place_page_enrichment(details)
                 if should_retry_limited_place_page_result(details, enrichment_place):
                     continue
@@ -7567,6 +7577,9 @@ def build_place_page_candidate_urls(
 
 
 def localize_google_maps_scrape_url(url: str) -> str:
+    if localize_scraper_maps_url is not None:
+        return localize_scraper_maps_url(url, hl="en", gl="us")
+
     split = urlsplit(url)
     host = split.netloc.lower()
     if "google." not in host:

@@ -52,6 +52,7 @@ from gmaps_scraper.url_tools import (
     extract_list_id,
     extract_list_id_from_text,
     has_placelist_marker,
+    localize_maps_url,
 )
 
 __all__ = [
@@ -83,6 +84,7 @@ __all__ = [
     "extract_list_id",
     "extract_list_id_from_text",
     "has_placelist_marker",
+    "localize_maps_url",
     "load_place_selector_recipe",
     "llm_cache_namespace_from_env",
     "needs_display_en",

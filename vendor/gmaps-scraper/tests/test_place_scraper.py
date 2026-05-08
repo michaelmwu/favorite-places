@@ -13,10 +13,12 @@ from gmaps_scraper.models import (
 )
 from gmaps_scraper.place_scraper import (
     _PLACE_ABOUT_TAB_CLICK_JS,
+    _PLACE_DETAIL_READY_JS,
     _PLACE_JS_EXTRACTOR,
     _PLACE_REVIEW_TAB_CLICK_JS,
     _PLACE_REVIEW_TOPIC_JS,
     _PLACE_SEARCH_RESULT_CLICK_JS,
+    _PLACE_SEARCH_RESULT_OPEN_JS,
     _build_place_details,
     _build_place_details_from_snapshot,
     _build_place_diagnostics,
@@ -76,10 +78,6 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIn('element.closest("[data-review-id]")', _PLACE_JS_EXTRACTOR)
         self.assertIn("root.querySelectorAll(selector)", _PLACE_JS_EXTRACTOR)
         self.assertIn(r"return /(^|\W)reviews?(\W|$)/i.test(label);", _PLACE_JS_EXTRACTOR)
-
-    def test_place_js_extractor_includes_editorial_summary_selectors(self) -> None:
-        self.assertIn('".WeS02d .PYvSYb"', _PLACE_JS_EXTRACTOR)
-        self.assertIn("description: descriptionValue(),", _PLACE_JS_EXTRACTOR)
 
     def test_collect_place_snapshot_can_skip_reviews_and_about_tabs(self) -> None:
         class _FakePage:
@@ -623,6 +621,14 @@ class PlaceScraperTests(unittest.TestCase):
             "new URL(hrefValue, window.location.href).href",
             _PLACE_SEARCH_RESULT_CLICK_JS,
         )
+        self.assertIn("searchResultTitleLabels", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertIn("parseCardReviewCount", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertIn("getBoundingClientRect()", _PLACE_SEARCH_RESULT_OPEN_JS)
+        self.assertIn("const placePanelRoot = () => {", _PLACE_JS_EXTRACTOR)
+        self.assertIn("visibleArea", _PLACE_JS_EXTRACTOR)
+        self.assertIn("articleCount >= 2", _PLACE_JS_EXTRACTOR)
+        self.assertIn("searchResultTitleLabels", _PLACE_DETAIL_READY_JS)
+        self.assertIn("placePanelRoot", _PLACE_REVIEW_TAB_CLICK_JS)
         self.assertIn("const detailsBoundaryTop = () => {", _PLACE_JS_EXTRACTOR)
         self.assertIn('structural_offer_kind: structuralOffers.kind,', _PLACE_JS_EXTRACTOR)
         self.assertIn(
@@ -845,6 +851,38 @@ class PlaceScraperTests(unittest.TestCase):
         assert details.diagnostics is not None
         self.assertFalse(details.diagnostics.llm_used)
         self.assertEqual(details.diagnostics.repair_source, "cache")
+
+    def test_build_place_details_backfills_from_search_result_card(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/place/Pooles+Temple",
+                "dom": {
+                    "name": "Pooles Temple",
+                    "category": "Event venue",
+                    "rating": "4.6",
+                    "address": "Hay St &, Cathedral Ave",
+                },
+                "search_result": {
+                    "name": "Pooles Temple",
+                    "rating": "4.6",
+                    "review_count": "16",
+                    "category": "Event venue",
+                    "address": "Hay St &, Cathedral Ave",
+                },
+                "preview": {},
+            },
+            llm_fallback=None,
+            llm_policy="never",
+        )
+
+        self.assertEqual(details.name, "Pooles Temple")
+        self.assertEqual(details.review_count, 16)
+        assert details.diagnostics is not None
+        self.assertEqual(
+            details.diagnostics.field_sources.get("review_count"),
+            "search_result",
+        )
 
     def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
         details = _build_place_details(
@@ -1249,101 +1287,6 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertEqual(description, "Open now for lunch and dinner service.")
 
-    def test_extract_preview_description_accepts_result_card_mini_summary(self) -> None:
-        description = _extract_preview_description(
-            [
-                "Taipei Zoo",
-                "Zoo",
-                "No. 30號, Section 2, Xinguang Rd",
-                "Sizable zoo with a gondola & kids' area",
-                "Open · Closes 5 PM",
-            ]
-        )
-
-        self.assertEqual(description, "Sizable zoo with a gondola & kids' area")
-
-    def test_merge_place_sources_preserves_full_description_over_preview_summary(self) -> None:
-        merged = _merge_place_sources(
-            {
-                "name": "Taipei Zoo",
-                "description": (
-                    "Large indoor-outdoor zoo in a scenic setting with a children's "
-                    "area, gondola & shuttle train."
-                ),
-            },
-            {
-                "description": "Sizable zoo with a gondola & kids' area",
-            },
-        )
-
-        self.assertEqual(
-            merged["description"],
-            (
-                "Large indoor-outdoor zoo in a scenic setting with a children's "
-                "area, gondola & shuttle train."
-            ),
-        )
-
-    def test_merge_place_sources_uses_preview_summary_when_full_description_missing(self) -> None:
-        merged = _merge_place_sources(
-            {
-                "name": "Taipei Zoo",
-                "description": None,
-            },
-            {
-                "description": "Sizable zoo with a gondola & kids' area",
-            },
-        )
-
-        self.assertEqual(merged["description"], "Sizable zoo with a gondola & kids' area")
-
-    def test_build_place_details_keeps_search_result_description_separate(self) -> None:
-        details = _build_place_details(
-            "https://www.google.com/maps/search/?api=1&query=Taipei+Zoo",
-            resolved_url="https://www.google.com/maps/place/Taipei+Zoo",
-            snapshot={
-                "name": "Taipei Zoo",
-                "category": "Zoo",
-                "description": (
-                    "Large indoor-outdoor zoo in a scenic setting with a children's "
-                    "area, gondola & shuttle train."
-                ),
-                "search_result_description": "Sizable zoo with a gondola & kids' area",
-                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
-                "body_text": "Taipei Zoo\nZoo",
-            },
-        )
-
-        self.assertEqual(
-            details.description,
-            (
-                "Large indoor-outdoor zoo in a scenic setting with a children's "
-                "area, gondola & shuttle train."
-            ),
-        )
-        self.assertEqual(
-            details.search_result_description,
-            "Sizable zoo with a gondola & kids' area",
-        )
-        self.assertEqual(details.search_result_url, "https://www.google.com/maps/place/Taipei+Zoo")
-
-    def test_build_place_details_rejects_seo_title_description(self) -> None:
-        details = _build_place_details(
-            "https://www.google.com/maps/place/Taipei+101",
-            resolved_url="https://www.google.com/maps/place/Taipei+101",
-            snapshot={
-                "name": "Taipei 101",
-                "category": "Shopping mall",
-                "description": (
-                    "The Executive Centre - Taipei 101 Tower | Coworking Space, "
-                    "Serviced & Virtual Offices and Workspace"
-                ),
-                "body_text": "Taipei 101\nShopping mall",
-            },
-        )
-
-        self.assertIsNone(details.description)
-
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [
             [
@@ -1596,20 +1539,22 @@ class PlaceScraperTests(unittest.TestCase):
         assert details.diagnostics is not None
         self.assertIn("missing_name", details.diagnostics.quality_flags)
 
-    def test_build_place_details_preserves_structured_name_that_matches_action_label(
+    def test_build_place_details_rejects_structured_name_that_matches_action_label(
         self,
     ) -> None:
         details = _build_place_details(
-            "https://www.google.com/maps/place/Share",
-            resolved_url="https://www.google.com/maps/place/Share",
+            "https://www.google.com/maps/place/Pooles+Temple",
+            resolved_url="https://www.google.com/maps/place/Pooles+Temple",
             snapshot={
                 "name": "Share",
-                "category": "Restaurant",
-                "body_text": "\n".join(["Share", "Saved", "Directions", "Restaurant"]),
+                "category": "Event venue",
+                "body_text": "\n".join(
+                    ["Share", "Saved", "Directions", "Pooles Temple", "Event venue"]
+                ),
             },
         )
 
-        self.assertEqual(details.name, "Share")
+        self.assertEqual(details.name, "Pooles Temple")
 
     def test_build_place_details_prefers_structured_title_over_action_lines(self) -> None:
         details = _build_place_details(
@@ -1668,70 +1613,6 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(details.name, "Open Kitchen")
         self.assertEqual(details.description, "Open fire cooking in a bright room.")
         self.assertIsNone(details.status)
-
-    def test_build_place_details_preserves_editorial_summary_description(self) -> None:
-        details = _build_place_details(
-            "https://www.google.com/maps/place/Faraglioni",
-            resolved_url="https://www.google.com/maps/place/Faraglioni",
-            snapshot={
-                "name": "Faraglioni",
-                "category": "Island",
-                "description": (
-                    "Offering a unique view, boats travel through an arch of these "
-                    "three iconic, oceanic rock formations."
-                ),
-                "body_text": "\n".join(
-                    [
-                        "Faraglioni",
-                        "Island",
-                        (
-                            "Offering a unique view, boats travel through an arch of "
-                            "these three iconic, oceanic rock formations."
-                        ),
-                    ]
-                ),
-            },
-        )
-
-        self.assertEqual(
-            details.description,
-            (
-                "Offering a unique view, boats travel through an arch of these "
-                "three iconic, oceanic rock formations."
-            ),
-        )
-
-    def test_build_place_details_preserves_editorial_summary_with_floor_number(self) -> None:
-        details = _build_place_details(
-            "https://www.google.com/maps/place/Taipei+101",
-            resolved_url="https://www.google.com/maps/place/Taipei+101",
-            snapshot={
-                "name": "Taipei 101",
-                "category": "Shopping mall",
-                "description": (
-                    "Towering landmark skyscraper offering shops, eateries & an "
-                    "observation platform on the 89th floor."
-                ),
-                "body_text": "\n".join(
-                    [
-                        "Taipei 101",
-                        "Shopping mall",
-                        (
-                            "Towering landmark skyscraper offering shops, eateries & an "
-                            "observation platform on the 89th floor."
-                        ),
-                    ]
-                ),
-            },
-        )
-
-        self.assertEqual(
-            details.description,
-            (
-                "Towering landmark skyscraper offering shops, eateries & an "
-                "observation platform on the 89th floor."
-            ),
-        )
 
     def test_build_place_details_preserves_photo_url(self) -> None:
         details = _build_place_details(
@@ -1920,11 +1801,25 @@ class PlaceScraperTests(unittest.TestCase):
             def __init__(self) -> None:
                 self.waited: list[object] = []
                 self.visited: list[tuple[str, str, int]] = []
+                self.clicked: list[tuple[float, float]] = []
+                self.detail_checks = 0
+                self.mouse = self
 
-            def evaluate(self, script: object) -> object:
+            def evaluate(self, script: object, *args: object) -> object:
                 if script == _PLACE_SEARCH_RESULT_CLICK_JS:
-                    return "https://www.google.com/maps/place/National+Azabu"
+                    return "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp"
+                if script == _PLACE_SEARCH_RESULT_OPEN_JS:
+                    assert args[0] == (
+                        "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp"
+                    )
+                    return {"x": 20, "y": 40}
+                if script == _PLACE_DETAIL_READY_JS:
+                    self.detail_checks += 1
+                    return True
                 return None
+
+            def click(self, x: float, y: float) -> None:
+                self.clicked.append((x, y))
 
             def goto(self, url: str, *, wait_until: str, timeout: int) -> None:
                 self.visited.append((url, wait_until, timeout))
@@ -1935,81 +1830,71 @@ class PlaceScraperTests(unittest.TestCase):
             def wait_for_selector(self, selector: str, *, timeout: int, state: str) -> None:
                 self.waited.append(("selector", selector, timeout, state))
 
-        page = _FakePage()
-        with patch("gmaps_scraper.place_scraper._handle_google_consent"):
-            self.assertTrue(_open_place_result_from_search_page(page, timeout_ms=30_000))
-        self.assertEqual(
-            page.visited,
-            [("https://www.google.com/maps/place/National+Azabu", "domcontentloaded", 30_000)],
-        )
-        self.assertIn(("load_state", "load", 10_000), page.waited)
+            def wait_for_timeout(self, value: int) -> None:
+                self.waited.append(("timeout", value))
 
-    def test_open_place_result_from_search_page_returns_result_card_description(self) -> None:
+        page = _FakePage()
+        with patch("gmaps_scraper.place_scraper._handle_google_consent") as consent_mock:
+            self.assertEqual(_open_place_result_from_search_page(page, timeout_ms=30_000), {})
+        self.assertEqual(page.visited, [])
+        self.assertEqual(page.clicked, [(20, 40)])
+        self.assertEqual(page.detail_checks, 2)
+        self.assertIn(("load_state", "load", 10_000), page.waited)
+        self.assertEqual(consent_mock.call_count, 2)
+
+    def test_open_place_result_from_search_page_falls_back_to_goto_when_click_fails(
+        self,
+    ) -> None:
         class _FakePage:
             def __init__(self) -> None:
                 self.visited: list[tuple[str, str, int]] = []
+                self.detail_checks = 0
 
-            def evaluate(self, script: object) -> object:
+            def evaluate(self, script: object, *_args: object) -> object:
                 if script == _PLACE_SEARCH_RESULT_CLICK_JS:
-                    return {
-                        "href": "https://www.google.com/maps/place/Taipei+Zoo",
-                        "search_result_description": "Sizable zoo with a gondola & kids' area",
-                    }
+                    return "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp"
+                if script == _PLACE_SEARCH_RESULT_OPEN_JS:
+                    return {}
+                if script == _PLACE_DETAIL_READY_JS:
+                    self.detail_checks += 1
+                    return True
                 return None
 
             def goto(self, url: str, *, wait_until: str, timeout: int) -> None:
                 self.visited.append((url, wait_until, timeout))
 
             def wait_for_load_state(self, _state: str, *, timeout: int) -> None:
-                pass
+                assert timeout == 10_000
 
             def wait_for_selector(self, _selector: str, *, timeout: int, state: str) -> None:
-                pass
+                assert timeout == 10_000
+                assert state == "attached"
 
         page = _FakePage()
-        with patch("gmaps_scraper.place_scraper._handle_google_consent"):
-            snapshot = _open_place_result_from_search_page(page, timeout_ms=30_000)
-
+        with patch("gmaps_scraper.place_scraper._handle_google_consent") as consent_mock:
+            self.assertEqual(_open_place_result_from_search_page(page, timeout_ms=30_000), {})
         self.assertEqual(
-            snapshot,
-            {
-                "search_result_description": "Sizable zoo with a gondola & kids' area",
-                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
-                "opened_from_search_result": True,
-            },
+            page.visited,
+            [
+                (
+                    "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp",
+                    "domcontentloaded",
+                    30_000,
+                )
+            ],
         )
-
-    def test_open_place_result_from_search_page_returns_candidate_on_click_fail(self) -> None:
-        class _FakePage:
-            def evaluate(self, script: object) -> object:
-                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
-                    return {
-                        "href": "https://www.google.com/maps/place/Taipei+Zoo",
-                        "search_result_description": "Sizable zoo with a gondola & kids' area",
-                    }
-                return None
-
-            def goto(self, *_args: object, **_kwargs: object) -> None:
-                raise RuntimeError("blocked")
-
-        page = _FakePage()
-        snapshot = _open_place_result_from_search_page(page, timeout_ms=30_000)
-
-        self.assertEqual(
-            snapshot,
-            {
-                "search_result_description": "Sizable zoo with a gondola & kids' area",
-                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
-            },
-        )
+        self.assertEqual(page.detail_checks, 1)
+        self.assertEqual(consent_mock.call_count, 2)
 
     def test_open_place_result_from_search_page_rejects_non_google_place_urls(self) -> None:
         class _FakePage:
             def __init__(self) -> None:
                 self.visited: list[str] = []
 
-            def evaluate(self, _script: object) -> object:
-                return "https://example.com/maps/place/National+Azabu"
+            def evaluate(self, script: object, *_args: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return "https://example.com/maps/place/National+Azabu"
+                return False
 
             def wait_for_timeout(self, _value: int) -> None:
                 pass
@@ -2063,6 +1948,24 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(page.evaluate_calls, 1)
         self.assertEqual(page.evaluated_scripts, [_PLACE_SEARCH_RESULT_CLICK_JS])
         self.assertEqual(page.wait_calls, 0)
+
+    def test_search_result_candidate_url_accepts_card_details_object(self) -> None:
+        class _FakePage:
+            def evaluate(self, script: object) -> object:
+                assert script == _PLACE_SEARCH_RESULT_CLICK_JS
+                return {
+                    "href": "https://www.google.com/maps/place/Pooles+Temple",
+                    "name": "Pooles Temple",
+                    "review_count": "16",
+                }
+
+            def wait_for_timeout(self, _value: int) -> None:
+                raise AssertionError("should not poll after a card candidate is found")
+
+        self.assertEqual(
+            _search_result_candidate_url(_FakePage(), timeout_ms=30_000),
+            "https://www.google.com/maps/place/Pooles+Temple",
+        )
 
     def test_extract_secondary_name_aborts_when_rating_line_follows_name(self) -> None:
         self.assertIsNone(

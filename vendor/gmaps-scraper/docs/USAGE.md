@@ -335,7 +335,7 @@ build a specific query from its own context, then pass the resulting URL to the
 scraper.
 
 ```python
-from gmaps_scraper import build_maps_search_url, scrape_place
+from gmaps_scraper import build_maps_search_url, localize_maps_url, scrape_place
 
 url = build_maps_search_url("Analogue, Singapore")
 place = scrape_place(url)
@@ -364,6 +364,14 @@ localized UI surprises for the scraper and usually gives English-readable
 labels. Override `gl` when the downstream app has a regional bias such as `sg`,
 `tw`, `au`, or `uk`. Override `hl` only when you intentionally want Google Maps
 to render in another language and can tolerate more localized output.
+
+`scrape_place()` itself preserves the URL it receives. For direct place or CID
+URLs, call `localize_maps_url(url, hl="en", gl="us")` before scraping when you
+want the same English-readable bias explicitly:
+
+```python
+place = scrape_place(localize_maps_url("https://www.google.co.jp/maps/place/Tokyo+Tower"))
+```
 
 `gl` is a regional search bias, not proof of location. Downstream consumers that
 have expected city/country context should still validate the resolved place

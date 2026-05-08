@@ -1369,6 +1369,91 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(entry.place.primary_type_display_name, "Tea house")
         self.assertEqual(entry.place.primary_type_display_name_localized, "茶館")
 
+    def test_fetch_place_page_enrichment_repairs_display_fields_on_sparse_retry(self) -> None:
+        place = RawPlace(
+            name="Tea House",
+            address="Taipei, Taiwan",
+            maps_url="https://www.google.com/maps/place/Tea+House",
+        )
+        repairer = object()
+        first = SimpleNamespace(
+            source_url=place.maps_url,
+            resolved_url=place.maps_url,
+            name="Tea House",
+            category="Cafe",
+            rating=None,
+            review_count=None,
+            address="Taipei, Taiwan",
+            status=None,
+            website=None,
+            phone=None,
+            plus_code=None,
+            description=None,
+            limited_view=True,
+        )
+        retry = SimpleNamespace(
+            source_url=place.maps_url,
+            resolved_url="https://www.google.com/maps/place/Tea+House/@25.1,121.5,17z",
+            name="Tea House",
+            category="茶館",
+            rating=4.5,
+            review_count=110,
+            address="No. 12號, Songgao Rd, Xinyi District, Taipei City",
+            status=None,
+            website="https://tea.example/",
+            phone=None,
+            plus_code=None,
+            description=None,
+            limited_view=False,
+        )
+
+        def fake_repair_place_display_fields(
+            details: SimpleNamespace,
+            *,
+            repairer: object,
+            evidence: dict[str, object],
+        ) -> SimpleNamespace:
+            details.category_display_en = "Tea house"
+            details.category_display_en_source = "llm"
+            details.category_display_en_confidence = "high"
+            details.address_display_en = "No. 12, Songgao Rd, Xinyi District, Taipei City"
+            details.address_display_en_source = "llm"
+            details.address_display_en_confidence = "high"
+            return details
+
+        with (
+            patch.object(build_data, "google_maps_place_llm_repair_mode", return_value="dom_then_translation"),
+            patch.object(build_data, "build_place_llm_repairer", return_value=repairer),
+            patch.object(build_data, "needs_display_en", side_effect=lambda value: "號" in (value or "")),
+            patch.object(
+                build_data,
+                "repair_place_display_fields",
+                side_effect=fake_repair_place_display_fields,
+            ) as repair_display,
+            patch.object(build_data, "scrape_place", side_effect=[first, retry]),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "clear_scraper_session_state"),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            )
+
+        repair_display.assert_called_once()
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.address_display_en, "No. 12, Songgao Rd, Xinyi District, Taipei City")
+        self.assertEqual(entry.place.primary_type_display_name, "Tea house")
+        self.assertEqual(entry.place.primary_type_display_name_localized, "茶館")
+
     def test_fetch_place_page_enrichment_reuses_previous_display_fields(self) -> None:
         place = RawPlace(
             name="Tea House",
