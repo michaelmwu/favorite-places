@@ -249,7 +249,23 @@ class BuildDataTests(unittest.TestCase):
             self.assertEqual(result, f"/author-photos/{expected_path.name}")
             self.assertEqual(expected_path.read_bytes(), b"optimized")
 
-    def test_author_photo_stale_cleanup_does_not_match_slug_prefixes(self) -> None:
+    def test_author_photo_temp_path_is_unique_per_invocation(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            author_photo_dir = Path(tmpdir)
+            first_uuid = SimpleNamespace(hex="first")
+            second_uuid = SimpleNamespace(hex="second")
+            with (
+                patch.object(build_data, "AUTHOR_PHOTOS_DIR", author_photo_dir),
+                patch.object(build_data.uuid, "uuid4", side_effect=[first_uuid, second_uuid]),
+            ):
+                first_path = build_data.author_photo_temp_path("profile-curator--abc.webp")
+                second_path = build_data.author_photo_temp_path("profile-curator--abc.webp")
+
+        self.assertEqual(first_path.name, ".profile-curator--abc.webp.first.tmp")
+        self.assertEqual(second_path.name, ".profile-curator--abc.webp.second.tmp")
+        self.assertNotEqual(first_path, second_path)
+
+    def test_author_photo_legacy_stale_cleanup_does_not_match_slug_prefixes_or_shared_paths(self) -> None:
         with TemporaryDirectory() as tmpdir:
             author_photo_dir = Path(tmpdir)
             keep_path = author_photo_dir / "tokyo--keep.webp"
@@ -258,6 +274,8 @@ class BuildDataTests(unittest.TestCase):
             same_slug_legacy = author_photo_dir / "tokyo-123456789abc.webp"
             prefixed_slug_current = author_photo_dir / "tokyo-japan--stale.webp"
             prefixed_slug_legacy = author_photo_dir / "tokyo-japan-123456789abc.webp"
+            shared_profile = author_photo_dir / "profile-curator-id--123456789abc.webp"
+            shared_photo_hash = author_photo_dir / "photo-123456789abc.webp"
             for path in [
                 keep_path,
                 same_slug_current,
@@ -265,13 +283,15 @@ class BuildDataTests(unittest.TestCase):
                 same_slug_legacy,
                 prefixed_slug_current,
                 prefixed_slug_legacy,
+                shared_profile,
+                shared_photo_hash,
             ]:
                 path.write_bytes(b"image")
 
             with patch.object(build_data, "AUTHOR_PHOTOS_DIR", author_photo_dir):
                 stale_names = {
                     path.name
-                    for path in build_data.stale_author_photo_paths("tokyo", keep_filename=keep_path.name)
+                    for path in build_data.stale_legacy_author_photo_paths("tokyo", keep_filename=keep_path.name)
                 }
 
         self.assertEqual(

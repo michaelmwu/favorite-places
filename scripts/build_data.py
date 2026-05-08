@@ -14,6 +14,7 @@ import shutil
 import sqlite3
 import time
 import unicodedata
+import uuid
 from collections import Counter
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -6392,11 +6393,14 @@ def download_list_author_photo(
 
     filename = f"{photo_stem}{extension}"
     output_path = AUTHOR_PHOTOS_DIR / filename
-    temp_path = AUTHOR_PHOTOS_DIR / f".{filename}.tmp"
-    temp_path.write_bytes(optimized_content)
-    temp_path.replace(output_path)
+    temp_path = author_photo_temp_path(filename)
+    try:
+        temp_path.write_bytes(optimized_content)
+        temp_path.replace(output_path)
+    finally:
+        temp_path.unlink(missing_ok=True)
 
-    for stale_path in stale_author_photo_paths(slug, keep_filename=filename):
+    for stale_path in stale_legacy_author_photo_paths(slug, keep_filename=filename):
         stale_path.unlink(missing_ok=True)
 
     return public_author_photo_path(filename)
@@ -6410,7 +6414,11 @@ def existing_author_photo_path(photo_stem: str) -> Path | None:
     return None
 
 
-def stale_author_photo_paths(slug: str, *, keep_filename: str) -> list[Path]:
+def author_photo_temp_path(filename: str) -> Path:
+    return AUTHOR_PHOTOS_DIR / f".{filename}.{uuid.uuid4().hex}.tmp"
+
+
+def stale_legacy_author_photo_paths(slug: str, *, keep_filename: str) -> list[Path]:
     if not AUTHOR_PHOTOS_DIR.exists():
         return []
 
