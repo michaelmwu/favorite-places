@@ -1569,7 +1569,10 @@ class PlaceScraperTests(unittest.TestCase):
             resolved_url="https://www.google.com/maps/place/La+Quintessence",
             snapshot={
                 "name": "La Quintessence Cannes",
-                "description": "Mark as temporarily closed, or remove this place; report a legal problem",
+                "description": (
+                    "Mark as temporarily closed, or remove this place; "
+                    "report a legal problem"
+                ),
                 "body_text": "La Quintessence Cannes\nRestaurant",
             },
         )
@@ -1582,7 +1585,10 @@ class PlaceScraperTests(unittest.TestCase):
             resolved_url="https://www.google.com/maps/place/La+Prosciutteria",
             snapshot={
                 "name": "La Prosciutteria Bologna",
-                "description": "· \ue5ca Dine-in · \ue5ca Curbside pickup · \ue5ca Delivery \ue5cc",
+                "description": (
+                    "· \ue5ca Dine-in · \ue5ca Curbside pickup · "
+                    "\ue5ca Delivery \ue5cc"
+                ),
                 "body_text": "La Prosciutteria Bologna\nRestaurant",
             },
         )
@@ -1605,7 +1611,10 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertEqual(
             details.description,
-            "Polished white-tablecloth operation dishing up traditional & Japanese-style cuts, plus cocktails",
+            (
+                "Polished white-tablecloth operation dishing up "
+                "traditional & Japanese-style cuts, plus cocktails"
+            ),
         )
 
     def test_build_place_details_rejects_first_person_review_description(self) -> None:
