@@ -168,7 +168,7 @@ const defaultSiteConfig: SiteConfig = {
   },
   guide: {
     fallbackDescription: "Saved places for this city.",
-    showAuthor: false,
+    showAuthor: true,
     authorLabel: "By",
     sidebarContent: [],
     backLinkLabel: "Back to all guides",
@@ -206,7 +206,7 @@ const defaultSiteConfig: SiteConfig = {
   guideCard: {
     showDescription: true,
     fallbackDescription: "Saved places for this guide.",
-    showAuthor: false,
+    showAuthor: true,
     authorLabel: "By",
     showTags: true,
     maxTags: 4,
