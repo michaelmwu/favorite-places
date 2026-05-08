@@ -2424,15 +2424,21 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             ]
             if semantic_tag_slug_is_usable(tag) and tag != mapped_primary_category_source_tag
         ]
+        override_tags = coerce_string_list(override.get("tags"))
         tags = sorted(
             {
-                *coerce_string_list(override.get("tags")),
+                *override_tags,
                 *semantic_tags,
                 *derive_place_tags(place, city_name, enrichment=enrichment, category=primary_category),
             }
         )
         if mapped_primary_category_source_tag:
-            tags = [tag for tag in tags if tag != mapped_primary_category_source_tag]
+            tags = sorted(
+                {
+                    *override_tags,
+                    *(tag for tag in tags if tag != mapped_primary_category_source_tag),
+                }
+            )
         raw_locality_candidates = infer_address_localities(
             place.address,
             city_name=city_name,

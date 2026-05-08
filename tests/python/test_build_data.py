@@ -4233,6 +4233,75 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(guide.places[0].primary_category, "Coffee Shop")
         self.assertIn("coffee-shop", guide.places[0].tags)
 
+    def test_normalize_guide_preserves_manual_tags_when_category_mapping_prunes_source_tag(self) -> None:
+        raw = RawSavedList(
+            title="Montreal, Canada",
+            places=[
+                RawPlace(
+                    name="Kitano Shokudo",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                query="Kitano Shokudo, Montreal, Canada",
+                matched=True,
+                source="google_maps_page",
+                place=EnrichmentPlace(
+                    display_name="Kitano Shokudo",
+                    primary_type_display_name="Authentic Japanese restaurant",
+                ),
+            ),
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            (place_overrides_dir / "montreal-canada.json").write_text(
+                json.dumps(
+                    {
+                        place_id: {
+                            "tags": ["authentic-japanese-restaurant", "izakaya"],
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+                patch.object(
+                    build_data,
+                    "google_maps_place_category_mappings",
+                    return_value=[
+                        {
+                            "city": "Montreal",
+                            "country": "Canada",
+                            "from": "Authentic Japanese restaurant",
+                            "to": "Japanese restaurant",
+                        }
+                    ],
+                ),
+            ):
+                guide = build_data.normalize_guide(
+                    "montreal-canada",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(guide.places[0].primary_category, "Japanese restaurant")
+        self.assertIn("japanese-restaurant", guide.places[0].tags)
+        self.assertIn("authentic-japanese-restaurant", guide.places[0].tags)
+        self.assertIn("izakaya", guide.places[0].tags)
+
     def test_normalize_guide_excludes_permanently_closed_places_from_ui_counts(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
