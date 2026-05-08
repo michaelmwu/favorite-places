@@ -14,6 +14,7 @@ import shutil
 import sqlite3
 import time
 import unicodedata
+import uuid
 from collections import Counter
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -6348,20 +6349,26 @@ def cached_place_photo_url(cache_entry: EnrichmentCacheEntry | None) -> str | No
 def sync_list_author_photo(slug: str, author: ListAuthor | None) -> ListAuthor | None:
     if author is None or not author.photo_url:
         return author
-    if author.photo_path:
-        existing_path = public_asset_absolute_path(author.photo_path)
-        if existing_path is not None and existing_path.exists():
-            return author
-
-    photo_path = download_list_author_photo(slug, author.photo_url)
+    photo_path = download_list_author_photo(
+        slug,
+        author.photo_url,
+        profile_id=author.profile_id,
+    )
     if photo_path is None:
+        return author
+    if photo_path == author.photo_path:
         return author
     return author.model_copy(update={"photo_path": photo_path})
 
 
-def download_list_author_photo(slug: str, photo_url: str) -> str | None:
+def download_list_author_photo(
+    slug: str,
+    photo_url: str,
+    *,
+    profile_id: str | None = None,
+) -> str | None:
     AUTHOR_PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
-    photo_stem = canonical_author_photo_stem(slug, photo_url)
+    photo_stem = canonical_author_photo_stem(profile_id=profile_id, photo_url=photo_url)
     existing_path = existing_author_photo_path(photo_stem)
     if existing_path is not None:
         return public_author_photo_path(existing_path.name)
@@ -6386,11 +6393,14 @@ def download_list_author_photo(slug: str, photo_url: str) -> str | None:
 
     filename = f"{photo_stem}{extension}"
     output_path = AUTHOR_PHOTOS_DIR / filename
-    temp_path = AUTHOR_PHOTOS_DIR / f".{filename}.tmp"
-    temp_path.write_bytes(optimized_content)
-    temp_path.replace(output_path)
+    temp_path = author_photo_temp_path(filename)
+    try:
+        temp_path.write_bytes(optimized_content)
+        temp_path.replace(output_path)
+    finally:
+        temp_path.unlink(missing_ok=True)
 
-    for stale_path in stale_author_photo_paths(slug, keep_filename=filename):
+    for stale_path in stale_legacy_author_photo_paths(slug, keep_filename=filename):
         stale_path.unlink(missing_ok=True)
 
     return public_author_photo_path(filename)
@@ -6404,7 +6414,11 @@ def existing_author_photo_path(photo_stem: str) -> Path | None:
     return None
 
 
-def stale_author_photo_paths(slug: str, *, keep_filename: str) -> list[Path]:
+def author_photo_temp_path(filename: str) -> Path:
+    return AUTHOR_PHOTOS_DIR / f".{filename}.{uuid.uuid4().hex}.tmp"
+
+
+def stale_legacy_author_photo_paths(slug: str, *, keep_filename: str) -> list[Path]:
     if not AUTHOR_PHOTOS_DIR.exists():
         return []
 
@@ -6425,9 +6439,11 @@ def safe_author_photo_stem(slug: str) -> str:
     return sanitized or "author"
 
 
-def canonical_author_photo_stem(slug: str, photo_url: str) -> str:
+def canonical_author_photo_stem(*, profile_id: str | None, photo_url: str) -> str:
     photo_hash = hashlib.sha256(photo_url.encode("utf-8")).hexdigest()[:12]
-    return f"{safe_author_photo_stem(slug)}--{photo_hash}"
+    if profile_id:
+        return f"profile-{safe_author_photo_stem(profile_id)}--{photo_hash}"
+    return f"photo-{photo_hash}"
 
 
 def populate_place_photos_for_guides(
