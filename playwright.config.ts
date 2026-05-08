@@ -35,7 +35,7 @@ export default defineConfig({
   webServer: {
     command: `${prepareSiteCommand} && ${siteEnv} bun run build:data && ${siteEnv} bun run build && ${siteEnv} bun run preview -- --host ${host} --port ${port}`,
     url: baseURL,
-    reuseExistingServer: !isCi,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
   projects: [
