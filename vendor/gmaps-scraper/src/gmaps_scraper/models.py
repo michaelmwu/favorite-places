@@ -297,6 +297,7 @@ class PlaceDetails:
     plus_code: str | None = None
     address_parts: AddressParts | None = None
     description: str | None = None
+    search_result_description: str | None = None
     secondary_name: str | None = None
     lat: float | None = None
     lng: float | None = None
@@ -336,6 +337,7 @@ class PlaceDetails:
             "plus_code": self.plus_code,
             "address_parts": self.address_parts,
             "description": self.description,
+            "search_result_description": self.search_result_description,
             "main_photo_url": self.main_photo_url,
             "photo_url": self.photo_url,
             "secondary_name": self.secondary_name,

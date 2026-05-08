@@ -204,6 +204,7 @@ class EnrichmentPlace(PipelineModel):
     plus_code: str | None = None
     address_parts: AddressParts | None = None
     description: str | None = None
+    search_result_description: str | None = None
     main_photo_url: str | None = None
     photo_url: str | None = None
     review_topics: list[dict[str, Any]] = Field(default_factory=list)

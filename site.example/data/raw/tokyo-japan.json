@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-06T17:00:18.868089+00:00",
-  "refresh_after": "2026-05-19T09:01:25.868089+00:00",
+  "fetched_at": "2026-05-08T03:35:46.749161+00:00",
+  "refresh_after": "2026-05-20T19:36:53.749161+00:00",
   "source_signature": "60a1d43bdd2c001777c528959c75d83c8ca9bcfc52beb3e40c1d095621c84da0",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/oJYkP7QRYcV1Assy8",
@@ -9,6 +9,14 @@
   "list_id": "iqXrdE39AnpXmzuvVP24Sg",
   "title": "Tokyo, Japan (Example) 🇯🇵",
   "description": null,
+  "owner": {
+    "name": "Michael Wu",
+    "photo_url": "https://lh3.googleusercontent.com/a-/ALV-UjW_i8-Eyr6conUhZ6tzGGlFe76mQTGeURI9NKDlca0FzlN0GY0Kjg",
+    "photo_path": null,
+    "avatar_mode": null,
+    "profile_id": "104356373423434804635"
+  },
+  "collaborators": [],
   "places": [
     {
       "name": "Mark's Tokyo",

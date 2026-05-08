@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Literal, cast
-from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from gmaps_scraper.models import (
     PLACE_LLM_DISPLAY_TRANSLATION_FIELDS,
@@ -323,6 +323,11 @@ _PLACE_JS_EXTRACTOR = r"""
   const itemValue = (itemId) => firstText([
     `[data-item-id="${itemId}"] .Io6YTe`,
     `[data-item-id="${itemId}"]`,
+  ]);
+  const descriptionValue = () => firstText([
+    ".WeS02d .PYvSYb",
+    ".WeS02d",
+    ".PYvSYb",
   ]);
 
   const rowValue = (row) => {
@@ -804,6 +809,7 @@ _PLACE_JS_EXTRACTOR = r"""
       ".skqShb .fontBodyMedium button",
       "button.DkEaL",
     ]),
+    description: descriptionValue(),
     price_range: priceRangeValue(),
     address: addressValue(),
     located_in: itemValue("locatedin"),
@@ -1062,6 +1068,35 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
   const hasQueryContext = Boolean(queryPlaceId || normalizedQuery);
   const queryTokens = normalizedQuery.split(" ").filter((token) => token.length >= 3);
   const articles = Array.from(document.querySelectorAll("div[role='feed'] [role='article']"));
+  const resultDescription = (article, label) => {
+    const candidates = [];
+    const seen = new Set();
+    for (const row of article.querySelectorAll(".W4Efsd")) {
+      const text = cleanLine(row.innerText || row.textContent || "");
+      if (!text || text === label || seen.has(text)) {
+        continue;
+      }
+      seen.add(text);
+      if (text.includes("·")) {
+        continue;
+      }
+      if (text.split(/\s+/).length < 4) {
+        continue;
+      }
+      if (/^(open|closed|temporarily closed)\b/i.test(text)) {
+        continue;
+      }
+      if (/[0-9][0-9\s().-]{6,}/.test(text)) {
+        continue;
+      }
+      candidates.push(text);
+    }
+    if (candidates.length === 0) {
+      return null;
+    }
+    candidates.sort((a, b) => b.length - a.length);
+    return candidates[0];
+  };
   let best = null;
 
   for (let index = 0; index < articles.length; index += 1) {
@@ -1115,14 +1150,18 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
       }
     }
     if (!best || score > best.score) {
-      best = {href, score};
+      best = {
+        href,
+        score,
+        search_result_description: resultDescription(article, label),
+      };
     }
   }
 
   if (!best || best.score <= 0) {
     return null;
   }
-  return best.href || null;
+  return best.href ? best : null;
 }
 """
 _PLACE_ABOUT_PANEL_JS = r"""
@@ -1682,16 +1721,15 @@ def _collect_place_snapshot_with_context(
     page = None
     try:
         page = context.new_page()
-        localized_place_url = _with_google_maps_locale(place_url)
-        _seed_google_consent_cookies(page, source_url=localized_place_url)
-        page.goto(localized_place_url, wait_until="domcontentloaded", timeout=timeout_ms)
+        _seed_google_consent_cookies(page, source_url=place_url)
+        page.goto(place_url, wait_until="domcontentloaded", timeout=timeout_ms)
         _handle_google_consent(page, timeout_ms=timeout_ms)
         try:
             page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
         except Exception:
             pass
         _handle_google_consent(page, timeout_ms=timeout_ms)
-        _open_place_result_from_search_page(page, timeout_ms=timeout_ms)
+        search_result_snapshot = _open_place_result_from_search_page(page, timeout_ms=timeout_ms)
         try:
             page.wait_for_selector(_TITLE_SELECTOR, timeout=timeout_ms, state="attached")
         except Exception:
@@ -1701,6 +1739,8 @@ def _collect_place_snapshot_with_context(
         page.wait_for_timeout(settle_time_ms)
         resolved_url = _normalize_response_url(getattr(page, "url", None))
         dom_snapshot = page.evaluate(_PLACE_JS_EXTRACTOR)
+        if search_result_snapshot and isinstance(dom_snapshot, Mapping):
+            dom_snapshot = {**dom_snapshot, **search_result_snapshot}
         if overview_screenshot_path is not None:
             _write_place_screenshot(page, overview_screenshot_path)
         if collect_reviews and isinstance(dom_snapshot, Mapping):
@@ -1796,17 +1836,17 @@ def _ensure_review_signal(page: Any, *, timeout_ms: int) -> bool:
     return _wait_for_review_signal(page, timeout_ms=min(timeout_ms, 4_000))
 
 
-def _open_place_result_from_search_page(page: Any, *, timeout_ms: int) -> bool:
-    target_url = _search_result_candidate_url(page, timeout_ms=timeout_ms)
-    if target_url is None:
-        return False
+def _open_place_result_from_search_page(page: Any, *, timeout_ms: int) -> dict[str, object] | None:
+    candidate = _search_result_candidate(page, timeout_ms=timeout_ms)
+    if candidate is None:
+        return None
+    target_url = cast(str, candidate["href"])
     if not _looks_like_google_maps_place_url(target_url):
-        return False
-    target_url = _with_google_maps_locale(target_url)
+        return None
     try:
         page.goto(target_url, wait_until="domcontentloaded", timeout=timeout_ms)
     except Exception:
-        return False
+        return None
     _handle_google_consent(page, timeout_ms=timeout_ms)
     try:
         page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
@@ -1815,21 +1855,43 @@ def _open_place_result_from_search_page(page: Any, *, timeout_ms: int) -> bool:
     try:
         page.wait_for_selector(_TITLE_SELECTOR, timeout=min(timeout_ms, 10_000), state="attached")
     except Exception:
-        return False
-    return True
+        return None
+    snapshot: dict[str, object] = {"opened_from_search_result": True}
+    description = _clean_description_text(candidate.get("search_result_description"))
+    if description is not None:
+        snapshot["search_result_description"] = description
+    return snapshot
 
 
 def _search_result_candidate_url(page: Any, *, timeout_ms: int) -> str | None:
+    candidate = _search_result_candidate(page, timeout_ms=timeout_ms)
+    return None if candidate is None else cast(str, candidate["href"])
+
+
+def _search_result_candidate(page: Any, *, timeout_ms: int) -> dict[str, object] | None:
     polls = max(1, min(8, timeout_ms // 500))
     for _ in range(polls):
         try:
-            target_url = page.evaluate(_PLACE_SEARCH_RESULT_CLICK_JS)
+            candidate = page.evaluate(_PLACE_SEARCH_RESULT_CLICK_JS)
         except Exception:
             return None
-        if target_url is False:
+        if candidate is False:
             return None
-        if isinstance(target_url, str) and target_url.strip():
-            return target_url.strip()
+        if isinstance(candidate, str) and candidate.strip():
+            return {"href": candidate.strip()}
+        if isinstance(candidate, Mapping):
+            href = _clean_text(candidate.get("href"))
+            if href is not None:
+                return {
+                    key: value
+                    for key, value in {
+                        "href": href,
+                        "search_result_description": _clean_text(
+                            candidate.get("search_result_description")
+                        ),
+                    }.items()
+                    if value is not None
+                }
         page.wait_for_timeout(500)
     return None
 
@@ -1842,23 +1904,6 @@ def _looks_like_google_maps_place_url(value: str) -> bool:
     if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
         return False
     return parsed.path.startswith("/maps/place/")
-
-
-def _with_google_maps_locale(value: str, *, hl: str = "en", gl: str = "us") -> str:
-    parsed = urlparse(value)
-    host = (parsed.hostname or "").lower()
-    if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
-        return value
-    query_pairs = [
-        (key, existing_value)
-        for key, existing_value in parse_qsl(parsed.query, keep_blank_values=True)
-        if key not in {"hl", "gl"}
-    ]
-    if hl.strip():
-        query_pairs.append(("hl", hl.strip()))
-    if gl.strip():
-        query_pairs.append(("gl", gl.strip()))
-    return urlunparse(parsed._replace(query=urlencode(query_pairs)))
 
 
 def _collect_review_panel_snapshot(page: Any, *, timeout_ms: int) -> dict[str, object]:
@@ -1998,6 +2043,7 @@ def _build_place_details(
         or _extract_plus_code_from_lines(combined_lines),
         address_parts=_extract_address_parts(snapshot.get("address_parts")),
         description=_extract_description(snapshot, combined_lines),
+        search_result_description=_clean_description_text(snapshot.get("search_result_description")),
         main_photo_url=_normalize_photo_url(snapshot.get("main_photo_url")),
         photo_url=_normalize_photo_url(snapshot.get("photo_url")),
         lat=lat,
@@ -2470,6 +2516,7 @@ def _place_detail_values(details: PlaceDetails) -> dict[str, object]:
         "plus_code": details.plus_code,
         "address_parts": details.address_parts,
         "description": details.description,
+        "search_result_description": details.search_result_description,
         "main_photo_url": details.main_photo_url,
         "photo_url": details.photo_url,
         "lat": details.lat,
@@ -3140,7 +3187,7 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if _normalize_phone_candidate(normalized) is not None:
         return None
-    if _looks_like_address_line(normalized):
+    if _looks_like_description_address_text(normalized):
         return None
     if (
         _parse_rating(normalized) is not None
@@ -3148,6 +3195,32 @@ def _clean_description_text(value: object) -> str | None:
     ):
         return None
     return normalized
+
+
+def _looks_like_description_address_text(value: str) -> bool:
+    if _PLUS_CODE_PATTERN.search(value):
+        return True
+    if "〒" in value or value.startswith("Japan, "):
+        return True
+    if _looks_like_locality_address_line(value):
+        return True
+
+    has_digit = re.search(r"\d", value) is not None
+    has_address_signal = "," in value or _STRONG_ADDRESS_KEYWORD_PATTERN.search(value) is not None
+    if not has_digit or not has_address_signal:
+        return False
+
+    # Editorial summaries can legitimately mention floors or numbers. Keep
+    # sentence-like prose unless it starts like a structured street address.
+    word_count = len(value.split())
+    if (
+        word_count >= 8
+        and re.search(r"[.!?]$", value)
+        and re.match(r"^\d|^No[.\s]", value, re.IGNORECASE) is None
+    ):
+        return False
+
+    return _looks_like_address_line(value)
 
 
 def _extract_preview_website(strings: list[str]) -> str | None:
