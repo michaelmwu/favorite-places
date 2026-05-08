@@ -1379,10 +1379,8 @@ class PlaceScraperTests(unittest.TestCase):
     def test_clean_description_text_rejects_first_person_review_prose(self) -> None:
         self.assertIsNone(
             _clean_description_text(
-                (
-                    "This garden is absolutely beautiful and highly fragrant. "
-                    "We visited in mid-April, and many of the roses were in bloom."
-                )
+                "This garden is absolutely beautiful and highly fragrant. "
+                "We visited in mid-April, and many of the roses were in bloom."
             )
         )
 
@@ -1652,8 +1650,9 @@ class PlaceScraperTests(unittest.TestCase):
             snapshot={
                 "name": "Rare Steakhouse",
                 "description": (
-                    "Polished white-tablecloth operation dishing up traditional & Japanese-style cuts, "
-                    "plus cocktails. · \ue5ca Dine-in · \ue5ca Takeout · \ue5cd Delivery \ue5cc"
+                    "Polished white-tablecloth operation dishing up traditional & "
+                    "Japanese-style cuts, plus cocktails. · \ue5ca Dine-in · "
+                    "\ue5ca Takeout · \ue5cd Delivery \ue5cc"
                 ),
                 "body_text": "Rare Steakhouse\nSteak house",
             },
