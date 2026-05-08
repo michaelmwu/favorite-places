@@ -1899,6 +1899,50 @@ class BuildDataTests(unittest.TestCase):
         self.assertFalse(entry.matched)
         self.assertIsNone(entry.place)
 
+    def test_fetch_place_page_enrichment_accepts_scored_search_partial_name_match(self) -> None:
+        place = RawPlace(
+            name="McDonald's",
+            maps_url="https://www.google.com/maps/search/?api=1&query=McDonald%27s%2C+Shibuya",
+            lat=35.6581,
+            lng=139.7017,
+        )
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url=url,
+                name="McDonald's Shibuya",
+                category="Fast food restaurant",
+                rating=3.8,
+                review_count=1200,
+                address=None,
+                located_in=None,
+                status=None,
+                website=None,
+                phone=None,
+                plus_code=None,
+                description=None,
+                lat=35.6581,
+                lng=139.7017,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.display_name, "McDonald's Shibuya")
+
     def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_match_lacks_description(self) -> None:
         place = RawPlace(
             name="Taipei 101",
@@ -4864,6 +4908,9 @@ class BuildDataTests(unittest.TestCase):
             "PERTH CBD": "Perth CBD",
             "CBD": "CBD",
             "da-an": "Da'an",
+            "st kilda": "St Kilda",
+            "St. Pauli": "St. Pauli",
+            "st johns wood": "St Johns Wood",
         }
         for value, expected in cases.items():
             with self.subTest(value=value):

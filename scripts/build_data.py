@@ -7522,9 +7522,31 @@ def fetch_place_page_enrichment(
             should_retry = should_retry_limited_place_page_result(details, enrichment_place)
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
-                if should_retry:
-                    defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
-                continue
+                usable_without_address = place_page_search_result_without_address_is_usable(
+                    place,
+                    details,
+                    enrichment_place,
+                )
+                if index + 1 < len(candidate_urls):
+                    if usable_without_address:
+                        deferred_matched_entry = build_cache_entry(
+                            place,
+                            source="google_maps_page",
+                            query=query,
+                            city_name=city_name,
+                            country_name=country_name,
+                            signature_google_place_id=signature_google_place_id,
+                            matched=True,
+                            score=STRONG_MATCH_SCORE,
+                            enrichment_place=enrichment_place,
+                        )
+                    elif should_retry:
+                        defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
+                    continue
+                if not usable_without_address:
+                    if should_retry:
+                        defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
+                    continue
             matched = place_page_has_meaningful_enrichment(details, enrichment_place)
             if not matched:
                 if should_retry:
@@ -7589,7 +7611,12 @@ def fetch_place_page_enrichment(
                 if should_retry_limited_place_page_result(details, enrichment_place):
                     continue
                 source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
-                if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
+                if (
+                    source_url
+                    and "/maps/search/" in source_url
+                    and not enrichment_place.formatted_address
+                    and not place_page_search_result_without_address_is_usable(place, details, enrichment_place)
+                ):
                     continue
                 matched = place_page_has_meaningful_enrichment(details, enrichment_place)
                 if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
@@ -7719,6 +7746,17 @@ def should_retry_limited_place_page_result(
     return enrichment_place.user_rating_count is None
 
 
+def place_page_search_result_without_address_is_usable(
+    raw_place: RawPlace,
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    return (
+        place_page_has_meaningful_enrichment(details, enrichment_place)
+        and place_page_candidate_is_confident_match(raw_place, details, enrichment_place)
+    )
+
+
 def place_page_candidate_is_confident_match(
     raw_place: RawPlace,
     details: Any,
@@ -7727,12 +7765,33 @@ def place_page_candidate_is_confident_match(
     source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
     if not source_url or "/maps/search/" not in source_url:
         return True
+    score = score_place_page_candidate(raw_place, details, enrichment_place)
     if enrichment_place.formatted_address is None:
         raw_name = normalize_text(raw_place.name)
         candidate_name = normalize_text(enrichment_place.display_name)
-        if raw_name and candidate_name and raw_name != candidate_name:
+        if (
+            raw_name
+            and candidate_name
+            and raw_name != candidate_name
+            and place_page_candidate_name_is_address_artifact(raw_place, enrichment_place.display_name)
+        ):
             return False
-    return score_place_page_candidate(raw_place, details, enrichment_place) >= 25
+        if raw_name and candidate_name and raw_name != candidate_name:
+            return score >= 60
+    return score >= 25
+
+
+def place_page_candidate_name_is_address_artifact(
+    raw_place: RawPlace,
+    candidate_name: str | None,
+) -> bool:
+    candidate = normalize_text(candidate_name)
+    if not candidate:
+        return False
+    raw_address = normalize_text(raw_place.address)
+    if raw_address and (candidate in raw_address or raw_address in candidate):
+        return True
+    return bool(candidate_name and re.search(r"\d", candidate_name) and is_street_or_block_part(candidate_name))
 
 
 def score_place_page_candidate(
@@ -8788,7 +8847,7 @@ def normalize_semantic_neighborhood_label(
     label = sanitize_semantic_label(value, max_length=64)
     if label is None:
         return None
-    label = normalize_address_locality_part(label)
+    label = normalize_semantic_neighborhood_part(label)
     if label is None:
         return None
     country_key = normalize_locality_key(country_name)
@@ -8816,6 +8875,50 @@ def normalize_semantic_neighborhood_label(
     if alias:
         return alias
     return label
+
+
+def normalize_semantic_neighborhood_part(label: str) -> str | None:
+    normalized = normalize_address_locality_part(label)
+    if normalized is not None:
+        return normalized
+
+    candidate = re.sub(r"\s+", " ", label.strip()).strip(" -−ー－/()[]{}.")
+    if not candidate:
+        return None
+    if not is_saint_prefixed_semantic_neighborhood(candidate):
+        return None
+    if is_country_locality(candidate):
+        return None
+    if is_subnational_locality(candidate) or is_subnational_locality_abbreviation(candidate):
+        return None
+    if is_explicit_subnational_locality_label(candidate):
+        return None
+    if is_building_or_unit_part(candidate):
+        return None
+    if re.search(r"\d", candidate):
+        return None
+    if semantic_neighborhood_has_non_saint_street_marker(candidate):
+        return None
+    return candidate
+
+
+def is_saint_prefixed_semantic_neighborhood(candidate: str) -> bool:
+    return bool(re.match(r"^st\.?\s+[A-Za-z]", candidate, flags=re.IGNORECASE))
+
+
+def semantic_neighborhood_has_non_saint_street_marker(candidate: str) -> bool:
+    return bool(
+        re.search(
+            (
+                r"\b(?:chome|丁目|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|placa|plaça|pl|bajada|"
+                r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
+                r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.|p\.\s*º)\s"
+            ),
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
 
 
 def semantic_neighborhood_comparison_key(value: str | None) -> str:
