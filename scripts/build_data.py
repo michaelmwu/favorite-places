@@ -4663,7 +4663,7 @@ def is_street_or_block_part(candidate: str) -> bool:
         re.search(
             (
                 r"\b(?:chome|丁目|st|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
-                r"rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|pg|placa|plaça|pl|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|pg|placa|plaça|pl|"
                 r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
                 r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.)\s"
             ),

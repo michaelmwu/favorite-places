@@ -6562,6 +6562,13 @@ class BuildDataTests(unittest.TestCase):
                 {"county-antrim"},
                 None,
             ),
+            (
+                "3 Prom. des Anglais, 06000 Nice, France",
+                "Nice",
+                {"nice"},
+                {"prom-des-anglais"},
+                None,
+            ),
         ]
 
         for address, city_name, expected_tags, rejected_tags, expected_neighborhood in addresses:
