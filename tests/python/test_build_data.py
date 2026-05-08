@@ -2021,7 +2021,7 @@ class BuildDataTests(unittest.TestCase):
         def scrape_side_effect(scrape_url: str, **_: object) -> SimpleNamespace:
             scrape_attempts.append(scrape_url)
             return SimpleNamespace(
-                source_url=scrape_url,
+                source_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK",
                 resolved_url=scrape_url,
                 name="Cantina OK!",
                 category="Cocktail bar",
@@ -2050,6 +2050,44 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(entry.place.user_rating_count)
         self.assertTrue(entry.place.limited_view)
         self.assertTrue(build_data.should_fallback_to_places_api(entry))
+
+    def test_fetch_place_page_enrichment_rejects_wrong_sparse_search_result(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK",
+        )
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(scrape_url: str, **_: object) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            return SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK",
+                resolved_url=scrape_url,
+                name="Wrong Cafe",
+                category="Cafe",
+                address=None,
+                rating=4.4,
+                limited_view=True,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_place_page_candidate_urls", return_value=["https://example.com/search"]),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state") as clear_session,
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(scrape_attempts, ["https://example.com/search"])
+        clear_session.assert_not_called()
+        self.assertFalse(entry.matched)
+        self.assertIsNone(entry.place)
+        self.assertIsNone(entry.error)
 
     def test_place_page_has_meaningful_enrichment_rejects_limited_view_without_review_count(self) -> None:
         details = SimpleNamespace(limited_view=True)

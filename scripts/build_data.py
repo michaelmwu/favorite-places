@@ -7188,6 +7188,27 @@ def fetch_place_page_enrichment(
             country_name=country_name,
             google_place_id=google_place_id,
         )
+
+        def defer_sparse_retry_candidate(
+            details: Any,
+            enrichment_place: EnrichmentPlace,
+            scrape_url: str,
+        ) -> None:
+            nonlocal deferred_matched_entry
+            if not place_page_candidate_is_confident_match(place, details, enrichment_place):
+                return
+            deferred_matched_entry = build_cache_entry(
+                place,
+                source="google_maps_page",
+                query=query,
+                city_name=city_name,
+                country_name=country_name,
+                matched=True,
+                score=STRONG_MATCH_SCORE,
+                enrichment_place=enrichment_place,
+            )
+            retry_urls.append(scrape_url)
+
         for index, scrape_url in enumerate(candidate_urls):
             try:
                 details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
@@ -7230,32 +7251,12 @@ def fetch_place_page_enrichment(
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
                 if should_retry:
-                    deferred_matched_entry = build_cache_entry(
-                        place,
-                        source="google_maps_page",
-                        query=query,
-                        city_name=city_name,
-                        country_name=country_name,
-                        matched=True,
-                        score=STRONG_MATCH_SCORE,
-                        enrichment_place=enrichment_place,
-                    )
-                    retry_urls.append(scrape_url)
+                    defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
                 continue
             matched = place_page_has_meaningful_enrichment(details, enrichment_place)
             if not matched:
                 if should_retry:
-                    deferred_matched_entry = build_cache_entry(
-                        place,
-                        source="google_maps_page",
-                        query=query,
-                        city_name=city_name,
-                        country_name=country_name,
-                        matched=True,
-                        score=STRONG_MATCH_SCORE,
-                        enrichment_place=enrichment_place,
-                    )
-                    retry_urls.append(scrape_url)
+                    defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
                 continue
             if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
                 continue
