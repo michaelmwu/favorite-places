@@ -3,7 +3,6 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 import {
-  isBrowserUnsafePort,
   resolveWorktreeDevPort,
   WORKTREE_DEV_PORT_ENV,
   WORKTREE_DEV_PORT_OFFSET_ENV,
@@ -73,7 +72,7 @@ const source = portConfig.usingExplicitPort
   : `base ${portConfig.basePort} + offset ${portConfig.offset}`;
 
 console.log(`Starting Astro on port ${portConfig.port} (${source})`);
-if (portConfig.portIsBrowserUnsafe || isBrowserUnsafePort(portConfig.port)) {
+if (portConfig.portIsBrowserUnsafe) {
   console.warn(
     `Warning: port ${portConfig.port} is blocked by browsers and may fail with ERR_UNSAFE_PORT.`,
   );

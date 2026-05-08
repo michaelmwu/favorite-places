@@ -110,7 +110,7 @@ export function resolveWorktreeDevPort({ env = process.env, worktreeRoot }) {
   const safePorts = safePortsInRange(basePort, span);
   if (safePorts.length === 0) {
     throw new Error(
-      `${WORKTREE_DEV_BASE_PORT_ENV}..${WORKTREE_DEV_BASE_PORT_ENV} + ${WORKTREE_DEV_PORT_SPAN_ENV} - 1 must include at least one browser-safe port.`,
+      `range ${WORKTREE_DEV_BASE_PORT_ENV}..(${WORKTREE_DEV_BASE_PORT_ENV} + ${WORKTREE_DEV_PORT_SPAN_ENV} - 1) (${basePort}..${basePort + span - 1}) must include at least one browser-safe port.`,
     );
   }
 
