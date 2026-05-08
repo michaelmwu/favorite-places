@@ -6520,6 +6520,7 @@ class BuildDataTests(unittest.TestCase):
             city_name=None,
             country_name=None,
             google_place_id=None,
+            signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
         )
@@ -6563,6 +6564,7 @@ class BuildDataTests(unittest.TestCase):
             place,
             city_name=None,
             country_name=None,
+            signature_google_place_id=None,
             api_key="test-key",
         )
         self.assertIs(entry, api_entry)
@@ -6641,6 +6643,7 @@ class BuildDataTests(unittest.TestCase):
             city_name=None,
             country_name=None,
             google_place_id=None,
+            signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
         )
@@ -6648,6 +6651,7 @@ class BuildDataTests(unittest.TestCase):
             place,
             city_name=None,
             country_name=None,
+            signature_google_place_id=None,
             api_key="test-key",
         )
         self.assertIs(entry, api_entry)
@@ -6706,6 +6710,7 @@ class BuildDataTests(unittest.TestCase):
             city_name=None,
             country_name=None,
             google_place_id=None,
+            signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
         )
@@ -6713,6 +6718,7 @@ class BuildDataTests(unittest.TestCase):
             place,
             city_name=None,
             country_name=None,
+            signature_google_place_id=None,
             api_key="test-key",
         )
         self.assertIs(entry, page_entry)
@@ -7260,6 +7266,85 @@ class BuildDataTests(unittest.TestCase):
                 seen_reasons,
                 ["missing-cache-entry", "refresh-window-expired"],
             )
+
+    def test_enrich_raw_sources_refreshes_when_google_place_id_override_changes(self) -> None:
+        place = RawPlace(
+            name="Taipei 101",
+            maps_url="https://maps.google.com/?cid=3765761221328423815",
+            cid="3765761221328423815",
+        )
+        raw = RawSavedList(title="Taipei, Taiwan", places=[place])
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            overrides_dir = tmpdir_path / "overrides" / "places"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir(parents=True)
+            overrides_dir.mkdir(parents=True)
+            cache_dir.mkdir()
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (overrides_dir / "taipei-taiwan.json").write_text(
+                json.dumps(
+                    {
+                        "cid:3765761221328423815": {
+                            "google_place_id": "ChIJraeA2rarQjQRPBBjyR3RxKw",
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            stale_signature_entry = EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                refresh_after="2099-01-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Taipei 101, Taipei, Taiwan",
+                input_signature=build_data.enrichment_input_signature(
+                    place,
+                    city_name="Taipei",
+                    country_name="Taiwan",
+                ),
+                matched=True,
+                score=build_data.STRONG_MATCH_SCORE,
+                place=EnrichmentPlace(display_name="Taipei 101"),
+            )
+
+            seen_reasons: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, _place_name, refresh_reason, _place_payload, **_kwargs):
+                seen_reasons.append(refresh_reason)
+                return stale_signature_entry
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+            ):
+                build_data.save_places_cache("taipei-taiwan", {"cid:3765761221328423815": stale_signature_entry})
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=False,
+                    missing_only=False,
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+        self.assertEqual(seen_reasons, ["raw-place-changed"])
 
     def test_enrich_raw_sources_filters_to_selected_place(self) -> None:
         raw = RawSavedList(

@@ -297,8 +297,6 @@ class PlaceDetails:
     plus_code: str | None = None
     address_parts: AddressParts | None = None
     description: str | None = None
-    search_result_description: str | None = None
-    search_result_url: str | None = None
     secondary_name: str | None = None
     lat: float | None = None
     lng: float | None = None
@@ -310,6 +308,8 @@ class PlaceDetails:
     reviews: list[PlaceReview] = field(default_factory=list)
     about_sections: list[PlaceAboutSection] = field(default_factory=list)
     diagnostics: PlaceExtractionDiagnostics | None = None
+    search_result_description: str | None = None
+    search_result_url: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         """Convert place details into a JSON-serializable dictionary."""

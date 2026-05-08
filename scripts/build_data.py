@@ -3197,15 +3197,17 @@ def enrich_raw_sources(
 
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
+        slug = raw_path.stem
         city_name = infer_city_name(raw.title or "")
         country_name = infer_country_name(raw.title or "", raw)
-        cache_payload = load_places_cache(raw_path.stem)
-        cache_payloads[raw_path.stem] = cache_payload
+        place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
+        cache_payload = load_places_cache(slug)
+        cache_payloads[slug] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
             if normalized_place_selectors:
                 selector_matches = place_selector_matches(
-                    raw_path.stem,
+                    slug,
                     place,
                     place_id=place_id,
                     selectors=normalized_place_selectors,
@@ -3213,11 +3215,14 @@ def enrich_raw_sources(
                 matched_place_selectors.update(selector_matches)
                 if not selector_matches:
                     continue
+            override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
+            override_google_place_id = as_string(override.get("google_place_id"))
             refresh_reason = enrichment_refresh_reason(
                 place,
                 cache_payload.get(place_id),
                 city_name=city_name,
                 country_name=country_name,
+                signature_google_place_id=override_google_place_id,
                 force_refresh=force_refresh,
                 missing_only=missing_only,
             )
@@ -3226,7 +3231,7 @@ def enrich_raw_sources(
 
             enrich_jobs.append(
                 (
-                    raw_path.stem,
+                    slug,
                     place_id,
                     place.name,
                     refresh_reason,
@@ -3466,6 +3471,7 @@ def enrich_place_job(
         country_name=country_name,
         google_place_id=override_google_place_id
         or (existing_entry.place.google_place_id if existing_entry and existing_entry.place else None),
+        signature_google_place_id=override_google_place_id,
         api_key=api_key,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
@@ -5195,6 +5201,7 @@ def cache_refresh_reason(
     *,
     city_name: str | None = None,
     country_name: str | None = None,
+    signature_google_place_id: str | None = None,
 ) -> str | None:
     if cache_entry is None:
         return "missing-cache-entry"
@@ -5203,6 +5210,7 @@ def cache_refresh_reason(
         place,
         city_name=city_name,
         country_name=country_name,
+        signature_google_place_id=signature_google_place_id,
     )
     if cache_entry.input_signature != expected_signature:
         return "raw-place-changed"
@@ -5245,6 +5253,7 @@ def enrichment_refresh_reason(
     *,
     city_name: str | None = None,
     country_name: str | None = None,
+    signature_google_place_id: str | None = None,
     force_refresh: bool,
     missing_only: bool,
 ) -> str | None:
@@ -5256,6 +5265,7 @@ def enrichment_refresh_reason(
         cache_entry,
         city_name=city_name,
         country_name=country_name,
+        signature_google_place_id=signature_google_place_id,
     )
     if missing_only and refresh_reason != "missing-cache-entry":
         return None
@@ -5289,6 +5299,7 @@ def enrichment_input_signature(
     *,
     city_name: str | None = None,
     country_name: str | None = None,
+    signature_google_place_id: str | None = None,
 ) -> str:
     payload = {
         "place": structured_place_identity_payload(place)
@@ -5300,6 +5311,7 @@ def enrichment_input_signature(
         },
         "city_name": as_string(city_name),
         "country_name": as_string(country_name),
+        "google_place_id_override": as_string(signature_google_place_id),
         "google_maps_places": google_maps_place_scraper_policy_payload(),
         "search_query_version": 2,
     }
@@ -5354,6 +5366,7 @@ def build_cache_entry(
     query: str,
     city_name: str | None = None,
     country_name: str | None = None,
+    signature_google_place_id: str | None = None,
     matched: bool | None = None,
     score: int | None = None,
     error: str | None = None,
@@ -5370,6 +5383,7 @@ def build_cache_entry(
             place,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
         ),
         matched=matched,
         score=score,
@@ -7066,6 +7080,7 @@ def fetch_places_enrichment(
     city_name: str | None = None,
     country_name: str | None = None,
     google_place_id: str | None = None,
+    signature_google_place_id: str | None = None,
     api_key: str | None,
     strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
     existing_entry: EnrichmentCacheEntry | None = None,
@@ -7080,6 +7095,7 @@ def fetch_places_enrichment(
             city_name=city_name,
             country_name=country_name,
             google_place_id=google_place_id,
+            signature_google_place_id=signature_google_place_id,
             existing_entry=existing_entry,
             suppress_description=suppress_description,
         )
@@ -7093,6 +7109,7 @@ def fetch_places_enrichment(
             place,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             api_key=api_key,
         )
 
@@ -7101,6 +7118,7 @@ def fetch_places_enrichment(
         city_name=city_name,
         country_name=country_name,
         google_place_id=google_place_id,
+        signature_google_place_id=signature_google_place_id,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
     )
@@ -7113,6 +7131,7 @@ def fetch_places_enrichment(
             place,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             api_key=api_key,
         )
         if (
@@ -7134,6 +7153,7 @@ def fetch_place_page_enrichment(
     city_name: str | None = None,
     country_name: str | None = None,
     google_place_id: str | None = None,
+    signature_google_place_id: str | None = None,
     existing_entry: EnrichmentCacheEntry | None = None,
     suppress_description: bool = False,
 ) -> EnrichmentCacheEntry:
@@ -7149,6 +7169,7 @@ def fetch_place_page_enrichment(
             query=query,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             error="gmaps_scraper_unavailable",
         )
 
@@ -7203,6 +7224,7 @@ def fetch_place_page_enrichment(
                 query=query,
                 city_name=city_name,
                 country_name=country_name,
+                signature_google_place_id=signature_google_place_id,
                 matched=True,
                 score=STRONG_MATCH_SCORE,
                 enrichment_place=enrichment_place,
@@ -7266,6 +7288,7 @@ def fetch_place_page_enrichment(
                 query=query,
                 city_name=city_name,
                 country_name=country_name,
+                signature_google_place_id=signature_google_place_id,
                 matched=True,
                 score=STRONG_MATCH_SCORE,
                 enrichment_place=enrichment_place,
@@ -7338,6 +7361,7 @@ def fetch_place_page_enrichment(
                     query=query,
                     city_name=city_name,
                     country_name=country_name,
+                    signature_google_place_id=signature_google_place_id,
                     matched=True,
                     score=STRONG_MATCH_SCORE,
                     enrichment_place=enrichment_place,
@@ -7360,6 +7384,7 @@ def fetch_place_page_enrichment(
                 query=query,
                 city_name=city_name,
                 country_name=country_name,
+                signature_google_place_id=signature_google_place_id,
                 matched=False,
             )
         if last_error is not None:
@@ -7369,6 +7394,7 @@ def fetch_place_page_enrichment(
                 query=query,
                 city_name=city_name,
                 country_name=country_name,
+                signature_google_place_id=signature_google_place_id,
                 error=last_error,
             )
         return build_cache_entry(
@@ -7377,6 +7403,7 @@ def fetch_place_page_enrichment(
             query=query,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             matched=False,
         )
     finally:
@@ -8971,6 +8998,7 @@ def fetch_places_api_enrichment(
     *,
     city_name: str | None = None,
     country_name: str | None = None,
+    signature_google_place_id: str | None = None,
     api_key: str,
 ) -> EnrichmentCacheEntry:
     query = build_place_page_search_query(
@@ -9016,6 +9044,7 @@ def fetch_places_api_enrichment(
             query=query,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             error=f"http_{exc.code}",
             error_body=body[:500],
         )
@@ -9026,6 +9055,7 @@ def fetch_places_api_enrichment(
             query=query,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             error=f"url_error:{exc.reason}",
         )
 
@@ -9037,6 +9067,7 @@ def fetch_places_api_enrichment(
             query=query,
             city_name=city_name,
             country_name=country_name,
+            signature_google_place_id=signature_google_place_id,
             matched=False,
         )
 
@@ -9054,6 +9085,7 @@ def fetch_places_api_enrichment(
         query=query,
         city_name=city_name,
         country_name=country_name,
+        signature_google_place_id=signature_google_place_id,
         matched=best_score >= 25,
         score=best_score,
         enrichment_place=normalize_enrichment_match(best_match) if best_score >= 25 else None,
