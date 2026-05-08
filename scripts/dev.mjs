@@ -72,6 +72,11 @@ const source = portConfig.usingExplicitPort
   : `base ${portConfig.basePort} + offset ${portConfig.offset}`;
 
 console.log(`Starting Astro on port ${portConfig.port} (${source})`);
+if (portConfig.portIsBrowserUnsafe) {
+  console.warn(
+    `Warning: port ${portConfig.port} is blocked by browsers and may fail with ERR_UNSAFE_PORT.`,
+  );
+}
 
 const child = spawn(command, astroArgs, {
   env: childEnv,
