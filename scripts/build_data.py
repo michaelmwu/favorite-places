@@ -7694,6 +7694,11 @@ def place_page_candidate_is_confident_match(
     source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
     if not source_url or "/maps/search/" not in source_url:
         return True
+    if enrichment_place.formatted_address is None:
+        raw_name = normalize_text(raw_place.name)
+        candidate_name = normalize_text(enrichment_place.display_name)
+        if raw_name and candidate_name and raw_name != candidate_name:
+            return False
     return score_place_page_candidate(raw_place, details, enrichment_place) >= 25
 
 
@@ -7884,7 +7889,10 @@ PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS = (
 )
 PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
-PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+PLACE_PAGE_URL_LIKE_RE = re.compile(
+    r"(?:https?://|www\.|/(?:search|maps|url|local)(?:[/?#]|$))",
+    re.IGNORECASE,
+)
 PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
 PLACE_PAGE_REGION_CODE_RE = re.compile(r"[A-Z]{2,3}")
 PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {

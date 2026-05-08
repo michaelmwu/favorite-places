@@ -1848,6 +1848,57 @@ class BuildDataTests(unittest.TestCase):
             "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
         )
 
+    def test_fetch_place_page_enrichment_rejects_search_artifact_partial_name_match(self) -> None:
+        place = RawPlace(
+            name="Sendlinger Tor",
+            address="Sendlinger-Tor-Platz 1, 80336 München, Germany",
+            maps_url=(
+                "https://www.google.com/maps/search/?api=1&query="
+                "Sendlinger+Tor%2C+Sendlinger-Tor-Platz+1%2C+80336+M%C3%BCnchen%2C+Germany"
+            ),
+            lat=48.1340387,
+            lng=11.5676369,
+        )
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url=url,
+                name="Sendlinger-Tor-Platz 1",
+                category="Kebab shop",
+                rating=4.4,
+                review_count=8862,
+                address=(
+                    "/search?sca_esv=6ce6d4092249d8a7&authuser=0&hl=en&gl=tw"
+                    "&output=search&tbm=map&q=Haferkater,+Sendlinger+Tor,+M%C3%BCnchen"
+                    "&ludocid=16588126363784805389"
+                ),
+                located_in=None,
+                status=None,
+                website=None,
+                phone=None,
+                plus_code=None,
+                description="Kreissparkasse München Starnberg Ebersberg - BaufinanzierungsCenter",
+                lat=48.1340387,
+                lng=11.5676369,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertFalse(entry.matched)
+        self.assertIsNone(entry.place)
+
     def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_match_lacks_description(self) -> None:
         place = RawPlace(
             name="Taipei 101",
@@ -2269,6 +2320,26 @@ class BuildDataTests(unittest.TestCase):
             ),
         )
         self.assertIsNone(enrichment.description)
+
+    def test_normalize_place_page_enrichment_rejects_relative_search_address(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor",
+                resolved_url="https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor",
+                name="Sendlinger-Tor-Platz 1",
+                category="Kebab shop",
+                rating=4.4,
+                review_count=8862,
+                address=(
+                    "/search?sca_esv=6ce6d4092249d8a7&authuser=0&hl=en&gl=tw"
+                    "&output=search&tbm=map&q=Haferkater,+Sendlinger+Tor,+M%C3%BCnchen"
+                    "&ludocid=16588126363784805389"
+                ),
+                limited_view=False,
+            )
+        )
+
+        self.assertIsNone(enrichment.formatted_address)
 
     def test_normalize_place_page_enrichment_keeps_description_after_search_resolves_to_place(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(

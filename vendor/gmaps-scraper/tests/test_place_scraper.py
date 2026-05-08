@@ -1034,6 +1034,26 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.address)
 
+    def test_build_place_details_rejects_relative_search_url_addresses(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor",
+            resolved_url="https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor",
+            snapshot={
+                "name": "Sendlinger-Tor-Platz 1",
+                "category": "Kebab shop",
+                "rating": "4.4",
+                "review_count": "8862",
+                "address": (
+                    "/search?sca_esv=6ce6d4092249d8a7&authuser=0&hl=en&gl=tw"
+                    "&output=search&tbm=map&q=Haferkater,+Sendlinger+Tor,+M%C3%BCnchen"
+                    "&ludocid=16588126363784805389"
+                ),
+                "body_text": "Sendlinger-Tor-Platz 1\nKebab shop",
+            },
+        )
+
+        self.assertIsNone(details.address)
+
     def test_build_place_details_accepts_locality_only_address(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Nizami+Street",

@@ -260,7 +260,10 @@ _LOCALITY_ADDRESS_REJECT_VALUES = {
 }
 _ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 _ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
-_URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+_URL_LIKE_PATTERN = re.compile(
+    r"(?:https?://|www\.|/(?:search|maps|url|local)(?:[/?#]|$))",
+    re.IGNORECASE,
+)
 # Locality-only addresses can legitimately contain periods in abbreviations
 # like "St. Louis" or "D.C."; prose with arbitrary periods is rejected later.
 _LOCALITY_ABBREVIATION_PERIOD_PATTERN = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
