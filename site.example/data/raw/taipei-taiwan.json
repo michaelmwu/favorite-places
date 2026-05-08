@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-06T17:00:09.893711+00:00",
-  "refresh_after": "2026-05-18T04:48:28.893711+00:00",
+  "fetched_at": "2026-05-08T03:35:46.044198+00:00",
+  "refresh_after": "2026-05-19T15:24:05.044198+00:00",
   "source_signature": "bd437c23e704220b8d5474599080dd9c862a874ca1b0f3187e5e4782502936a4",
   "configured_source_type": "google_list_url",
   "configured_source_url": "https://maps.app.goo.gl/raNHBHESDS9CsZiL9",
@@ -9,6 +9,14 @@
   "list_id": "_3wTY8A6sXa04MEQSVno6w",
   "title": "Taipei, Taiwan (Example) 🇹🇼",
   "description": null,
+  "owner": {
+    "name": "Example Curator",
+    "photo_url": null,
+    "photo_path": null,
+    "avatar_mode": null,
+    "profile_id": null
+  },
+  "collaborators": [],
   "places": [
     {
       "name": "Wang’s Broth",

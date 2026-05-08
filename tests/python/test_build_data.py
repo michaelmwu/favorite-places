@@ -406,6 +406,8 @@ class BuildDataTests(unittest.TestCase):
     def test_main_treats_enrich_place_as_targeted_refresh(self) -> None:
         with (
             patch.object(sys, "argv", ["build_data.py", "--enrich-place", "cid:123"]),
+            patch.object(build_data, "enrichment_source_refresh_lists", return_value=[]),
+            patch.object(build_data, "refresh_raw_sources") as refresh_raw_sources,
             patch.object(build_data, "sync_local_csv_sources"),
             patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
             patch.object(build_data, "rebuild_generated_data") as rebuild_generated_data,
@@ -413,6 +415,7 @@ class BuildDataTests(unittest.TestCase):
             result = build_data.main()
 
         self.assertEqual(result, 0)
+        refresh_raw_sources.assert_not_called()
         enrich_raw_sources.assert_called_once_with(
             force_refresh=True,
             missing_only=False,
@@ -425,6 +428,53 @@ class BuildDataTests(unittest.TestCase):
             photo_workers=build_data.DEFAULT_REFRESH_WORKERS,
             startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
         )
+
+    def test_main_refreshes_affected_source_before_targeted_enrichment(self) -> None:
+        with (
+            patch.object(sys, "argv", ["build_data.py", "--enrich-place", "guide-slug:tokyo-japan"]),
+            patch.object(build_data, "enrichment_source_refresh_lists", return_value=["tokyo-japan"]),
+            patch.object(build_data, "refresh_raw_sources") as refresh_raw_sources,
+            patch.object(build_data, "sync_local_csv_sources"),
+            patch.object(build_data, "enrich_raw_sources") as enrich_raw_sources,
+            patch.object(build_data, "rebuild_generated_data"),
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_raw_sources.assert_called_once_with(
+            headed=False,
+            force_refresh=True,
+            refresh_lists=["tokyo-japan"],
+            refresh_workers=build_data.DEFAULT_REFRESH_WORKERS,
+            refresh_retries=build_data.DEFAULT_REFRESH_RETRIES,
+            refresh_retry_backoff_seconds=build_data.DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS,
+            refresh_startup_jitter_seconds=build_data.DEFAULT_REFRESH_STARTUP_JITTER_SECONDS,
+        )
+        enrich_raw_sources.assert_called_once()
+
+    def test_main_can_skip_source_refresh_before_targeted_enrichment(self) -> None:
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "build_data.py",
+                    "--skip-enrichment-source-refresh",
+                    "--enrich-place",
+                    "guide-slug:tokyo-japan",
+                ],
+            ),
+            patch.object(build_data, "enrichment_source_refresh_lists") as refresh_lists,
+            patch.object(build_data, "refresh_raw_sources") as refresh_raw_sources,
+            patch.object(build_data, "sync_local_csv_sources"),
+            patch.object(build_data, "enrich_raw_sources"),
+            patch.object(build_data, "rebuild_generated_data"),
+        ):
+            result = build_data.main()
+
+        self.assertEqual(result, 0)
+        refresh_lists.assert_not_called()
+        refresh_raw_sources.assert_not_called()
 
     def test_main_force_semantic_descriptions_runs_cache_only_pass(self) -> None:
         with (
@@ -1369,6 +1419,91 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(entry.place.primary_type_display_name, "Tea house")
         self.assertEqual(entry.place.primary_type_display_name_localized, "茶館")
 
+    def test_fetch_place_page_enrichment_repairs_display_fields_on_sparse_retry(self) -> None:
+        place = RawPlace(
+            name="Tea House",
+            address="Taipei, Taiwan",
+            maps_url="https://www.google.com/maps/place/Tea+House",
+        )
+        repairer = object()
+        first = SimpleNamespace(
+            source_url=place.maps_url,
+            resolved_url=place.maps_url,
+            name="Tea House",
+            category="Cafe",
+            rating=None,
+            review_count=None,
+            address="Taipei, Taiwan",
+            status=None,
+            website=None,
+            phone=None,
+            plus_code=None,
+            description=None,
+            limited_view=True,
+        )
+        retry = SimpleNamespace(
+            source_url=place.maps_url,
+            resolved_url="https://www.google.com/maps/place/Tea+House/@25.1,121.5,17z",
+            name="Tea House",
+            category="茶館",
+            rating=4.5,
+            review_count=110,
+            address="No. 12號, Songgao Rd, Xinyi District, Taipei City",
+            status=None,
+            website="https://tea.example/",
+            phone=None,
+            plus_code=None,
+            description=None,
+            limited_view=False,
+        )
+
+        def fake_repair_place_display_fields(
+            details: SimpleNamespace,
+            *,
+            repairer: object,
+            evidence: dict[str, object],
+        ) -> SimpleNamespace:
+            details.category_display_en = "Tea house"
+            details.category_display_en_source = "llm"
+            details.category_display_en_confidence = "high"
+            details.address_display_en = "No. 12, Songgao Rd, Xinyi District, Taipei City"
+            details.address_display_en_source = "llm"
+            details.address_display_en_confidence = "high"
+            return details
+
+        with (
+            patch.object(build_data, "google_maps_place_llm_repair_mode", return_value="dom_then_translation"),
+            patch.object(build_data, "build_place_llm_repairer", return_value=repairer),
+            patch.object(build_data, "needs_display_en", side_effect=lambda value: "號" in (value or "")),
+            patch.object(
+                build_data,
+                "repair_place_display_fields",
+                side_effect=fake_repair_place_display_fields,
+            ) as repair_display,
+            patch.object(build_data, "scrape_place", side_effect=[first, retry]),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "clear_scraper_session_state"),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            )
+
+        repair_display.assert_called_once()
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.address_display_en, "No. 12, Songgao Rd, Xinyi District, Taipei City")
+        self.assertEqual(entry.place.primary_type_display_name, "Tea house")
+        self.assertEqual(entry.place.primary_type_display_name_localized, "茶館")
+
     def test_fetch_place_page_enrichment_reuses_previous_display_fields(self) -> None:
         place = RawPlace(
             name="Tea House",
@@ -1713,6 +1848,394 @@ class BuildDataTests(unittest.TestCase):
             "38C5+F57 - Wadi Al Safa 4 - Dubai - United Arab Emirates",
         )
 
+    def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_match_lacks_description(self) -> None:
+        place = RawPlace(
+            name="Taipei 101",
+            address="Taipei, Taiwan",
+            maps_url="https://www.google.com/maps/place/Taipei+101/@25.0341222,121.5640212,17z",
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            if "/maps/search/" in url:
+                return SimpleNamespace(
+                    source_url=url,
+                    resolved_url="https://www.google.com/maps/place/Taipei+101/@25.0341222,121.5640212,17z",
+                    name="Taipei 101",
+                    category="Shopping center",
+                    rating=4.4,
+                    review_count=37946,
+                    address="No. 45, City Hall Rd, Taipei City, Taiwan 110",
+                    located_in=None,
+                    status=None,
+                    website="https://www.taipei-101.com.tw/",
+                    phone="+886 2 8101 8899",
+                    plus_code=None,
+                    description=None,
+                    lat=25.0341222,
+                    lng=121.5640212,
+                    limited_view=False,
+                )
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url="https://www.google.com/maps/place/Taipei+101/@25.0341222,121.5640212,17z",
+                name="Taipei 101",
+                category="Shopping center",
+                rating=4.4,
+                review_count=37946,
+                address="No. 45, City Hall Rd, Taipei City, Taiwan 110",
+                located_in=None,
+                status=None,
+                website="https://www.taipei-101.com.tw/",
+                phone="+886 2 8101 8899",
+                plus_code=None,
+                description="Iconic skyscraper with shopping, dining, and an observatory on the 89th floor.",
+                lat=25.0341222,
+                lng=121.5640212,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                google_place_id="ChIJraeA2rarQjQRPBBjyR3RxKw",
+            )
+
+        self.assertEqual(
+            called_urls,
+            [
+                "https://www.google.com/maps/search/?api=1&query=Taipei+101%2C+Taipei%2C+Taiwan&query_place_id=ChIJraeA2rarQjQRPBBjyR3RxKw&hl=en&gl=us",
+                "https://www.google.com/maps/place/Taipei+101/@25.0341222,121.5640212,17z?hl=en&gl=us",
+            ],
+        )
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(
+            entry.place.description,
+            "Iconic skyscraper with shopping, dining, and an observatory on the 89th floor.",
+        )
+
+    def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_page_stays_search_and_lacks_description(self) -> None:
+        place = RawPlace(
+            name="Taipei Zoo",
+            address="Taipei, Taiwan",
+            maps_url="https://www.google.com/maps/place/Taipei+Zoo/@24.9982415,121.5807219,17z",
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            if len(called_urls) == 1:
+                return SimpleNamespace(
+                    source_url=url,
+                    resolved_url=url,
+                    name="Taipei Zoo",
+                    category="Zoo",
+                    rating=4.6,
+                    review_count=76998,
+                    address="No. 30號, Section 2, Xinguang Rd",
+                    located_in=None,
+                    status=None,
+                    website="https://www.zoo.gov.taipei/",
+                    phone="02 2938 2300",
+                    plus_code="XHXJ+C9 Wanxing Village, Wenshan District, Taipei City",
+                    description=None,
+                    lat=24.9982415,
+                    lng=121.5807219,
+                    limited_view=False,
+                )
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url="https://www.google.com/maps/place/Taipei+Zoo/@24.9982415,121.5807219,17z",
+                name="Taipei Zoo",
+                category="Zoo",
+                rating=4.6,
+                review_count=76998,
+                address="No. 30號, Section 2, Xinguang Rd, Wanxing Village, Wenshan District, Taipei City, 116",
+                located_in=None,
+                status=None,
+                website="https://www.zoo.gov.taipei/",
+                phone="02 2938 2300",
+                plus_code="XHXJ+C9 Wanxing Village, Wenshan District, Taipei City",
+                description="Large indoor-outdoor zoo in a scenic setting with a children’s area, gondola & shuttle train.",
+                lat=24.9982415,
+                lng=121.5807219,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                google_place_id="ChIJj4EySmCqQjQRZte0Cf0G_qo",
+            )
+
+        self.assertEqual(
+            called_urls,
+            [
+                "https://www.google.com/maps/search/?api=1&query=Taipei+Zoo%2C+Taipei%2C+Taiwan&query_place_id=ChIJj4EySmCqQjQRZte0Cf0G_qo&hl=en&gl=us",
+                "https://www.google.com/maps/place/Taipei+Zoo/@24.9982415,121.5807219,17z?hl=en&gl=us",
+            ],
+        )
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(
+            entry.place.description,
+            "Large indoor-outdoor zoo in a scenic setting with a children’s area, gondola & shuttle train.",
+        )
+
+    def test_fetch_place_page_enrichment_retries_captured_search_result_url_when_clickthrough_is_thin(self) -> None:
+        place = RawPlace(
+            name="Taipei Zoo",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Taipei+Zoo",
+        )
+        called_urls: list[str] = []
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            called_urls.append(url)
+            if len(called_urls) == 1:
+                return SimpleNamespace(
+                    source_url=url,
+                    resolved_url=url,
+                    name="Taipei Zoo",
+                    category="Zoo",
+                    rating=4.6,
+                    review_count=76998,
+                    address="No. 30號, Section 2, Xinguang Rd",
+                    status=None,
+                    website="https://www.zoo.gov.taipei/",
+                    phone="02 2938 2300",
+                    plus_code="XHXJ+C9 Wanxing Village, Wenshan District, Taipei City",
+                    description=None,
+                    search_result_description="Sizable zoo with a gondola & kids' area",
+                    search_result_url="https://www.google.com/maps/place/Taipei+Zoo/data=!4m7!3m6",
+                    lat=24.9985635,
+                    lng=121.5809857,
+                    limited_view=False,
+                )
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url=url,
+                name="Taipei Zoo",
+                category="Zoo",
+                rating=4.6,
+                review_count=76998,
+                address="No. 30號, Section 2, Xinguang Rd, Wanxing Village, Wenshan District, Taipei City, 116",
+                status=None,
+                website="https://www.zoo.gov.taipei/",
+                phone="02 2938 2300",
+                plus_code="XHXJ+C9 Wanxing Village, Wenshan District, Taipei City",
+                description="Large indoor-outdoor zoo in a scenic setting with a children’s area, gondola & shuttle train.",
+                lat=24.9985635,
+                lng=121.5809857,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(
+                place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            )
+
+        self.assertEqual(
+            called_urls,
+            [
+                "https://www.google.com/maps/search/?api=1&query=Taipei+Zoo%2C+Taipei%2C+Taiwan&hl=en&gl=us",
+                "https://www.google.com/maps/place/Taipei+Zoo/data=!4m7!3m6?hl=en&gl=us",
+            ],
+        )
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(
+            entry.place.description,
+            "Large indoor-outdoor zoo in a scenic setting with a children’s area, gondola & shuttle train.",
+        )
+
+    def test_fetch_place_page_enrichment_retries_limited_view_without_review_count_after_candidate_queue(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            maps_url="https://www.google.com/maps/place/Cantina+OK!",
+        )
+        scrape_urls = ["https://example.com/first", "https://example.com/second"]
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(
+            scrape_url: str,
+            *,
+            headless: bool,
+            browser_session: object,
+            http_session: object,
+            llm_fallback: object,
+            llm_tasks: tuple[str, ...],
+            collect_reviews: bool,
+            collect_about: bool,
+        ) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            if len(scrape_attempts) <= len(scrape_urls):
+                return SimpleNamespace(
+                    source_url=scrape_url,
+                    resolved_url=scrape_url,
+                    name="Cantina OK!",
+                    category="Cocktail bar",
+                    address="Council Pl, Sydney NSW 2000, Australia",
+                    limited_view=True,
+                )
+            return SimpleNamespace(
+                source_url=scrape_url,
+                resolved_url=scrape_url,
+                name="Cantina OK!",
+                category="Cocktail bar",
+                address="Council Pl, Sydney NSW 2000, Australia",
+                rating=4.8,
+                review_count=512,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_place_page_candidate_urls", return_value=scrape_urls),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state") as clear_session,
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(
+            scrape_attempts,
+            ["https://example.com/first", "https://example.com/second", "https://example.com/first"],
+        )
+        clear_session.assert_called_once()
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.user_rating_count, 512)
+
+    def test_fetch_place_page_enrichment_returns_sparse_limited_view_when_retry_stays_sparse(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            maps_url="https://www.google.com/maps/place/Cantina+OK!",
+        )
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(scrape_url: str, **_: object) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            return SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK",
+                resolved_url=scrape_url,
+                name="Cantina OK!",
+                category="Cocktail bar",
+                address="Council Pl, Sydney NSW 2000, Australia",
+                rating=4.4,
+                limited_view=True,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_place_page_candidate_urls", return_value=["https://example.com/first"]),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state"),
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(scrape_attempts, ["https://example.com/first", "https://example.com/first"])
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.display_name, "Cantina OK!")
+        self.assertEqual(entry.place.rating, 4.4)
+        self.assertIsNone(entry.place.user_rating_count)
+        self.assertTrue(entry.place.limited_view)
+        self.assertTrue(build_data.should_fallback_to_places_api(entry))
+
+    def test_fetch_place_page_enrichment_rejects_wrong_sparse_search_result(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK",
+        )
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(scrape_url: str, **_: object) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            return SimpleNamespace(
+                source_url="https://www.google.com/maps/search/?api=1&query=Cantina+OK",
+                resolved_url=scrape_url,
+                name="Wrong Cafe",
+                category="Cafe",
+                address=None,
+                rating=4.4,
+                limited_view=True,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_place_page_candidate_urls", return_value=["https://example.com/search"]),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state") as clear_session,
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(scrape_attempts, ["https://example.com/search"])
+        clear_session.assert_not_called()
+        self.assertFalse(entry.matched)
+        self.assertIsNone(entry.place)
+        self.assertIsNone(entry.error)
+
+    def test_place_page_has_meaningful_enrichment_rejects_limited_view_without_review_count(self) -> None:
+        details = SimpleNamespace(limited_view=True)
+        enrichment_place = EnrichmentPlace(
+            display_name="Bianchetto",
+            formatted_address="26-28 Cotham Rd, Kew VIC 3101, Australia",
+            primary_type_display_name="Bar",
+            rating=4.4,
+        )
+
+        self.assertTrue(build_data.should_retry_limited_place_page_result(details, enrichment_place))
+        self.assertFalse(build_data.place_page_has_meaningful_enrichment(details, enrichment_place))
+
     def test_normalize_place_page_enrichment_prefers_stable_search_source_url(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -1721,8 +2244,8 @@ class BuildDataTests(unittest.TestCase):
                     "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
                 ),
                 resolved_url=(
-                    "https://www.google.com/maps/place/Sister+Midnight/"
-                    "@48.8814703,2.340862,17z/data=!3m1!4b1"
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Sister+Midnight%2C+4+Rue+Viollet-le-Duc%2C+75009+Paris%2C+France"
                 ),
                 name="Sister Midnight",
                 category="Cocktail bar",
@@ -1746,6 +2269,75 @@ class BuildDataTests(unittest.TestCase):
             ),
         )
         self.assertIsNone(enrichment.description)
+
+    def test_normalize_place_page_enrichment_keeps_description_after_search_resolves_to_place(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url=(
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Taipei+101%2C+Taipei%2C+Taiwan&query_place_id=ChIJraeA2rarQjQRPBBjyR3RxKw"
+                ),
+                resolved_url=(
+                    "https://www.google.com/maps/place/Taipei+101/"
+                    "@25.0341222,121.5640212,17z/data=!3m1!4b1"
+                ),
+                name="Taipei 101",
+                category="Shopping center",
+                rating=4.4,
+                review_count=37946,
+                address="No. 45, City Hall Rd, Xinyi District, Taipei City, Taiwan 110",
+                website="https://www.taipei-101.com.tw/",
+                phone="02 8101 8899",
+                plus_code=None,
+                description="Iconic skyscraper with shopping, dining, and an observatory on the 89th floor.",
+                limited_view=False,
+                status=None,
+            )
+        )
+
+        self.assertEqual(
+            enrichment.google_maps_uri,
+            (
+                "https://www.google.com/maps/search/?api=1&query="
+                "Taipei+101%2C+Taipei%2C+Taiwan&query_place_id=ChIJraeA2rarQjQRPBBjyR3RxKw"
+            ),
+        )
+        self.assertEqual(
+            enrichment.description,
+            "Iconic skyscraper with shopping, dining, and an observatory on the 89th floor.",
+        )
+
+    def test_normalize_place_page_enrichment_keeps_search_result_description_separate(self) -> None:
+        enrichment = build_data.normalize_place_page_enrichment(
+            SimpleNamespace(
+                source_url=(
+                    "https://www.google.com/maps/search/?api=1&query="
+                    "Taipei+Zoo%2C+Taipei%2C+Taiwan"
+                ),
+                resolved_url="https://www.google.com/maps/place/Taipei+Zoo/@24.9982415,121.5807219,17z",
+                name="Taipei Zoo",
+                category="Zoo",
+                rating=4.6,
+                review_count=76998,
+                address="No. 30號, Section 2, Xinguang Rd, Taipei City",
+                website="https://www.zoo.gov.taipei/",
+                phone="02 2938 2300",
+                plus_code=None,
+                description="Large indoor-outdoor zoo in a scenic setting with a children's area.",
+                search_result_description="Sizable zoo with a gondola & kids' area",
+                limited_view=False,
+                status=None,
+            )
+        )
+
+        self.assertEqual(
+            enrichment.description,
+            "Large indoor-outdoor zoo in a scenic setting with a children's area.",
+        )
+        self.assertEqual(
+            enrichment.search_result_description,
+            "Sizable zoo with a gondola & kids' area",
+        )
 
     def test_normalize_place_page_enrichment_carries_photo_urls(self) -> None:
         enrichment = build_data.normalize_place_page_enrichment(
@@ -2850,7 +3442,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("specialty", first_place.tags)
         self.assertIn("tokyo", first_place.tags)
         self.assertEqual(first_place.provenance.name.source, "google_list")
-        self.assertEqual(first_place.provenance.address.source, "google_list")
+        self.assertEqual(first_place.provenance.address.source, "google_places")
         self.assertEqual(first_place.provenance.maps_url.source, "google_places")
         self.assertEqual(first_place.provenance.primary_category.source, "manual")
         self.assertEqual(first_place.provenance.note.source, "manual")
@@ -2901,6 +3493,132 @@ class BuildDataTests(unittest.TestCase):
             with patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir):
                 with self.assertRaisesRegex(ValueError, "use 'note' for handwritten recommendation copy"):
                     build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+    def test_normalize_guide_combines_google_description_and_saved_note_without_semantic_description(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="Taipei Zoo",
+                    note="Go early for the panda house.",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Taipei Zoo, Taipei, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Taipei Zoo",
+                    description="Large indoor-outdoor zoo in a scenic setting with a children's area.",
+                    semantic_description="A semantic description should be ignored when disabled.",
+                ),
+            )
+        }
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+        ):
+            guide = build_data.normalize_guide(
+                "taipei-taiwan",
+                raw,
+                enrichment_cache=enrichment_cache,
+            )
+
+        self.assertEqual(
+            guide.places[0].why_recommended,
+            "Large indoor-outdoor zoo in a scenic setting with a children's area.\n\n"
+            "Go early for the panda house.",
+        )
+
+    def test_normalize_guide_uses_semantic_description_before_google_description_and_saved_note(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="Taipei Zoo",
+                    note="Go early for the panda house.",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Taipei Zoo, Taipei, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Taipei Zoo",
+                    description="Large indoor-outdoor zoo in a scenic setting with a children's area.",
+                    semantic_description="A concise LLM description grounded in the zoo summary and panda note.",
+                ),
+            )
+        }
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=True),
+        ):
+            guide = build_data.normalize_guide(
+                "taipei-taiwan",
+                raw,
+                enrichment_cache=enrichment_cache,
+            )
+
+        self.assertEqual(
+            guide.places[0].why_recommended,
+            "A concise LLM description grounded in the zoo summary and panda note.",
+        )
+
+    def test_normalize_guide_uses_search_result_description_when_full_description_missing(self) -> None:
+        raw = RawSavedList(
+            title="Taipei, Taiwan",
+            places=[
+                RawPlace(
+                    name="Taipei Zoo",
+                    note="Go early for the panda house.",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Taipei Zoo, Taipei, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Taipei Zoo",
+                    search_result_description="Sizable zoo with a gondola & kids' area",
+                ),
+            )
+        }
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+        ):
+            guide = build_data.normalize_guide(
+                "taipei-taiwan",
+                raw,
+                enrichment_cache=enrichment_cache,
+            )
+
+        self.assertEqual(
+            guide.places[0].why_recommended,
+            "Sizable zoo with a gondola & kids' area\n\nGo early for the panda house.",
+        )
 
     def test_normalize_guide_prefers_display_address_over_raw_saved_list_address(self) -> None:
         raw = RawSavedList(
@@ -2953,6 +3671,59 @@ class BuildDataTests(unittest.TestCase):
         assert guide.places[0].provenance.address is not None
         self.assertEqual(guide.places[0].provenance.address.source, "google_maps_page")
         self.assertIn("No.+12%2C+Songgao+Rd", guide.places[0].maps_url)
+
+    def test_normalize_guide_prefers_enriched_formatted_address_over_raw_address(self) -> None:
+        raw = RawSavedList(
+            title="Yilan, Taiwan",
+            places=[
+                RawPlace(
+                    name="Coming Home Bar",
+                    address="260, Taiwan, Yilan County, Yilan City, Nongquan Rd, 110號1F",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Coming Home Bar, Yilan, Taiwan",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Coming Home Bar",
+                    formatted_address=(
+                        "260, Taiwan, Yilan County, Yilan City, "
+                        "Minquan Village, Nongquan Rd, 110號1F"
+                    ),
+                ),
+            )
+        }
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            list_overrides_dir = tmpdir_path / "lists"
+            place_overrides_dir = tmpdir_path / "places"
+            list_overrides_dir.mkdir()
+            place_overrides_dir.mkdir()
+            with (
+                patch.object(build_data, "LIST_OVERRIDES_DIR", list_overrides_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", place_overrides_dir),
+            ):
+                guide = build_data.normalize_guide(
+                    "yilan-taiwan",
+                    raw,
+                    enrichment_cache=enrichment_cache,
+                )
+
+        self.assertEqual(
+            guide.places[0].address,
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+        self.assertIsNotNone(guide.places[0].provenance.address)
+        assert guide.places[0].provenance.address is not None
+        self.assertEqual(guide.places[0].provenance.address.source, "google_maps_page")
 
     def test_place_vibe_tags_can_be_manually_overridden(self) -> None:
         raw = RawSavedList(
@@ -3622,6 +4393,84 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.semantic_types, ["specialty-cafe"])
         self.assertEqual(enrichment.semantic_source, "llm")
 
+    def test_normalize_semantic_neighborhood_display_cases_slug_outputs(self) -> None:
+        cases = {
+            "perth-cbd": "Perth CBD",
+            "perth_cbd": "Perth CBD",
+            "margaret-river": "Margaret River",
+            "northbridge": "Northbridge",
+            "PERTH CBD": "Perth CBD",
+            "CBD": "CBD",
+            "da-an": "Da'an",
+        }
+        for value, expected in cases.items():
+            with self.subTest(value=value):
+                self.assertEqual(
+                    build_data.normalize_semantic_neighborhood_label(
+                        value,
+                        city_name="Perth",
+                        country_name="Australia",
+                    ),
+                    expected,
+                )
+
+    def test_refine_semantic_neighborhood_prefers_address_candidate_casing(self) -> None:
+        self.assertEqual(
+            build_data.refine_semantic_neighborhood_with_address_localities(
+                "perth-cbd",
+                ["Perth CBD"],
+            ),
+            "Perth CBD",
+        )
+        self.assertEqual(
+            build_data.refine_semantic_neighborhood_with_address_localities(
+                "phố cổ hà nội",
+                ["Phố cổ Hà Nội"],
+            ),
+            "Phố cổ Hà Nội",
+        )
+
+    def test_apply_semantic_enrichment_display_cases_llm_neighborhood_slug(self) -> None:
+        enrichment = EnrichmentPlace(
+            display_name="Wine Bar",
+            formatted_address="Perth CBD, Perth WA, Australia",
+            primary_type_display_name="Wine bar",
+        )
+        raw_place = RawPlace(name="Wine Bar", maps_url="https://maps.example/wine")
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=False),
+            patch.object(
+                build_data,
+                "repair_semantic_enrichment_with_llm",
+                return_value={
+                    "neighborhood": "perth-cbd",
+                    "tags": ["wine-bar"],
+                    "vibe_tags": ["date-night"],
+                    "types": ["bar"],
+                },
+            ),
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Perth",
+                country_name="Australia",
+            )
+
+        self.assertEqual(enrichment.semantic_neighborhood, "Perth CBD")
+
+    def test_normalize_semantic_tag_list_drops_noise_tags(self) -> None:
+        self.assertEqual(
+            build_data.normalize_semantic_tag_list(
+                ["scallion pancake", "q", "蔥油餅", "street food"],
+                limit=8,
+            ),
+            ["scallion-pancake", "street-food"],
+        )
+
     def test_apply_semantic_enrichment_reuses_description_when_signature_matches(self) -> None:
         raw_place = RawPlace(
             name="Tea House",
@@ -3940,13 +4789,67 @@ class BuildDataTests(unittest.TestCase):
             ),
         )
 
+    def test_semantic_description_signature_changes_when_google_description_changes(self) -> None:
+        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+        first = EnrichmentPlace(
+            display_name="Tea House",
+            description="Polished tea room with quiet seating and house oolong.",
+            review_topics=[{"label": "oolong", "count": 12}],
+        )
+        second = first.model_copy(deep=True)
+        second.description = "Compact tea counter known for fast tastings."
+
+        self.assertNotEqual(
+            build_data.semantic_description_signature(
+                first,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            ),
+            build_data.semantic_description_signature(
+                second,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            ),
+        )
+
+    def test_semantic_description_signature_changes_when_search_result_description_changes(self) -> None:
+        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+        first = EnrichmentPlace(
+            display_name="Tea House",
+            search_result_description="Quiet tea room near the station.",
+            review_topics=[{"label": "oolong", "count": 12}],
+        )
+        second = first.model_copy(deep=True)
+        second.search_result_description = "Fast tea counter near the station."
+
+        self.assertNotEqual(
+            build_data.semantic_description_signature(
+                first,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            ),
+            build_data.semantic_description_signature(
+                second,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+            ),
+        )
+
     def test_semantic_enrichment_evidence_includes_raw_note_only_for_descriptions(self) -> None:
         raw_place = RawPlace(
             name="Tea House",
             note="Order the house oolong and stay for a quiet reset.",
             maps_url="https://maps.example/tea",
         )
-        enrichment = EnrichmentPlace(display_name="Tea House")
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            description="Polished tea room with quiet seating and house oolong.",
+            search_result_description="Quiet tea room near the station.",
+        )
 
         description_evidence = build_data.semantic_enrichment_evidence(
             enrichment,
@@ -3966,6 +4869,22 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             description_evidence["raw_note"],
             "Order the house oolong and stay for a quiet reset.",
+        )
+        self.assertEqual(
+            description_evidence["google_maps_description"],
+            "Polished tea room with quiet seating and house oolong.",
+        )
+        self.assertEqual(
+            semantic_only_evidence["google_maps_description"],
+            "Polished tea room with quiet seating and house oolong.",
+        )
+        self.assertEqual(
+            description_evidence["search_result_description"],
+            "Quiet tea room near the station.",
+        )
+        self.assertEqual(
+            semantic_only_evidence["search_result_description"],
+            "Quiet tea room near the station.",
         )
         self.assertNotIn("raw_note", semantic_only_evidence)
 
@@ -4074,6 +4993,40 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.display_name)
         self.assertEqual(place.primary_type_display_name, "Zoo")
         self.assertEqual(place.formatted_address, "No. 30號, Section 2, Xinguang Rd")
+
+    def test_normalize_guide_display_address_formats_taiwan_postal_prefix(self) -> None:
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "260, Taiwan, Yilan County, Yilan City, Minquan Village, Nongquan Rd, 110號1F",
+                country_name="Taiwan",
+            ),
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+
+    def test_normalize_guide_display_address_formats_localized_taiwan_postal_prefix(self) -> None:
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "260, 台灣, Yilan County, Yilan City, Minquan Village, Nongquan Rd, 110號1F",
+                country_name="Taiwan",
+            ),
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "260, 台湾, Yilan County, Yilan City, Minquan Village, Nongquan Rd, 110號1F",
+                country_name="Taiwan",
+            ),
+            "No. 110, 1F, Nongquan Rd, Minquan Village, Yilan City, Yilan County, Taiwan 260",
+        )
+
+    def test_normalize_guide_display_address_collapses_taiwan_duplicate_number(self) -> None:
+        self.assertEqual(
+            build_data.normalize_guide_display_address(
+                "No. 6 No. 6號, Lane 47, Section 3, Dafu Rd, Zhuangwei Township, Yilan County, 263",
+                country_name="Taiwan",
+            ),
+            "No. 6, Lane 47, Section 3, Dafu Rd, Zhuangwei Township, Yilan County, 263",
+        )
 
     def test_normalize_place_page_enrichment_sanitizes_suspicious_addresses(self) -> None:
         chrome = build_data.normalize_place_page_enrichment(
@@ -5867,6 +6820,7 @@ class BuildDataTests(unittest.TestCase):
             city_name=None,
             country_name=None,
             google_place_id=None,
+            signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
         )
@@ -5910,6 +6864,7 @@ class BuildDataTests(unittest.TestCase):
             place,
             city_name=None,
             country_name=None,
+            signature_google_place_id=None,
             api_key="test-key",
         )
         self.assertIs(entry, api_entry)
@@ -5953,6 +6908,8 @@ class BuildDataTests(unittest.TestCase):
                 formatted_address="Tokyo, Japan",
                 google_maps_uri=place.maps_url,
                 limited_view=True,
+                description="A polished kaiseki counter with seasonal menus.",
+                about_sections=[{"title": "Amenities", "items": [{"label": "Restroom"}]}],
             ),
         )
         api_entry = EnrichmentCacheEntry(
@@ -5986,6 +6943,7 @@ class BuildDataTests(unittest.TestCase):
             city_name=None,
             country_name=None,
             google_place_id=None,
+            signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
         )
@@ -5993,9 +6951,20 @@ class BuildDataTests(unittest.TestCase):
             place,
             city_name=None,
             country_name=None,
+            signature_google_place_id=None,
             api_key="test-key",
         )
         self.assertIs(entry, api_entry)
+        assert entry.place is not None
+        self.assertEqual(
+            entry.place.description,
+            "A polished kaiseki counter with seasonal menus.",
+        )
+        self.assertEqual(
+            entry.place.about_sections,
+            [{"title": "Amenities", "items": [{"label": "Restroom"}]}],
+        )
+        self.assertEqual(entry.place.google_maps_uri, "https://maps.google.com/?cid=1")
 
     def test_fetch_places_enrichment_keeps_page_result_when_api_fallback_fails(self) -> None:
         place = RawPlace(
@@ -6041,6 +7010,7 @@ class BuildDataTests(unittest.TestCase):
             city_name=None,
             country_name=None,
             google_place_id=None,
+            signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
         )
@@ -6048,6 +7018,7 @@ class BuildDataTests(unittest.TestCase):
             place,
             city_name=None,
             country_name=None,
+            signature_google_place_id=None,
             api_key="test-key",
         )
         self.assertIs(entry, page_entry)
@@ -6595,6 +7566,85 @@ class BuildDataTests(unittest.TestCase):
                 seen_reasons,
                 ["missing-cache-entry", "refresh-window-expired"],
             )
+
+    def test_enrich_raw_sources_refreshes_when_google_place_id_override_changes(self) -> None:
+        place = RawPlace(
+            name="Taipei 101",
+            maps_url="https://maps.google.com/?cid=3765761221328423815",
+            cid="3765761221328423815",
+        )
+        raw = RawSavedList(title="Taipei, Taiwan", places=[place])
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            overrides_dir = tmpdir_path / "overrides" / "places"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir(parents=True)
+            overrides_dir.mkdir(parents=True)
+            cache_dir.mkdir()
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (overrides_dir / "taipei-taiwan.json").write_text(
+                json.dumps(
+                    {
+                        "cid:3765761221328423815": {
+                            "google_place_id": "ChIJraeA2rarQjQRPBBjyR3RxKw",
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            stale_signature_entry = EnrichmentCacheEntry(
+                fetched_at="2026-05-01T00:00:00+00:00",
+                refresh_after="2099-01-01T00:00:00+00:00",
+                source="google_maps_page",
+                query="Taipei 101, Taipei, Taiwan",
+                input_signature=build_data.enrichment_input_signature(
+                    place,
+                    city_name="Taipei",
+                    country_name="Taiwan",
+                ),
+                matched=True,
+                score=build_data.STRONG_MATCH_SCORE,
+                place=EnrichmentPlace(display_name="Taipei 101"),
+            )
+
+            seen_reasons: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, _place_name, refresh_reason, _place_payload, **_kwargs):
+                seen_reasons.append(refresh_reason)
+                return stale_signature_entry
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+            ):
+                build_data.save_places_cache("taipei-taiwan", {"cid:3765761221328423815": stale_signature_entry})
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.enrich_raw_sources(
+                    force_refresh=False,
+                    missing_only=False,
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+
+        self.assertEqual(seen_reasons, ["raw-place-changed"])
 
     def test_enrich_raw_sources_filters_to_selected_place(self) -> None:
         raw = RawSavedList(
@@ -7950,6 +9000,68 @@ class BuildDataTests(unittest.TestCase):
                 )
 
         self.assertTrue(fetch_enrichment.call_args.kwargs["suppress_description"])
+
+    def test_enrich_place_job_uses_override_google_place_id(self) -> None:
+        entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Taipei 101, Taipei",
+            matched=True,
+            place=EnrichmentPlace(display_name="Taipei 101"),
+        )
+        previous_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-19T00:00:00+00:00",
+            query="Taipei 101, Taipei",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Taipei 101 Offices",
+                google_place_id="stale-place-id",
+            ),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            overrides_dir = tmpdir_path / "overrides" / "places"
+            overrides_dir.mkdir(parents=True)
+            (overrides_dir / "taipei-taiwan.json").write_text(
+                json.dumps(
+                    {
+                        "cid:3765761221328423815": {
+                            "google_place_id": "ChIJraeA2rarQjQRPBBjyR3RxKw",
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "PLACE_OVERRIDES_DIR", overrides_dir),
+                patch.object(build_data, "sleep_for_refresh_startup_jitter"),
+                patch.object(build_data, "fetch_places_enrichment", return_value=entry) as fetch_enrichment,
+                patch("builtins.print"),
+            ):
+                build_data.enrich_place_job(
+                    "taipei-taiwan",
+                    "cid:3765761221328423815",
+                    "Taipei 101",
+                    "forced",
+                    {
+                        "name": "Taipei 101",
+                        "address": "No. 45, City Hall Rd, Taipei",
+                        "maps_url": "https://www.google.com/maps?cid=3765761221328423815",
+                        "cid": "3765761221328423815",
+                    },
+                    city_name="Taipei",
+                    country_name="Taiwan",
+                    api_key=None,
+                    refresh_startup_jitter_seconds=0,
+                    existing_entry=previous_entry,
+                )
+
+        self.assertEqual(
+            fetch_enrichment.call_args.kwargs["google_place_id"],
+            "ChIJraeA2rarQjQRPBBjyR3RxKw",
+        )
 
     def test_enrich_place_job_preserves_previous_entry_when_refresh_degrades_to_error(self) -> None:
         previous_entry = EnrichmentCacheEntry(

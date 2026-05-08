@@ -13,10 +13,12 @@ from gmaps_scraper.models import (
 )
 from gmaps_scraper.place_scraper import (
     _PLACE_ABOUT_TAB_CLICK_JS,
+    _PLACE_DETAIL_READY_JS,
     _PLACE_JS_EXTRACTOR,
     _PLACE_REVIEW_TAB_CLICK_JS,
     _PLACE_REVIEW_TOPIC_JS,
     _PLACE_SEARCH_RESULT_CLICK_JS,
+    _PLACE_SEARCH_RESULT_OPEN_JS,
     _build_place_details,
     _build_place_details_from_snapshot,
     _build_place_diagnostics,
@@ -50,7 +52,6 @@ from gmaps_scraper.place_scraper import (
     _search_result_candidate_url,
     _seed_google_consent_cookies,
     _should_use_llm_repair,
-    _with_google_maps_locale,
     collect_place_snapshot,
     scrape_places,
 )
@@ -620,6 +621,14 @@ class PlaceScraperTests(unittest.TestCase):
             "new URL(hrefValue, window.location.href).href",
             _PLACE_SEARCH_RESULT_CLICK_JS,
         )
+        self.assertIn("searchResultTitleLabels", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertIn("parseCardReviewCount", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertIn("getBoundingClientRect()", _PLACE_SEARCH_RESULT_OPEN_JS)
+        self.assertIn("const placePanelRoot = () => {", _PLACE_JS_EXTRACTOR)
+        self.assertIn("visibleArea", _PLACE_JS_EXTRACTOR)
+        self.assertIn("articleCount >= 2", _PLACE_JS_EXTRACTOR)
+        self.assertIn("searchResultTitleLabels", _PLACE_DETAIL_READY_JS)
+        self.assertIn("placePanelRoot", _PLACE_REVIEW_TAB_CLICK_JS)
         self.assertIn("const detailsBoundaryTop = () => {", _PLACE_JS_EXTRACTOR)
         self.assertIn('structural_offer_kind: structuralOffers.kind,', _PLACE_JS_EXTRACTOR)
         self.assertIn(
@@ -842,6 +851,103 @@ class PlaceScraperTests(unittest.TestCase):
         assert details.diagnostics is not None
         self.assertFalse(details.diagnostics.llm_used)
         self.assertEqual(details.diagnostics.repair_source, "cache")
+
+    def test_build_place_details_backfills_from_search_result_card(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/place/Pooles+Temple",
+                "dom": {
+                    "name": "Pooles Temple",
+                    "category": "Event venue",
+                    "rating": "4.6",
+                    "address": "Hay St &, Cathedral Ave",
+                },
+                "search_result": {
+                    "name": "Pooles Temple",
+                    "rating": "4.6",
+                    "review_count": "16",
+                    "category": "Event venue",
+                    "address": "Hay St &, Cathedral Ave",
+                },
+                "preview": {},
+            },
+            llm_fallback=None,
+            llm_policy="never",
+        )
+
+        self.assertEqual(details.name, "Pooles Temple")
+        self.assertEqual(details.review_count, 16)
+        assert details.diagnostics is not None
+        self.assertEqual(
+            details.diagnostics.field_sources.get("review_count"),
+            "search_result",
+        )
+
+    def test_build_place_details_prefers_preview_over_search_card_fallback(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/place/Pooles+Temple",
+                "dom": {"name": "Pooles Temple"},
+                "search_result": {
+                    "name": "Pooles Temple",
+                    "category": "Event venue",
+                    "review_count": "16",
+                    "address": "Hay St &, Cathedral Ave",
+                    "opened_from_search_result": True,
+                },
+                "preview": {
+                    "category": "Bar",
+                    "review_count": "32",
+                    "address": (
+                        "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, "
+                        "2 Chome−3−18 建築家会館ＪＩＡ館"
+                    ),
+                },
+            },
+            llm_fallback=None,
+            llm_policy="never",
+        )
+
+        self.assertEqual(details.category, "Bar")
+        self.assertEqual(details.review_count, 32)
+        self.assertEqual(
+            details.address,
+            "Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 2 Chome−3−18 建築家会館ＪＩＡ館",
+        )
+        assert details.diagnostics is not None
+        self.assertEqual(details.diagnostics.field_sources.get("category"), "preview")
+
+    def test_build_place_details_prefers_selected_card_when_search_open_fails(self) -> None:
+        details = _build_place_details_from_snapshot(
+            "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            snapshot={
+                "resolved_url": "https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+                "dom": {
+                    "name": "Wrong Visible Result",
+                    "category": "Restaurant",
+                    "review_count": "999",
+                    "address": "Wrong Address",
+                },
+                "search_result": {
+                    "name": "Pooles Temple",
+                    "category": "Event venue",
+                    "review_count": "16",
+                    "address": "Hay St &, Cathedral Ave",
+                },
+                "preview": {},
+            },
+            llm_fallback=None,
+            llm_policy="never",
+        )
+
+        self.assertEqual(details.name, "Pooles Temple")
+        self.assertEqual(details.category, "Event venue")
+        self.assertEqual(details.review_count, 16)
+        self.assertEqual(details.address, "Hay St &, Cathedral Ave")
+        assert details.diagnostics is not None
+        self.assertEqual(details.diagnostics.field_sources.get("name"), "search_result")
 
     def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
         details = _build_place_details(
@@ -1498,20 +1604,22 @@ class PlaceScraperTests(unittest.TestCase):
         assert details.diagnostics is not None
         self.assertIn("missing_name", details.diagnostics.quality_flags)
 
-    def test_build_place_details_preserves_structured_name_that_matches_action_label(
+    def test_build_place_details_rejects_structured_name_that_matches_action_label(
         self,
     ) -> None:
         details = _build_place_details(
-            "https://www.google.com/maps/place/Share",
-            resolved_url="https://www.google.com/maps/place/Share",
+            "https://www.google.com/maps/place/Pooles+Temple",
+            resolved_url="https://www.google.com/maps/place/Pooles+Temple",
             snapshot={
                 "name": "Share",
-                "category": "Restaurant",
-                "body_text": "\n".join(["Share", "Saved", "Directions", "Restaurant"]),
+                "category": "Event venue",
+                "body_text": "\n".join(
+                    ["Share", "Saved", "Directions", "Pooles Temple", "Event venue"]
+                ),
             },
         )
 
-        self.assertEqual(details.name, "Share")
+        self.assertEqual(details.name, "Pooles Temple")
 
     def test_build_place_details_prefers_structured_title_over_action_lines(self) -> None:
         details = _build_place_details(
@@ -1626,6 +1734,31 @@ class PlaceScraperTests(unittest.TestCase):
                 "JP",
                 ["Floor 1"],
             ],
+        )
+
+    def test_build_place_details_preserves_search_result_fields(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Taipei+Zoo",
+            resolved_url="https://www.google.com/maps/place/Taipei+Zoo",
+            snapshot={
+                "name": "Taipei Zoo",
+                "search_result_description": "Sizable zoo with a gondola & kids' area",
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
+                "body_text": "Taipei Zoo",
+            },
+        )
+
+        self.assertEqual(
+            details.search_result_description,
+            "Sizable zoo with a gondola & kids' area",
+        )
+        self.assertEqual(
+            details.search_result_url,
+            "https://www.google.com/maps/place/Taipei+Zoo",
+        )
+        self.assertEqual(
+            details.to_dict()["search_result_description"],
+            "Sizable zoo with a gondola & kids' area",
         )
 
     def test_build_place_details_rejects_invalid_address_parts(self) -> None:
@@ -1758,11 +1891,25 @@ class PlaceScraperTests(unittest.TestCase):
             def __init__(self) -> None:
                 self.waited: list[object] = []
                 self.visited: list[tuple[str, str, int]] = []
+                self.clicked: list[tuple[float, float]] = []
+                self.detail_checks = 0
+                self.mouse = self
 
-            def evaluate(self, script: object) -> object:
+            def evaluate(self, script: object, *args: object) -> object:
                 if script == _PLACE_SEARCH_RESULT_CLICK_JS:
-                    return "https://www.google.com/maps/place/National+Azabu"
+                    return "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp"
+                if script == _PLACE_SEARCH_RESULT_OPEN_JS:
+                    assert args[0] == (
+                        "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp"
+                    )
+                    return {"x": 20, "y": 40}
+                if script == _PLACE_DETAIL_READY_JS:
+                    self.detail_checks += 1
+                    return True
                 return None
+
+            def click(self, x: float, y: float) -> None:
+                self.clicked.append((x, y))
 
             def goto(self, url: str, *, wait_until: str, timeout: int) -> None:
                 self.visited.append((url, wait_until, timeout))
@@ -1773,27 +1920,100 @@ class PlaceScraperTests(unittest.TestCase):
             def wait_for_selector(self, selector: str, *, timeout: int, state: str) -> None:
                 self.waited.append(("selector", selector, timeout, state))
 
+            def wait_for_timeout(self, value: int) -> None:
+                self.waited.append(("timeout", value))
+
         page = _FakePage()
-        with patch("gmaps_scraper.place_scraper._handle_google_consent"):
-            self.assertTrue(_open_place_result_from_search_page(page, timeout_ms=30_000))
+        with patch("gmaps_scraper.place_scraper._handle_google_consent") as consent_mock:
+            self.assertEqual(
+                _open_place_result_from_search_page(page, timeout_ms=30_000),
+                {"opened_from_search_result": True},
+            )
+        self.assertEqual(page.visited, [])
+        self.assertEqual(page.clicked, [(20, 40)])
+        self.assertEqual(page.detail_checks, 2)
+        self.assertIn(("load_state", "load", 10_000), page.waited)
+        self.assertEqual(consent_mock.call_count, 2)
+
+    def test_open_place_result_from_search_page_falls_back_to_goto_when_click_fails(
+        self,
+    ) -> None:
+        class _FakePage:
+            def __init__(self) -> None:
+                self.visited: list[tuple[str, str, int]] = []
+                self.detail_checks = 0
+
+            def evaluate(self, script: object, *_args: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp"
+                if script == _PLACE_SEARCH_RESULT_OPEN_JS:
+                    return {}
+                if script == _PLACE_DETAIL_READY_JS:
+                    self.detail_checks += 1
+                    return True
+                return None
+
+            def goto(self, url: str, *, wait_until: str, timeout: int) -> None:
+                self.visited.append((url, wait_until, timeout))
+
+            def wait_for_load_state(self, _state: str, *, timeout: int) -> None:
+                assert timeout == 10_000
+
+            def wait_for_selector(self, _selector: str, *, timeout: int, state: str) -> None:
+                assert timeout == 10_000
+                assert state == "attached"
+
+        page = _FakePage()
+        with patch("gmaps_scraper.place_scraper._handle_google_consent") as consent_mock:
+            self.assertEqual(
+                _open_place_result_from_search_page(page, timeout_ms=30_000),
+                {"opened_from_search_result": True},
+            )
         self.assertEqual(
             page.visited,
             [
                 (
-                    "https://www.google.com/maps/place/National+Azabu?hl=en&gl=us",
+                    "https://www.google.co.jp/maps/place/National+Azabu?hl=ja&gl=jp",
                     "domcontentloaded",
                     30_000,
                 )
             ],
         )
-        self.assertIn(("load_state", "load", 10_000), page.waited)
+        self.assertEqual(page.detail_checks, 1)
+        self.assertEqual(consent_mock.call_count, 2)
 
-    def test_with_google_maps_locale_replaces_existing_locale(self) -> None:
+    def test_open_place_result_from_search_page_preserves_card_details_on_goto_failure(
+        self,
+    ) -> None:
+        class _FakePage:
+            def evaluate(self, script: object, *_args: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return {
+                        "href": "https://www.google.com/maps/place/Taipei+Zoo",
+                        "name": "Taipei Zoo",
+                        "review_count": "76,998",
+                        "search_result_description": "Sizable zoo with a gondola & kids' area",
+                    }
+                if script == _PLACE_SEARCH_RESULT_OPEN_JS:
+                    return {}
+                return None
+
+            def goto(self, _url: str, *, wait_until: str, timeout: int) -> None:
+                assert wait_until == "domcontentloaded"
+                assert timeout == 30_000
+                raise RuntimeError("navigation blocked")
+
+            def wait_for_timeout(self, _value: int) -> None:
+                pass
+
         self.assertEqual(
-            _with_google_maps_locale(
-                "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=ja&gl=jp"
-            ),
-            "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=en&gl=us",
+            _open_place_result_from_search_page(_FakePage(), timeout_ms=30_000),
+            {
+                "search_result_url": "https://www.google.com/maps/place/Taipei+Zoo",
+                "name": "Taipei Zoo",
+                "review_count": "76,998",
+                "search_result_description": "Sizable zoo with a gondola & kids' area",
+            },
         )
 
     def test_open_place_result_from_search_page_rejects_non_google_place_urls(self) -> None:
@@ -1801,8 +2021,10 @@ class PlaceScraperTests(unittest.TestCase):
             def __init__(self) -> None:
                 self.visited: list[str] = []
 
-            def evaluate(self, _script: object) -> object:
-                return "https://example.com/maps/place/National+Azabu"
+            def evaluate(self, script: object, *_args: object) -> object:
+                if script == _PLACE_SEARCH_RESULT_CLICK_JS:
+                    return "https://example.com/maps/place/National+Azabu"
+                return False
 
             def wait_for_timeout(self, _value: int) -> None:
                 pass
@@ -1813,6 +2035,16 @@ class PlaceScraperTests(unittest.TestCase):
         page = _FakePage()
         self.assertFalse(_open_place_result_from_search_page(page, timeout_ms=30_000))
         self.assertEqual(page.visited, [])
+
+    def test_search_result_candidate_js_decodes_place_id_safely(self) -> None:
+        self.assertIn("safeDecodeURIComponent", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertNotIn(
+            "decodeURIComponent(placeIdMatch[1])",
+            _PLACE_SEARCH_RESULT_CLICK_JS,
+        )
+
+    def test_place_js_extractor_keeps_place_page_description_selectors(self) -> None:
+        self.assertIn('description: firstText([".WeS02d", ".PYvSYb"])', _PLACE_JS_EXTRACTOR)
 
     def test_looks_like_google_maps_place_url_accepts_google_tlds_only(self) -> None:
         self.assertTrue(
@@ -1856,6 +2088,24 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(page.evaluate_calls, 1)
         self.assertEqual(page.evaluated_scripts, [_PLACE_SEARCH_RESULT_CLICK_JS])
         self.assertEqual(page.wait_calls, 0)
+
+    def test_search_result_candidate_url_accepts_card_details_object(self) -> None:
+        class _FakePage:
+            def evaluate(self, script: object) -> object:
+                assert script == _PLACE_SEARCH_RESULT_CLICK_JS
+                return {
+                    "href": "https://www.google.com/maps/place/Pooles+Temple",
+                    "name": "Pooles Temple",
+                    "review_count": "16",
+                }
+
+            def wait_for_timeout(self, _value: int) -> None:
+                raise AssertionError("should not poll after a card candidate is found")
+
+        self.assertEqual(
+            _search_result_candidate_url(_FakePage(), timeout_ms=30_000),
+            "https://www.google.com/maps/place/Pooles+Temple",
+        )
 
     def test_extract_secondary_name_aborts_when_rating_line_follows_name(self) -> None:
         self.assertIsNone(

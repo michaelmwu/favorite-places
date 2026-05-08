@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 PLACELIST_URL_MARKER = "maps/placelists/list/"
 _LIST_ID_PATTERN = re.compile(r"!2s([^!]+)")
@@ -56,3 +56,35 @@ def build_maps_search_url(
     if gl is not None and gl.strip():
         params["gl"] = gl.strip()
     return f"https://www.google.com/maps/search/?{urlencode(params)}"
+
+
+def localize_maps_url(
+    url: str,
+    *,
+    hl: str | None = "en",
+    gl: str | None = "us",
+) -> str:
+    """Return a Google Maps URL with explicit language and region parameters.
+
+    `scrape_place()` preserves the caller-provided URL. Use this helper at the
+    call site when English-readable Maps UI/output is preferred over the URL's
+    original locale.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return url
+    host = (parsed.hostname or "").lower()
+    if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
+        return url
+    if not host.startswith("maps.google.") and not parsed.path.startswith("/maps/"):
+        return url
+    query_pairs = [
+        (key, value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if key not in {"hl", "gl"}
+    ]
+    if hl is not None and hl.strip():
+        query_pairs.append(("hl", hl.strip()))
+    if gl is not None and gl.strip():
+        query_pairs.append(("gl", gl.strip()))
+    return urlunparse(parsed._replace(query=urlencode(query_pairs)))

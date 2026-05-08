@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Literal, cast
-from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from gmaps_scraper.models import (
     PLACE_LLM_DISPLAY_TRANSLATION_FIELDS,
@@ -230,29 +230,155 @@ _NUMERIC_PRICE_PATTERN = re.compile(
     r")\s*(?P<amount>[0-9][0-9,.\s\u00a0]*)(?=\s|$|·)",
     flags=re.IGNORECASE,
 )
+_PLACE_PANEL_HELPERS_JS = r"""
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const searchResultTitleLabels = new Set([
+    "result",
+    "results",
+    "search result",
+    "search results",
+    "結果",
+    "検索結果",
+  ]);
+  const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
+  const isSearchResultTitle = (value) => searchResultTitleLabels.has(
+    cleanLine(value).toLowerCase(),
+  );
+  const visibleRect = (element) => {
+    const rect = element.getBoundingClientRect();
+    const width = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+    const height = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+    return {rect, visibleArea: width * height};
+  };
+  const matchingTitleElements = (root) => {
+    const elements = [];
+    const seen = new Set();
+    for (const selector of titleSelectors) {
+      const matches = [];
+      if (root.matches?.(selector)) {
+        matches.push(root);
+      }
+      matches.push(...root.querySelectorAll(selector));
+      for (const element of matches) {
+        if (seen.has(element)) {
+          continue;
+        }
+        seen.add(element);
+        elements.push(element);
+      }
+    }
+    return elements;
+  };
+  const placePanelCandidateRoots = () => {
+    const roots = new Set();
+    for (const selector of [
+      "[role='main']",
+      "[role='dialog']",
+      "[role='region'][aria-label]",
+    ]) {
+      for (const element of document.querySelectorAll(selector)) {
+        roots.add(element);
+      }
+    }
+    for (const title of document.querySelectorAll("h1, [role='heading']")) {
+      let current = title;
+      for (let depth = 0; depth < 9 && current && current !== document.body; depth += 1) {
+        roots.add(current);
+        current = current.parentElement;
+      }
+    }
+    return Array.from(roots);
+  };
+  const placePanelRoot = () => {
+    let best = null;
+    for (const root of placePanelCandidateRoots()) {
+      const {rect, visibleArea} = visibleRect(root);
+      if (visibleArea <= 0 || rect.width < 120 || rect.height < 80) {
+        continue;
+      }
+      const titleElements = matchingTitleElements(root);
+      const titleTexts = titleElements
+        .map((element) => cleanLine(element.innerText || element.textContent || ""))
+        .filter(Boolean);
+      const titleElement = titleElements.find((element) => {
+        const title = cleanLine(element.innerText || element.textContent || "");
+        return title && !isSearchResultTitle(title);
+      }) || titleElements.find(
+        (element) => cleanLine(element.innerText || element.textContent || ""),
+      );
+      const title = cleanLine(titleElement?.innerText || titleElement?.textContent || "");
+      const nonResultTitle = title && !isSearchResultTitle(title) ? title : "";
+      const label = cleanLine(root.getAttribute("aria-label") || "");
+      const hasResultsTitle = titleTexts.some(isSearchResultTitle) || /results for/i.test(label);
+      const addressRows = root.querySelectorAll(`[data-item-id="address"]`).length;
+      const ratingSummaries = root.querySelectorAll("div.F7nice").length;
+      const tabLabels = Array.from(
+        root.querySelectorAll("button[role='tab'], div[role='tablist'] button"),
+      ).map((element) => cleanLine(element.getAttribute("aria-label") || element.innerText || ""));
+      const hasOverviewTabs = tabLabels.some((value) => /overview/i.test(value))
+        && tabLabels.some((value) => /reviews?/i.test(value));
+      const articleCount = root.querySelectorAll("[role='article']").length;
+      const placeRows = root.querySelectorAll(
+        `[data-item-id="address"], [data-item-id="authority"], [data-item-id^="phone:"]`,
+      ).length;
+      let score = 0;
+      if (nonResultTitle) {
+        score += 120;
+      }
+      if (addressRows) {
+        score += 45;
+      }
+      if (ratingSummaries) {
+        score += 30;
+      }
+      if (hasOverviewTabs) {
+        score += 25;
+      }
+      score += Math.min(placeRows * 10, 30);
+      if (root.getAttribute("role") === "main" && nonResultTitle) {
+        score += 10;
+      }
+      if (label && nonResultTitle && label === nonResultTitle) {
+        score += 8;
+      }
+      if (hasResultsTitle) {
+        score -= 70;
+      }
+      if (articleCount >= 2 && !addressRows) {
+        score -= 40;
+      }
+      score += Math.min(visibleArea / 20000, 20);
+      const tieBreak = (root.getAttribute("role") === "main" ? 2000000 : 0) + visibleArea;
+      if (!best || score > best.score || (score === best.score && tieBreak > best.tieBreak)) {
+        best = {root, titleElement, title, score, tieBreak};
+      }
+    }
+    if (best && best.score > 0) {
+      return {
+        root: best.root,
+        titleElement: best.titleElement,
+        title: best.title,
+        found: true,
+        score: best.score,
+      };
+    }
+    const fallbackTitle = document.querySelector(titleSelectors.join(","));
+    return {
+      root: document.body,
+      titleElement: fallbackTitle,
+      title: cleanLine(fallbackTitle?.innerText || fallbackTitle?.textContent || ""),
+      found: false,
+      score: 0,
+    };
+  };
+"""
 _PLACE_JS_EXTRACTOR = r"""
 () => {
-  const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
-  let titleElement = null;
-  for (const selector of titleSelectors) {
-    const element = document.querySelector(selector);
-    if (element?.innerText?.trim()) {
-      titleElement = element;
-      break;
-    }
-  }
+""" + _PLACE_PANEL_HELPERS_JS + r"""
 
-  let panel = document.body;
-  if (titleElement) {
-    let current = titleElement;
-    for (let i = 0; i < 8; i += 1) {
-      if (!current.parentElement || current.parentElement.tagName === "BODY") {
-        break;
-      }
-      current = current.parentElement;
-    }
-    panel = current;
-  }
+  const panelInfo = placePanelRoot();
+  const panel = panelInfo.root;
+  const titleElement = panelInfo.titleElement;
 
   const firstText = (selectors, root = panel) => {
     for (const selector of selectors) {
@@ -438,7 +564,32 @@ _PLACE_JS_EXTRACTOR = r"""
     considerCount(match[1], "f7nice");
   }
 
+  const reviewSummaryBoundaryTop = () => {
+    const addressRow = addressRowElement();
+    if (addressRow) {
+      const rect = addressRow.getBoundingClientRect();
+      if (rect.height > 0) {
+        return rect.top;
+      }
+    }
+    const panelRect = panel.getBoundingClientRect();
+    return panelRect.top + 520;
+  };
+  const isOverviewReviewCountElement = (element) => {
+    if (element.closest("div.F7nice")) {
+      return true;
+    }
+    const rect = element.getBoundingClientRect();
+    if (rect.height <= 0) {
+      return false;
+    }
+    return rect.top < reviewSummaryBoundaryTop();
+  };
+
   for (const element of panel.querySelectorAll("[aria-label]")) {
+    if (!isOverviewReviewCountElement(element)) {
+      continue;
+    }
     const label = element.getAttribute("aria-label") || "";
     if (!reviewKeywords.some((keyword) => label.toLowerCase().includes(keyword.toLowerCase()))) {
       continue;
@@ -482,7 +633,6 @@ _PLACE_JS_EXTRACTOR = r"""
   const photoUrl = mainPhotoUrl
     || firstAttr(["meta[property='og:image']", "meta[itemprop='image']"], "content", document);
 
-  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
   const shallowPath = (element) => {
     const parts = [];
     let current = element;
@@ -814,6 +964,7 @@ _PLACE_JS_EXTRACTOR = r"""
       "button[data-item-id^='phone:']",
     ]),
     plus_code: itemValue("oloc"),
+    description: firstText([".WeS02d", ".PYvSYb"]),
     review_topics: collectReviewTopics(),
     admission_prices: collectLeafPrices(sectionRootByHeading([
       "Admission",
@@ -856,26 +1007,9 @@ _PLACE_JS_EXTRACTOR = r"""
 """
 _PLACE_REVIEW_SIGNAL_JS = r"""
 () => {
-  const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
-  let titleElement = null;
-  for (const selector of titleSelectors) {
-    const element = document.querySelector(selector);
-    if (element?.innerText?.trim()) {
-      titleElement = element;
-      break;
-    }
-  }
-  let panel = document.body;
-  if (titleElement) {
-    let current = titleElement;
-    for (let i = 0; i < 8; i += 1) {
-      if (!current.parentElement || current.parentElement.tagName === "BODY") {
-        break;
-      }
-      current = current.parentElement;
-    }
-    panel = current;
-  }
+""" + _PLACE_PANEL_HELPERS_JS + r"""
+
+  const panel = placePanelRoot().root;
   const f7nice = panel.querySelector("div.F7nice");
   if (f7nice?.innerText?.match(/[0-9]/)) {
     return true;
@@ -896,7 +1030,10 @@ _PLACE_REVIEW_SIGNAL_JS = r"""
 """
 _PLACE_REVIEW_TAB_CLICK_JS = r"""
 () => {
-  for (const tab of document.querySelectorAll("div[role='tablist'] button, button[role='tab']")) {
+""" + _PLACE_PANEL_HELPERS_JS + r"""
+
+  const root = placePanelRoot().root;
+  for (const tab of root.querySelectorAll("div[role='tablist'] button, button[role='tab']")) {
     const text = (tab.innerText || tab.textContent || "").trim();
     const ariaLabel = tab.getAttribute("aria-label") || "";
     if (/(review|reviews|評論|クチコミ)/i.test(`${text} ${ariaLabel}`)) {
@@ -909,8 +1046,9 @@ _PLACE_REVIEW_TAB_CLICK_JS = r"""
 """
 _PLACE_REVIEW_TOPIC_JS = r"""
 () => {
-  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
-  let root = document.querySelector("div[role='main']") || document.body;
+""" + _PLACE_PANEL_HELPERS_JS + r"""
+
+  const root = placePanelRoot().root;
   for (const button of root.querySelectorAll("button, div[role='button']")) {
     const text = cleanLine(button.innerText || button.textContent || "");
     const ariaLabel = cleanLine(button.getAttribute("aria-label") || "");
@@ -995,6 +1133,8 @@ _PLACE_REVIEW_SNIPPET_JS = r"""
 """
 _PLACE_ABOUT_TAB_CLICK_JS = r"""
 () => {
+""" + _PLACE_PANEL_HELPERS_JS + r"""
+
   const aliases = [
     "about",
     "information",
@@ -1008,7 +1148,8 @@ _PLACE_ABOUT_TAB_CLICK_JS = r"""
     "簡介",
     "简介",
   ];
-  for (const tab of document.querySelectorAll("div[role='tablist'] button, button[role='tab']")) {
+  const root = placePanelRoot().root;
+  for (const tab of root.querySelectorAll("div[role='tablist'] button, button[role='tab']")) {
     const text = ((tab.innerText || tab.textContent || "").trim()).toLowerCase();
     const ariaLabel = ((tab.getAttribute("aria-label") || "").trim()).toLowerCase();
     if (
@@ -1025,15 +1166,27 @@ _PLACE_ABOUT_TAB_CLICK_JS = r"""
 """
 _PLACE_SEARCH_RESULT_CLICK_JS = r"""
 () => {
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const searchResultTitleLabels = new Set([
+    "result",
+    "results",
+    "search result",
+    "search results",
+    "結果",
+    "検索結果",
+  ]);
+  const isSearchResultTitle = (value) => searchResultTitleLabels.has(
+    cleanLine(value).toLowerCase(),
+  );
   const titleSelectors = ["h1.DUwDvf", "h1.lfPIob", "div[role='main'] h1"];
   for (const selector of titleSelectors) {
     const element = document.querySelector(selector);
-    if (element?.innerText?.trim()) {
+    const title = cleanLine(element?.innerText || element?.textContent || "");
+    if (title && !isSearchResultTitle(title)) {
       return false;
     }
   }
 
-  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
   const normalize = (value) => cleanLine(value)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")
@@ -1063,6 +1216,101 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
   const queryTokens = normalizedQuery.split(" ").filter((token) => token.length >= 3);
   const articles = Array.from(document.querySelectorAll("div[role='feed'] [role='article']"));
   let best = null;
+  const cleanSearchLabel = (value) => cleanLine(value)
+    .replace(/\s*·\s*(?:visited\s+)?link$/i, "")
+    .trim();
+  const textLines = (element) => {
+    const text = element.innerText || element.textContent || "";
+    return text.split(/\n+/).map(cleanLine).filter(Boolean);
+  };
+  const parseCardRating = (value) => {
+    const text = cleanLine(value);
+    const match = text.match(/([0-5](?:[.,][0-9]+)?)\s*(?:stars?|★)/i)
+      || text.match(/^([0-5](?:[.,][0-9]+)?)$/);
+    return match?.[1] || null;
+  };
+  const parseCardReviewCount = (value) => {
+    const text = cleanLine(value);
+    const match = text.match(
+      /([0-9][0-9,.\s]*[KM萬万]?)\s*(?:reviews?|評論|クチコミ|件のクチコミ|件の Google クチコミ)/i,
+    ) || text.match(/\(([0-9][0-9,.\s]*[KM萬万]?)\)/);
+    return match?.[1] || null;
+  };
+  const parseCardCategoryAddress = (lines) => {
+    for (const line of lines) {
+      if (!line.includes("·")) {
+        continue;
+      }
+      if (parseCardReviewCount(line) || parseCardRating(line)) {
+        continue;
+      }
+      const segments = line.split("·").map(cleanLine).filter(Boolean);
+      if (segments.length < 2) {
+        continue;
+      }
+      return {
+        category: segments[0] || null,
+        address: segments[segments.length - 1] || null,
+      };
+    }
+    return {category: null, address: null};
+  };
+  const findDescriptionLine = (lines, excludedValues) => {
+    const excluded = new Set(excludedValues.map(cleanLine).filter(Boolean));
+    return lines.find((line) => {
+      const text = cleanLine(line);
+      if (!text || excluded.has(text)) {
+        return false;
+      }
+      if (text.includes("·") || parseCardRating(text) || parseCardReviewCount(text)) {
+        return false;
+      }
+      if (/^(open|closed|temporarily closed|website|directions|saved in)\b/i.test(text)) {
+        return false;
+      }
+      if (/^[+()\d\s.-]{7,}$/.test(text)) {
+        return false;
+      }
+      return text.length >= 12;
+    }) || null;
+  };
+  const safeDecodeURIComponent = (value) => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  };
+  const candidateDetails = (article, href, label) => {
+    const lines = textLines(article);
+    const starLabel = cleanLine(
+      article.querySelector("[role='img'][aria-label*='star' i]")?.getAttribute("aria-label")
+        || "",
+    );
+    const rating = parseCardRating(starLabel)
+      || lines.map(parseCardRating).find(Boolean)
+      || null;
+    const reviewCount = parseCardReviewCount(starLabel)
+      || lines.map(parseCardReviewCount).find(Boolean)
+      || null;
+    const categoryAddress = parseCardCategoryAddress(lines);
+    const name = cleanSearchLabel(label);
+    const placeIdMatch = href.match(/!19s([^!?&]+)/) || href.match(/!1s([^!?&]+)/);
+    return {
+      href,
+      google_place_id: placeIdMatch?.[1] ? safeDecodeURIComponent(placeIdMatch[1]) : null,
+      name,
+      rating,
+      review_count: reviewCount,
+      category: categoryAddress.category,
+      address: categoryAddress.address,
+      search_result_description: findDescriptionLine(
+        lines,
+        [name, categoryAddress.category, categoryAddress.address],
+      ),
+      body_text: lines.join("\n"),
+    };
+  };
 
   for (let index = 0; index < articles.length; index += 1) {
     const article = articles[index];
@@ -1115,14 +1363,73 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
       }
     }
     if (!best || score > best.score) {
-      best = {href, score};
+      best = {score, details: candidateDetails(article, href, label)};
     }
   }
 
   if (!best || best.score <= 0) {
     return null;
   }
-  return best.href || null;
+  return best.details || null;
+}
+"""
+_PLACE_SEARCH_RESULT_OPEN_JS = r"""
+(targetHref) => {
+  const cleanLine = (value) => (value || "").replace(/\s+/g, " ").trim();
+  let target = "";
+  try {
+    target = cleanLine(new URL(targetHref, window.location.href).href);
+  } catch {
+    return false;
+  }
+  if (!target) {
+    return false;
+  }
+  const targetUrl = new URL(target);
+  const targetPlaceIdMatch = target.match(/!19s([^!?&]+)/) || target.match(/!1s([^!?&]+)/);
+  const targetPlaceId = targetPlaceIdMatch?.[1] || "";
+  for (const anchor of document.querySelectorAll(
+    "div[role='feed'] [role='article'] a.hfpxzc, "
+      + "div[role='feed'] [role='article'] a[href*='/maps/place/']",
+  )) {
+    const hrefValue = anchor.getAttribute("href") || anchor.href || "";
+    let href = "";
+    try {
+      href = cleanLine(new URL(hrefValue, window.location.href).href);
+    } catch {
+      continue;
+    }
+    const hrefPlaceIdMatch = href.match(/!19s([^!?&]+)/) || href.match(/!1s([^!?&]+)/);
+    const hrefPlaceId = hrefPlaceIdMatch?.[1] || "";
+    const hrefUrl = new URL(href);
+    const samePlace = (
+      href === target
+      || (targetPlaceId && hrefPlaceId && targetPlaceId === hrefPlaceId)
+      || (hrefUrl.pathname === targetUrl.pathname && hrefUrl.pathname.includes("/maps/place/"))
+    );
+    if (!samePlace) {
+      continue;
+    }
+    const targetElement = anchor.closest("[role='article']") || anchor;
+    targetElement.scrollIntoView({block: "center", inline: "center"});
+    const rect = targetElement.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) {
+      return false;
+    }
+    return {
+      x: rect.left + Math.min(Math.max(rect.width / 2, 8), rect.width - 8),
+      y: rect.top + Math.min(Math.max(rect.height / 2, 8), rect.height - 8),
+    };
+  }
+  return false;
+}
+"""
+_PLACE_DETAIL_READY_JS = r"""
+() => {
+""" + _PLACE_PANEL_HELPERS_JS + r"""
+
+  const panelInfo = placePanelRoot();
+  return panelInfo.found && Boolean(panelInfo.title) && !isSearchResultTitle(panelInfo.title);
 }
 """
 _PLACE_ABOUT_PANEL_JS = r"""
@@ -1313,7 +1620,29 @@ def _build_place_details_from_snapshot(
         Mapping[str, object],
         snapshot.get("preview") if isinstance(snapshot.get("preview"), Mapping) else {},
     )
-    merged_snapshot = _merge_place_sources(dom_snapshot, preview_snapshot)
+    search_result_snapshot = cast(
+        Mapping[str, object],
+        snapshot.get("search_result")
+        if isinstance(snapshot.get("search_result"), Mapping)
+        else {},
+    )
+    if search_result_snapshot and not _to_bool(
+        search_result_snapshot.get("opened_from_search_result")
+    ):
+        # The page is still a search results list, so DOM may describe a
+        # different visible card. Prefer richer preview data, then the selected
+        # card, and only use search-page DOM as a last resort.
+        merged_snapshot = _merge_ordered_place_sources(
+            (preview_snapshot, "preview"),
+            (search_result_snapshot, "search_result"),
+            (dom_snapshot, "dom"),
+        )
+    else:
+        merged_snapshot = _merge_ordered_place_sources(
+            (dom_snapshot, "dom"),
+            (preview_snapshot, "preview"),
+            (search_result_snapshot, "search_result"),
+        )
     details = _build_place_details(
         place_url,
         resolved_url=resolved_url,
@@ -1682,16 +2011,18 @@ def _collect_place_snapshot_with_context(
     page = None
     try:
         page = context.new_page()
-        localized_place_url = _with_google_maps_locale(place_url)
-        _seed_google_consent_cookies(page, source_url=localized_place_url)
-        page.goto(localized_place_url, wait_until="domcontentloaded", timeout=timeout_ms)
+        _seed_google_consent_cookies(page, source_url=place_url)
+        page.goto(place_url, wait_until="domcontentloaded", timeout=timeout_ms)
         _handle_google_consent(page, timeout_ms=timeout_ms)
         try:
             page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
         except Exception:
             pass
         _handle_google_consent(page, timeout_ms=timeout_ms)
-        _open_place_result_from_search_page(page, timeout_ms=timeout_ms)
+        search_result_snapshot = _open_place_result_from_search_page(
+            page,
+            timeout_ms=timeout_ms,
+        )
         try:
             page.wait_for_selector(_TITLE_SELECTOR, timeout=timeout_ms, state="attached")
         except Exception:
@@ -1733,6 +2064,7 @@ def _collect_place_snapshot_with_context(
     return {
         "resolved_url": resolved_url,
         "dom": dict(dom_snapshot),
+        "search_result": search_result_snapshot or {},
         "preview": preview_snapshot,
     }
 
@@ -1796,42 +2128,136 @@ def _ensure_review_signal(page: Any, *, timeout_ms: int) -> bool:
     return _wait_for_review_signal(page, timeout_ms=min(timeout_ms, 4_000))
 
 
-def _open_place_result_from_search_page(page: Any, *, timeout_ms: int) -> bool:
-    target_url = _search_result_candidate_url(page, timeout_ms=timeout_ms)
+def _open_place_result_from_search_page(
+    page: Any,
+    *,
+    timeout_ms: int,
+) -> dict[str, object] | None:
+    candidate = _search_result_candidate(page, timeout_ms=timeout_ms)
+    if candidate is None:
+        return None
+    snapshot = _search_result_snapshot(candidate)
+    target_url = (
+        candidate
+        if isinstance(candidate, str)
+        else _clean_text(candidate.get("href"))
+    )
     if target_url is None:
-        return False
+        return None
     if not _looks_like_google_maps_place_url(target_url):
-        return False
-    target_url = _with_google_maps_locale(target_url)
+        return None
+    clicked = _click_search_result_candidate(page, target_url, timeout_ms=timeout_ms)
+    if not clicked or not _wait_for_place_detail_title(page, timeout_ms=min(timeout_ms, 12_000)):
+        try:
+            page.goto(target_url, wait_until="domcontentloaded", timeout=timeout_ms)
+        except Exception:
+            return snapshot
+        _handle_google_consent(page, timeout_ms=timeout_ms)
+        try:
+            page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
+        except Exception:
+            pass
+        _handle_google_consent(page, timeout_ms=timeout_ms)
+    if not _wait_for_place_detail_title(page, timeout_ms=min(timeout_ms, 12_000)):
+        return snapshot
+    snapshot["opened_from_search_result"] = True
+    return snapshot
+
+
+def _click_search_result_candidate(page: Any, target_url: str, *, timeout_ms: int) -> bool:
     try:
-        page.goto(target_url, wait_until="domcontentloaded", timeout=timeout_ms)
+        click_point = page.evaluate(_PLACE_SEARCH_RESULT_OPEN_JS, target_url)
     except Exception:
         return False
+    if not isinstance(click_point, Mapping):
+        return False
+    x = _parse_float(click_point.get("x"))
+    y = _parse_float(click_point.get("y"))
+    if x is None or y is None:
+        return False
+    mouse = getattr(page, "mouse", None)
+    click = getattr(mouse, "click", None)
+    if click is None:
+        return False
+    try:
+        click(x, y)
+    except Exception:
+        return False
+    page.wait_for_timeout(min(max(timeout_ms // 20, 1_000), 3_000))
     _handle_google_consent(page, timeout_ms=timeout_ms)
     try:
         page.wait_for_load_state("load", timeout=min(timeout_ms, 10_000))
     except Exception:
         pass
-    try:
-        page.wait_for_selector(_TITLE_SELECTOR, timeout=min(timeout_ms, 10_000), state="attached")
-    except Exception:
-        return False
+    _handle_google_consent(page, timeout_ms=timeout_ms)
     return True
 
 
+def _wait_for_place_detail_title(page: Any, *, timeout_ms: int) -> bool:
+    polls = max(1, min(24, timeout_ms // 500))
+    for _ in range(polls):
+        try:
+            if page.evaluate(_PLACE_DETAIL_READY_JS) is True:
+                return True
+        except Exception:
+            pass
+        page.wait_for_timeout(500)
+    return False
+
+
 def _search_result_candidate_url(page: Any, *, timeout_ms: int) -> str | None:
+    candidate = _search_result_candidate(page, timeout_ms=timeout_ms)
+    if isinstance(candidate, str):
+        return candidate
+    if isinstance(candidate, Mapping):
+        return _clean_text(candidate.get("href"))
+    return None
+
+
+def _search_result_candidate(
+    page: Any,
+    *,
+    timeout_ms: int,
+) -> str | dict[str, object] | None:
     polls = max(1, min(8, timeout_ms // 500))
     for _ in range(polls):
         try:
-            target_url = page.evaluate(_PLACE_SEARCH_RESULT_CLICK_JS)
+            candidate = page.evaluate(_PLACE_SEARCH_RESULT_CLICK_JS)
         except Exception:
             return None
-        if target_url is False:
+        if candidate is False:
             return None
-        if isinstance(target_url, str) and target_url.strip():
-            return target_url.strip()
+        if isinstance(candidate, str) and candidate.strip():
+            return candidate.strip()
+        if isinstance(candidate, Mapping):
+            href = _clean_text(candidate.get("href"))
+            if href is not None:
+                return {**candidate, "href": href}
         page.wait_for_timeout(500)
     return None
+
+
+def _search_result_snapshot(candidate: str | Mapping[str, object]) -> dict[str, object]:
+    if not isinstance(candidate, Mapping):
+        return {}
+    snapshot: dict[str, object] = {}
+    href = _clean_text(candidate.get("href"))
+    if href is not None:
+        snapshot["search_result_url"] = href
+    for key in (
+        "google_place_id",
+        "name",
+        "rating",
+        "review_count",
+        "category",
+        "address",
+        "search_result_description",
+        "body_text",
+    ):
+        value = candidate.get(key)
+        if not _is_missing_value(value):
+            snapshot[key] = value
+    return snapshot
 
 
 def _looks_like_google_maps_place_url(value: str) -> bool:
@@ -1842,23 +2268,6 @@ def _looks_like_google_maps_place_url(value: str) -> bool:
     if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
         return False
     return parsed.path.startswith("/maps/place/")
-
-
-def _with_google_maps_locale(value: str, *, hl: str = "en", gl: str = "us") -> str:
-    parsed = urlparse(value)
-    host = (parsed.hostname or "").lower()
-    if re.fullmatch(r"(?:www\.|maps\.)?google\.[a-z]{2,}(?:\.[a-z]{2,})?", host) is None:
-        return value
-    query_pairs = [
-        (key, existing_value)
-        for key, existing_value in parse_qsl(parsed.query, keep_blank_values=True)
-        if key not in {"hl", "gl"}
-    ]
-    if hl.strip():
-        query_pairs.append(("hl", hl.strip()))
-    if gl.strip():
-        query_pairs.append(("gl", gl.strip()))
-    return urlunparse(parsed._replace(query=urlencode(query_pairs)))
 
 
 def _collect_review_panel_snapshot(page: Any, *, timeout_ms: int) -> dict[str, object]:
@@ -1918,10 +2327,19 @@ def _build_place_details(
     category = _clean_category_text(snapshot.get("category")) or _extract_category_from_lines(
         search_lines
     )
-    name = _clean_structured_name_text(snapshot.get("name")) or _first_meaningful_name(
+    fallback_name = _first_meaningful_name(
         search_lines,
         excluded_values=(category,),
     )
+    structured_name = _clean_structured_name_text(snapshot.get("name"))
+    if (
+        structured_name is not None
+        and _looks_like_ui_action_label(structured_name)
+        and _snapshot_contains_ui_action_name_candidate(snapshot)
+    ):
+        name = fallback_name
+    else:
+        name = structured_name or fallback_name
     category_display_en, category_display_en_source, category_display_en_confidence = (
         _derive_category_display_en(category, snapshot)
     )
@@ -1998,6 +2416,10 @@ def _build_place_details(
         or _extract_plus_code_from_lines(combined_lines),
         address_parts=_extract_address_parts(snapshot.get("address_parts")),
         description=_extract_description(snapshot, combined_lines),
+        search_result_description=_clean_description_text(
+            snapshot.get("search_result_description")
+        ),
+        search_result_url=_clean_text(snapshot.get("search_result_url")),
         main_photo_url=_normalize_photo_url(snapshot.get("main_photo_url")),
         photo_url=_normalize_photo_url(snapshot.get("photo_url")),
         lat=lat,
@@ -2038,19 +2460,34 @@ def _seed_google_consent_cookies(page: Any, *, source_url: str) -> None:
 def _merge_place_sources(
     primary: Mapping[str, object],
     secondary: Mapping[str, object],
+    *,
+    secondary_source: str = "preview",
 ) -> dict[str, object]:
     merged = dict(primary)
-    field_sources = {
-        key: "dom" for key, value in primary.items() if not _is_missing_value(value)
-    }
+    raw_field_sources = primary.get("field_sources")
+    field_sources = dict(raw_field_sources) if isinstance(raw_field_sources, Mapping) else {}
+    for key, value in primary.items():
+        if key == "field_sources":
+            continue
+        if key not in field_sources and not _is_missing_value(value):
+            field_sources[key] = "dom"
     for key, value in secondary.items():
         if key == "limited_view":
             merged[key] = _to_bool(merged.get(key)) or _to_bool(value)
             continue
         if _is_missing_value(merged.get(key)) and not _is_missing_value(value):
             merged[key] = value
-            field_sources[key] = "preview"
+            field_sources[key] = secondary_source
     merged["field_sources"] = field_sources
+    return merged
+
+
+def _merge_ordered_place_sources(
+    *sources: tuple[Mapping[str, object], str],
+) -> dict[str, object]:
+    merged: dict[str, object] = {}
+    for snapshot, source in sources:
+        merged = _merge_place_sources(merged, snapshot, secondary_source=source)
     return merged
 
 
@@ -2470,6 +2907,8 @@ def _place_detail_values(details: PlaceDetails) -> dict[str, object]:
         "plus_code": details.plus_code,
         "address_parts": details.address_parts,
         "description": details.description,
+        "search_result_description": details.search_result_description,
+        "search_result_url": details.search_result_url,
         "main_photo_url": details.main_photo_url,
         "photo_url": details.photo_url,
         "lat": details.lat,

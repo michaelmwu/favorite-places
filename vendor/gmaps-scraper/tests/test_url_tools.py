@@ -7,6 +7,7 @@ from gmaps_scraper.url_tools import (
     extract_list_id,
     extract_list_id_from_text,
     has_placelist_marker,
+    localize_maps_url,
 )
 
 
@@ -63,6 +64,38 @@ class UrlToolsTests(unittest.TestCase):
     def test_build_maps_search_url_rejects_blank_query(self) -> None:
         with self.assertRaisesRegex(ValueError, "query"):
             build_maps_search_url("  ")
+
+    def test_localize_maps_url_replaces_existing_locale(self) -> None:
+        self.assertEqual(
+            localize_maps_url(
+                "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=ja&gl=jp"
+            ),
+            "https://www.google.co.jp/maps/place/Tokyo+Tower?entry=ttu&hl=en&gl=us",
+        )
+
+    def test_localize_maps_url_leaves_non_google_url_unchanged(self) -> None:
+        self.assertEqual(
+            localize_maps_url("https://example.com/maps/place/Tokyo+Tower?hl=ja&gl=jp"),
+            "https://example.com/maps/place/Tokyo+Tower?hl=ja&gl=jp",
+        )
+
+    def test_localize_maps_url_leaves_non_http_google_url_unchanged(self) -> None:
+        self.assertEqual(
+            localize_maps_url("ftp://google.com/maps/place/Tokyo+Tower?hl=ja&gl=jp"),
+            "ftp://google.com/maps/place/Tokyo+Tower?hl=ja&gl=jp",
+        )
+
+    def test_localize_maps_url_leaves_non_maps_google_url_unchanged(self) -> None:
+        self.assertEqual(
+            localize_maps_url("https://www.google.com/search?q=Tokyo+Tower&hl=ja&gl=jp"),
+            "https://www.google.com/search?q=Tokyo+Tower&hl=ja&gl=jp",
+        )
+
+    def test_localize_maps_url_accepts_maps_google_host_without_maps_path(self) -> None:
+        self.assertEqual(
+            localize_maps_url("https://maps.google.com/?q=Tokyo+Tower&hl=ja&gl=jp"),
+            "https://maps.google.com/?q=Tokyo+Tower&hl=en&gl=us",
+        )
 
 
 if __name__ == "__main__":

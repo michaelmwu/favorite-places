@@ -105,6 +105,7 @@ from gmaps_scraper import (
     cached_place_repairer,
     llm_cache_namespace_from_env,
     openai_compatible_place_repairer_from_env,
+    localize_maps_url,
     scrape_place,
     scrape_saved_list,
 )
@@ -118,6 +119,9 @@ place = scrape_place(
         profile_dir=Path(".gmaps-scraper/session"),
     ),
 )
+
+direct_place_url = localize_maps_url("https://www.google.co.jp/maps/place/Tokyo+Tower")
+direct_place = scrape_place(direct_place_url)
 
 repaired_place = scrape_place(
     place.source_url,
