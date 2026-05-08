@@ -1971,6 +1971,17 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(enrichment.display_name)
         self.assertIsNone(enrichment.description)
 
+        details.name = "Tamariz Beach"
+        details.description = (
+            "Huge Waves - they were really fun but you should not lie in the front rows "
+            "because an unexpectedly large wave hit our towel."
+        )
+
+        enrichment = build_data.normalize_place_page_enrichment(details)
+
+        self.assertEqual(enrichment.display_name, "Tamariz Beach")
+        self.assertIsNone(enrichment.description)
+
     def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_match_lacks_description(self) -> None:
         place = RawPlace(
             name="Taipei 101",

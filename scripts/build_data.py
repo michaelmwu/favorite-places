@@ -8077,6 +8077,7 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
     "enjoyed",
     "felt",
     "found",
+    "hit",
     "ordered",
     "reserve",
     "reserved",

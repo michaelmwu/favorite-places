@@ -1423,6 +1423,12 @@ class PlaceScraperTests(unittest.TestCase):
                 "It cost ¥2000 yen to reserve it. I think during normal hours it is cheaper."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "Huge Waves - they were really fun but you should not lie in the front rows "
+                "because an unexpectedly large wave hit our towel."
+            )
+        )
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(

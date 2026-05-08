@@ -159,6 +159,7 @@ _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "went",
     "found",
     "felt",
+    "hit",
     "think",
     "saw",
     "seen",
