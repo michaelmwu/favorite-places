@@ -1563,6 +1563,68 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.description)
 
+    def test_build_place_details_rejects_moderation_prompt_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/La+Quintessence",
+            resolved_url="https://www.google.com/maps/place/La+Quintessence",
+            snapshot={
+                "name": "La Quintessence Cannes",
+                "description": "Mark as temporarily closed, or remove this place; report a legal problem",
+                "body_text": "La Quintessence Cannes\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_rejects_service_option_only_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/La+Prosciutteria",
+            resolved_url="https://www.google.com/maps/place/La+Prosciutteria",
+            snapshot={
+                "name": "La Prosciutteria Bologna",
+                "description": "· \ue5ca Dine-in · \ue5ca Curbside pickup · \ue5ca Delivery \ue5cc",
+                "body_text": "La Prosciutteria Bologna\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_strips_service_option_suffix_from_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Rare+Steakhouse",
+            resolved_url="https://www.google.com/maps/place/Rare+Steakhouse",
+            snapshot={
+                "name": "Rare Steakhouse",
+                "description": (
+                    "Polished white-tablecloth operation dishing up traditional & Japanese-style cuts, "
+                    "plus cocktails. · \ue5ca Dine-in · \ue5ca Takeout · \ue5cd Delivery \ue5cc"
+                ),
+                "body_text": "Rare Steakhouse\nSteak house",
+            },
+        )
+
+        self.assertEqual(
+            details.description,
+            "Polished white-tablecloth operation dishing up traditional & Japanese-style cuts, plus cocktails",
+        )
+
+    def test_build_place_details_rejects_first_person_review_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/CANNES+sign",
+            resolved_url="https://www.google.com/maps/place/CANNES+sign",
+            snapshot={
+                "name": "CANNES sign",
+                "description": (
+                    "We took a very long cruise last summer from Venice to Portugal. On NCL. "
+                    "One stop was Cannes. We got off the ship and took a self guided walking "
+                    "tour using google maps and my research."
+                ),
+                "body_text": "CANNES sign\nTourist attraction",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
     def test_build_place_details_rejects_search_results_labels_and_rating_categories(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/search/?api=1&query=Bianchetto",

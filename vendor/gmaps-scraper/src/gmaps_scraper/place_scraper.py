@@ -109,6 +109,36 @@ _DESCRIPTION_STOP_MARKERS = {
     "get the most out of google maps",
     "our policies do not permit contributions to this type of place.",
 }
+_DESCRIPTION_STOP_SUBSTRINGS = (
+    "mark as temporarily closed",
+    "remove this place",
+    "report a legal problem",
+)
+_DESCRIPTION_SERVICE_OPTION_SEGMENT_PATTERN = re.compile(
+    r"^(?:[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]\s*)?"
+    r"(?:dine-?in|takeout|delivery|curbside pickup|kerbside pickup|"
+    r"no-contact delivery|drive-through|drive thru|takeaway|reservations?)$",
+    re.IGNORECASE,
+)
+_DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
+    "thank you for",
+    "we're thrilled",
+    "we apologize",
+    "contact us",
+    "our team",
+    "we strive to",
+    "we took",
+    "we got",
+    "we decided",
+    "we stopped by",
+    "we spent",
+    "ended up going",
+    "my research",
+    "my son and i",
+    "i had high hopes",
+    "i'm sorry to inform",
+    "google maps",
+)
 _SEARCH_RESULTS_LABELS = {
     "result",
     "results",
@@ -3569,11 +3599,19 @@ def _clean_description_text(value: object) -> str | None:
     normalized = _clean_text(value)
     if normalized is None:
         return None
-    if normalized.lower() in _DESCRIPTION_STOP_MARKERS:
+    normalized = _strip_description_service_options(normalized)
+    if normalized is None:
+        return None
+    lowered = normalized.lower()
+    if lowered in _DESCRIPTION_STOP_MARKERS:
+        return None
+    if any(marker in lowered for marker in _DESCRIPTION_STOP_SUBSTRINGS):
         return None
     if _looks_like_status_text(normalized):
         return None
     if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
+        return None
+    if _looks_like_review_snippet(normalized) or _looks_like_review_response_text(normalized):
         return None
     if not any(character.isalnum() for character in normalized):
         return None
@@ -3587,6 +3625,47 @@ def _clean_description_text(value: object) -> str | None:
     ):
         return None
     return normalized
+
+
+def _strip_description_service_options(value: str) -> str | None:
+    segments = [_clean_description_segment(part) for part in re.split(r"[·•⋅]+", value)]
+    cleaned_segments = [segment for segment in segments if segment]
+    if not cleaned_segments:
+        return None
+
+    is_service_segment = [
+        bool(_DESCRIPTION_SERVICE_OPTION_SEGMENT_PATTERN.fullmatch(segment))
+        for segment in cleaned_segments
+    ]
+    if all(is_service_segment):
+        return None
+
+    last_non_service_index = len(cleaned_segments) - 1
+    while last_non_service_index >= 0 and is_service_segment[last_non_service_index]:
+        last_non_service_index -= 1
+
+    if last_non_service_index < len(cleaned_segments) - 1:
+        trimmed = " · ".join(cleaned_segments[: last_non_service_index + 1]).strip(" .")
+        return trimmed or None
+    return value
+
+
+def _clean_description_segment(value: str) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    normalized = normalized.strip("·•⋅ ").strip()
+    normalized = re.sub(r"^[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]+\s*", "", normalized)
+    normalized = re.sub(r"\s*[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]+$", "", normalized)
+    normalized = normalized.strip(" .")
+    return normalized or None
+
+
+def _looks_like_review_response_text(value: str) -> bool:
+    lowered = value.casefold()
+    if len(value.split()) < 10:
+        return False
+    return any(marker in lowered for marker in _DESCRIPTION_REVIEW_RESPONSE_MARKERS)
 
 
 def _extract_preview_website(strings: list[str]) -> str | None:
