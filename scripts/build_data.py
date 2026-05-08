@@ -1040,6 +1040,7 @@ INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+-reviews?$"),
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$"),
     re.compile(r"^adults(?:_|-)only(?:_|-).*$"),
+    re.compile(r"^beer$"),
     re.compile(r"^(?:light|heavy|mostly|partly)(?:_|-)(?:rain|snow|cloudy|sunny)$"),
     re.compile(r"^free(?:_|-)breakfast$"),
     re.compile(r"^free(?:_|-)?wi(?:_|-)?fi$"),
@@ -1052,6 +1053,7 @@ INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...
     re.compile(r"^floor\s+\d+$", re.IGNORECASE),
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$", re.IGNORECASE),
     re.compile(r"^adults\s+only\b", re.IGNORECASE),
+    re.compile(r"^beer$", re.IGNORECASE),
     re.compile(r"^(?:light|heavy|mostly|partly)\s+(?:rain|snow|cloudy|sunny)$", re.IGNORECASE),
     re.compile(r"^free\s+breakfast$", re.IGNORECASE),
     re.compile(r"^free\s+wi-?fi$", re.IGNORECASE),
@@ -4532,6 +4534,7 @@ def normalize_address_locality_part(part: str) -> str | None:
     candidate = re.sub(r"\s+\d{4}\b", "", candidate).strip()
     candidate = candidate.strip(" -−ー－/()[]{}.")
     candidate = strip_leading_numeric_locality_prefix(candidate)
+    candidate = strip_leading_locality_preposition(candidate)
     candidate = strip_country_locality_prefix(candidate)
     candidate = strip_subnational_locality_suffix(candidate)
 
@@ -4581,6 +4584,10 @@ def strip_leading_numeric_locality_prefix(candidate: str) -> str:
         candidate,
         flags=re.IGNORECASE,
     ).strip()
+
+
+def strip_leading_locality_preposition(candidate: str) -> str:
+    return re.sub(r"^(?:at|near)\s+", "", candidate, flags=re.IGNORECASE).strip()
 
 
 def strip_subnational_locality_suffix(candidate: str) -> str:
@@ -8676,7 +8683,15 @@ def apply_semantic_enrichment(
         bypass_cache=(include_semantics and force_semantics) or (include_description and force_description),
     )
     if repair is None:
-        if include_description and not description_reused:
+        if (
+            include_description
+            and not description_reused
+            and fallback_semantic_description_is_allowed(
+                enrichment_place,
+                raw_place=raw_place,
+                raw_note=raw_note,
+            )
+        ):
             description = fallback_semantic_description(
                 enrichment_place,
                 raw_place=raw_place,
@@ -8700,7 +8715,11 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
     if include_description and not description_reused:
         description = sanitize_semantic_description(repair.get("description"))
-        if description is None:
+        if description is None and fallback_semantic_description_is_allowed(
+            enrichment_place,
+            raw_place=raw_place,
+            raw_note=raw_note,
+        ):
             description = fallback_semantic_description(
                 enrichment_place,
                 raw_place=raw_place,
@@ -8719,6 +8738,23 @@ def apply_semantic_enrichment(
         )
     ):
         enrichment_place.semantic_source = "llm"
+
+
+def fallback_semantic_description_is_allowed(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    raw_note: str | None,
+) -> bool:
+    return not any(
+        as_string(value)
+        for value in (
+            raw_note,
+            raw_place.note,
+            enrichment_place.description,
+            enrichment_place.search_result_description,
+        )
+    )
 
 
 def fallback_semantic_description(
@@ -8785,7 +8821,12 @@ def fallback_semantic_description_locality_is_usable(
 
 
 def indefinite_article(value: str) -> str:
-    return "an" if value[:1].lower() in {"a", "e", "i", "o", "u"} else "a"
+    normalized = value.strip().lower()
+    if normalized.startswith(("eu", "uni", "use", "one")):
+        return "a"
+    if normalized.startswith(("honest", "hour", "heir")):
+        return "an"
+    return "an" if normalized[:1] in {"a", "e", "i", "o", "u"} else "a"
 
 
 def repair_semantic_enrichment_with_llm(

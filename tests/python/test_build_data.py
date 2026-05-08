@@ -5256,7 +5256,7 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertEqual(enrichment.semantic_description_signature, signature)
 
-    def test_apply_semantic_enrichment_falls_back_on_signature_mismatch(self) -> None:
+    def test_apply_semantic_enrichment_does_not_fallback_over_saved_note_on_signature_mismatch(self) -> None:
         raw_place = RawPlace(
             name="Tea House",
             note="Order the house oolong and stay for a quiet reset.",
@@ -5293,9 +5293,49 @@ class BuildDataTests(unittest.TestCase):
                 existing_entry=existing_entry,
             )
 
-        self.assertEqual(enrichment.semantic_description, "Tea House is a tea house in Taipei.")
-        self.assertIsNotNone(enrichment.semantic_description_signature)
-        self.assertEqual(enrichment.semantic_source, "fallback")
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
+
+    def test_apply_semantic_enrichment_does_not_fallback_over_google_description(self) -> None:
+        raw_place = RawPlace(
+            name="Tea House",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            description="A calm tea stop with oolong-focused review signals.",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+            semantic_description="A stale generated description.",
+            semantic_description_signature="old-signature",
+            semantic_source="llm",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Tea House, Taipei, Taiwan",
+            matched=True,
+            place=enrichment,
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=False),
+            patch.object(build_data, "repair_semantic_enrichment_with_llm", return_value=None),
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                existing_entry=existing_entry,
+            )
+
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
 
     def test_apply_semantic_enrichment_falls_back_when_llm_description_missing(self) -> None:
         raw_place = RawPlace(
@@ -5370,9 +5410,9 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(enrichment.semantic_neighborhood, "Xinyi")
         self.assertEqual(enrichment.semantic_tags, ["tea-house"])
-        self.assertEqual(enrichment.semantic_description, "Tea House is a tea house in Taipei.")
-        self.assertIsNotNone(enrichment.semantic_description_signature)
-        self.assertEqual(enrichment.semantic_source, "fallback")
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertEqual(enrichment.semantic_source, "llm")
 
     def test_apply_semantic_enrichment_force_refreshes_description(self) -> None:
         raw_place = RawPlace(
@@ -6235,6 +6275,7 @@ class BuildDataTests(unittest.TestCase):
     def test_humanize_type_id_rejects_weather_and_amenity_noise(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("light_rain"))
         self.assertIsNone(build_data.humanize_type_id("adults_only_boutique_hotel"))
+        self.assertIsNone(build_data.humanize_type_id("beer"))
         self.assertIsNone(build_data.humanize_type_id("free_breakfast"))
         self.assertIsNone(build_data.humanize_type_id("free_wi_fi"))
 
@@ -6249,6 +6290,25 @@ class BuildDataTests(unittest.TestCase):
                 "primaryType": "light_rain",
                 "primaryTypeDisplayName": {"text": "Light rain"},
                 "types": ["light_rain"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertIsNone(place.primary_type_display_name_localized)
+        self.assertEqual(place.types, [])
+
+    def test_normalize_enrichment_match_drops_beer_category(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "test-id",
+                "name": "places/test-id",
+                "displayName": {"text": "Made in Belfast Talbot Street"},
+                "formattedAddress": "25 Talbot St, Belfast BT1 2LD, UK",
+                "googleMapsUri": "https://maps.google.com/?cid=1",
+                "primaryType": "beer",
+                "primaryTypeDisplayName": {"text": "Beer"},
+                "types": ["beer"],
             }
         )
 
@@ -6306,6 +6366,32 @@ class BuildDataTests(unittest.TestCase):
         )
 
         self.assertEqual(description, "Kite Beach is a beach in Dubai.")
+
+    def test_fallback_semantic_description_strips_leading_location_preposition(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Coco Grill & Bar",
+                primary_type_display_name="Grill",
+                formatted_address="at Paradeplatz, Bleicherweg 1, 8001 Zurich, Switzerland",
+            ),
+            raw_place=RawPlace(name="Coco Grill & Bar", maps_url="https://maps.example/coco", address=None),
+            city_name="Zurich",
+        )
+
+        self.assertEqual(description, "Coco Grill & Bar is a grill in Paradeplatz.")
+
+    def test_fallback_semantic_description_uses_natural_articles(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Didi's Frieden",
+                primary_type_display_name="European restaurant",
+                formatted_address="Old Town, Zurich, Switzerland",
+            ),
+            raw_place=RawPlace(name="Didi's Frieden", maps_url="https://maps.example/didis", address=None),
+            city_name="Zurich",
+        )
+
+        self.assertEqual(description, "Didi's Frieden is a european restaurant in Old Town.")
 
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [

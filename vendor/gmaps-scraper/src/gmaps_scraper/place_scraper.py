@@ -179,6 +179,12 @@ _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "return",
     "returned",
 )
+_DESCRIPTION_FIRST_PERSON_EXPERIENCE_PATTERN = re.compile(
+    r"\b(?:"
+    + "|".join(re.escape(marker) for marker in _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS)
+    + r")\b",
+    re.IGNORECASE,
+)
 _SEARCH_RESULTS_LABELS = {
     "result",
     "results",
@@ -3735,9 +3741,7 @@ def _looks_like_first_person_review_text(value: str) -> bool:
     lowered = value.casefold()
     if _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN.search(lowered) is None:
         return False
-    return any(
-        marker in lowered for marker in _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS
-    )
+    return _DESCRIPTION_FIRST_PERSON_EXPERIENCE_PATTERN.search(value) is not None
 
 
 def _extract_preview_website(strings: list[str]) -> str | None:

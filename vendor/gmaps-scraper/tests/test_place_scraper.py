@@ -1454,12 +1454,38 @@ class PlaceScraperTests(unittest.TestCase):
             "We serve seasonal Italian dishes and cocktails in a relaxed dining room.",
         )
 
+    def test_clean_description_text_keeps_first_person_summary_with_word_prefixes(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "We are a family-owned restaurant founded in 1978, serving regional dishes "
+                "with local ingredients and warm hospitality."
+            ),
+            (
+                "We are a family-owned restaurant founded in 1978, serving regional dishes "
+                "with local ingredients and warm hospitality."
+            ),
+        )
+
     def test_clean_description_text_keeps_owner_style_marketing_summary(self) -> None:
         self.assertEqual(
             _clean_description_text(
                 "Our team provides thoughtful care and we strive to make every visit feel easy."
             ),
             "Our team provides thoughtful care and we strive to make every visit feel easy.",
+        )
+
+    def test_clean_description_text_keeps_first_person_words_containing_markers(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Our costume museum preserves regional theatre clothing and performance "
+                "objects with guided exhibits, public workshops, archival research, "
+                "and rotating displays for visitors."
+            ),
+            (
+                "Our costume museum preserves regional theatre clothing and performance "
+                "objects with guided exhibits, public workshops, archival research, "
+                "and rotating displays for visitors."
+            ),
         )
 
     def test_clean_description_text_rejects_option_only_amenity_labels(self) -> None:
