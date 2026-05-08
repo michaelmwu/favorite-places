@@ -130,6 +130,7 @@ OPERATIONAL_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
+PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS = 25_000.0
 MAP_PIN_DISTANCE_WARNING_MIN_METERS = 100_000.0
 MAP_PIN_DISTANCE_WARNING_BUFFER_METERS = 50_000.0
 MAP_PIN_DISTANCE_SUPPRESSION_MIN_METERS = 1_000_000.0
@@ -1038,8 +1039,10 @@ GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
 INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+-reviews?$"),
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$"),
+    re.compile(r"^adults(?:_|-)only(?:_|-).*$"),
     re.compile(r"^(?:light|heavy|mostly|partly)(?:_|-)(?:rain|snow|cloudy|sunny)$"),
     re.compile(r"^free(?:_|-)breakfast$"),
+    re.compile(r"^free(?:_|-)?wi(?:_|-)?fi$"),
     re.compile(r"^breakfast(?:_|-)included$"),
     re.compile(r"^free(?:_|-)cancellation(?:_|-).*$"),
     re.compile(r"^floor(?:_|-)\d+$"),
@@ -1048,8 +1051,10 @@ INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...
     re.compile(r"^\d+\s+reviews?$", re.IGNORECASE),
     re.compile(r"^floor\s+\d+$", re.IGNORECASE),
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$", re.IGNORECASE),
+    re.compile(r"^adults\s+only\b", re.IGNORECASE),
     re.compile(r"^(?:light|heavy|mostly|partly)\s+(?:rain|snow|cloudy|sunny)$", re.IGNORECASE),
     re.compile(r"^free\s+breakfast$", re.IGNORECASE),
+    re.compile(r"^free\s+wi-?fi$", re.IGNORECASE),
     re.compile(r"^breakfast\s+included$", re.IGNORECASE),
     re.compile(r"^free cancellation\b", re.IGNORECASE),
 )
@@ -3874,6 +3879,8 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
     raw_display_name = place.primary_type_display_name_localized or place.primary_type_display_name
     if place.primary_type is not None and normalize_enrichment_type_tag(place.primary_type) is None:
         raw_display_name = None
+        place.primary_type = None
+        place.types = []
     canonical_display_name = canonical_primary_category_label(
         primary_type=place.primary_type,
         display_name=place.primary_type_display_name,
@@ -5805,7 +5812,11 @@ def preserve_existing_enrichment(
         refreshed_place.business_status = previous_place.business_status
         append_unique_reason(preserved_fields, "status")
 
-    if google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri):
+    if (
+        refreshed_place.google_maps_uri is None
+        and google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri)
+        and google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place)
+    ):
         refreshed_place.google_maps_uri = previous_place.google_maps_uri
         if not refreshed_place.google_place_id and previous_place.google_place_id:
             refreshed_place.google_place_id = previous_place.google_place_id
@@ -5833,6 +5844,17 @@ def preserve_existing_enrichment(
         f"WARNING: Preserving previous enrichment fields for {slug}:{place_id} [{place_name}]: "
         f"{', '.join(preserved_fields)}.",
     )
+
+
+def google_maps_uri_is_compatible_for_preservation(
+    previous_place: EnrichmentPlace,
+    refreshed_place: EnrichmentPlace,
+) -> bool:
+    previous_address = normalize_text(previous_place.formatted_address)
+    refreshed_address = normalize_text(refreshed_place.formatted_address)
+    if previous_address and refreshed_address and token_overlap_score(previous_address, refreshed_address) == 0:
+        return False
+    return True
 
 
 def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
@@ -7784,6 +7806,13 @@ def place_page_candidate_is_confident_match(
     details: Any,
     enrichment_place: EnrichmentPlace,
 ) -> bool:
+    distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
+    if (
+        distance_m is not None
+        and distance_m > PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS
+    ):
+        return False
+
     source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
     if not source_url or "/maps/search/" not in source_url:
         return True
@@ -7816,6 +7845,19 @@ def place_page_candidate_name_is_address_artifact(
     return bool(candidate_name and re.search(r"\d", candidate_name) and is_street_or_block_part(candidate_name))
 
 
+def place_page_candidate_coordinate_distance_meters(
+    raw_place: RawPlace,
+    details: Any,
+) -> float | None:
+    raw_lat = raw_place.lat
+    raw_lng = raw_place.lng
+    candidate_lat = as_float(getattr(details, "lat", None))
+    candidate_lng = as_float(getattr(details, "lng", None))
+    if raw_lat is None or raw_lng is None or candidate_lat is None or candidate_lng is None:
+        return None
+    return haversine_meters(raw_lat, raw_lng, candidate_lat, candidate_lng)
+
+
 def score_place_page_candidate(
     raw_place: RawPlace,
     details: Any,
@@ -7840,12 +7882,8 @@ def score_place_page_candidate(
     if raw_address and candidate_address:
         score += token_overlap_score(raw_address, candidate_address)
 
-    raw_lat = raw_place.lat
-    raw_lng = raw_place.lng
-    candidate_lat = as_float(getattr(details, "lat", None))
-    candidate_lng = as_float(getattr(details, "lng", None))
-    if raw_lat is not None and raw_lng is not None and candidate_lat is not None and candidate_lng is not None:
-        distance_m = haversine_meters(raw_lat, raw_lng, candidate_lat, candidate_lng)
+    distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
+    if distance_m is not None:
         if distance_m <= 100:
             score += 40
         elif distance_m <= 400:
@@ -7888,7 +7926,7 @@ def build_place_page_candidate_urls(
         localized_maps_url=localized_maps_url,
         search_url=search_url,
     ):
-        candidates = [search_url, localized_maps_url, cid_url]
+        candidates = [cid_url, search_url, localized_maps_url]
         return dedupe_urls([*priority_candidates, *[url for url in candidates if url is not None]])
 
     candidates: list[str] = []
@@ -8698,6 +8736,8 @@ def fallback_semantic_description(
         raw_place=raw_place,
         city_name=city_name,
     )
+    if normalize_text(location) == normalize_text(name):
+        location = as_string(city_name)
     if category and location:
         description = f"{name} is {indefinite_article(category)} {category.lower()} in {location}."
     elif category:
@@ -8736,6 +8776,8 @@ def fallback_semantic_description_locality_is_usable(
     if not normalized:
         return False
     if re.search(r"^\+?\s*photos?\b", normalized, flags=re.IGNORECASE):
+        return False
+    if re.search(r"\b(?:centrico|habitaciones?|bedrooms?|ascensor|wifi|air\s*conditioning|\bac\b)\b", normalized, flags=re.IGNORECASE):
         return False
     if " - " in normalized and city_name and normalize_locality_key(city_name) in normalize_locality_key(normalized):
         return False

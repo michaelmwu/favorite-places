@@ -1063,12 +1063,12 @@ class BuildDataTests(unittest.TestCase):
                 country_name="Japan",
             ),
             [
+                "https://maps.google.com/?cid=6924437521980544303&hl=en&gl=us",
                 (
                     "https://www.google.com/maps/search/?api=1"
                     "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
                 ),
                 "https://www.google.com/maps/search/?api=1&query=Locale&hl=en&gl=us",
-                "https://maps.google.com/?cid=6924437521980544303&hl=en&gl=us",
             ],
         )
 
@@ -1221,12 +1221,7 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(
             called_urls,
-            [
-                (
-                    "https://www.google.com/maps/search/?api=1"
-                    "&query=Locale%2C+Tokyo%2C+Japan&hl=en&gl=us"
-                )
-            ],
+            ["https://maps.google.com/?cid=6924437521980544303&hl=en&gl=us"],
         )
         self.assertTrue(entry.matched)
         self.assertIsNotNone(entry.place)
@@ -2405,6 +2400,101 @@ class BuildDataTests(unittest.TestCase):
         self.assertFalse(entry.matched)
         self.assertIsNone(entry.place)
         self.assertIsNone(entry.error)
+
+    def test_fetch_place_page_enrichment_rejects_far_exact_name_candidate(self) -> None:
+        place = RawPlace(
+            name="Casa Montaña",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Casa+Monta%C3%B1a",
+            lat=39.465568,
+            lng=-0.3308894,
+        )
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(scrape_url: str, **_: object) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            if scrape_url == "https://example.com/wrong":
+                return SimpleNamespace(
+                    source_url="https://www.google.com/maps/place/Casa+Monta%C3%B1a",
+                    resolved_url=scrape_url,
+                    name="Casa Montaña",
+                    category="Villa",
+                    address="Rincón, Puerto Rico",
+                    rating=4.8,
+                    review_count=10,
+                    lat=18.3546206,
+                    lng=-67.2517407,
+                    limited_view=False,
+                )
+            return SimpleNamespace(
+                source_url="https://maps.google.com/?cid=963849929162476527",
+                resolved_url=scrape_url,
+                name="Casa Montaña",
+                category="Restaurant",
+                address="Carrer de Josep Benlliure, 69, Valencia, Spain",
+                rating=4.6,
+                review_count=4812,
+                lat=39.465568,
+                lng=-0.3308894,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(
+                build_data,
+                "build_place_page_candidate_urls",
+                return_value=["https://example.com/wrong", "https://example.com/correct"],
+            ),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state"),
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(scrape_attempts, ["https://example.com/wrong", "https://example.com/correct"])
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.primary_type_display_name, "Restaurant")
+        self.assertEqual(entry.place.formatted_address, "Carrer de Josep Benlliure, 69, Valencia, Spain")
+
+    def test_preserve_existing_enrichment_does_not_keep_incompatible_stronger_maps_url(self) -> None:
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Casa Montaña, Valencia, Spain",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Casa Montaña",
+                formatted_address="Carr. 413 KM 5.8 Interior Road Sec La Joya BO, Puerto Rico",
+                google_maps_uri="https://www.google.com/maps/place/Casa+Monta%C3%B1a/@18.3546206,-67.2517407,17z/",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Casa Montaña, Valencia, Spain",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Casa Montaña",
+                formatted_address="C/ de Josep Benlliure, 69, Poblats Marítims, València, Spain",
+                google_maps_uri="https://maps.google.com/?cid=963849929162476527",
+            ),
+        )
+
+        merged, warning = build_data.preserve_existing_enrichment(
+            slug="valencia-spain",
+            place_id="cid:963849929162476527",
+            place_name="Casa Montaña",
+            existing_entry=existing_entry,
+            refreshed_entry=refreshed_entry,
+        )
+
+        self.assertIsNone(warning)
+        assert merged.place is not None
+        self.assertEqual(merged.place.google_maps_uri, "https://maps.google.com/?cid=963849929162476527")
 
     def test_place_page_has_meaningful_enrichment_rejects_limited_view_without_review_count(self) -> None:
         details = SimpleNamespace(limited_view=True)
@@ -6124,12 +6214,29 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.primary_type)
         self.assertEqual(place.types, [])
 
+    def test_canonicalize_enrichment_place_drops_types_from_invalid_cached_primary_type(self) -> None:
+        place = build_data.canonicalize_enrichment_place(
+            EnrichmentPlace(
+                display_name="Russafa",
+                primary_type="adults_only_boutique_hotel",
+                primary_type_display_name="Adults Only Boutique Hotel",
+                types=["shopping", "adults_only_boutique_hotel"],
+            )
+        )
+
+        assert place is not None
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertEqual(place.types, [])
+
     def test_humanize_type_id_rejects_generic_item(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("item"))
 
     def test_humanize_type_id_rejects_weather_and_amenity_noise(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("light_rain"))
+        self.assertIsNone(build_data.humanize_type_id("adults_only_boutique_hotel"))
         self.assertIsNone(build_data.humanize_type_id("free_breakfast"))
+        self.assertIsNone(build_data.humanize_type_id("free_wi_fi"))
 
     def test_normalize_enrichment_match_drops_weather_category(self) -> None:
         place = build_data.normalize_enrichment_match(
@@ -6161,6 +6268,31 @@ class BuildDataTests(unittest.TestCase):
         )
 
         self.assertEqual(description, "Al Seef St is a saved place in Dubai.")
+
+    def test_fallback_semantic_description_uses_city_for_lodging_listing_address(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Russafa",
+                formatted_address="VG Centrico, 2 habitaciones, confort ascensor,wifi AC",
+            ),
+            raw_place=RawPlace(name="Russafa", maps_url="https://maps.example/russafa", address=None),
+            city_name="Valencia",
+        )
+
+        self.assertEqual(description, "Russafa is a saved place in Valencia.")
+
+    def test_fallback_semantic_description_does_not_use_place_name_as_location(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Russafa",
+                primary_type_display_name="Neighborhood",
+                formatted_address="Russafa, Valencia, Spain",
+            ),
+            raw_place=RawPlace(name="Russafa", maps_url="https://maps.example/russafa", address=None),
+            city_name="Valencia",
+        )
+
+        self.assertEqual(description, "Russafa is a neighborhood in Valencia.")
 
     def test_fallback_semantic_description_uses_city_for_full_address_locality(self) -> None:
         description = build_data.fallback_semantic_description(
@@ -10030,7 +10162,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(result.place.business_status, "CLOSED_TEMPORARILY")
         self.assertEqual(
             result.place.google_maps_uri,
-            "https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
+            "https://www.google.com/maps/search/?api=1&query=First+Place",
         )
         self.assertEqual(result.place.google_place_id, "place123")
         self.assertEqual(result.place.photo_url, "https://photos.example/old.jpg")
@@ -10038,7 +10170,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             print_mock.call_args_list[1].args[0],
             "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
-            "rating, user_rating_count, primary_category, status, maps_url, photo_url.",
+            "rating, user_rating_count, primary_category, status, photo_url.",
         )
 
     def test_enrich_place_job_preserves_valid_previous_address_when_refresh_loses_it(self) -> None:
@@ -10192,7 +10324,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             print_mock.call_args_list[1].args[0],
             "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
-            "rating, user_rating_count, maps_url.",
+            "rating, user_rating_count.",
         )
 
     def test_refresh_retries_transient_parse_failure(self) -> None:
