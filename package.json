@@ -17,6 +17,7 @@
     "format": "biome format --write .",
     "test": "bun run test:frontend && bun run test:python",
     "test:frontend": "vitest run",
+    "test:e2e": "playwright test",
     "test:python": "uv run python3 -m unittest discover -s tests/python -p 'test_*.py'",
     "export:marker-icons": "bun scripts/export_marker_icons.mjs",
     "build:data": "uv run python3 scripts/build_data.py",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@biomejs/biome": "^2.4.12",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.2.4",
     "@types/leaflet": "^1.9.21",
     "tailwindcss": "^4.2.4",

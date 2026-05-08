@@ -12,6 +12,8 @@ __pycache__/
 src/data/generated/
 public/data/search-index.json
 .gstack/
+playwright-report/
+test-results/
 data/cache/google-places/
 site/data/cache/google-places/
 site.example/data/cache/*

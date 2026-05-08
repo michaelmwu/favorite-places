@@ -10,6 +10,6 @@ export default defineConfig({
     },
   },
   test: {
-    exclude: [...configDefaults.exclude, ".context/**"],
+    exclude: [...configDefaults.exclude, ".context/**", "tests/e2e/**"],
   },
 });
