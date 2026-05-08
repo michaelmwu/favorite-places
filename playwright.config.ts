@@ -2,7 +2,19 @@ import { defineConfig, devices } from "@playwright/test";
 
 const env = process.env as Record<string, string | undefined>;
 const isCi = Boolean(env["CI"]);
-const port = Number(env["PLAYWRIGHT_PORT"] || 4321);
+const parsePort = (value: string | undefined, fallback: number) => {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 65535) {
+    throw new Error(`PLAYWRIGHT_PORT must be an integer from 1 to 65535, got "${value}".`);
+  }
+
+  return parsed;
+};
+const port = parsePort(env["PLAYWRIGHT_PORT"], 4321);
 const host = "127.0.0.1";
 const baseURL = `http://${host}:${port}`;
 const testSiteDir = ".context/e2e-site";
