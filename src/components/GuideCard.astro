@@ -44,9 +44,10 @@ const countryNameAliases: Record<string, string[]> = {
   "United Kingdom": ["UK"],
   "United States": ["USA"],
 };
+const guideCardConfig = siteConfig.home.guideCard;
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const trimCountryFromTitle = (title: string) => {
-  if (!siteConfig.guideCard.trimCountryFromTitle) {
+  if (!guideCardConfig.trimCountryFromTitle) {
     return title;
   }
 
@@ -78,17 +79,17 @@ const guideDisplayTitle = trimCountryFromTitle(guide.title);
   <div class="section-stack ui-stack">
     <h3 class="ui-card-title">{guideDisplayTitle}</h3>
     {
-      siteConfig.guideCard.showDescription && guideDescriptionHtml ? (
+      guideCardConfig.showDescription && guideDescriptionHtml ? (
         <p class="rich-copy ui-copy" set:html={guideDescriptionHtml} />
-      ) : siteConfig.guideCard.showDescription ? (
-        <p class="ui-copy">{siteConfig.guideCard.fallbackDescription}</p>
+      ) : guideCardConfig.showDescription ? (
+        <p class="ui-copy">{guideCardConfig.fallbackDescription}</p>
       ) : null
     }
   </div>
 
-  {siteConfig.guideCard.showTags && displayGuideTags.length > 0 && (
+  {guideCardConfig.showTags && displayGuideTags.length > 0 && (
     <div class="tag-row ui-tag-row">
-      {displayGuideTags.slice(0, siteConfig.guideCard.maxTags).map((tag) => (
+      {displayGuideTags.slice(0, guideCardConfig.maxTags).map((tag) => (
         <a
           class="tag-pill ui-tag-pill guide-card-tag-link"
           href={`/guides/${guide.slug}/?tag=${encodeURIComponent(normalizeTagValue(tag))}`}
@@ -100,11 +101,11 @@ const guideDisplayTitle = trimCountryFromTitle(guide.title);
     </div>
   )}
 
-  {(siteConfig.guideCard.showPlaceCount || (siteConfig.guideCard.showAuthor && guideAuthorName)) && (
+  {(guideCardConfig.showPlaceCount || (guideCardConfig.showAuthor && guideAuthorName)) && (
     <div class="guide-card-footer ui-card-footer">
       <div class="stats-row ui-meta-row">
-        {siteConfig.guideCard.showAuthor && guide.author && guideAuthorName && <AuthorByline author={guide.author} label={siteConfig.guideCard.authorLabel} variant="card" />}
-        {siteConfig.guideCard.showPlaceCount && (
+        {guideCardConfig.showAuthor && guide.author && guideAuthorName && <AuthorByline author={guide.author} label={guideCardConfig.authorLabel} variant="card" />}
+        {guideCardConfig.showPlaceCount && (
           <span class="count-chip guide-card-place-count">
             <strong>{guide.place_count}</strong>
             <span>place{guide.place_count === 1 ? "" : "s"}</span>
