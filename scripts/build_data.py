@@ -482,6 +482,16 @@ COUNTRY_LOCALITY_ALIASES = (
     "España",
     "Espanya",
     "スペイン",
+    "France",
+    "フランス",
+    "Monaco",
+    "モナコ",
+    "Japan",
+    "日本",
+    "China",
+    "中国",
+    "South Korea",
+    "韓国",
     "Vatican City",
     "Ivory Coast",
 )
@@ -518,6 +528,61 @@ SEMANTIC_NEIGHBORHOOD_UPPERCASE_TOKENS = {
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
+SUBNATIONAL_LOCALITY_ABBREVIATIONS = frozenset(
+    {
+        "AL",
+        "AK",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "FL",
+        "GA",
+        "HI",
+        "ID",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "ME",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MS",
+        "MO",
+        "MT",
+        "NE",
+        "NV",
+        "NH",
+        "NJ",
+        "NM",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VT",
+        "VA",
+        "WA",
+        "WV",
+        "WI",
+        "WY",
+        "DC",
+    }
+)
 LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
@@ -3722,6 +3787,13 @@ def humanize_type_id(value: str | None) -> str | None:
     normalized = as_string(value)
     if normalized is None:
         return None
+    tag = slugify(normalized.replace("_", "-"))
+    if (
+        not tag
+        or tag in GENERIC_ENRICHMENT_TYPE_TAGS
+        or any(pattern.match(tag) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS)
+    ):
+        return None
     phrase = normalized.replace("_", " ").replace("-", " ").strip().lower()
     if not phrase:
         return None
@@ -3745,7 +3817,11 @@ def localized_primary_category_label(
     canonical_display_name: str | None,
 ) -> str | None:
     sanitized_display_name = sanitize_enrichment_primary_category(raw_display_name)
-    if sanitized_display_name is None or looks_english_category_label(sanitized_display_name):
+    if (
+        sanitized_display_name is None
+        or canonical_display_name is None
+        or looks_english_category_label(sanitized_display_name)
+    ):
         return None
     if (
         canonical_display_name
@@ -3874,7 +3950,11 @@ def normalize_enrichment_type_id_with_generic_fallback(value: str | None) -> str
     if not value:
         return None
     normalized = slugify(value.replace("_", "-"))
-    if not normalized or any(pattern.match(normalized) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS):
+    if (
+        not normalized
+        or normalized in GENERIC_ENRICHMENT_TYPE_TAGS
+        or any(pattern.match(normalized) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS)
+    ):
         return None
     return normalized.replace("-", "_")
 
@@ -4401,6 +4481,10 @@ def normalize_address_locality_part(part: str) -> str | None:
 
     if not candidate or is_country_locality(candidate):
         return None
+    if is_subnational_locality_abbreviation(candidate):
+        return None
+    if is_explicit_subnational_locality_label(candidate):
+        return None
 
     if is_building_or_unit_part(candidate):
         return None
@@ -4467,6 +4551,21 @@ def extract_trailing_locality(candidate: str) -> str | None:
 
 def is_country_locality(candidate: str) -> bool:
     return normalize_locality_key(candidate) in get_country_locality_keys()
+
+
+def is_subnational_locality_abbreviation(candidate: str) -> bool:
+    compact = re.sub(r"[^A-Za-z]", "", candidate).upper()
+    return compact in SUBNATIONAL_LOCALITY_ABBREVIATIONS
+
+
+def is_explicit_subnational_locality_label(candidate: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:county|province|prefecture|state|region)\b",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
 
 
 def get_country_locality_keys() -> set[str]:
@@ -4563,8 +4662,9 @@ def is_street_or_block_part(candidate: str) -> bool:
     return bool(
         re.search(
             (
-                r"\b(?:chome|丁目|st|street|rd|road|ln|lane|ave|avenue|dr|drive|blvd|boulevard|rue|via|"
-                r"carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|pg|placa|plaça|pl|passatge|travessera|moll)\b"
+                r"\b(?:chome|丁目|st|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
+                r"rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|pg|placa|plaça|pl|"
+                r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
                 r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.)\s"
             ),
             candidate,
@@ -8634,8 +8734,22 @@ def normalize_semantic_neighborhood_label(
     label = sanitize_semantic_label(value, max_length=64)
     if label is None:
         return None
+    label = normalize_address_locality_part(label)
+    if label is None:
+        return None
     country_key = normalize_locality_key(country_name)
     city_key = normalize_locality_key(city_name)
+    label_key = normalize_locality_key(label)
+    label_equivalence_key = normalize_locality_equivalence_key(label)
+    city_equivalence_key = normalize_locality_equivalence_key(city_name)
+    country_equivalence_key = normalize_locality_equivalence_key(country_name)
+    if (
+        label_key == country_key
+        or label_key == city_key
+        or (city_equivalence_key and label_equivalence_key == city_equivalence_key)
+        or (country_equivalence_key and label_equivalence_key == country_equivalence_key)
+    ):
+        return None
     if country_key == "taiwan" or city_key in {"taipei", "taipei city"}:
         shortened = re.sub(r"\s+District$", "", label, flags=re.IGNORECASE).strip()
         if shortened:

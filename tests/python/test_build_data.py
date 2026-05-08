@@ -4789,6 +4789,25 @@ class BuildDataTests(unittest.TestCase):
                     expected,
                 )
 
+    def test_normalize_semantic_neighborhood_rejects_country_city_and_street_like_values(self) -> None:
+        cases = [
+            ("モナコ", "Monaco", "Monaco"),
+            ("フランス", "Nice", "France"),
+            ("Commercial Ct", "Belfast", "Northern Ireland"),
+            ("Rte de la Piscine", "Monaco", "Monaco"),
+            ("County Antrim", "Belfast", "Northern Ireland"),
+            ("TX", "Austin", "United States"),
+        ]
+        for value, city_name, country_name in cases:
+            with self.subTest(value=value):
+                self.assertIsNone(
+                    build_data.normalize_semantic_neighborhood_label(
+                        value,
+                        city_name=city_name,
+                        country_name=country_name,
+                    )
+                )
+
     def test_refine_semantic_neighborhood_prefers_address_candidate_casing(self) -> None:
         self.assertEqual(
             build_data.refine_semantic_neighborhood_with_address_localities(
@@ -5773,6 +5792,28 @@ class BuildDataTests(unittest.TestCase):
             ["restaurant", "japanese_restaurant", "udon_noodle_restaurant"],
         )
 
+    def test_normalize_enrichment_match_drops_generic_item_type(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "test-id",
+                "name": "places/test-id",
+                "displayName": {"text": "Deenyana - Little Switzerland - Palms Village"},
+                "formattedAddress": "Alishan Township",
+                "googleMapsUri": "https://maps.google.com/?cid=1",
+                "primaryType": "item",
+                "primaryTypeDisplayName": {"text": "公共住宅"},
+                "types": ["item"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertIsNone(place.primary_type_display_name_localized)
+        self.assertEqual(place.types, [])
+
+    def test_humanize_type_id_rejects_generic_item(self) -> None:
+        self.assertIsNone(build_data.humanize_type_id("item"))
+
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [
             ("Bar Rooster", "bar"),
@@ -6505,6 +6546,20 @@ class BuildDataTests(unittest.TestCase):
                 "Sydney",
                 {"sydney"},
                 {"nsw", "council-pl"},
+                None,
+            ),
+            (
+                "Boston, MA 02108, United States",
+                "Boston",
+                {"boston"},
+                {"ma"},
+                None,
+            ),
+            (
+                "Belfast, County Antrim, Northern Ireland",
+                "Belfast",
+                {"belfast"},
+                {"county-antrim"},
                 None,
             ),
         ]

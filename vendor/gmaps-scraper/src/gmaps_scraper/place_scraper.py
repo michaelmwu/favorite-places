@@ -102,6 +102,7 @@ _UI_ACTION_LABELS = {
 _DESCRIPTION_STOP_MARKERS = {
     "photos",
     "about this data",
+    "sponsored",
     "write a review",
     "claim this business",
     "suggest an edit",
@@ -138,6 +139,33 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
     "i had high hopes",
     "i'm sorry to inform",
     "google maps",
+)
+_DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN = re.compile(
+    r"\b(?:i|i['’](?:m|d|ve)|my|me|we|we['’](?:re|d|ve)|our|us)\b",
+    re.IGNORECASE,
+)
+_DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
+    "visited",
+    "ordered",
+    "enjoyed",
+    "stopped by",
+    "spent",
+    "tried",
+    "came",
+    "went",
+    "found",
+    "felt",
+    "chose",
+    "celebrate",
+    "celebrated",
+    "return",
+    "returned",
+    "staff",
+    "service",
+    "menu",
+    "food",
+    "drinks",
+    "public toilets",
 )
 _SEARCH_RESULTS_LABELS = {
     "result",
@@ -3611,7 +3639,11 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
         return None
-    if _looks_like_review_snippet(normalized) or _looks_like_review_response_text(normalized):
+    if (
+        _looks_like_review_snippet(normalized)
+        or _looks_like_review_response_text(normalized)
+        or _looks_like_first_person_review_text(normalized)
+    ):
         return None
     if not any(character.isalnum() for character in normalized):
         return None
@@ -3666,6 +3698,17 @@ def _looks_like_review_response_text(value: str) -> bool:
     if len(value.split()) < 10:
         return False
     return any(marker in lowered for marker in _DESCRIPTION_REVIEW_RESPONSE_MARKERS)
+
+
+def _looks_like_first_person_review_text(value: str) -> bool:
+    if len(value.split()) < 12:
+        return False
+    lowered = value.casefold()
+    if _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN.search(lowered) is None:
+        return False
+    return any(
+        marker in lowered for marker in _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS
+    )
 
 
 def _extract_preview_website(strings: list[str]) -> str | None:

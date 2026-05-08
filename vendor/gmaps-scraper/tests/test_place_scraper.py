@@ -24,6 +24,7 @@ from gmaps_scraper.place_scraper import (
     _build_place_diagnostics,
     _build_place_llm_evidence,
     _clean_category_text,
+    _clean_description_text,
     _clean_name_text,
     _extract_address_from_lines,
     _extract_admission_price_from_lines,
@@ -1351,6 +1352,27 @@ class PlaceScraperTests(unittest.TestCase):
         )
 
         self.assertEqual(description, "Open now for lunch and dinner service.")
+
+    def test_clean_description_text_rejects_sponsored_label(self) -> None:
+        self.assertIsNone(_clean_description_text("Sponsored"))
+
+    def test_clean_description_text_rejects_first_person_review_prose(self) -> None:
+        self.assertIsNone(
+            _clean_description_text(
+                (
+                    "This garden is absolutely beautiful and highly fragrant. "
+                    "We visited in mid-April, and many of the roses were in bloom."
+                )
+            )
+        )
+
+    def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "We serve seasonal Italian dishes and cocktails in a relaxed dining room."
+            ),
+            "We serve seasonal Italian dishes and cocktails in a relaxed dining room.",
+        )
 
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [
