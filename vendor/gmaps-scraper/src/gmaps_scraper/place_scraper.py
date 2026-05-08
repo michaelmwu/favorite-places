@@ -142,6 +142,12 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
     "i'm sorry to inform",
     "google maps",
 )
+_DESCRIPTION_REVIEW_PROSE_MARKERS = (
+    "highly recommended",
+    "your children",
+    "your kids",
+    "you should",
+)
 _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN = re.compile(
     r"\b(?:i|i['’](?:m|d|ve)|my|me|we|we['’](?:re|d|ve)|our|us)\b",
     re.IGNORECASE,
@@ -224,7 +230,7 @@ _STRONG_ADDRESS_KEYWORD_PATTERN = re.compile(
 # UI/review vocabulary that commonly appears next to real address rows.
 _PROSE_TERM_PATTERN = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|recommended|session)\b",
     re.IGNORECASE,
 )
 _ADDRESS_REJECT_SUBSTRINGS = (
@@ -3651,6 +3657,7 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if (
         _looks_like_review_snippet(normalized)
+        or _looks_like_description_review_prose(normalized)
         or _looks_like_review_response_text(normalized)
         or _looks_like_first_person_review_text(normalized)
     ):
@@ -3709,6 +3716,13 @@ def _looks_like_review_response_text(value: str) -> bool:
     if len(value.split()) < 10:
         return False
     return any(marker in lowered for marker in _DESCRIPTION_REVIEW_RESPONSE_MARKERS)
+
+
+def _looks_like_description_review_prose(value: str) -> bool:
+    if len(value.split()) < 12:
+        return False
+    lowered = value.casefold()
+    return any(marker in lowered for marker in _DESCRIPTION_REVIEW_PROSE_MARKERS)
 
 
 def _looks_like_first_person_review_text(value: str) -> bool:

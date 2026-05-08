@@ -515,6 +515,8 @@ SUBNATIONAL_LOCALITY_ALIASES = AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES + (
     "Sichuan",
     "四川",
     "四川省",
+    "Kitaazumi District",
+    "Kitasaku District",
 )
 SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
     "da an": "Da'an",
@@ -8021,7 +8023,7 @@ PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
 }
 PLACE_PAGE_PROSE_TERM_RE = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|recommended|session)\b",
     re.IGNORECASE,
 )
 PLACE_PAGE_PLUS_CODE_RE = re.compile(
@@ -8092,15 +8094,32 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
     "visited",
     "went",
 )
+PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS = (
+    "highly recommended",
+    "your children",
+    "your kids",
+    "you should",
+)
 
 
 def sanitize_place_page_description(value: Any) -> str | None:
     normalized = as_string(value)
     if normalized is None:
         return None
+    if looks_like_place_page_review_snippet(normalized):
+        return None
+    if looks_like_place_page_review_description(normalized):
+        return None
     if looks_like_place_page_first_person_description(normalized):
         return None
     return normalized
+
+
+def looks_like_place_page_review_description(value: str) -> bool:
+    if len(value.split()) < 12:
+        return False
+    lowered = value.casefold()
+    return any(marker in lowered for marker in PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS)
 
 
 def looks_like_place_page_first_person_description(value: str) -> bool:

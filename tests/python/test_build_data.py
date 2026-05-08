@@ -1982,6 +1982,19 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.display_name, "Tamariz Beach")
         self.assertIsNone(enrichment.description)
 
+        details.name = "Kumoba Pond"
+        details.description = (
+            "This pond is a scenic and tranquil spot, just a five-minute bike ride from the main street in Karuizawa. "
+            "It offers a peaceful retreat with serene water and lush surroundings. "
+            "The area is equipped with toilets and is perfect for taking your children for a relaxing outing. "
+            "A wonderful place to unwind and enjoy nature. Highly recommended for families."
+        )
+
+        enrichment = build_data.normalize_place_page_enrichment(details)
+
+        self.assertEqual(enrichment.display_name, "Kumoba Pond")
+        self.assertIsNone(enrichment.description)
+
     def test_fetch_place_page_enrichment_retries_direct_place_url_when_search_match_lacks_description(self) -> None:
         place = RawPlace(
             name="Taipei 101",
@@ -6658,6 +6671,13 @@ class BuildDataTests(unittest.TestCase):
                 {"kutchan", "yamada", "niseko"},
                 {"hokkaido"},
                 "Kutchan",
+            ),
+            (
+                "Karuizawa, Kitasaku District, Nagano 389-0102, Japan",
+                "Karuizawa",
+                {"karuizawa"},
+                {"kitasaku-district", "nagano"},
+                None,
             ),
             (
                 "2 Chome-7-22 Asato, Naha, Okinawa 902-0067, Japan",

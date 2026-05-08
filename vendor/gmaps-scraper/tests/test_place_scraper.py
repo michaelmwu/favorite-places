@@ -1429,6 +1429,16 @@ class PlaceScraperTests(unittest.TestCase):
                 "because an unexpectedly large wave hit our towel."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "This pond is a scenic and tranquil spot, just a five-minute bike "
+                "ride from the main street in Karuizawa. "
+                "It offers a peaceful retreat with serene water and lush surroundings. "
+                "The area is equipped with toilets and is perfect for taking your "
+                "children for a relaxing outing. "
+                "A wonderful place to unwind and enjoy nature. Highly recommended for families."
+            )
+        )
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(
