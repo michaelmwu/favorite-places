@@ -8238,14 +8238,27 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
         enrichment_place.semantic_vibe_tags = normalize_semantic_tag_list(repair.get("vibe_tags"), limit=8)
         enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
+    description_source: str | None = None
     if include_description and not description_reused:
         description = sanitize_semantic_description(repair.get("description"))
+        if description is not None and semantic_description_has_conflicting_location(
+            description,
+            enrichment_place=enrichment_place,
+            raw_place=raw_place,
+            city_name=city_name,
+            country_name=country_name,
+        ):
+            description = None
         if description is None:
             description = fallback_semantic_description(
                 enrichment_place,
                 raw_place=raw_place,
                 city_name=city_name,
             )
+            if description is not None:
+                description_source = "fallback"
+        else:
+            description_source = "llm"
         if description is not None:
             enrichment_place.semantic_description = description
             enrichment_place.semantic_description_signature = description_signature
@@ -8258,7 +8271,16 @@ def apply_semantic_enrichment(
             enrichment_place.semantic_description,
         )
     ):
-        enrichment_place.semantic_source = "llm"
+        if (
+            description_source == "fallback"
+            and not enrichment_place.semantic_neighborhood
+            and not enrichment_place.semantic_tags
+            and not enrichment_place.semantic_vibe_tags
+            and not enrichment_place.semantic_types
+        ):
+            enrichment_place.semantic_source = "fallback"
+        else:
+            enrichment_place.semantic_source = "llm"
 
 
 def fallback_semantic_description(
@@ -9233,6 +9255,71 @@ def sanitize_semantic_description(value: Any) -> str | None:
     if not description or len(description) > 240:
         return None
     return description
+
+
+SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS: tuple[str, ...] = (
+    "nishi-shinjuku",
+    "shinjuku",
+    "shibuya",
+    "ginza",
+    "roppongi",
+    "tokyo",
+    "osaka",
+    "kyoto",
+    "sapporo",
+    "seoul",
+    "taipei",
+    "bangkok",
+    "singapore",
+    "paris",
+    "london",
+    "new york",
+    "los angeles",
+    "san francisco",
+    "shanghai",
+    "beijing",
+    "hong kong",
+)
+
+
+def semantic_description_has_conflicting_location(
+    description: str,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> bool:
+    description_key = normalize_locality_key(description)
+    if not description_key:
+        return False
+    allowed_key = normalize_locality_key(
+        " ".join(
+            candidate
+            for candidate in (
+                city_name,
+                country_name,
+                enrichment_place.display_name,
+                enrichment_place.formatted_address,
+                enrichment_place.address_display_en,
+                enrichment_place.plus_code,
+                raw_place.name,
+                raw_place.address,
+            )
+            if candidate
+        )
+    )
+    for term in SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS:
+        term_key = normalize_locality_key(term)
+        if not term_key or term_key in allowed_key:
+            continue
+        term_pattern = re.escape(term_key).replace(r"\-", r"[- ]")
+        if re.search(
+            rf"\b(?:in|near|around|at|from)\s+(?:the\s+)?{term_pattern}(?:\s+s)?\b",
+            description_key,
+        ):
+            return True
+    return False
 
 
 def normalize_semantic_tag_list(value: Any, *, limit: int) -> list[str]:
