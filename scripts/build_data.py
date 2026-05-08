@@ -4606,9 +4606,10 @@ def is_street_or_block_part(candidate: str) -> bool:
         re.search(
             (
                 r"\b(?:chome|丁目|st|str|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
-                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|placa|plaça|pl|bajada|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|piazza|"
+                r"placa|plaça|pl|bajada|jet[eé]e|palais|"
                 r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
-                r"|^(?:c/|c\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.\s*º)\s"
+                r"|^(?:c/|c\.|v\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.za|p\.\s*º)\s"
             ),
             candidate,
             flags=re.IGNORECASE,
@@ -8730,9 +8731,10 @@ def semantic_neighborhood_has_non_saint_street_marker(candidate: str) -> bool:
         re.search(
             (
                 r"\b(?:chome|丁目|str|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
-                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|placa|plaça|pl|bajada|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|piazza|"
+                r"placa|plaça|pl|bajada|jet[eé]e|"
                 r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
-                r"|^(?:c/|c\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.\s*º)\s"
+                r"|^(?:c/|c\.|v\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.za|p\.\s*º)\s"
             ),
             candidate,
             flags=re.IGNORECASE,

@@ -6380,6 +6380,16 @@ class BuildDataTests(unittest.TestCase):
             ("DDR Museum", "Museum", "Vera Britain Ufer, Karl-Liebknecht-Str. 1, 10178 Berlin, Germany", "Berlin"),
             ("Exotic Garden of Monaco", "Garden", "62 Bd du Jardin Exotique, 98000 Monaco", "Monaco"),
             ("gerhard's café monaco", "Bar", "42 Quai Jean-Charles Rey, 98000 Monaco", "Monaco"),
+            ("Basilica di San Petronio", "Basilica", "Piazza Maggiore, 1/e, 40124 Bologna BO, Italy", "Bologna"),
+            ("Garisenda", "Tourist attraction", "P.za di Porta Ravegnana, 40126 Bologna BO, Italy", "Bologna"),
+            ("Museo Civico Archeologico Bologna", "Archaeological museum", "V. dell'Archiginnasio, 2, 40124 Bologna BO, Italy", "Bologna"),
+            ("IGY Vieux-Port de Cannes", "Marina", "Jetée Albert Edouard, 06400 Cannes, France", "Cannes"),
+            (
+                "Palace of Festivals and Congresses of Cannes",
+                "Exhibition and trade center",
+                "Palais des Festivals et des Congrès, 1 Bd de la Croisette, 06400 Cannes, France",
+                "Cannes",
+            ),
         ]
 
         for name, category, address, city_name in cases:
