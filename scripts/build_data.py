@@ -7087,6 +7087,12 @@ def fetch_place_page_enrichment(
     llm_repairer = None if llm_mode == "off" else build_place_llm_repairer()
     collect_reviews = google_maps_place_collect_reviews()
     collect_about = google_maps_place_collect_about()
+    candidate_urls = build_place_page_candidate_urls(
+        place,
+        city_name=city_name,
+        country_name=country_name,
+        google_place_id=google_place_id,
+    )
 
     def scrape_for_enrichment(scrape_url: str, *, llm_tasks: Sequence[Any]) -> Any:
         return scrape_place(
@@ -7100,68 +7106,72 @@ def fetch_place_page_enrichment(
             collect_about=collect_about,
         )
 
+    def process_scrape_url(scrape_url: str) -> tuple[EnrichmentPlace | None, bool]:
+        nonlocal browser_session, http_session, last_error, saw_non_error_result
+        try:
+            details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
+        except RECOVERABLE_REFRESH_ERRORS as exc:
+            if should_reset_scraper_session(exc):
+                clear_scraper_session_state(session_state)
+                browser_session, http_session = build_scraper_configs(session_state, proxy)
+                try:
+                    details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
+                except RECOVERABLE_REFRESH_ERRORS as retry_exc:
+                    last_error = f"scrape_error:{retry_exc}"
+                    return None, False
+            else:
+                last_error = f"scrape_error:{exc}"
+                return None, False
+
+        saw_non_error_result = True
+        record_scraper_session_use(session_state, proxy=proxy)
+        apply_reusable_place_display_fields(details, existing_entry)
+        if (
+            llm_mode == "dom_then_translation"
+            and llm_repairer is not None
+            and repair_place_display_fields is not None
+            and place_details_need_display_translation(details)
+        ):
+            try:
+                details = repair_place_display_fields(
+                    details,
+                    repairer=llm_repairer,
+                    evidence={
+                        "city": city_name,
+                        "country": country_name,
+                        "query": query,
+                    },
+                )
+            except Exception as exc:
+                last_error = f"display_repair_error:{exc}"
+        enrichment_place = normalize_place_page_enrichment(details)
+        source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
+        if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
+            return None, False
+
+        matched = place_page_has_meaningful_enrichment(details, enrichment_place)
+        if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
+            return None, False
+        if matched:
+            apply_semantic_enrichment(
+                enrichment_place,
+                raw_place=place,
+                city_name=city_name,
+                country_name=country_name,
+                existing_entry=existing_entry,
+                raw_note=place.note,
+                suppress_description=suppress_description,
+            )
+            return enrichment_place, False
+        return None, should_retry_limited_place_page_result(details, enrichment_place)
+
     try:
         last_error: str | None = None
         saw_non_error_result = False
-        for scrape_url in build_place_page_candidate_urls(
-            place,
-            city_name=city_name,
-            country_name=country_name,
-            google_place_id=google_place_id,
-        ):
-            try:
-                details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
-            except RECOVERABLE_REFRESH_ERRORS as exc:
-                if should_reset_scraper_session(exc):
-                    clear_scraper_session_state(session_state)
-                    browser_session, http_session = build_scraper_configs(session_state, proxy)
-                    try:
-                        details = scrape_for_enrichment(scrape_url, llm_tasks=("dom_repair",))
-                    except RECOVERABLE_REFRESH_ERRORS as retry_exc:
-                        last_error = f"scrape_error:{retry_exc}"
-                        continue
-                else:
-                    last_error = f"scrape_error:{exc}"
-                    continue
-
-            saw_non_error_result = True
-            record_scraper_session_use(session_state, proxy=proxy)
-            apply_reusable_place_display_fields(details, existing_entry)
-            if (
-                llm_mode == "dom_then_translation"
-                and llm_repairer is not None
-                and repair_place_display_fields is not None
-                and place_details_need_display_translation(details)
-            ):
-                try:
-                    details = repair_place_display_fields(
-                        details,
-                        repairer=llm_repairer,
-                        evidence={
-                            "city": city_name,
-                            "country": country_name,
-                            "query": query,
-                        },
-                    )
-                except Exception as exc:
-                    last_error = f"display_repair_error:{exc}"
-            enrichment_place = normalize_place_page_enrichment(details)
-            source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
-            if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
-                continue
-            matched = place_page_has_meaningful_enrichment(details, enrichment_place)
-            if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
-                continue
-            if matched:
-                apply_semantic_enrichment(
-                    enrichment_place,
-                    raw_place=place,
-                    city_name=city_name,
-                    country_name=country_name,
-                    existing_entry=existing_entry,
-                    raw_note=place.note,
-                    suppress_description=suppress_description,
-                )
+        retry_urls: list[str] = []
+        for scrape_url in candidate_urls:
+            enrichment_place, should_retry = process_scrape_url(scrape_url)
+            if enrichment_place is not None:
                 return build_cache_entry(
                     place,
                     source="google_maps_page",
@@ -7172,6 +7182,25 @@ def fetch_place_page_enrichment(
                     score=STRONG_MATCH_SCORE,
                     enrichment_place=enrichment_place,
                 )
+            if should_retry:
+                retry_urls.append(scrape_url)
+
+        if retry_urls:
+            clear_scraper_session_state(session_state)
+            browser_session, http_session = build_scraper_configs(session_state, proxy)
+            for scrape_url in dedupe_urls(retry_urls):
+                enrichment_place, _should_retry = process_scrape_url(scrape_url)
+                if enrichment_place is not None:
+                    return build_cache_entry(
+                        place,
+                        source="google_maps_page",
+                        query=query,
+                        city_name=city_name,
+                        country_name=country_name,
+                        matched=True,
+                        score=STRONG_MATCH_SCORE,
+                        enrichment_place=enrichment_place,
+                    )
         if saw_non_error_result:
             return build_cache_entry(
                 place,
@@ -7237,6 +7266,8 @@ def place_page_has_meaningful_enrichment(
         or enrichment_place.plus_code
         or enrichment_place.description
     )
+    if should_retry_limited_place_page_result(details, enrichment_place):
+        return False
     if has_identity and (has_reputation or has_contact_or_context):
         return True
     if (
@@ -7248,6 +7279,15 @@ def place_page_has_meaningful_enrichment(
     return not bool(getattr(details, "limited_view", False)) and bool(
         has_reputation and enrichment_place.formatted_address
     )
+
+
+def should_retry_limited_place_page_result(
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    if not bool(getattr(details, "limited_view", False)):
+        return False
+    return enrichment_place.user_rating_count is None
 
 
 def place_page_candidate_is_confident_match(

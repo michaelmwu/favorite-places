@@ -2426,6 +2426,18 @@ class BuildDataTests(unittest.TestCase):
             )
         )
 
+    def test_place_page_has_meaningful_enrichment_rejects_limited_view_without_review_count(self) -> None:
+        details = SimpleNamespace(limited_view=True)
+        enrichment_place = EnrichmentPlace(
+            display_name="Bianchetto",
+            formatted_address="26-28 Cotham Rd, Kew VIC 3101, Australia",
+            primary_type_display_name="Bar",
+            rating=4.4,
+        )
+
+        self.assertTrue(build_data.should_retry_limited_place_page_result(details, enrichment_place))
+        self.assertFalse(build_data.place_page_has_meaningful_enrichment(details, enrichment_place))
+
     def test_should_fallback_to_places_api_for_sparse_search_result(self) -> None:
         entry = EnrichmentCacheEntry(
             fetched_at="2026-04-20T00:00:00+00:00",
@@ -5830,6 +5842,68 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertTrue(entry.matched)
         self.assertEqual(entry.place.display_name, "Cantina OK!")
+
+    def test_fetch_place_page_enrichment_retries_limited_view_without_reputation_after_candidate_queue(self) -> None:
+        place = RawPlace(
+            name="Cantina OK!",
+            address="Council Pl, Sydney NSW 2000, Australia",
+            maps_url="https://www.google.com/maps/place/Cantina+OK!",
+        )
+        scrape_urls = ["https://example.com/first", "https://example.com/second"]
+        scrape_attempts: list[str] = []
+
+        def scrape_side_effect(
+            scrape_url: str,
+            *,
+            headless: bool,
+            browser_session: object,
+            http_session: object,
+            llm_fallback: object,
+            llm_tasks: tuple[str, ...],
+            collect_reviews: bool,
+            collect_about: bool,
+        ) -> SimpleNamespace:
+            scrape_attempts.append(scrape_url)
+            if len(scrape_attempts) <= len(scrape_urls):
+                return SimpleNamespace(
+                    source_url=scrape_url,
+                    resolved_url=scrape_url,
+                    name="Cantina OK!",
+                    category="Cocktail bar",
+                    address="Council Pl, Sydney NSW 2000, Australia",
+                    limited_view=True,
+                )
+            return SimpleNamespace(
+                source_url=scrape_url,
+                resolved_url=scrape_url,
+                name="Cantina OK!",
+                category="Cocktail bar",
+                address="Council Pl, Sydney NSW 2000, Australia",
+                rating=4.8,
+                review_count=512,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "current_scraper_proxy", return_value=None),
+            patch.object(build_data, "build_place_page_candidate_urls", return_value=scrape_urls),
+            patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
+            patch.object(build_data, "build_scraper_configs", return_value=(None, None)),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "clear_scraper_session_state") as clear_session,
+            patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "scrape_place", side_effect=scrape_side_effect),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertEqual(
+            scrape_attempts,
+            ["https://example.com/first", "https://example.com/second", "https://example.com/first"],
+        )
+        clear_session.assert_called_once()
+        self.assertTrue(entry.matched)
+        assert entry.place is not None
+        self.assertEqual(entry.place.user_rating_count, 512)
 
     def test_fetch_places_enrichment_uses_scrape_strategy_without_api_fallback(self) -> None:
         place = RawPlace(
