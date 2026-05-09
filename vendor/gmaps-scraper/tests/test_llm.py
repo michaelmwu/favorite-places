@@ -476,7 +476,7 @@ class LLMConfigTests(unittest.TestCase):
         with (
             patch("urllib.request.urlopen", side_effect=fake_urlopen),
             patch.object(llm_module, "_configured_langfuse_client", return_value=fake_client),
-            self.assertRaises(LLMRepairError),
+            self.assertRaises(LLMRepairError) as raised,
         ):
             openai_compatible_place_repair(
                 _build_request(),
@@ -485,6 +485,7 @@ class LLMConfigTests(unittest.TestCase):
                 model="gpt-5-mini",
             )
 
+        self.assertEqual(str(raised.exception), "LLM repair HTTP 400")
         self.assertTrue(fake_client.manager.closed)
         metadata = fake_client.observation.updates[-1]["metadata"]
         self.assertIsInstance(metadata, dict)

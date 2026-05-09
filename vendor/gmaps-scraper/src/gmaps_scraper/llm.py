@@ -81,6 +81,7 @@ class _NoopLangfuseObservation:
 
 _LANGFUSE_CLIENT_CACHE: dict[tuple[str, str, str | None], Any] = {}
 _LANGFUSE_FLUSH_CLIENT_IDS: set[int] = set()
+_LANGFUSE_CLIENT_CACHE_LOCK = threading.Lock()
 
 
 def _configured_langfuse_client() -> Any | None:
@@ -94,22 +95,30 @@ def _langfuse_client_for_config(config: tuple[str, str, str | None]) -> Any | No
     cached = _LANGFUSE_CLIENT_CACHE.get(config)
     if cached is not None:
         return cached
-    public_key, secret_key, base_url = config
-    try:
-        langfuse_module = importlib.import_module("langfuse")
-        langfuse_class = langfuse_module.Langfuse
-    except (ImportError, AttributeError):
-        return None
-    try:
-        if base_url:
-            client = langfuse_class(public_key=public_key, secret_key=secret_key, base_url=base_url)
-        else:
-            client = langfuse_class(public_key=public_key, secret_key=secret_key)
-    except Exception:
-        return None
-    _LANGFUSE_CLIENT_CACHE[config] = client
-    _register_langfuse_flush(client)
-    return client
+    with _LANGFUSE_CLIENT_CACHE_LOCK:
+        cached = _LANGFUSE_CLIENT_CACHE.get(config)
+        if cached is not None:
+            return cached
+        public_key, secret_key, base_url = config
+        try:
+            langfuse_module = importlib.import_module("langfuse")
+            langfuse_class = langfuse_module.Langfuse
+        except (ImportError, AttributeError):
+            return None
+        try:
+            if base_url:
+                client = langfuse_class(
+                    public_key=public_key,
+                    secret_key=secret_key,
+                    base_url=base_url,
+                )
+            else:
+                client = langfuse_class(public_key=public_key, secret_key=secret_key)
+        except Exception:
+            return None
+        _LANGFUSE_CLIENT_CACHE[config] = client
+        _register_langfuse_flush(client)
+        return client
 
 
 def _langfuse_config_from_env() -> tuple[str, str, str | None] | None:
@@ -124,8 +133,9 @@ def _langfuse_config_from_env() -> tuple[str, str, str | None] | None:
 
 
 def _clear_langfuse_client_cache() -> None:
-    _LANGFUSE_CLIENT_CACHE.clear()
-    _LANGFUSE_FLUSH_CLIENT_IDS.clear()
+    with _LANGFUSE_CLIENT_CACHE_LOCK:
+        _LANGFUSE_CLIENT_CACHE.clear()
+        _LANGFUSE_FLUSH_CLIENT_IDS.clear()
 
 
 def _normalize_langfuse_base_url(value: str | None) -> str | None:
@@ -514,7 +524,10 @@ def openai_compatible_place_repair(
                 generation,
                 metadata=metadata,
             )
-            raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
+            message = f"LLM repair HTTP {exc.code}"
+            if full_langfuse_capture:
+                message = f"{message}: {body}"
+            raise LLMRepairError(message) from exc
         except (OSError, json.JSONDecodeError) as exc:
             _update_langfuse_generation(
                 generation,

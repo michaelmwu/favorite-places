@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from statistics import median
+from threading import Lock
 from typing import Any, Literal
 from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError, URLError
@@ -9260,6 +9261,7 @@ def load_dotenv_values(path: Path) -> dict[str, str]:
 
 LANGFUSE_CLIENT_CACHE: dict[tuple[str, str, str | None], Any] = {}
 LANGFUSE_FLUSH_CLIENT_IDS: set[int] = set()
+LANGFUSE_CLIENT_CACHE_LOCK = Lock()
 
 
 def configured_langfuse_client() -> Any | None:
@@ -9282,25 +9284,30 @@ def langfuse_client_for_config(public_key: str, secret_key: str, base_url: str |
     cached = LANGFUSE_CLIENT_CACHE.get(cache_key)
     if cached is not None:
         return cached
-    try:
-        from langfuse import Langfuse
-    except ImportError:
-        return None
-    kwargs = {"public_key": public_key, "secret_key": secret_key}
-    if base_url:
-        kwargs["base_url"] = base_url
-    try:
-        client = Langfuse(**kwargs)
-    except Exception:
-        return None
-    LANGFUSE_CLIENT_CACHE[cache_key] = client
-    register_langfuse_flush(client)
-    return client
+    with LANGFUSE_CLIENT_CACHE_LOCK:
+        cached = LANGFUSE_CLIENT_CACHE.get(cache_key)
+        if cached is not None:
+            return cached
+        try:
+            from langfuse import Langfuse
+        except ImportError:
+            return None
+        kwargs = {"public_key": public_key, "secret_key": secret_key}
+        if base_url:
+            kwargs["base_url"] = base_url
+        try:
+            client = Langfuse(**kwargs)
+        except Exception:
+            return None
+        LANGFUSE_CLIENT_CACHE[cache_key] = client
+        register_langfuse_flush(client)
+        return client
 
 
 def clear_langfuse_client_cache() -> None:
-    LANGFUSE_CLIENT_CACHE.clear()
-    LANGFUSE_FLUSH_CLIENT_IDS.clear()
+    with LANGFUSE_CLIENT_CACHE_LOCK:
+        LANGFUSE_CLIENT_CACHE.clear()
+        LANGFUSE_FLUSH_CLIENT_IDS.clear()
 
 
 def normalize_langfuse_base_url(value: str | None) -> str | None:
