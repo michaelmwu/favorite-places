@@ -137,7 +137,6 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
 )
 _DESCRIPTION_REVIEW_PROSE_MARKERS = (
     "highly recommended",
-    "must visit",
     "overrated",
     "your children",
     "your kids",

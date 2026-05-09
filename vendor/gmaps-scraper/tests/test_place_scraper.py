@@ -1429,6 +1429,16 @@ class PlaceScraperTests(unittest.TestCase):
                 "house-roasted coffee, brunch plates, and seasonal pastries daily."
             ),
         )
+        self.assertEqual(
+            _clean_description_text(
+                "A must visit destination for families, with interactive science "
+                "exhibits, live demonstrations, and workshops."
+            ),
+            (
+                "A must visit destination for families, with interactive science "
+                "exhibits, live demonstrations, and workshops."
+            ),
+        )
 
     def test_clean_description_text_rejects_first_person_review_prose(self) -> None:
         self.assertIsNone(

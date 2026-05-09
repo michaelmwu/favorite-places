@@ -131,6 +131,7 @@ RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
 PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS = 25_000.0
+PLACE_PAGE_ADDRESSLESS_SEARCH_COORDINATE_MATCH_METERS = 400.0
 MAP_PIN_DISTANCE_WARNING_MIN_METERS = 100_000.0
 MAP_PIN_DISTANCE_WARNING_BUFFER_METERS = 50_000.0
 MAP_PIN_DISTANCE_SUPPRESSION_MIN_METERS = 1_000_000.0
@@ -7498,7 +7499,7 @@ def place_page_search_result_without_address_has_location_evidence(
     distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
     if distance_m is None:
         return False
-    return distance_m <= PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS
+    return distance_m <= PLACE_PAGE_ADDRESSLESS_SEARCH_COORDINATE_MATCH_METERS
 
 
 def place_page_candidate_is_confident_match(
@@ -7876,8 +7877,6 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
     "arrived",
     "attended",
     "came",
-    "celebrate",
-    "celebrated",
     "chose",
     "cost",
     "enjoyed",
@@ -7885,8 +7884,6 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
     "found",
     "hit",
     "ordered",
-    "reserve",
-    "reserved",
     "return",
     "returned",
     "saw",
@@ -7900,10 +7897,7 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
 )
 PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS = (
     "highly recommended",
-    "instagram",
-    "must visit",
     "overrated",
-    "tiktok",
     "your children",
     "your kids",
     "you should",
