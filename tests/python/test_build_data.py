@@ -11,7 +11,7 @@ from datetime import UTC, datetime, timedelta
 from io import BytesIO, StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 from pydantic import ValidationError
@@ -5543,6 +5543,170 @@ class BuildDataTests(unittest.TestCase):
                 city_name="Seoul",
                 country_name="South Korea",
             )
+        )
+
+    def test_repair_semantic_enrichment_logs_langfuse_generation(self) -> None:
+        class FakeResponse:
+            def read(self) -> bytes:
+                return json.dumps(
+                    {
+                        "choices": [
+                            {
+                                "message": {
+                                    "content": json.dumps(
+                                        {
+                                            "neighborhood": "Xinyi District",
+                                            "tags": ["tea-house"],
+                                            "description": "A quiet tea stop.",
+                                        }
+                                    )
+                                }
+                            }
+                        ],
+                        "usage": {
+                            "prompt_tokens": 11,
+                            "completion_tokens": 7,
+                            "total_tokens": 18,
+                        },
+                    }
+                ).encode("utf-8")
+
+            def __enter__(self) -> "FakeResponse":
+                return self
+
+            def __exit__(self, exc_type: object, exc: object, tb: object) -> bool:
+                return False
+
+        class FakeObservation:
+            def __init__(self) -> None:
+                self.updates: list[dict[str, object]] = []
+
+            def update(self, **kwargs: object) -> None:
+                self.updates.append(kwargs)
+
+        class FakeManager:
+            def __init__(self, observation: FakeObservation) -> None:
+                self.observation = observation
+                self.closed = False
+
+            def __enter__(self) -> FakeObservation:
+                return self.observation
+
+            def __exit__(self, exc_type: object, exc: object, tb: object) -> bool:
+                self.closed = True
+                return False
+
+        class FakeClient:
+            def __init__(self) -> None:
+                self.observation = FakeObservation()
+                self.manager = FakeManager(self.observation)
+                self.started: dict[str, object] | None = None
+
+            def start_as_current_observation(self, **kwargs: object) -> FakeManager:
+                self.started = kwargs
+                return self.manager
+
+        fake_client = FakeClient()
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+        )
+        raw_place = RawPlace(name="Tea House", maps_url="https://maps.example/tea")
+
+        with TemporaryDirectory() as tmp_dir:
+            with (
+                patch.object(
+                    build_data,
+                    "semantic_llm_config",
+                    return_value={
+                        "model": "gpt-test",
+                        "api_key": "test-key",
+                        "base_url": "https://llm.example/v1",
+                        "namespace": "test-namespace",
+                    },
+                ),
+                patch.object(
+                    build_data,
+                    "google_maps_place_semantic_cache_dir",
+                    return_value=Path(tmp_dir),
+                ),
+                patch.object(build_data, "configured_langfuse_client", return_value=fake_client),
+                patch.object(build_data, "urlopen", return_value=FakeResponse()),
+            ):
+                result = build_data.repair_semantic_enrichment_with_llm(
+                    enrichment,
+                    raw_place=raw_place,
+                    city_name="Taipei",
+                    country_name="Taiwan",
+                    include_semantics=True,
+                    include_description=True,
+                    bypass_cache=True,
+                )
+
+        self.assertEqual(
+            result,
+            {
+                "neighborhood": "Xinyi District",
+                "tags": ["tea-house"],
+                "description": "A quiet tea stop.",
+            },
+        )
+        self.assertIsNotNone(fake_client.started)
+        assert fake_client.started is not None
+        self.assertEqual(fake_client.started["as_type"], "generation")
+        self.assertEqual(fake_client.started["name"], "favorite-places.semantic-enrichment")
+        self.assertEqual(fake_client.started["model"], "gpt-test")
+        self.assertEqual(fake_client.started["metadata"]["prompt_version"], "favorite-places-semantic-v9")
+        self.assertTrue(fake_client.manager.closed)
+        self.assertEqual(
+            fake_client.observation.updates[-1]["usage_details"],
+            {"input_tokens": 11, "output_tokens": 7, "total_tokens": 18},
+        )
+        self.assertEqual(
+            fake_client.observation.updates[-1]["metadata"],
+            {**fake_client.started["metadata"], "status": "success"},
+        )
+
+    def test_langfuse_client_does_not_cache_disabled_env(self) -> None:
+        class FakeLangfuse:
+            def __init__(self, **kwargs: object) -> None:
+                self.kwargs = kwargs
+
+        fake_module = ModuleType("langfuse")
+        fake_module.Langfuse = FakeLangfuse  # type: ignore[attr-defined]
+        build_data.clear_langfuse_client_cache()
+        self.addCleanup(build_data.clear_langfuse_client_cache)
+
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            patch.object(build_data, "load_dotenv_values", return_value={}),
+        ):
+            self.assertIsNone(build_data.configured_langfuse_client())
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "LANGFUSE_PUBLIC_KEY": "pk-lf-test",
+                    "LANGFUSE_SECRET_KEY": "sk-lf-test",
+                    "LANGFUSE_BASE_URL": "https://us.cloud.langfuse.com",
+                },
+                clear=True,
+            ),
+            patch.dict(sys.modules, {"langfuse": fake_module}),
+            patch.object(build_data, "load_dotenv_values", return_value={}),
+        ):
+            client = build_data.configured_langfuse_client()
+
+        self.assertIsInstance(client, FakeLangfuse)
+        self.assertEqual(
+            client.kwargs,
+            {
+                "public_key": "pk-lf-test",
+                "secret_key": "sk-lf-test",
+                "base_url": "https://us.cloud.langfuse.com",
+            },
         )
 
     def test_normalize_semantic_neighborhood_display_cases_slug_outputs(self) -> None:
