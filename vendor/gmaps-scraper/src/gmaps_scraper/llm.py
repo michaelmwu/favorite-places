@@ -81,18 +81,32 @@ class _NoopLangfuseObservation:
 
 @functools.cache
 def _configured_langfuse_client() -> Any | None:
-    if not os.environ.get("LANGFUSE_PUBLIC_KEY") or not os.environ.get("LANGFUSE_SECRET_KEY"):
+    config = _langfuse_config_from_env()
+    if config is None:
         return None
+    public_key, secret_key, base_url = config
     try:
-        from langfuse import get_client
+        from langfuse import Langfuse
     except ImportError:
         return None
     try:
-        client = get_client()
+        if base_url:
+            client = Langfuse(public_key=public_key, secret_key=secret_key, base_url=base_url)
+        else:
+            client = Langfuse(public_key=public_key, secret_key=secret_key)
     except Exception:
         return None
     atexit.register(_flush_langfuse)
     return client
+
+
+def _langfuse_config_from_env() -> tuple[str, str, str | None] | None:
+    public_key = os.environ.get("LANGFUSE_PUBLIC_KEY")
+    secret_key = os.environ.get("LANGFUSE_SECRET_KEY")
+    base_url = os.environ.get("LANGFUSE_BASE_URL") or os.environ.get("LANGFUSE_HOST")
+    if not public_key or not secret_key:
+        return None
+    return public_key, secret_key, base_url
 
 
 def _flush_langfuse() -> None:

@@ -346,6 +346,22 @@ class LLMConfigTests(unittest.TestCase):
         )
         self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
 
+    def test_langfuse_client_uses_base_url_from_env(self) -> None:
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "LANGFUSE_PUBLIC_KEY": "pk-lf-test",
+                    "LANGFUSE_SECRET_KEY": "sk-lf-test",
+                    "LANGFUSE_BASE_URL": "https://us.cloud.langfuse.com",
+                },
+                clear=True,
+            )
+        ):
+            config = llm_module._langfuse_config_from_env()
+
+        self.assertEqual(config, ("pk-lf-test", "sk-lf-test", "https://us.cloud.langfuse.com"))
+
     def test_local_config_can_define_fireworks_alias(self) -> None:
         captured: dict[str, object] = {}
 
