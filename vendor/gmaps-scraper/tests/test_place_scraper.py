@@ -1392,6 +1392,44 @@ class PlaceScraperTests(unittest.TestCase):
     def test_clean_description_text_rejects_sponsored_label(self) -> None:
         self.assertIsNone(_clean_description_text("Sponsored"))
 
+    def test_clean_description_text_keeps_structured_marketing_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Modern restaurant serving delicious food for lunch and dinner in a "
+                "friendly, relaxed setting."
+            ),
+            (
+                "Modern restaurant serving delicious food for lunch and dinner in a "
+                "friendly, relaxed setting."
+            ),
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "Casual cafe serving coffee all day in a sunny room near downtown."
+            ),
+            "Casual cafe serving coffee all day in a sunny room near downtown.",
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "Museum exhibits artifacts found across the US, with archival photos, "
+                "oral histories, rotating galleries, and educational programs."
+            ),
+            (
+                "Museum exhibits artifacts found across the US, with archival photos, "
+                "oral histories, rotating galleries, and educational programs."
+            ),
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "Instagram-worthy dessert cafe serving colorful macarons, "
+                "house-roasted coffee, brunch plates, and seasonal pastries daily."
+            ),
+            (
+                "Instagram-worthy dessert cafe serving colorful macarons, "
+                "house-roasted coffee, brunch plates, and seasonal pastries daily."
+            ),
+        )
+
     def test_clean_description_text_rejects_first_person_review_prose(self) -> None:
         self.assertIsNone(
             _clean_description_text(
@@ -1503,6 +1541,11 @@ class PlaceScraperTests(unittest.TestCase):
     def test_clean_description_text_rejects_option_only_amenity_labels(self) -> None:
         self.assertIsNone(_clean_description_text("· \ue5ca Dogs allowed \ue5cc"))
         self.assertIsNone(_clean_description_text("Onsite services"))
+        self.assertIsNone(_clean_description_text("Restaurant · Dine-in · Takeout"))
+        self.assertEqual(
+            _clean_description_text("Dine-in · Takeout · Cozy bistro with seasonal plates."),
+            "Cozy bistro with seasonal plates",
+        )
 
     def test_clean_description_text_rejects_policy_prompt_without_period(self) -> None:
         self.assertIsNone(
@@ -1569,6 +1612,14 @@ class PlaceScraperTests(unittest.TestCase):
             ),
             "26-28 Cotham Rd, Kew VIC 3101, Australia",
         )
+        self.assertEqual(
+            _extract_preview_address(
+                [
+                    "/maps/place/Foo · 123 Main St, Springfield, IL 62701",
+                ]
+            ),
+            "123 Main St, Springfield, IL 62701",
+        )
 
     def test_extract_preview_address_uses_cleaned_segment_from_compound_value(self) -> None:
         self.assertEqual(
@@ -1579,6 +1630,14 @@ class PlaceScraperTests(unittest.TestCase):
                 ]
             ),
             "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+        )
+        self.assertEqual(
+            _extract_preview_address(["8-Day Ili Pastoral RV Adventure · 123 Main St"]),
+            "123 Main St",
+        )
+        self.assertEqual(
+            _extract_preview_address(["8 Day Street, Boston, MA 02111"]),
+            "8 Day Street, Boston, MA 02111",
         )
 
     def test_extract_preview_address_rejects_review_snippets(self) -> None:

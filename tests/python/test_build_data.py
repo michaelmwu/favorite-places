@@ -1938,6 +1938,47 @@ class BuildDataTests(unittest.TestCase):
         assert entry.place is not None
         self.assertEqual(entry.place.display_name, "McDonald's Shibuya")
 
+    def test_fetch_place_page_enrichment_rejects_sparse_search_match_without_location_evidence(self) -> None:
+        place = RawPlace(
+            name="McDonald's",
+            maps_url="https://www.google.com/maps/search/?api=1&query=McDonald%27s",
+        )
+
+        def fake_scrape_place(url: str, **_: object) -> SimpleNamespace:
+            return SimpleNamespace(
+                source_url=url,
+                resolved_url=url,
+                name="McDonald's",
+                category="Fast food restaurant",
+                rating=3.8,
+                review_count=1200,
+                address=None,
+                located_in=None,
+                status=None,
+                website=None,
+                phone=None,
+                plus_code=None,
+                description=None,
+                lat=None,
+                lng=None,
+                limited_view=False,
+            )
+
+        with (
+            patch.object(build_data, "scrape_place", side_effect=fake_scrape_place),
+            patch.object(
+                build_data,
+                "build_scraper_sessions",
+                return_value=(SimpleNamespace(), None, None),
+            ),
+            patch.object(build_data, "record_scraper_session_use"),
+            patch.object(build_data, "release_scraper_session_lock"),
+        ):
+            entry = build_data.fetch_place_page_enrichment(place)
+
+        self.assertFalse(entry.matched)
+        self.assertIsNone(entry.place)
+
     def test_normalize_place_page_enrichment_rejects_ui_display_name_and_review_description(self) -> None:
         details = SimpleNamespace(
             source_url="https://www.google.com/maps/search/?api=1&query=Onsen",
@@ -1992,7 +2033,7 @@ class BuildDataTests(unittest.TestCase):
 
         details.name = "Pink Street"
         details.description = (
-            "Just an overrated place. Tiktok and instagram made it famous but I didn’t "
+            "Just an overrated place. Tiktok and instagram made it famous but I didn't "
             "feel like it is a must visit spot."
         )
 
@@ -2000,6 +2041,31 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(enrichment.display_name, "Pink Street")
         self.assertIsNone(enrichment.description)
+
+        details.name = "Sushi Bar"
+        details.description = "Highly recommended sushi spot"
+
+        enrichment = build_data.normalize_place_page_enrichment(details)
+
+        self.assertEqual(enrichment.display_name, "Sushi Bar")
+        self.assertIsNone(enrichment.description)
+
+        details.description = "We came for brunch and loved it"
+
+        enrichment = build_data.normalize_place_page_enrichment(details)
+
+        self.assertIsNone(enrichment.description)
+
+        details.source_url = "https://www.google.com/maps/place/Modern+Restaurant"
+        details.resolved_url = "https://www.google.com/maps/place/Modern+Restaurant"
+        details.description = (
+            "Modern restaurant serving delicious food for lunch and dinner in a "
+            "friendly, relaxed setting."
+        )
+
+        enrichment = build_data.normalize_place_page_enrichment(details)
+
+        self.assertEqual(enrichment.description, details.description)
 
         details.source_url = "https://www.google.com/maps/place/Costume+Museum"
         details.resolved_url = "https://www.google.com/maps/place/Costume+Museum"
@@ -5394,6 +5460,32 @@ class BuildDataTests(unittest.TestCase):
                 country_name="Japan",
             )
         )
+        self.assertFalse(
+            build_data.semantic_description_has_conflicting_location(
+                "Compact ramen counter serving Tokyo-style ramen with house noodles.",
+                enrichment_place=enrichment,
+                raw_place=raw_place,
+                city_name="New York",
+                country_name="United States",
+            )
+        )
+        self.assertTrue(
+            build_data.semantic_description_has_conflicting_location(
+                "Paris Baguette is a bakery in Paris with coffee and pastries.",
+                enrichment_place=EnrichmentPlace(
+                    display_name="Paris Baguette",
+                    formatted_address="Seoul, South Korea",
+                    primary_type_display_name="Bakery",
+                ),
+                raw_place=RawPlace(
+                    name="Paris Baguette",
+                    address="Seoul, South Korea",
+                    maps_url="https://maps.example/paris-baguette",
+                ),
+                city_name="Seoul",
+                country_name="South Korea",
+            )
+        )
 
     def test_normalize_semantic_neighborhood_display_cases_slug_outputs(self) -> None:
         cases = {
@@ -6243,6 +6335,22 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(place.primary_type_display_name_localized, "麺類専門店")
         self.assertEqual(place.types, [])
 
+    def test_normalize_enrichment_match_preserves_localized_category_with_generic_type(self) -> None:
+        place = build_data.normalize_enrichment_match(
+            {
+                "id": "places/abc",
+                "displayName": {"text": "Test Place"},
+                "primaryType": "point_of_interest",
+                "primaryTypeDisplayName": {"text": "もつ鍋料理店"},
+                "types": ["point_of_interest", "establishment"],
+            }
+        )
+
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertEqual(place.primary_type_display_name_localized, "もつ鍋料理店")
+        self.assertEqual(place.types, [])
+
     def test_normalize_place_page_enrichment_drops_ui_action_display_names(self) -> None:
         place = build_data.normalize_place_page_enrichment(
             SimpleNamespace(
@@ -6727,6 +6835,22 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.primary_type_display_name)
         self.assertEqual(place.types, ["restaurant", "food"])
 
+    def test_canonicalize_enrichment_place_preserves_localized_category_when_primary_is_generic(self) -> None:
+        place = build_data.canonicalize_enrichment_place(
+            EnrichmentPlace(
+                display_name="Motsu Pot",
+                primary_type="point_of_interest",
+                primary_type_display_name="もつ鍋料理店",
+                types=["point_of_interest"],
+            )
+        )
+
+        assert place is not None
+        self.assertIsNone(place.primary_type)
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertEqual(place.primary_type_display_name_localized, "もつ鍋料理店")
+        self.assertEqual(place.types, [])
+
     def test_humanize_type_id_rejects_generic_item(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("item"))
 
@@ -6761,12 +6885,12 @@ class BuildDataTests(unittest.TestCase):
     def test_fallback_semantic_description_trims_seo_stuffed_cjk_place_name(self) -> None:
         description = build_data.fallback_semantic_description(
             EnrichmentPlace(
-                display_name="山之埕－嘉義景點 親子旅遊園區 阿里山景點 好評 打卡景點 伴手禮推薦 2025評價",
+                display_name="山之埕-嘉義景點 親子旅遊園區 阿里山景點 好評 打卡景點 伴手禮推薦 2025評價",
                 primary_type_display_name="Tourist attraction",
                 formatted_address="Chukou Village, Taiwan",
             ),
             raw_place=RawPlace(
-                name="山之埕－嘉義景點 親子旅遊園區 阿里山景點 好評 打卡景點 伴手禮推薦 2024評價",
+                name="山之埕-嘉義景點 親子旅遊園區 阿里山景點 好評 打卡景點 伴手禮推薦 2024評價",
                 maps_url="https://maps.example/shan",
                 address=None,
             ),
@@ -6985,6 +7109,11 @@ class BuildDataTests(unittest.TestCase):
             build_data.normalize_address_locality_part("青羊宫商圈 Qingyang District"),
             "Qingyang District",
         )
+
+    def test_normalize_address_locality_part_keeps_localities_with_admin_words(self) -> None:
+        self.assertEqual(build_data.normalize_address_locality_part("State College"), "State College")
+        self.assertEqual(build_data.normalize_address_locality_part("County Line"), "County Line")
+        self.assertIsNone(build_data.normalize_address_locality_part("Burqin County"))
 
     def test_normalize_semantic_neighborhood_part_keeps_near_prefixed_neighborhood(self) -> None:
         self.assertEqual(
@@ -10413,6 +10542,22 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(pruned_count, 1)
         self.assertEqual(list(pruned_payload), ["cid:14063537238082844765"])
         self.assertIs(pruned_payload["cid:14063537238082844765"], current_entry)
+
+    def test_prune_places_cache_to_raw_places_drops_all_rows_for_empty_guide(self) -> None:
+        raw = RawSavedList(title="Empty", places=[])
+        stale_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-01T00:00:00+00:00",
+            query="stale",
+            matched=True,
+        )
+
+        pruned_payload, pruned_count = build_data.prune_places_cache_to_raw_places(
+            {"cid:111": stale_entry},
+            raw,
+        )
+
+        self.assertEqual(pruned_payload, {})
+        self.assertEqual(pruned_count, 1)
 
     def test_export_places_cache_json_writes_debug_output(self) -> None:
         cache_entry = EnrichmentCacheEntry(

@@ -129,31 +129,22 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
     "thank you for",
     "we're thrilled",
     "we apologize",
-    "we took",
-    "we got",
-    "we decided",
-    "we stopped by",
-    "we spent",
     "ended up going",
     "my research",
     "my son and i",
     "i had high hopes",
     "i'm sorry to inform",
-    "google maps",
 )
 _DESCRIPTION_REVIEW_PROSE_MARKERS = (
     "highly recommended",
-    "instagram",
     "must visit",
     "overrated",
-    "tiktok",
     "your children",
     "your kids",
     "you should",
 )
 _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN = re.compile(
-    r"\b(?:i|i['’](?:m|d|ve)|my|me|we|we['’](?:re|d|ve)|our|us)\b",
-    re.IGNORECASE,
+    r"\b(?:[Ii]|[Ii]['’](?:m|d|ve)|[Mm]y|[Mm]e|[Ww]e|[Ww]e['’](?:re|d|ve)|[Oo]ur|[Uu]s)\b",
 )
 _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
     "visited",
@@ -3191,6 +3182,14 @@ def _clean_address_text(value: object) -> str | None:
     if normalized is None:
         return None
 
+    if "·" in normalized:
+        segments = [segment.strip() for segment in normalized.split("·") if segment.strip()]
+        for candidate in reversed(segments):
+            if candidate == normalized:
+                continue
+            if _looks_like_address_line(candidate):
+                return candidate
+
     lowered = normalized.lower()
     if _URL_LIKE_PATTERN.search(normalized) is not None:
         return None
@@ -3214,14 +3213,6 @@ def _clean_address_text(value: object) -> str | None:
         and not _looks_like_locality_address_line(normalized)
     ):
         return None
-
-    if "·" in normalized:
-        segments = [segment.strip() for segment in normalized.split("·") if segment.strip()]
-        for candidate in reversed(segments):
-            if candidate == normalized:
-                continue
-            if _looks_like_address_line(candidate):
-                return candidate
 
     if _looks_like_address_line(normalized):
         return normalized
@@ -3665,8 +3656,7 @@ def _clean_description_text(value: object) -> str | None:
     if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
         return None
     if (
-        _looks_like_review_snippet(normalized)
-        or _looks_like_description_review_prose(normalized)
+        _looks_like_description_review_prose(normalized)
         or _looks_like_review_response_text(normalized)
         or _looks_like_first_person_review_text(normalized)
     ):
@@ -3698,13 +3688,24 @@ def _strip_description_service_options(value: str) -> str | None:
     if all(is_service_segment):
         return None
 
+    first_non_service_index = 0
+    while (
+        first_non_service_index < len(cleaned_segments)
+        and is_service_segment[first_non_service_index]
+    ):
+        first_non_service_index += 1
     last_non_service_index = len(cleaned_segments) - 1
-    while last_non_service_index >= 0 and is_service_segment[last_non_service_index]:
+    while (
+        last_non_service_index >= first_non_service_index
+        and is_service_segment[last_non_service_index]
+    ):
         last_non_service_index -= 1
 
-    kept_segments = cleaned_segments[: last_non_service_index + 1]
+    kept_segments = cleaned_segments[first_non_service_index : last_non_service_index + 1]
+    if len(kept_segments) == 1 and _looks_like_category_text(kept_segments[0]):
+        return None
     trimmed = " · ".join(kept_segments).strip()
-    if last_non_service_index < len(cleaned_segments) - 1:
+    if first_non_service_index > 0 or last_non_service_index < len(cleaned_segments) - 1:
         trimmed = trimmed.strip(" .")
     return trimmed or None
 
@@ -3721,7 +3722,7 @@ def _clean_description_segment(value: str) -> str | None:
 
 
 def _looks_like_review_response_text(value: str) -> bool:
-    lowered = value.casefold()
+    lowered = value.casefold().replace("’", "'")
     if len(value.split()) < 10:
         return False
     return any(marker in lowered for marker in _DESCRIPTION_REVIEW_RESPONSE_MARKERS)
@@ -3737,8 +3738,7 @@ def _looks_like_description_review_prose(value: str) -> bool:
 def _looks_like_first_person_review_text(value: str) -> bool:
     if len(value.split()) < 12:
         return False
-    lowered = value.casefold()
-    if _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN.search(lowered) is None:
+    if _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN.search(value) is None:
         return False
     return _DESCRIPTION_FIRST_PERSON_EXPERIENCE_PATTERN.search(value) is not None
 

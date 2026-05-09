@@ -3453,7 +3453,6 @@ def refresh_cached_semantic_enrichment(
             missing_text = ", ".join(missing_selectors)
             raise RuntimeError(f"No configured place matched: {missing_text}")
 
-    changed_slugs: set[str] = set()
     pending_save_slug: str | None = None
     for slug, place_id, place, entry, city_name, country_name, suppress_description in semantic_jobs:
         if pending_save_slug is not None and slug != pending_save_slug:
@@ -3494,7 +3493,6 @@ def refresh_cached_semantic_enrichment(
             requested_label = " and ".join(requested)
             print(f"Generated {requested_label} for {slug}:{place_id} [{place.name}]", flush=True)
             updated_count += 1
-            changed_slugs.add(slug)
             pending_save_slug = slug
         elif (
             (not enable_semantics or semantic_enrichment_state_is_populated(current_semantics))
@@ -3799,7 +3797,6 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     raw_display_name = place.primary_type_display_name_localized or place.primary_type_display_name
     if place.primary_type is not None and normalize_enrichment_type_tag(place.primary_type) is None:
-        raw_display_name = None
         place.primary_type = None
     canonical_display_name = canonical_primary_category_label(
         primary_type=place.primary_type,
@@ -3818,6 +3815,7 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
     place.address_display_en = sanitize_place_page_formatted_address(place.address_display_en)
     place.category_display_en = sanitize_enrichment_primary_category(place.category_display_en)
     place.description = sanitize_place_page_description(place.description)
+    place.search_result_description = sanitize_place_page_description(place.search_result_description)
     place.phone = sanitize_place_page_phone(place.phone)
     place.plus_code = sanitize_place_page_plus_code(place.plus_code)
     place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
@@ -4571,8 +4569,13 @@ def is_subnational_locality_abbreviation(candidate: str) -> bool:
 
 def is_explicit_subnational_locality_label(candidate: str) -> bool:
     return bool(
-        re.search(
-            r"\b(?:county|province|prefecture|state|region)\b",
+        re.match(
+            r"^(?:state|province|prefecture|region)\s+of\s+\S",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+        or re.search(
+            r"\b(?:county|province|prefecture|state|region)$",
             candidate,
             flags=re.IGNORECASE,
         )
@@ -5836,7 +5839,7 @@ def prune_places_cache_to_raw_places(
         for place in raw.places
     }
     if not current_place_ids:
-        return payload, 0
+        return {}, len(payload)
     pruned_payload = {
         place_id: entry
         for place_id, entry in payload.items()
@@ -6181,8 +6184,9 @@ def shared_enrichment_photo_identity_keys(
 
 def hydrate_shared_enrichment_photo_urls(
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
-) -> None:
+) -> int:
     photo_donors: dict[str, tuple[tuple[int, int, str], str | None, str | None]] = {}
+    hydrated_count = 0
 
     for payload in enrichment_caches.values():
         for place_id, entry in payload.items():
@@ -6217,8 +6221,11 @@ def hydrate_shared_enrichment_photo_urls(
             _, donor_main_photo_url, donor_photo_url = donor
             if not place.main_photo_url and donor_main_photo_url:
                 place.main_photo_url = donor_main_photo_url
+                hydrated_count += 1
             if not place.photo_url and donor_photo_url:
                 place.photo_url = donor_photo_url
+                hydrated_count += 1
+    return hydrated_count
 
 
 def build_places_sqlite_rows(
@@ -6228,7 +6235,6 @@ def build_places_sqlite_rows(
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> PlacesSqliteRows:
     _ = raw_lists, guides
-    hydrate_shared_enrichment_photo_urls(enrichment_caches)
 
     guide_cache_rows = [
         (
@@ -6296,13 +6302,22 @@ def rebuild_places_sqlite(
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> None:
-    hydrate_shared_enrichment_photo_urls(enrichment_caches)
+    pruned_any = False
+    for slug, raw in raw_lists.items():
+        cache_payload = enrichment_caches.get(slug)
+        if cache_payload is None:
+            continue
+        pruned_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            enrichment_caches[slug] = pruned_payload
+            pruned_any = True
+    hydrated_count = hydrate_shared_enrichment_photo_urls(enrichment_caches)
     build_signature = build_places_sqlite_signature(
         raw_lists=raw_lists,
         guides=guides,
         enrichment_caches=enrichment_caches,
     )
-    if load_places_sqlite_build_signature() == build_signature:
+    if not pruned_any and not hydrated_count and load_places_sqlite_build_signature() == build_signature:
         return
 
     rows = build_places_sqlite_rows(
@@ -7209,6 +7224,24 @@ def fetch_place_page_enrichment(
                     details,
                     enrichment_place,
                 )
+                search_result_url = localize_google_maps_scrape_url(
+                    as_string(getattr(details, "search_result_url", None)) or ""
+                )
+                if search_result_url and search_result_url not in candidate_urls:
+                    if usable_without_address:
+                        deferred_matched_entry = build_cache_entry(
+                            place,
+                            source="google_maps_page",
+                            query=query,
+                            city_name=city_name,
+                            country_name=country_name,
+                            signature_google_place_id=signature_google_place_id,
+                            matched=True,
+                            score=STRONG_MATCH_SCORE,
+                            enrichment_place=enrichment_place,
+                        )
+                    candidate_urls.insert(index + 1, search_result_url)
+                    continue
                 if index + 1 < len(candidate_urls):
                     if usable_without_address:
                         deferred_matched_entry = build_cache_entry(
@@ -7442,7 +7475,20 @@ def place_page_search_result_without_address_is_usable(
     return (
         place_page_has_meaningful_enrichment(details, enrichment_place)
         and place_page_candidate_is_confident_match(raw_place, details, enrichment_place)
+        and place_page_search_result_without_address_has_location_evidence(raw_place, details, enrichment_place)
     )
+
+
+def place_page_search_result_without_address_has_location_evidence(
+    raw_place: RawPlace,
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    _ = enrichment_place
+    distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
+    if distance_m is None:
+        return False
+    return distance_m <= PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS
 
 
 def place_page_candidate_is_confident_match(
@@ -7814,8 +7860,7 @@ def sanitize_place_page_display_name(value: Any) -> str | None:
 
 
 PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE = re.compile(
-    r"\b(?:i|i['’](?:m|d|ve)|my|me|we|we['’](?:re|d|ve)|our|us)\b",
-    re.IGNORECASE,
+    r"\b(?:[Ii]|[Ii]['’](?:m|d|ve)|[Mm]y|[Mm]e|[Ww]e|[Ww]e['’](?:re|d|ve)|[Oo]ur|[Uu]s)\b",
 )
 PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
     "arrived",
@@ -7853,16 +7898,22 @@ PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS = (
     "your kids",
     "you should",
 )
+
+
+def phrase_marker_pattern(marker: str) -> str:
+    return re.escape(marker).replace(r"\ ", r"\s+")
+
+
 PLACE_PAGE_REVIEW_DESCRIPTION_MARKER_RE = re.compile(
     "|".join(
-        rf"(?<![\w-]){re.escape(marker).replace(r'\\ ', r'\\s+')}(?![\w-])"
+        rf"(?<![\w-]){phrase_marker_pattern(marker)}(?![\w-])"
         for marker in PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS
     ),
     re.IGNORECASE,
 )
 PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE = re.compile(
     "|".join(
-        rf"(?<![\w-]){re.escape(marker).replace(r'\\ ', r'\\s+')}(?![\w-])"
+        rf"(?<![\w-]){phrase_marker_pattern(marker)}(?![\w-])"
         for marker in PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS
     ),
     re.IGNORECASE,
@@ -7873,8 +7924,6 @@ def sanitize_place_page_description(value: Any) -> str | None:
     normalized = as_string(value)
     if normalized is None:
         return None
-    if looks_like_place_page_review_snippet(normalized):
-        return None
     if looks_like_place_page_review_description(normalized):
         return None
     if looks_like_place_page_first_person_description(normalized):
@@ -7883,16 +7932,11 @@ def sanitize_place_page_description(value: Any) -> str | None:
 
 
 def looks_like_place_page_review_description(value: str) -> bool:
-    if len(value.split()) < 12:
-        return False
     return PLACE_PAGE_REVIEW_DESCRIPTION_MARKER_RE.search(value) is not None
 
 
 def looks_like_place_page_first_person_description(value: str) -> bool:
-    if len(value.split()) < 12:
-        return False
-    lowered = value.casefold()
-    if PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE.search(lowered) is None:
+    if PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE.search(value) is None:
         return False
     return PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE.search(value) is not None
 
@@ -8973,10 +9017,6 @@ def semantic_neighborhood_label_has_site_mapping_source(
     return False
 
 
-def is_saint_prefixed_semantic_neighborhood(candidate: str) -> bool:
-    return bool(re.match(r"^st\.?\s+[A-Za-z]", candidate, flags=re.IGNORECASE))
-
-
 def semantic_neighborhood_has_non_saint_street_marker(candidate: str) -> bool:
     return bool(
         re.search(
@@ -9689,6 +9729,10 @@ SEMANTIC_DESCRIPTION_LOCATION_NAME_SUFFIX_RE = re.compile(
     r"^\s+(?:cafe|café|restaurant|bar|hotel|museum|market|gallery|theatre|theater|station|park|square)\b",
     re.IGNORECASE,
 )
+SEMANTIC_DESCRIPTION_LOCATION_STYLE_SUFFIX_RE = re.compile(
+    r"^-(?:style|inspired|brest)\b",
+    re.IGNORECASE,
+)
 
 
 def semantic_description_has_conflicting_location(
@@ -9702,17 +9746,15 @@ def semantic_description_has_conflicting_location(
     description_key = normalize_locality_key(description)
     if not description_key:
         return False
-    allowed_key = normalize_locality_key(
+    allowed_location_key = normalize_locality_key(
         " ".join(
             candidate
             for candidate in (
                 city_name,
                 country_name,
-                enrichment_place.display_name,
                 enrichment_place.formatted_address,
                 enrichment_place.address_display_en,
                 enrichment_place.plus_code,
-                raw_place.name,
                 raw_place.address,
             )
             if candidate
@@ -9720,7 +9762,7 @@ def semantic_description_has_conflicting_location(
     )
     for term in SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS:
         term_key = normalize_locality_key(term)
-        if not term_key or term_key in allowed_key:
+        if not term_key or term_key in allowed_location_key:
             continue
         term_pattern = re.escape(term_key).replace(r"\-", r"[- ]")
         match = re.search(
@@ -9728,7 +9770,9 @@ def semantic_description_has_conflicting_location(
             description_key,
         )
         if match and not SEMANTIC_DESCRIPTION_LOCATION_NAME_SUFFIX_RE.match(description_key[match.end() :]):
-            return True
+            suffix = description_key[match.end() :]
+            if not SEMANTIC_DESCRIPTION_LOCATION_STYLE_SUFFIX_RE.match(suffix):
+                return True
     return False
 
 
@@ -10055,13 +10099,8 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
         primary_type=primary_type,
         display_name=raw_primary_type_display_name,
     )
-    raw_localized_display_name = (
-        raw_primary_type_display_name
-        if primary_type is None or normalize_enrichment_type_tag(primary_type) is not None
-        else None
-    )
     primary_type_display_name_localized = localized_primary_category_label(
-        raw_display_name=raw_localized_display_name,
+        raw_display_name=raw_primary_type_display_name,
         canonical_display_name=primary_type_display_name,
     )
     primary_type, types = normalized_enrichment_type_ids(
