@@ -342,7 +342,7 @@ class LLMConfigTests(unittest.TestCase):
         self.assertTrue(fake_client.manager.closed)
         self.assertEqual(
             fake_client.observation.updates[-1]["usage_details"],
-            {"input": 13, "output": 5, "total": 18},
+            {"input_tokens": 13, "output_tokens": 5, "total_tokens": 18},
         )
         self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
 

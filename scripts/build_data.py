@@ -9338,9 +9338,9 @@ def openai_usage_details(response_payload: Any) -> dict[str, int] | None:
         return None
     details: dict[str, int] = {}
     for langfuse_key, openai_key in (
-        ("input", "prompt_tokens"),
-        ("output", "completion_tokens"),
-        ("total", "total_tokens"),
+        ("input_tokens", "prompt_tokens"),
+        ("output_tokens", "completion_tokens"),
+        ("total_tokens", "total_tokens"),
     ):
         value = usage.get(openai_key)
         if isinstance(value, int):

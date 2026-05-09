@@ -4884,7 +4884,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertTrue(fake_client.manager.closed)
         self.assertEqual(
             fake_client.observation.updates[-1]["usage_details"],
-            {"input": 11, "output": 7, "total": 18},
+            {"input_tokens": 11, "output_tokens": 7, "total_tokens": 18},
         )
         self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
 
