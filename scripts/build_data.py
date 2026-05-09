@@ -904,6 +904,11 @@ GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
 INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+-reviews?$"),
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$"),
+    re.compile(
+        r"^(?:clear|cloudy|sunny|rain|snow|showers?|storms?|thunderstorms?|fog|haze|mist|overcast)"
+        r"(?:[_-](?:with|and|periodic|scattered|mostly|partly|light|heavy|clouds?|sun|rain|snow|"
+        r"showers?|storms?|thunderstorms?|fog|haze|mist|overcast))*$"
+    ),
     re.compile(r"^adults(?:_|-)only(?:_|-).*$"),
     re.compile(r"^beer$"),
     re.compile(r"^transportation$"),
@@ -918,6 +923,12 @@ INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...
     re.compile(r"^\d+\s+reviews?$", re.IGNORECASE),
     re.compile(r"^floor\s+\d+$", re.IGNORECASE),
     re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$", re.IGNORECASE),
+    re.compile(
+        r"^(?:clear|cloudy|sunny|rain|snow|showers?|storms?|thunderstorms?|fog|haze|mist|overcast)"
+        r"(?:\s+(?:with|and|periodic|scattered|mostly|partly|light|heavy|clouds?|sun|rain|snow|"
+        r"showers?|storms?|thunderstorms?|fog|haze|mist|overcast))*$",
+        re.IGNORECASE,
+    ),
     re.compile(r"^adults\s+only\b", re.IGNORECASE),
     re.compile(r"^beer$", re.IGNORECASE),
     re.compile(r"^transportation$", re.IGNORECASE),
@@ -8326,7 +8337,7 @@ def fallback_semantic_description(
     raw_place: RawPlace,
     city_name: str | None,
 ) -> str | None:
-    name = as_string(enrichment_place.display_name) or as_string(raw_place.name)
+    name = semantic_place_name(enrichment_place, raw_place=raw_place)
     if name is None:
         return None
     category = as_string(enrichment_place.primary_type_display_name)
@@ -8346,6 +8357,38 @@ def fallback_semantic_description(
     else:
         return None
     return sanitize_semantic_description(description)
+
+
+SEMANTIC_NAME_SEO_MARKER_RE = re.compile(
+    r"(?:\b(?:ig|ptt|dcard)\b|景點|好評|打卡|推薦|評價|必去|必吃|人氣|網美)",
+    re.IGNORECASE,
+)
+SEMANTIC_NAME_SEO_SPLIT_RE = re.compile(r"\s*[-－–—|｜:：]\s*")
+
+
+def semantic_place_name(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+) -> str | None:
+    return sanitize_semantic_place_name(enrichment_place.display_name) or sanitize_semantic_place_name(raw_place.name)
+
+
+def sanitize_semantic_place_name(value: Any) -> str | None:
+    name = as_string(value)
+    if name is None:
+        return None
+    name = re.sub(r"\s+", " ", name).strip()
+    if not name:
+        return None
+    parts = SEMANTIC_NAME_SEO_SPLIT_RE.split(name, maxsplit=1)
+    if (
+        len(parts) == 2
+        and 1 < len(parts[0]) <= 40
+        and SEMANTIC_NAME_SEO_MARKER_RE.search(parts[1])
+    ):
+        return parts[0].strip() or name
+    return name
 
 
 def fallback_semantic_description_location(
@@ -8574,7 +8617,7 @@ def semantic_enrichment_evidence(
         "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
         "city": city_name,
         "country": country_name,
-        "name": enrichment_place.display_name or raw_place.name,
+        "name": semantic_place_name(enrichment_place, raw_place=raw_place),
         "address": enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address,
         "raw_address": enrichment_place.formatted_address or raw_place.address,
         "category": enrichment_place.primary_type_display_name,
@@ -8607,7 +8650,7 @@ def semantic_description_signature(
         "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
         "city": city_name,
         "country": country_name,
-        "name": semantic_signature_text(enrichment_place.display_name or raw_place.name),
+        "name": semantic_signature_text(semantic_place_name(enrichment_place, raw_place=raw_place)),
         "address": semantic_signature_text(
             enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
         ),

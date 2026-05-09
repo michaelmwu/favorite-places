@@ -6269,6 +6269,7 @@ class BuildDataTests(unittest.TestCase):
 
     def test_humanize_type_id_rejects_weather_and_amenity_noise(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("light_rain"))
+        self.assertIsNone(build_data.humanize_type_id("clear_with_periodic_clouds"))
         self.assertIsNone(build_data.humanize_type_id("adults_only_boutique_hotel"))
         self.assertIsNone(build_data.humanize_type_id("beer"))
         self.assertIsNone(build_data.humanize_type_id("free_breakfast"))
@@ -6283,9 +6284,9 @@ class BuildDataTests(unittest.TestCase):
                 "displayName": {"text": "Christianshavn"},
                 "formattedAddress": "Copenhagen, Denmark",
                 "googleMapsUri": "https://maps.google.com/?cid=1",
-                "primaryType": "light_rain",
-                "primaryTypeDisplayName": {"text": "Light rain"},
-                "types": ["light_rain"],
+                "primaryType": "clear_with_periodic_clouds",
+                "primaryTypeDisplayName": {"text": "Clear with periodic clouds"},
+                "types": ["clear_with_periodic_clouds"],
             }
         )
 
@@ -6293,6 +6294,40 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.primary_type_display_name)
         self.assertIsNone(place.primary_type_display_name_localized)
         self.assertEqual(place.types, [])
+
+    def test_fallback_semantic_description_trims_seo_stuffed_cjk_place_name(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="山之埕－嘉義景點 親子旅遊園區 阿里山景點 好評 打卡景點 伴手禮推薦 2025評價",
+                primary_type_display_name="Tourist attraction",
+                formatted_address="Chukou Village, Taiwan",
+            ),
+            raw_place=RawPlace(
+                name="山之埕－嘉義景點 親子旅遊園區 阿里山景點 好評 打卡景點 伴手禮推薦 2024評價",
+                maps_url="https://maps.example/shan",
+                address=None,
+            ),
+            city_name="Alishan",
+        )
+
+        self.assertEqual(description, "山之埕 is a tourist attraction in Chukou Village.")
+
+    def test_semantic_enrichment_evidence_trims_seo_stuffed_name(self) -> None:
+        evidence = build_data.semantic_enrichment_evidence(
+            EnrichmentPlace(
+                display_name="鄒族 逐鹿文創園區-嘉義阿里山 原住民餐廳 IG PTT Dcard",
+                primary_type_display_name="Restaurant",
+            ),
+            raw_place=RawPlace(
+                name="鄒族 逐鹿文創園區-嘉義阿里山 原住民餐廳 IG PTT Dcard",
+                maps_url="https://maps.example/veoveoana",
+                address=None,
+            ),
+            city_name="Alishan",
+            country_name="Taiwan",
+        )
+
+        self.assertEqual(evidence["name"], "鄒族 逐鹿文創園區")
 
     def test_normalize_enrichment_match_drops_beer_category(self) -> None:
         place = build_data.normalize_enrichment_match(
