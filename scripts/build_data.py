@@ -8197,7 +8197,7 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
     return items
 
 
-SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v6"
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v7"
 SEMANTIC_ENRICHMENT_SYSTEM_PROMPT = """
 You classify saved places for a travel guide. Return only compact JSON.
 
@@ -8229,6 +8229,8 @@ Description:
 - You may synthesize aggregate review-topic, review-signal, and about-section evidence into concise factual phrases such as popular dishes, format, setting, service style, or use case.
 - Do not quote individual reviews.
 - Do not mention reviewers, reviews, review counts, or source language such as "reviews say" or "customers praise."
+- Use direct factual wording instead of review/source phrasing: write "with warm service" rather than "praised for warm service."
+- Avoid hype and ranking claims such as "one of the best," "one of the world's most," "widely hailed," or "regarded as."
 - Do not preserve individual complaints.
 - Do not repeat raw UI labels like Accessibility or Service options.
 - Do not copy raw_note verbatim; rewrite it as neutral, well-edited guide copy.
@@ -9398,6 +9400,9 @@ SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
     r"\b(?:"
     r"(?:mixed\s+)?reviews?\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
     r"(?:reviewers?|customers?|users?|people)\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
+    r"(?:praised|lauded|commended|celebrated|famed)\s+(?:for|as)|"
+    r"(?:widely\s+)?(?:hailed|regarded|considered)\s+as|"
+    r"one\s+of\s+(?:the\s+)?(?:world'?s|italy'?s|city'?s|region'?s|area'?s)\s+(?:most|best|finest)|"
     r"according\s+to\s+(?:reviews?|reviewers?|customers?|users?)"
     r")\b",
     re.IGNORECASE,

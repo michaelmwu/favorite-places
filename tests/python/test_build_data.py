@@ -5559,6 +5559,16 @@ class BuildDataTests(unittest.TestCase):
                 "Budget mineral hot springs with free lockers, though mixed reviews note lukewarm water."
             )
         )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "Beloved trattoria praised for warm service and handmade pasta."
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "Historic villa widely hailed as one of the world's most beautiful views."
+            )
+        )
 
     def test_apply_semantic_enrichment_preserves_semantic_source_when_semantics_remain_populated(self) -> None:
         raw_place = RawPlace(
