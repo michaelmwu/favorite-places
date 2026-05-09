@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from gmaps_scraper import llm as llm_module
 from gmaps_scraper.llm import (
     cached_place_repairer,
     openai_compatible_place_repair,
@@ -269,6 +270,81 @@ class LLMConfigTests(unittest.TestCase):
             json.loads(content)["allowed_fields"],
             list(PLACE_LLM_REPAIR_FIELDS),
         )
+
+    def test_openai_compatible_place_repair_logs_langfuse_generation(self) -> None:
+        class FakeObservation:
+            def __init__(self) -> None:
+                self.updates: list[dict[str, object]] = []
+
+            def update(self, **kwargs: object) -> None:
+                self.updates.append(kwargs)
+
+        class FakeManager:
+            def __init__(self, observation: FakeObservation) -> None:
+                self.observation = observation
+                self.closed = False
+
+            def __enter__(self) -> FakeObservation:
+                return self.observation
+
+            def __exit__(self, exc_type: object, exc: object, tb: object) -> bool:
+                self.closed = True
+                return False
+
+        class FakeClient:
+            def __init__(self) -> None:
+                self.observation = FakeObservation()
+                self.manager = FakeManager(self.observation)
+                self.started: dict[str, object] | None = None
+
+            def start_as_current_observation(self, **kwargs: object) -> FakeManager:
+                self.started = kwargs
+                return self.manager
+
+        fake_client = FakeClient()
+
+        def fake_urlopen(http_request: object, timeout: float) -> _FakeHTTPResponse:
+            del http_request, timeout
+            return _FakeHTTPResponse(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps({"address_display_en": "Tokyo, Japan"})
+                            }
+                        }
+                    ],
+                    "usage": {
+                        "prompt_tokens": 13,
+                        "completion_tokens": 5,
+                        "total_tokens": 18,
+                    },
+                }
+            )
+
+        with (
+            patch("urllib.request.urlopen", side_effect=fake_urlopen),
+            patch.object(llm_module, "_configured_langfuse_client", return_value=fake_client),
+        ):
+            response = openai_compatible_place_repair(
+                _build_request(),
+                api_key="test-openai-key",
+                base_url="https://api.openai.com/v1",
+                model="gpt-5-mini",
+            )
+
+        self.assertEqual(response, {"address_display_en": "Tokyo, Japan"})
+        self.assertIsNotNone(fake_client.started)
+        assert fake_client.started is not None
+        self.assertEqual(fake_client.started["as_type"], "generation")
+        self.assertEqual(fake_client.started["name"], "gmaps-scraper.place-repair")
+        self.assertEqual(fake_client.started["model"], "gpt-5-mini")
+        self.assertTrue(fake_client.manager.closed)
+        self.assertEqual(
+            fake_client.observation.updates[-1]["usage_details"],
+            {"input": 13, "output": 5, "total": 18},
+        )
+        self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
 
     def test_local_config_can_define_fireworks_alias(self) -> None:
         captured: dict[str, object] = {}

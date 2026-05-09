@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import atexit
+import functools
 import json
 import os
 import re
+import sys
 import threading
 import urllib.error
 import urllib.request
@@ -69,6 +72,93 @@ class _ResolvedLLMConfig:
 
 class LLMRepairError(RuntimeError):
     """Raised when an optional LLM repair call fails."""
+
+
+class _NoopLangfuseObservation:
+    def update(self, **_: Any) -> None:
+        return None
+
+
+@functools.cache
+def _configured_langfuse_client() -> Any | None:
+    if not os.environ.get("LANGFUSE_PUBLIC_KEY") or not os.environ.get("LANGFUSE_SECRET_KEY"):
+        return None
+    try:
+        from langfuse import get_client
+    except ImportError:
+        return None
+    try:
+        client = get_client()
+    except Exception:
+        return None
+    atexit.register(_flush_langfuse)
+    return client
+
+
+def _flush_langfuse() -> None:
+    client = _configured_langfuse_client()
+    if client is None:
+        return
+    try:
+        client.flush()
+    except Exception:
+        return
+
+
+def _open_langfuse_generation(
+    *,
+    name: str,
+    model: str,
+    input_payload: Mapping[str, object],
+    metadata: Mapping[str, object],
+) -> tuple[Any, Any]:
+    client = _configured_langfuse_client()
+    if client is None:
+        return None, _NoopLangfuseObservation()
+    try:
+        manager = client.start_as_current_observation(
+            as_type="generation",
+            name=name,
+            model=model,
+            input=input_payload,
+            metadata=metadata,
+        )
+        observation = manager.__enter__()
+    except Exception:
+        return None, _NoopLangfuseObservation()
+    return manager, observation
+
+
+def _close_langfuse_generation(manager: Any, exc_info: tuple[Any, Any, Any]) -> None:
+    if manager is None:
+        return
+    try:
+        manager.__exit__(*exc_info)
+    except Exception:
+        return
+
+
+def _update_langfuse_generation(observation: Any, **kwargs: Any) -> None:
+    try:
+        observation.update(**kwargs)
+    except Exception:
+        return
+
+
+def _openai_usage_details(response_payload: Mapping[str, Any]) -> dict[str, int] | None:
+    usage = response_payload.get("usage")
+    if not isinstance(usage, Mapping):
+        return None
+    details: dict[str, int] = {}
+    for langfuse_key, openai_key in (
+        ("input", "prompt_tokens"),
+        ("output", "completion_tokens"),
+        ("total", "total_tokens"),
+    ):
+        value = usage.get(openai_key)
+        if isinstance(value, int):
+            details[langfuse_key] = value
+    return details or None
 
 
 def openai_compatible_place_repairer_from_env(
@@ -324,21 +414,74 @@ def openai_compatible_place_repair(
         },
         method="POST",
     )
+    manager, generation = _open_langfuse_generation(
+        name="gmaps-scraper.place-repair",
+        model=model,
+        input_payload=payload,
+        metadata={
+            "base_url": base_url,
+            "prompt_version": request.diagnostics.prompt_version,
+            "evidence_hash": request.diagnostics.evidence_hash,
+            "tasks": list(request.tasks),
+            "source_url": request.source_url,
+            "resolved_url": request.resolved_url,
+        },
+    )
+    exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
         with urllib.request.urlopen(http_request, timeout=timeout_seconds) as response:
             response_payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
+        exc_info = sys.exc_info()
         body = exc.read().decode("utf-8", errors="replace")
+        _update_langfuse_generation(
+            generation,
+            metadata={"status": "http_error", "status_code": exc.code, "error": body},
+        )
+        _close_langfuse_generation(manager, exc_info)
         raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
     except (OSError, json.JSONDecodeError) as exc:
+        exc_info = sys.exc_info()
+        _update_langfuse_generation(
+            generation,
+            metadata={"status": "error", "error": str(exc)},
+        )
+        _close_langfuse_generation(manager, exc_info)
         raise LLMRepairError(f"LLM repair failed: {exc}") from exc
 
     content = _extract_chat_content(response_payload)
     if content is None:
+        _update_langfuse_generation(generation, metadata={"status": "missing_content"})
+        _close_langfuse_generation(manager, exc_info)
         return None
-    decoded = _decode_json_object(content)
+    try:
+        decoded = _decode_json_object(content)
+    except json.JSONDecodeError:
+        exc_info = sys.exc_info()
+        _update_langfuse_generation(
+            generation,
+            output=content,
+            metadata={"status": "invalid_json"},
+            usage_details=_openai_usage_details(response_payload),
+        )
+        _close_langfuse_generation(manager, exc_info)
+        raise
     if not isinstance(decoded, Mapping):
+        _update_langfuse_generation(
+            generation,
+            output=decoded,
+            metadata={"status": "invalid_schema"},
+            usage_details=_openai_usage_details(response_payload),
+        )
+        _close_langfuse_generation(manager, exc_info)
         return None
+    _update_langfuse_generation(
+        generation,
+        output=dict(decoded),
+        metadata={"status": "success"},
+        usage_details=_openai_usage_details(response_payload),
+    )
+    _close_langfuse_generation(manager, exc_info)
     return decoded
 
 
