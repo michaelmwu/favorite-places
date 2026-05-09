@@ -4898,8 +4898,8 @@ class BuildDataTests(unittest.TestCase):
 
         fake_module = ModuleType("langfuse")
         fake_module.Langfuse = FakeLangfuse  # type: ignore[attr-defined]
-        build_data.langfuse_client_for_config.cache_clear()
-        self.addCleanup(build_data.langfuse_client_for_config.cache_clear)
+        build_data.clear_langfuse_client_cache()
+        self.addCleanup(build_data.clear_langfuse_client_cache)
 
         with (
             patch.dict(os.environ, {}, clear=True),

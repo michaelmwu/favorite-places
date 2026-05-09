@@ -341,11 +341,89 @@ class LLMConfigTests(unittest.TestCase):
         self.assertEqual(fake_client.started["as_type"], "generation")
         self.assertEqual(fake_client.started["name"], "gmaps-scraper.place-repair")
         self.assertEqual(fake_client.started["model"], "gpt-5-mini")
+        self.assertNotIn("input", fake_client.started)
+        started_metadata = fake_client.started["metadata"]
+        self.assertIsInstance(started_metadata, dict)
+        self.assertIn("source_url_hash", started_metadata)
+        self.assertIn("resolved_url_hash", started_metadata)
+        self.assertNotIn("source_url", started_metadata)
+        self.assertNotIn("resolved_url", started_metadata)
         self.assertTrue(fake_client.manager.closed)
         self.assertEqual(
             fake_client.observation.updates[-1]["usage_details"],
             {"input_tokens": 13, "output_tokens": 5, "total_tokens": 18},
         )
+        self.assertNotIn("output", fake_client.observation.updates[-1])
+        self.assertEqual(
+            fake_client.observation.updates[-1]["metadata"],
+            {**fake_client.started["metadata"], "status": "success"},
+        )
+
+    def test_openai_compatible_place_repair_logs_without_usage(self) -> None:
+        class FakeObservation:
+            def __init__(self) -> None:
+                self.updates: list[dict[str, object]] = []
+
+            def update(self, **kwargs: object) -> None:
+                self.updates.append(kwargs)
+
+        class FakeManager:
+            def __init__(self, observation: FakeObservation) -> None:
+                self.observation = observation
+                self.closed = False
+
+            def __enter__(self) -> FakeObservation:
+                return self.observation
+
+            def __exit__(self, exc_type: object, exc: object, tb: object) -> bool:
+                self.closed = True
+                return False
+
+        class FakeClient:
+            def __init__(self) -> None:
+                self.observation = FakeObservation()
+                self.manager = FakeManager(self.observation)
+                self.started: dict[str, object] | None = None
+
+            def start_as_current_observation(self, **kwargs: object) -> FakeManager:
+                self.started = kwargs
+                return self.manager
+
+        fake_client = FakeClient()
+
+        def fake_urlopen(http_request: object, timeout: float) -> _FakeHTTPResponse:
+            del http_request, timeout
+            return _FakeHTTPResponse(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps({"address_display_en": "Tokyo, Japan"})
+                            }
+                        }
+                    ],
+                }
+            )
+
+        with (
+            patch("urllib.request.urlopen", side_effect=fake_urlopen),
+            patch.object(llm_module, "_configured_langfuse_client", return_value=fake_client),
+        ):
+            response = openai_compatible_place_repair(
+                _build_request(),
+                api_key="test-openai-key",
+                base_url="https://api.openai.com/v1",
+                model="gpt-5-mini",
+            )
+
+        self.assertEqual(response, {"address_display_en": "Tokyo, Japan"})
+        self.assertIsNotNone(fake_client.started)
+        assert fake_client.started is not None
+        self.assertEqual(fake_client.started["as_type"], "generation")
+        self.assertEqual(fake_client.started["name"], "gmaps-scraper.place-repair")
+        self.assertEqual(fake_client.started["model"], "gpt-5-mini")
+        self.assertTrue(fake_client.manager.closed)
+        self.assertNotIn("usage_details", fake_client.observation.updates[-1])
         self.assertEqual(
             fake_client.observation.updates[-1]["metadata"],
             {**fake_client.started["metadata"], "status": "success"},
@@ -367,6 +445,22 @@ class LLMConfigTests(unittest.TestCase):
 
         self.assertEqual(config, ("pk-lf-test", "sk-lf-test", "https://us.cloud.langfuse.com"))
 
+    def test_langfuse_client_uses_host_fallback_from_env(self) -> None:
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "LANGFUSE_PUBLIC_KEY": "pk-lf-test",
+                    "LANGFUSE_SECRET_KEY": "sk-lf-test",
+                    "LANGFUSE_HOST": "eu.langfuse.com",
+                },
+                clear=True,
+            )
+        ):
+            config = llm_module._langfuse_config_from_env()
+
+        self.assertEqual(config, ("pk-lf-test", "sk-lf-test", "https://eu.langfuse.com"))
+
     def test_langfuse_client_does_not_cache_disabled_env(self) -> None:
         class FakeLangfuse:
             def __init__(self, **kwargs: object) -> None:
@@ -374,8 +468,8 @@ class LLMConfigTests(unittest.TestCase):
 
         fake_module = ModuleType("langfuse")
         fake_module.Langfuse = FakeLangfuse  # type: ignore[attr-defined]
-        llm_module._langfuse_client_for_config.cache_clear()
-        self.addCleanup(llm_module._langfuse_client_for_config.cache_clear)
+        llm_module._clear_langfuse_client_cache()
+        self.addCleanup(llm_module._clear_langfuse_client_cache)
 
         with patch.dict("os.environ", {}, clear=True):
             self.assertIsNone(llm_module._configured_langfuse_client())

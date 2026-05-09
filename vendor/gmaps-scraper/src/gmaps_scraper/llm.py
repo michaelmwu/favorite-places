@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import atexit
-import functools
 import importlib
 import json
 import os
@@ -80,6 +79,10 @@ class _NoopLangfuseObservation:
         return None
 
 
+_LANGFUSE_CLIENT_CACHE: dict[tuple[str, str, str | None], Any] = {}
+_LANGFUSE_FLUSH_CLIENT_IDS: set[int] = set()
+
+
 def _configured_langfuse_client() -> Any | None:
     config = _langfuse_config_from_env()
     if config is None:
@@ -87,8 +90,10 @@ def _configured_langfuse_client() -> Any | None:
     return _langfuse_client_for_config(config)
 
 
-@functools.cache
 def _langfuse_client_for_config(config: tuple[str, str, str | None]) -> Any | None:
+    cached = _LANGFUSE_CLIENT_CACHE.get(config)
+    if cached is not None:
+        return cached
     public_key, secret_key, base_url = config
     try:
         langfuse_module = importlib.import_module("langfuse")
@@ -102,47 +107,87 @@ def _langfuse_client_for_config(config: tuple[str, str, str | None]) -> Any | No
             client = langfuse_class(public_key=public_key, secret_key=secret_key)
     except Exception:
         return None
-    atexit.register(_flush_langfuse)
+    _LANGFUSE_CLIENT_CACHE[config] = client
+    _register_langfuse_flush(client)
     return client
 
 
 def _langfuse_config_from_env() -> tuple[str, str, str | None] | None:
     public_key = os.environ.get("LANGFUSE_PUBLIC_KEY")
     secret_key = os.environ.get("LANGFUSE_SECRET_KEY")
-    base_url = os.environ.get("LANGFUSE_BASE_URL") or os.environ.get("LANGFUSE_HOST")
+    base_url = _normalize_langfuse_base_url(
+        os.environ.get("LANGFUSE_BASE_URL") or os.environ.get("LANGFUSE_HOST")
+    )
     if not public_key or not secret_key:
         return None
     return public_key, secret_key, base_url
 
 
-def _flush_langfuse() -> None:
-    client = _configured_langfuse_client()
-    if client is None:
+def _clear_langfuse_client_cache() -> None:
+    _LANGFUSE_CLIENT_CACHE.clear()
+    _LANGFUSE_FLUSH_CLIENT_IDS.clear()
+
+
+def _normalize_langfuse_base_url(value: str | None) -> str | None:
+    if value is None:
+        return None
+    stripped = value.strip().rstrip("/")
+    if not stripped:
+        return None
+    if "://" in stripped:
+        return stripped
+    return f"https://{stripped}"
+
+
+def _register_langfuse_flush(client: Any) -> None:
+    client_id = id(client)
+    if client_id in _LANGFUSE_FLUSH_CLIENT_IDS:
         return
+    _LANGFUSE_FLUSH_CLIENT_IDS.add(client_id)
+    atexit.register(_flush_langfuse_client, client)
+
+
+def _flush_langfuse_client(client: Any) -> None:
     try:
         client.flush()
     except Exception:
         return
 
 
+def _langfuse_full_capture_enabled() -> bool:
+    return _env_flag("GMAPS_SCRAPER_LANGFUSE_FULL_CAPTURE")
+
+
+def _env_flag(name: str) -> bool:
+    return (os.environ.get(name) or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _langfuse_hash(value: str | None) -> str | None:
+    if not value:
+        return None
+    return sha256(value.encode("utf-8")).hexdigest()
+
+
 def _open_langfuse_generation(
     *,
     name: str,
     model: str,
-    input_payload: Mapping[str, object],
+    input_payload: Mapping[str, object] | None,
     metadata: Mapping[str, object],
 ) -> tuple[Any, Any]:
     client = _configured_langfuse_client()
     if client is None:
         return None, _NoopLangfuseObservation()
     try:
-        manager = client.start_as_current_observation(
-            as_type="generation",
-            name=name,
-            model=model,
-            input=input_payload,
-            metadata=metadata,
-        )
+        kwargs: dict[str, object] = {
+            "as_type": "generation",
+            "name": name,
+            "model": model,
+            "metadata": metadata,
+        }
+        if input_payload is not None:
+            kwargs["input"] = input_payload
+        manager = client.start_as_current_observation(**kwargs)
         observation = manager.__enter__()
     except Exception:
         return None, _NoopLangfuseObservation()
@@ -160,6 +205,7 @@ def _close_langfuse_generation(manager: Any, exc_info: tuple[Any, Any, Any]) -> 
 
 def _update_langfuse_generation(observation: Any, **kwargs: Any) -> None:
     try:
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
         observation.update(**kwargs)
     except Exception:
         return
@@ -434,27 +480,28 @@ def openai_compatible_place_repair(
         },
         method="POST",
     )
+    full_langfuse_capture = _langfuse_full_capture_enabled()
     langfuse_metadata = {
         "base_url": base_url,
         "prompt_version": request.diagnostics.prompt_version,
         "evidence_hash": request.diagnostics.evidence_hash,
+        "task_count": len(request.tasks),
         "tasks": list(request.tasks),
-        "source_url": request.source_url,
-        "resolved_url": request.resolved_url,
+        "source_url_hash": _langfuse_hash(request.source_url),
+        "resolved_url_hash": _langfuse_hash(request.resolved_url),
+        "full_capture": full_langfuse_capture,
     }
     manager, generation = _open_langfuse_generation(
         name="gmaps-scraper.place-repair",
         model=model,
-        input_payload=payload,
+        input_payload=payload if full_langfuse_capture else None,
         metadata=langfuse_metadata,
     )
-    exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
         try:
             with urllib.request.urlopen(http_request, timeout=timeout_seconds) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
-            exc_info = sys.exc_info()
             body = exc.read().decode("utf-8", errors="replace")
             _update_langfuse_generation(
                 generation,
@@ -467,7 +514,6 @@ def openai_compatible_place_repair(
             )
             raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
         except (OSError, json.JSONDecodeError) as exc:
-            exc_info = sys.exc_info()
             _update_langfuse_generation(
                 generation,
                 metadata={**langfuse_metadata, "status": "error", "error": str(exc)},
@@ -484,10 +530,9 @@ def openai_compatible_place_repair(
         try:
             decoded = _decode_json_object(content)
         except json.JSONDecodeError:
-            exc_info = sys.exc_info()
             _update_langfuse_generation(
                 generation,
-                output=content,
+                output=content if full_langfuse_capture else None,
                 metadata={**langfuse_metadata, "status": "invalid_json"},
                 usage_details=_openai_usage_details(response_payload),
             )
@@ -495,23 +540,20 @@ def openai_compatible_place_repair(
         if not isinstance(decoded, Mapping):
             _update_langfuse_generation(
                 generation,
-                output=decoded,
+                output=decoded if full_langfuse_capture else None,
                 metadata={**langfuse_metadata, "status": "invalid_schema"},
                 usage_details=_openai_usage_details(response_payload),
             )
             return None
         _update_langfuse_generation(
             generation,
-            output=dict(decoded),
+            output=dict(decoded) if full_langfuse_capture else None,
             metadata={**langfuse_metadata, "status": "success"},
             usage_details=_openai_usage_details(response_payload),
         )
         return decoded
     finally:
-        current_exc_info = sys.exc_info()
-        if exc_info[0] is None and current_exc_info[0] is not None:
-            exc_info = current_exc_info
-        _close_langfuse_generation(manager, exc_info)
+        _close_langfuse_generation(manager, sys.exc_info())
 
 
 def _allowed_fields_for_tasks(tasks: list[str]) -> list[str]:

@@ -247,6 +247,7 @@ Common variables:
 - `GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTIONS`: override optional LLM-generated card descriptions
 - `GOOGLE_MAPS_PLACES_SEMANTIC_DESCRIPTION_FORCE_REFRESH`: force description regeneration instead of signature reuse
 - `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_BASE_URL`: optionally log uncached scraper repair and semantic enrichment LLM generations to Langfuse
+- `GMAPS_SCRAPER_LANGFUSE_FULL_CAPTURE`: opt scraper repair traces into full request/response payload capture; unset by default so scraper repair traces use URL hashes and metadata only
 - `PUBLIC_MAP_PROVIDER=leaflet`: force Leaflet/OpenStreetMap rendering
 - `PUBLIC_PLACE_PHOTOS=off`: hide place photos in the UI
 - `FAVORITE_PLACES_SITE_DIR`: point the app and Python pipeline at a non-default site pack

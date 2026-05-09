@@ -9256,11 +9256,15 @@ def load_dotenv_values(path: Path) -> dict[str, str]:
     return values
 
 
+LANGFUSE_CLIENT_CACHE: dict[tuple[str, str, str | None], Any] = {}
+LANGFUSE_FLUSH_CLIENT_IDS: set[int] = set()
+
+
 def configured_langfuse_client() -> Any | None:
     env = load_dotenv_values(ROOT / ".env")
     public_key = os.environ.get("LANGFUSE_PUBLIC_KEY") or env.get("LANGFUSE_PUBLIC_KEY")
     secret_key = os.environ.get("LANGFUSE_SECRET_KEY") or env.get("LANGFUSE_SECRET_KEY")
-    base_url = (
+    base_url = normalize_langfuse_base_url(
         os.environ.get("LANGFUSE_BASE_URL")
         or os.environ.get("LANGFUSE_HOST")
         or env.get("LANGFUSE_BASE_URL")
@@ -9271,8 +9275,11 @@ def configured_langfuse_client() -> Any | None:
     return langfuse_client_for_config(public_key, secret_key, base_url)
 
 
-@lru_cache(maxsize=8)
 def langfuse_client_for_config(public_key: str, secret_key: str, base_url: str | None) -> Any | None:
+    cache_key = (public_key, secret_key, base_url)
+    cached = LANGFUSE_CLIENT_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
     try:
         from langfuse import Langfuse
     except ImportError:
@@ -9284,18 +9291,45 @@ def langfuse_client_for_config(public_key: str, secret_key: str, base_url: str |
         client = Langfuse(**kwargs)
     except Exception:
         return None
-    atexit.register(flush_langfuse)
+    LANGFUSE_CLIENT_CACHE[cache_key] = client
+    register_langfuse_flush(client)
     return client
 
 
-def flush_langfuse() -> None:
-    client = configured_langfuse_client()
-    if client is None:
+def clear_langfuse_client_cache() -> None:
+    LANGFUSE_CLIENT_CACHE.clear()
+    LANGFUSE_FLUSH_CLIENT_IDS.clear()
+
+
+def normalize_langfuse_base_url(value: str | None) -> str | None:
+    if value is None:
+        return None
+    stripped = value.strip().rstrip("/")
+    if not stripped:
+        return None
+    if "://" in stripped:
+        return stripped
+    return f"https://{stripped}"
+
+
+def register_langfuse_flush(client: Any) -> None:
+    client_id = id(client)
+    if client_id in LANGFUSE_FLUSH_CLIENT_IDS:
         return
+    LANGFUSE_FLUSH_CLIENT_IDS.add(client_id)
+    atexit.register(flush_langfuse_client, client)
+
+
+def flush_langfuse_client(client: Any) -> None:
     try:
         client.flush()
     except Exception:
         return
+
+
+def flush_langfuse() -> None:
+    for client in list(LANGFUSE_CLIENT_CACHE.values()):
+        flush_langfuse_client(client)
 
 
 def open_langfuse_generation(
@@ -9333,6 +9367,7 @@ def close_langfuse_generation(manager: Any, exc_info: tuple[Any, Any, Any]) -> N
 
 def update_langfuse_generation(observation: Any, **kwargs: Any) -> None:
     try:
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
         observation.update(**kwargs)
     except Exception:
         return

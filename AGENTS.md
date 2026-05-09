@@ -39,6 +39,7 @@ The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner.
 - `FAVORITE_PLACES_GMAPS_SCRAPER_STATE_DIR` optionally overrides the scraper browser-profile and HTTP-cookie-jar root. Use the same absolute path from multiple worktrees if you want to share scraper trust state. A headed run with that same path may still be needed to establish consent or signed-in browser state; the browser profile and curl cookie jar are persisted together under this root but are separate artifacts.
 - `FAVORITE_PLACES_SITE_DIR` points both Astro and the Python data pipeline at the site pack. It defaults to `./site`, with `./site.example` as the fresh-checkout fallback.
 - `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and optional `LANGFUSE_BASE_URL` enable Langfuse generation logging for uncached scraper repair and semantic enrichment LLM calls.
+- `GMAPS_SCRAPER_LANGFUSE_FULL_CAPTURE=true` opts scraper repair logging into full request/response payload capture. Leave unset by default so scraper repair traces use URL hashes and metadata only.
 
 ## Data Practices
 
