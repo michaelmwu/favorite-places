@@ -3797,6 +3797,8 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     raw_display_name = place.primary_type_display_name_localized or place.primary_type_display_name
     if place.primary_type is not None and normalize_enrichment_type_tag(place.primary_type) is None:
+        if normalize_type_lookup_text(place.primary_type) == "item":
+            raw_display_name = None
         place.primary_type = None
     canonical_display_name = canonical_primary_category_label(
         primary_type=place.primary_type,
@@ -4568,9 +4570,17 @@ def is_subnational_locality_abbreviation(candidate: str) -> bool:
 
 
 def is_explicit_subnational_locality_label(candidate: str) -> bool:
+    candidate_key = normalize_locality_key(candidate)
+    if candidate_key in {"county line", "state college"}:
+        return False
     return bool(
         re.match(
-            r"^(?:state|province|prefecture|region)\s+of\s+\S",
+            r"^(?:state|county|province|prefecture|region)\s+of\s+\S",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+        or re.match(
+            r"^(?:county|province|prefecture|region)\s+\S",
             candidate,
             flags=re.IGNORECASE,
         )
@@ -10095,12 +10105,15 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
         display_name_text(candidate.get("primaryTypeDisplayName"))
     )
     primary_type = as_string(candidate.get("primaryType"))
+    raw_localized_display_name = (
+        None if normalize_type_lookup_text(primary_type) == "item" else raw_primary_type_display_name
+    )
     primary_type_display_name = canonical_primary_category_label(
         primary_type=primary_type,
         display_name=raw_primary_type_display_name,
     )
     primary_type_display_name_localized = localized_primary_category_label(
-        raw_display_name=raw_primary_type_display_name,
+        raw_display_name=raw_localized_display_name,
         canonical_display_name=primary_type_display_name,
     )
     primary_type, types = normalized_enrichment_type_ids(
