@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import atexit
 import functools
+import importlib
 import json
 import os
 import re
@@ -86,14 +87,15 @@ def _configured_langfuse_client() -> Any | None:
         return None
     public_key, secret_key, base_url = config
     try:
-        from langfuse import Langfuse
-    except ImportError:
+        langfuse_module = importlib.import_module("langfuse")
+        langfuse_class = langfuse_module.Langfuse
+    except (ImportError, AttributeError):
         return None
     try:
         if base_url:
-            client = Langfuse(public_key=public_key, secret_key=secret_key, base_url=base_url)
+            client = langfuse_class(public_key=public_key, secret_key=secret_key, base_url=base_url)
         else:
-            client = Langfuse(public_key=public_key, secret_key=secret_key)
+            client = langfuse_class(public_key=public_key, secret_key=secret_key)
     except Exception:
         return None
     atexit.register(_flush_langfuse)
