@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import ModuleType
 from unittest.mock import patch
 
 from gmaps_scraper import llm as llm_module
@@ -361,6 +363,38 @@ class LLMConfigTests(unittest.TestCase):
             config = llm_module._langfuse_config_from_env()
 
         self.assertEqual(config, ("pk-lf-test", "sk-lf-test", "https://us.cloud.langfuse.com"))
+
+    def test_langfuse_client_does_not_cache_disabled_env(self) -> None:
+        class FakeLangfuse:
+            def __init__(self, **kwargs: object) -> None:
+                self.kwargs = kwargs
+
+        fake_module = ModuleType("langfuse")
+        fake_module.Langfuse = FakeLangfuse  # type: ignore[attr-defined]
+        llm_module._langfuse_client_for_config.cache_clear()
+        self.addCleanup(llm_module._langfuse_client_for_config.cache_clear)
+
+        with patch.dict("os.environ", {}, clear=True):
+            self.assertIsNone(llm_module._configured_langfuse_client())
+
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "LANGFUSE_PUBLIC_KEY": "pk-lf-test",
+                    "LANGFUSE_SECRET_KEY": "sk-lf-test",
+                },
+                clear=True,
+            ),
+            patch.dict(sys.modules, {"langfuse": fake_module}),
+        ):
+            client = llm_module._configured_langfuse_client()
+
+        self.assertIsInstance(client, FakeLangfuse)
+        self.assertEqual(
+            client.kwargs,
+            {"public_key": "pk-lf-test", "secret_key": "sk-lf-test"},
+        )
 
     def test_local_config_can_define_fireworks_alias(self) -> None:
         captured: dict[str, object] = {}

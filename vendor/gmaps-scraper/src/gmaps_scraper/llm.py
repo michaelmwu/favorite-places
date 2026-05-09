@@ -80,11 +80,15 @@ class _NoopLangfuseObservation:
         return None
 
 
-@functools.cache
 def _configured_langfuse_client() -> Any | None:
     config = _langfuse_config_from_env()
     if config is None:
         return None
+    return _langfuse_client_for_config(config)
+
+
+@functools.cache
+def _langfuse_client_for_config(config: tuple[str, str, str | None]) -> Any | None:
     public_key, secret_key, base_url = config
     try:
         langfuse_module = importlib.import_module("langfuse")

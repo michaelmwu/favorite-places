@@ -9252,7 +9252,6 @@ def load_dotenv_values(path: Path) -> dict[str, str]:
     return values
 
 
-@lru_cache(maxsize=1)
 def configured_langfuse_client() -> Any | None:
     env = load_dotenv_values(ROOT / ".env")
     public_key = os.environ.get("LANGFUSE_PUBLIC_KEY") or env.get("LANGFUSE_PUBLIC_KEY")
@@ -9265,6 +9264,11 @@ def configured_langfuse_client() -> Any | None:
     )
     if not public_key or not secret_key:
         return None
+    return langfuse_client_for_config(public_key, secret_key, base_url)
+
+
+@lru_cache(maxsize=8)
+def langfuse_client_for_config(public_key: str, secret_key: str, base_url: str | None) -> Any | None:
     try:
         from langfuse import Langfuse
     except ImportError:

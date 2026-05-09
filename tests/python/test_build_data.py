@@ -11,7 +11,7 @@ from datetime import UTC, datetime, timedelta
 from io import BytesIO, StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 from pydantic import ValidationError
@@ -4887,6 +4887,47 @@ class BuildDataTests(unittest.TestCase):
             {"input_tokens": 11, "output_tokens": 7, "total_tokens": 18},
         )
         self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
+
+    def test_langfuse_client_does_not_cache_disabled_env(self) -> None:
+        class FakeLangfuse:
+            def __init__(self, **kwargs: object) -> None:
+                self.kwargs = kwargs
+
+        fake_module = ModuleType("langfuse")
+        fake_module.Langfuse = FakeLangfuse  # type: ignore[attr-defined]
+        build_data.langfuse_client_for_config.cache_clear()
+        self.addCleanup(build_data.langfuse_client_for_config.cache_clear)
+
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            patch.object(build_data, "load_dotenv_values", return_value={}),
+        ):
+            self.assertIsNone(build_data.configured_langfuse_client())
+
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "LANGFUSE_PUBLIC_KEY": "pk-lf-test",
+                    "LANGFUSE_SECRET_KEY": "sk-lf-test",
+                    "LANGFUSE_BASE_URL": "https://us.cloud.langfuse.com",
+                },
+                clear=True,
+            ),
+            patch.dict(sys.modules, {"langfuse": fake_module}),
+            patch.object(build_data, "load_dotenv_values", return_value={}),
+        ):
+            client = build_data.configured_langfuse_client()
+
+        self.assertIsInstance(client, FakeLangfuse)
+        self.assertEqual(
+            client.kwargs,
+            {
+                "public_key": "pk-lf-test",
+                "secret_key": "sk-lf-test",
+                "base_url": "https://us.cloud.langfuse.com",
+            },
+        )
 
     def test_normalize_semantic_neighborhood_display_cases_slug_outputs(self) -> None:
         cases = {
