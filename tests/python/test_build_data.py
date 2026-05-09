@@ -4886,7 +4886,10 @@ class BuildDataTests(unittest.TestCase):
             fake_client.observation.updates[-1]["usage_details"],
             {"input_tokens": 11, "output_tokens": 7, "total_tokens": 18},
         )
-        self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
+        self.assertEqual(
+            fake_client.observation.updates[-1]["metadata"],
+            {**fake_client.started["metadata"], "status": "success"},
+        )
 
     def test_langfuse_client_does_not_cache_disabled_env(self) -> None:
         class FakeLangfuse:

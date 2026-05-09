@@ -8440,18 +8440,19 @@ def repair_semantic_enrichment_with_llm(
         ],
         "response_format": {"type": "json_object"},
     }
+    langfuse_metadata = {
+        "base_url": config["base_url"],
+        "cache_namespace": config["namespace"],
+        "evidence_hash": evidence_hash,
+        "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
+        "include_semantics": include_semantics,
+        "include_description": include_description,
+    }
     manager, generation = open_langfuse_generation(
         name="favorite-places.semantic-enrichment",
         model=config["model"],
         input_payload=payload,
-        metadata={
-            "base_url": config["base_url"],
-            "cache_namespace": config["namespace"],
-            "evidence_hash": evidence_hash,
-            "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
-            "include_semantics": include_semantics,
-            "include_description": include_description,
-        },
+        metadata=langfuse_metadata,
     )
     exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
@@ -8471,13 +8472,16 @@ def repair_semantic_enrichment_with_llm(
             exc_info = sys.exc_info()
             update_langfuse_generation(
                 generation,
-                metadata={"status": "error", "error": str(exc_info[1])},
+                metadata={**langfuse_metadata, "status": "error", "error": str(exc_info[1])},
             )
             return None
 
         content = extract_chat_message_content(response_payload)
         if content is None:
-            update_langfuse_generation(generation, metadata={"status": "missing_content"})
+            update_langfuse_generation(
+                generation,
+                metadata={**langfuse_metadata, "status": "missing_content"},
+            )
             return None
         try:
             decoded = json.loads(content)
@@ -8486,7 +8490,7 @@ def repair_semantic_enrichment_with_llm(
             update_langfuse_generation(
                 generation,
                 output=content,
-                metadata={"status": "invalid_json"},
+                metadata={**langfuse_metadata, "status": "invalid_json"},
                 usage_details=openai_usage_details(response_payload),
             )
             return None
@@ -8494,14 +8498,14 @@ def repair_semantic_enrichment_with_llm(
             update_langfuse_generation(
                 generation,
                 output=decoded,
-                metadata={"status": "invalid_schema"},
+                metadata={**langfuse_metadata, "status": "invalid_schema"},
                 usage_details=openai_usage_details(response_payload),
             )
             return None
         update_langfuse_generation(
             generation,
             output=decoded,
-            metadata={"status": "success"},
+            metadata={**langfuse_metadata, "status": "success"},
             usage_details=openai_usage_details(response_payload),
         )
         write_semantic_llm_cache(cache_path, decoded)

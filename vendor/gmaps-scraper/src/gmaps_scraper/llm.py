@@ -434,18 +434,19 @@ def openai_compatible_place_repair(
         },
         method="POST",
     )
+    langfuse_metadata = {
+        "base_url": base_url,
+        "prompt_version": request.diagnostics.prompt_version,
+        "evidence_hash": request.diagnostics.evidence_hash,
+        "tasks": list(request.tasks),
+        "source_url": request.source_url,
+        "resolved_url": request.resolved_url,
+    }
     manager, generation = _open_langfuse_generation(
         name="gmaps-scraper.place-repair",
         model=model,
         input_payload=payload,
-        metadata={
-            "base_url": base_url,
-            "prompt_version": request.diagnostics.prompt_version,
-            "evidence_hash": request.diagnostics.evidence_hash,
-            "tasks": list(request.tasks),
-            "source_url": request.source_url,
-            "resolved_url": request.resolved_url,
-        },
+        metadata=langfuse_metadata,
     )
     exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
@@ -457,20 +458,28 @@ def openai_compatible_place_repair(
             body = exc.read().decode("utf-8", errors="replace")
             _update_langfuse_generation(
                 generation,
-                metadata={"status": "http_error", "status_code": exc.code, "error": body},
+                metadata={
+                    **langfuse_metadata,
+                    "status": "http_error",
+                    "status_code": exc.code,
+                    "error": body,
+                },
             )
             raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
         except (OSError, json.JSONDecodeError) as exc:
             exc_info = sys.exc_info()
             _update_langfuse_generation(
                 generation,
-                metadata={"status": "error", "error": str(exc)},
+                metadata={**langfuse_metadata, "status": "error", "error": str(exc)},
             )
             raise LLMRepairError(f"LLM repair failed: {exc}") from exc
 
         content = _extract_chat_content(response_payload)
         if content is None:
-            _update_langfuse_generation(generation, metadata={"status": "missing_content"})
+            _update_langfuse_generation(
+                generation,
+                metadata={**langfuse_metadata, "status": "missing_content"},
+            )
             return None
         try:
             decoded = _decode_json_object(content)
@@ -479,7 +488,7 @@ def openai_compatible_place_repair(
             _update_langfuse_generation(
                 generation,
                 output=content,
-                metadata={"status": "invalid_json"},
+                metadata={**langfuse_metadata, "status": "invalid_json"},
                 usage_details=_openai_usage_details(response_payload),
             )
             raise
@@ -487,14 +496,14 @@ def openai_compatible_place_repair(
             _update_langfuse_generation(
                 generation,
                 output=decoded,
-                metadata={"status": "invalid_schema"},
+                metadata={**langfuse_metadata, "status": "invalid_schema"},
                 usage_details=_openai_usage_details(response_payload),
             )
             return None
         _update_langfuse_generation(
             generation,
             output=dict(decoded),
-            metadata={"status": "success"},
+            metadata={**langfuse_metadata, "status": "success"},
             usage_details=_openai_usage_details(response_payload),
         )
         return decoded

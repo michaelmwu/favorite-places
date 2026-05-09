@@ -346,7 +346,10 @@ class LLMConfigTests(unittest.TestCase):
             fake_client.observation.updates[-1]["usage_details"],
             {"input_tokens": 13, "output_tokens": 5, "total_tokens": 18},
         )
-        self.assertEqual(fake_client.observation.updates[-1]["metadata"], {"status": "success"})
+        self.assertEqual(
+            fake_client.observation.updates[-1]["metadata"],
+            {**fake_client.started["metadata"], "status": "success"},
+        )
 
     def test_langfuse_client_uses_base_url_from_env(self) -> None:
         with (
