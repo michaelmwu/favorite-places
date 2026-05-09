@@ -2480,9 +2480,20 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             enrichment.description or enrichment.search_result_description,
             place.note,
         )
+        semantic_description = (
+            usable_semantic_description(
+                enrichment.semantic_description,
+                enrichment_place=enrichment,
+                raw_place=place,
+                city_name=city_name,
+                country_name=country_name,
+            )
+            if use_semantic_descriptions
+            else None
+        )
         why_recommended = (
             manual_note
-            or (enrichment.semantic_description if use_semantic_descriptions else None)
+            or semantic_description
             or base_recommendation
         )
         if "vibe_tags" in override:
@@ -8186,7 +8197,42 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
     return items
 
 
-SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v3"
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v6"
+SEMANTIC_ENRICHMENT_SYSTEM_PROMPT = """
+You classify saved places for a travel guide. Return only compact JSON.
+
+Neighborhood:
+- Infer the guide-facing neighborhood only from address/geography evidence.
+- Prefer common local area names over the smallest administrative unit.
+- Return a human-facing display label, not a tag or slug.
+- Use normal local display casing such as Perth CBD, Northbridge, or Margaret River.
+- Preserve acronyms like CBD.
+- Never return kebab-case, snake_case, all-lowercase labels, or labels with stray spaces inside words.
+- For English-language guides, return the common English-facing neighborhood label when one exists.
+- Use established English names rather than mechanically preserving local-language administrative labels.
+- For Taiwan, village/li labels such as Kangle Village or Tonghua Village are usually too granular; prefer the district such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local area as the neighborhood.
+- Do not infer Ximen, Neihu, Longshan, or similar local areas from map knowledge alone; if the address only says Wanhua District or a street/night-market name, return Wanhua.
+
+Tags:
+- Generate broad, reusable kebab-case tags, vibe_tags, and types when requested.
+- Prefer 3-6 tags and 2-4 vibe_tags.
+
+Description:
+- Generate one concise, polished English place description when requested.
+- Prefer a description under 180 characters.
+- Use natural grammar and canonical capitalization for dish names, place types, and proper nouns when possible.
+- Return null rather than generic card-metadata prose.
+- Do not write descriptions whose only facts are the place name, category/type, address, city, or neighborhood, such as "X is a Y in Z."
+- A description must add a distinctive, guide-useful fact grounded in the official description, raw_note, review topics, review-signal patterns, about sections, or concrete page evidence; otherwise return null.
+- Treat google_maps_description and raw_note as the strongest description inputs, with raw_note as first-party saved-list context.
+- Treat search_result_description as lower-priority supporting context.
+- You may synthesize aggregate review-topic, review-signal, and about-section evidence into concise factual phrases such as popular dishes, format, setting, service style, or use case.
+- Do not quote individual reviews.
+- Do not mention reviewers, reviews, review counts, or source language such as "reviews say" or "customers praise."
+- Do not preserve individual complaints.
+- Do not repeat raw UI labels like Accessibility or Service options.
+- Do not copy raw_note verbatim; rewrite it as neutral, well-edited guide copy.
+""".strip()
 
 
 def apply_semantic_enrichment(
@@ -8240,6 +8286,21 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_description_signature = None
         if not semantic_enrichment_state_is_populated(semantic_enrichment_state(enrichment_place)):
             enrichment_place.semantic_source = None
+    if include_description and enrichment_place.semantic_description:
+        accepted_description = usable_semantic_description(
+            enrichment_place.semantic_description,
+            enrichment_place=enrichment_place,
+            raw_place=raw_place,
+            city_name=city_name,
+            country_name=country_name,
+        )
+        if accepted_description is None:
+            enrichment_place.semantic_description = None
+            enrichment_place.semantic_description_signature = None
+            if not semantic_enrichment_state_is_populated(semantic_enrichment_state(enrichment_place)):
+                enrichment_place.semantic_source = None
+        elif accepted_description != enrichment_place.semantic_description:
+            enrichment_place.semantic_description = accepted_description
     if (
         include_description
         and not force_description
@@ -8247,10 +8308,18 @@ def apply_semantic_enrichment(
         and previous_place.semantic_description
         and previous_place.semantic_description_signature == description_signature
     ):
-        enrichment_place.semantic_description = previous_place.semantic_description
-        enrichment_place.semantic_description_signature = previous_place.semantic_description_signature
-        enrichment_place.semantic_source = previous_place.semantic_source or "llm"
-        description_reused = True
+        previous_description = usable_semantic_description(
+            previous_place.semantic_description,
+            enrichment_place=enrichment_place,
+            raw_place=raw_place,
+            city_name=city_name,
+            country_name=country_name,
+        )
+        if previous_description is not None:
+            enrichment_place.semantic_description = previous_description
+            enrichment_place.semantic_description_signature = previous_place.semantic_description_signature
+            enrichment_place.semantic_source = previous_place.semantic_source or "llm"
+            description_reused = True
     if description_reused and not include_semantics:
         return
     repair = repair_semantic_enrichment_with_llm(
@@ -8264,16 +8333,6 @@ def apply_semantic_enrichment(
         bypass_cache=(include_semantics and force_semantics) or (include_description and force_description),
     )
     if repair is None:
-        if include_description and not description_reused:
-            description = fallback_semantic_description(
-                enrichment_place,
-                raw_place=raw_place,
-                city_name=city_name,
-            )
-            if description is not None:
-                enrichment_place.semantic_description = description
-                enrichment_place.semantic_description_signature = description_signature
-                enrichment_place.semantic_source = "fallback"
         return
     if include_semantics:
         neighborhood = normalize_semantic_neighborhood_label(
@@ -8288,26 +8347,15 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
     description_source: str | None = None
     if include_description and not description_reused:
-        description = sanitize_semantic_description(repair.get("description"))
-        if description is not None and semantic_description_has_conflicting_location(
-            description,
+        description = usable_semantic_description(
+            repair.get("description"),
             enrichment_place=enrichment_place,
             raw_place=raw_place,
             city_name=city_name,
             country_name=country_name,
-        ):
-            description = None
-        if description is None:
-            description = fallback_semantic_description(
-                enrichment_place,
-                raw_place=raw_place,
-                city_name=city_name,
-            )
-            if description is not None:
-                description_source = "fallback"
-        else:
-            description_source = "llm"
+        )
         if description is not None:
+            description_source = "llm"
             enrichment_place.semantic_description = description
             enrichment_place.semantic_description_signature = description_signature
     if any(
@@ -8530,31 +8578,7 @@ def repair_semantic_enrichment_with_llm(
         "messages": [
             {
                 "role": "system",
-                "content": (
-                    "You classify saved places for a travel guide. Return only compact JSON. "
-                    "Infer the guide-facing neighborhood only from address/geography evidence. Prefer common "
-                    "local area names over the smallest administrative unit. The neighborhood must be a "
-                    "human-facing display label, not a tag or slug: use normal local display casing such as "
-                    "Perth CBD, Northbridge, or Margaret River; preserve acronyms like CBD; never return "
-                    "kebab-case, snake_case, all-lowercase labels, or labels with stray spaces inside words. "
-                    "For English-language guides, return the common English-facing neighborhood label when "
-                    "one exists; use established English names rather than mechanically preserving local-language "
-                    "administrative labels. "
-                    "For Taiwan, village/li labels "
-                    "such as Kangle Village or Tonghua Village are usually too granular; prefer the district "
-                    "such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local "
-                    "area as the neighborhood. Do not infer Ximen, Neihu, Longshan, or similar local areas from "
-                    "map knowledge alone; if the address only says Wanhua District or a street/night-market name, "
-                    "return Wanhua. "
-                    "Generate broad, reusable kebab-case tags, vibe_tags, and types when requested. "
-                    "Generate one concise, non-hype place description when requested. Treat "
-                    "google_maps_description and raw_note as the strongest description inputs, with raw_note "
-                    "as first-party saved-list context. Treat search_result_description as lower-priority "
-                    "supporting context, then use other evidence only to fill gaps. Do not copy raw_note "
-                    "verbatim. Do not quote or summarize review text. Do not expose About or review details. "
-                    "Prefer 3-6 tags, 2-4 vibe_tags, "
-                    "and a description under 180 characters."
-                ),
+                "content": SEMANTIC_ENRICHMENT_SYSTEM_PROMPT,
             },
             {
                 "role": "user",
@@ -9355,14 +9379,182 @@ def normalize_exchange_rate_payload(payload: dict[Any, Any]) -> dict[str, float]
     return rates
 
 
+SEMANTIC_DESCRIPTION_MAX_CHARS = 320
+
+
 def sanitize_semantic_description(value: Any) -> str | None:
     description = as_string(value)
     if description is None:
         return None
     description = re.sub(r"\s+", " ", description).strip()
-    if not description or len(description) > 240:
+    if not description or len(description) > SEMANTIC_DESCRIPTION_MAX_CHARS:
+        return None
+    if looks_like_semantic_description_review_source_leak(description):
         return None
     return description
+
+
+SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
+    r"\b(?:"
+    r"(?:mixed\s+)?reviews?\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
+    r"(?:reviewers?|customers?|users?|people)\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
+    r"according\s+to\s+(?:reviews?|reviewers?|customers?|users?)"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def looks_like_semantic_description_review_source_leak(value: str) -> bool:
+    return SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE.search(value) is not None
+
+
+def usable_semantic_description(
+    value: Any,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    description = sanitize_semantic_description(value)
+    if description is None:
+        return None
+    if semantic_description_has_conflicting_location(
+        description,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        return None
+    if semantic_description_is_low_information(
+        description,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        return None
+    return description
+
+
+LOW_INFORMATION_SEMANTIC_DESCRIPTION_TEMPLATE_RE = re.compile(
+    r"^.{1,120}\s+is\s+(?:an?|the)\s+.{1,120}(?:\s+(?:in|near|around|at)\s+.{1,120})?\.$",
+    re.IGNORECASE,
+)
+LOW_INFORMATION_SEMANTIC_DESCRIPTION_LOCATED_TEMPLATE_RE = re.compile(
+    r"^(?:located|set|based)\s+(?:in|near|around|at)\s+.{1,120},\s+.{1,120}\s+is\s+(?:an?|the)\s+.{1,120}\.$",
+    re.IGNORECASE,
+)
+SEMANTIC_DESCRIPTION_RICH_CONTEXT_RE = re.compile(
+    r"\b(?:known for|famous for|specializing in|focused on|serving|serves|features|featuring|offers|offering|"
+    r"with|housed in|set in|built|dating|founded|opened|showcasing|highlighting)\b",
+    re.IGNORECASE,
+)
+SEMANTIC_DESCRIPTION_TOKEN_RE = re.compile(r"[\w]+(?:[-'][\w]+)*", re.UNICODE)
+SEMANTIC_DESCRIPTION_CONTEXT_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "around",
+    "as",
+    "at",
+    "based",
+    "by",
+    "for",
+    "from",
+    "in",
+    "into",
+    "is",
+    "it",
+    "its",
+    "near",
+    "of",
+    "on",
+    "or",
+    "place",
+    "saved",
+    "set",
+    "the",
+    "this",
+    "to",
+    "with",
+}
+
+
+def semantic_description_is_low_information(
+    description: str,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> bool:
+    if (
+        LOW_INFORMATION_SEMANTIC_DESCRIPTION_TEMPLATE_RE.match(description)
+        or LOW_INFORMATION_SEMANTIC_DESCRIPTION_LOCATED_TEMPLATE_RE.match(description)
+    ) and not SEMANTIC_DESCRIPTION_RICH_CONTEXT_RE.search(description):
+        return True
+
+    description_tokens = semantic_description_meaningful_tokens(description)
+    if not description_tokens:
+        return True
+    context_tokens = semantic_description_card_context_tokens(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    )
+    if description_tokens and description_tokens <= context_tokens:
+        return True
+
+    distinctive_tokens = description_tokens - context_tokens
+    if len(distinctive_tokens) <= 1 and not SEMANTIC_DESCRIPTION_RICH_CONTEXT_RE.search(description):
+        return True
+    return False
+
+
+def semantic_description_card_context_tokens(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> set[str]:
+    values: list[Any] = [
+        semantic_place_name(enrichment_place, raw_place=raw_place),
+        enrichment_place.display_name,
+        raw_place.name,
+        enrichment_place.primary_type,
+        enrichment_place.primary_type_display_name,
+        enrichment_place.primary_type_display_name_localized,
+        enrichment_place.category_display_en,
+        enrichment_place.formatted_address,
+        enrichment_place.address_display_en,
+        raw_place.address,
+        enrichment_place.plus_code,
+        city_name,
+        country_name,
+        *enrichment_place.types,
+    ]
+    tokens: set[str] = set()
+    for value in values:
+        tokens.update(semantic_description_meaningful_tokens(value))
+    return tokens
+
+
+def semantic_description_meaningful_tokens(value: Any) -> set[str]:
+    text = as_string(value)
+    if text is None:
+        return set()
+    normalized = unicodedata.normalize("NFKC", text).casefold().replace("_", " ").replace("-", " ")
+    tokens = {
+        token.strip("'")
+        for token in SEMANTIC_DESCRIPTION_TOKEN_RE.findall(normalized)
+        if len(token.strip("'")) >= 2 and not token.strip("'").isdigit()
+    }
+    return {token for token in tokens if token not in SEMANTIC_DESCRIPTION_CONTEXT_STOPWORDS}
 
 
 SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS: tuple[str, ...] = (
@@ -9386,7 +9578,13 @@ SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS: tuple[str, ...] = (
     "san francisco",
     "shanghai",
     "beijing",
+    "tianjin",
+    "beijing-tianjin-hebei",
     "hong kong",
+)
+SEMANTIC_DESCRIPTION_LOCATION_NAME_SUFFIX_RE = re.compile(
+    r"^\s+(?:cafe|café|restaurant|bar|hotel|museum|market|gallery|theatre|theater|station|park|square)\b",
+    re.IGNORECASE,
 )
 
 
@@ -9422,10 +9620,11 @@ def semantic_description_has_conflicting_location(
         if not term_key or term_key in allowed_key:
             continue
         term_pattern = re.escape(term_key).replace(r"\-", r"[- ]")
-        if re.search(
-            rf"\b(?:in|near|around|at|from)\s+(?:the\s+)?{term_pattern}(?:\s+s)?\b",
+        match = re.search(
+            rf"\b(?:in|near|around|at|from|serving)\s+(?:the\s+)?{term_pattern}(?:\s+s)?\b",
             description_key,
-        ):
+        )
+        if match and not SEMANTIC_DESCRIPTION_LOCATION_NAME_SUFFIX_RE.match(description_key[match.end() :]):
             return True
     return False
 

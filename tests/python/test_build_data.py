@@ -5116,7 +5116,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(enrichment.semantic_types, ["specialty-cafe"])
         self.assertEqual(enrichment.semantic_source, "llm")
 
-    def test_apply_semantic_enrichment_rejects_conflicting_llm_description_location(self) -> None:
+    def test_apply_semantic_enrichment_drops_conflicting_llm_description_location(self) -> None:
         raw_place = RawPlace(
             name="Casa de Norte",
             address="Japan, 〒040-0065 Hokkaido, Hakodate, Toyokawacho, 12-6",
@@ -5148,8 +5148,40 @@ class BuildDataTests(unittest.TestCase):
                 country_name="Japan",
             )
 
-        self.assertEqual(enrichment.semantic_description, "Casa de Norte is a western restaurant in Toyokawacho.")
-        self.assertEqual(enrichment.semantic_source, "fallback")
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
+
+    def test_semantic_description_location_conflict_allows_named_venue_references(self) -> None:
+        raw_place = RawPlace(
+            name="Hugo",
+            address="Budapest, Hungary",
+            maps_url="https://maps.example/hugo",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Hugo",
+            formatted_address="Budapest, Hungary",
+            primary_type_display_name="Espresso bar",
+        )
+
+        self.assertFalse(
+            build_data.semantic_description_has_conflicting_location(
+                "Small espresso bar near the New York Café famous for traditional Hungarian strudels.",
+                enrichment_place=enrichment,
+                raw_place=raw_place,
+                city_name="Budapest",
+                country_name="Hungary",
+            )
+        )
+        self.assertTrue(
+            build_data.semantic_description_has_conflicting_location(
+                "Major international airport serving Tianjin and the Beijing-Tianjin-Hebei region.",
+                enrichment_place=enrichment,
+                raw_place=raw_place,
+                city_name="Takamatsu",
+                country_name="Japan",
+            )
+        )
 
     def test_normalize_semantic_neighborhood_display_cases_slug_outputs(self) -> None:
         cases = {
@@ -5331,7 +5363,54 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertEqual(enrichment.semantic_description_signature, signature)
 
-    def test_apply_semantic_enrichment_falls_back_on_signature_mismatch(self) -> None:
+    def test_apply_semantic_enrichment_does_not_reuse_low_information_matching_signature(self) -> None:
+        raw_place = RawPlace(
+            name="Tea House",
+            maps_url="https://maps.example/tea",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Tea House",
+            formatted_address="No. 12, Songgao Rd, Taipei City",
+            primary_type_display_name="Tea house",
+        )
+        signature = build_data.semantic_description_signature(
+            enrichment,
+            raw_place=raw_place,
+            city_name="Taipei",
+            country_name="Taiwan",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Tea House, Taipei, Taiwan",
+            matched=True,
+            place=EnrichmentPlace(
+                semantic_description="Tea House is a tea house in Taipei.",
+                semantic_description_signature=signature,
+                semantic_source="llm",
+            ),
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=False),
+            patch.object(build_data, "repair_semantic_enrichment_with_llm", return_value=None) as repair,
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Taipei",
+                country_name="Taiwan",
+                existing_entry=existing_entry,
+            )
+
+        repair.assert_called_once()
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
+
+    def test_apply_semantic_enrichment_clears_stale_description_on_signature_mismatch(self) -> None:
         raw_place = RawPlace(
             name="Tea House",
             note="Order the house oolong and stay for a quiet reset.",
@@ -5368,11 +5447,11 @@ class BuildDataTests(unittest.TestCase):
                 existing_entry=existing_entry,
             )
 
-        self.assertEqual(enrichment.semantic_description, "Tea House is a tea house in Taipei.")
-        self.assertIsNotNone(enrichment.semantic_description_signature)
-        self.assertEqual(enrichment.semantic_source, "fallback")
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
 
-    def test_apply_semantic_enrichment_falls_back_when_llm_description_missing(self) -> None:
+    def test_apply_semantic_enrichment_omits_description_when_llm_description_missing(self) -> None:
         raw_place = RawPlace(
             name="Rua Augusta Arch",
             address="R. Augusta 2, 1100-053 Lisboa, Portugal",
@@ -5397,12 +5476,89 @@ class BuildDataTests(unittest.TestCase):
                 country_name="Portugal",
             )
 
-        self.assertEqual(
-            enrichment.semantic_description,
-            "Rua Augusta Arch is a historical landmark in Lisbon.",
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
+
+    def test_apply_semantic_enrichment_rejects_low_information_llm_description(self) -> None:
+        raw_place = RawPlace(
+            name="'Olu 'Olu Poké Sherbrooke West",
+            address="250 Sherbrooke St W #101, Montreal, Quebec H2X 1X9, Canada",
+            maps_url="https://maps.example/poke",
         )
-        self.assertIsNotNone(enrichment.semantic_description_signature)
-        self.assertEqual(enrichment.semantic_source, "fallback")
+        enrichment = EnrichmentPlace(
+            display_name="'Olu 'Olu Poké Sherbrooke West",
+            formatted_address="250 Sherbrooke St W #101, Montreal, Quebec H2X 1X9, Canada",
+            primary_type="poke_bar",
+            primary_type_display_name="Poke bar",
+            types=["poke_bar", "restaurant"],
+            review_topics=[{"label": "limu poke", "count": 2}],
+            about_sections=[{"title": "Service options", "items": [{"label": "Dine-in"}]}],
+        )
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=True),
+            patch.object(build_data, "google_maps_place_semantic_description_force_refresh", return_value=True),
+            patch.object(
+                build_data,
+                "repair_semantic_enrichment_with_llm",
+                return_value={"description": "'Olu 'Olu Poké Sherbrooke West is a poke bar in Montreal."},
+            ),
+        ):
+            build_data.apply_semantic_enrichment(
+                enrichment,
+                raw_place=raw_place,
+                city_name="Montreal",
+                country_name="Canada",
+            )
+
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertIsNone(enrichment.semantic_source)
+
+    def test_semantic_description_accepts_distinctive_review_topic_context(self) -> None:
+        raw_place = RawPlace(
+            name="Pizzeria Zac",
+            address="8 Av. Duluth E, Montréal, QC H2W 1G6, Canada",
+            maps_url="https://maps.example/zac",
+        )
+        enrichment = EnrichmentPlace(
+            display_name="Pizzeria Zac | Plant-Based Pizza & Eats",
+            formatted_address="8 Av. Duluth E, Montréal, QC H2W 1G6, Canada",
+            primary_type="pizza_restaurant",
+            primary_type_display_name="Pizza restaurant",
+            types=["pizza_restaurant", "restaurant"],
+            review_topics=[{"label": "vegan pizza", "count": 136}],
+        )
+
+        self.assertFalse(
+            build_data.semantic_description_is_low_information(
+                "Plant-based pizzeria known for vegan pizza and casual counter-service meals.",
+                enrichment_place=enrichment,
+                raw_place=raw_place,
+                city_name="Montreal",
+                country_name="Canada",
+            )
+        )
+
+    def test_semantic_description_accepts_longer_single_sentence(self) -> None:
+        description = (
+            "Plant-based pizzeria known for vegan pizza, dairy-free cheese, and casual counter-service meals "
+            "near Duluth, useful when the guide needs a relaxed vegan option."
+        )
+
+        self.assertEqual(build_data.sanitize_semantic_description(description), description)
+
+    def test_semantic_description_rejects_paragraph_length_text(self) -> None:
+        self.assertIsNone(build_data.sanitize_semantic_description("x" * 321))
+
+    def test_semantic_description_rejects_review_source_leaks(self) -> None:
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "Budget mineral hot springs with free lockers, though mixed reviews note lukewarm water."
+            )
+        )
 
     def test_apply_semantic_enrichment_preserves_semantic_source_when_semantics_remain_populated(self) -> None:
         raw_place = RawPlace(
@@ -5445,9 +5601,9 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(enrichment.semantic_neighborhood, "Xinyi")
         self.assertEqual(enrichment.semantic_tags, ["tea-house"])
-        self.assertEqual(enrichment.semantic_description, "Tea House is a tea house in Taipei.")
-        self.assertIsNotNone(enrichment.semantic_description_signature)
-        self.assertEqual(enrichment.semantic_source, "fallback")
+        self.assertIsNone(enrichment.semantic_description)
+        self.assertIsNone(enrichment.semantic_description_signature)
+        self.assertEqual(enrichment.semantic_source, "llm")
 
     def test_apply_semantic_enrichment_force_refreshes_description(self) -> None:
         raw_place = RawPlace(
@@ -8616,9 +8772,9 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual((updated_count, reused_count, skipped_count), (1, 0, 0))
         refreshed_place = refreshed_cache["cid:111"].place
         assert refreshed_place is not None
-        self.assertEqual(refreshed_place.semantic_description, "Tea House is a tea house in Taipei.")
-        self.assertIsNotNone(refreshed_place.semantic_description_signature)
-        self.assertEqual(refreshed_place.semantic_source, "fallback")
+        self.assertIsNone(refreshed_place.semantic_description)
+        self.assertIsNone(refreshed_place.semantic_description_signature)
+        self.assertIsNone(refreshed_place.semantic_source)
 
     def test_refresh_cached_semantic_descriptions_skips_places_with_manual_note(self) -> None:
         raw = RawSavedList(
