@@ -445,60 +445,60 @@ def openai_compatible_place_repair(
     )
     exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
-        with urllib.request.urlopen(http_request, timeout=timeout_seconds) as response:
-            response_payload = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        exc_info = sys.exc_info()
-        body = exc.read().decode("utf-8", errors="replace")
-        _update_langfuse_generation(
-            generation,
-            metadata={"status": "http_error", "status_code": exc.code, "error": body},
-        )
-        _close_langfuse_generation(manager, exc_info)
-        raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
-    except (OSError, json.JSONDecodeError) as exc:
-        exc_info = sys.exc_info()
-        _update_langfuse_generation(
-            generation,
-            metadata={"status": "error", "error": str(exc)},
-        )
-        _close_langfuse_generation(manager, exc_info)
-        raise LLMRepairError(f"LLM repair failed: {exc}") from exc
+        try:
+            with urllib.request.urlopen(http_request, timeout=timeout_seconds) as response:
+                response_payload = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            exc_info = sys.exc_info()
+            body = exc.read().decode("utf-8", errors="replace")
+            _update_langfuse_generation(
+                generation,
+                metadata={"status": "http_error", "status_code": exc.code, "error": body},
+            )
+            raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
+        except (OSError, json.JSONDecodeError) as exc:
+            exc_info = sys.exc_info()
+            _update_langfuse_generation(
+                generation,
+                metadata={"status": "error", "error": str(exc)},
+            )
+            raise LLMRepairError(f"LLM repair failed: {exc}") from exc
 
-    content = _extract_chat_content(response_payload)
-    if content is None:
-        _update_langfuse_generation(generation, metadata={"status": "missing_content"})
-        _close_langfuse_generation(manager, exc_info)
-        return None
-    try:
-        decoded = _decode_json_object(content)
-    except json.JSONDecodeError:
-        exc_info = sys.exc_info()
+        content = _extract_chat_content(response_payload)
+        if content is None:
+            _update_langfuse_generation(generation, metadata={"status": "missing_content"})
+            return None
+        try:
+            decoded = _decode_json_object(content)
+        except json.JSONDecodeError:
+            exc_info = sys.exc_info()
+            _update_langfuse_generation(
+                generation,
+                output=content,
+                metadata={"status": "invalid_json"},
+                usage_details=_openai_usage_details(response_payload),
+            )
+            raise
+        if not isinstance(decoded, Mapping):
+            _update_langfuse_generation(
+                generation,
+                output=decoded,
+                metadata={"status": "invalid_schema"},
+                usage_details=_openai_usage_details(response_payload),
+            )
+            return None
         _update_langfuse_generation(
             generation,
-            output=content,
-            metadata={"status": "invalid_json"},
+            output=dict(decoded),
+            metadata={"status": "success"},
             usage_details=_openai_usage_details(response_payload),
         )
+        return decoded
+    finally:
+        current_exc_info = sys.exc_info()
+        if exc_info[0] is None and current_exc_info[0] is not None:
+            exc_info = current_exc_info
         _close_langfuse_generation(manager, exc_info)
-        raise
-    if not isinstance(decoded, Mapping):
-        _update_langfuse_generation(
-            generation,
-            output=decoded,
-            metadata={"status": "invalid_schema"},
-            usage_details=_openai_usage_details(response_payload),
-        )
-        _close_langfuse_generation(manager, exc_info)
-        return None
-    _update_langfuse_generation(
-        generation,
-        output=dict(decoded),
-        metadata={"status": "success"},
-        usage_details=_openai_usage_details(response_payload),
-    )
-    _close_langfuse_generation(manager, exc_info)
-    return decoded
 
 
 def _allowed_fields_for_tasks(tasks: list[str]) -> list[str]:

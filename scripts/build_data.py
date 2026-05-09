@@ -8455,60 +8455,62 @@ def repair_semantic_enrichment_with_llm(
     )
     exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
-        request = Request(
-            f"{config['base_url'].rstrip('/')}/chat/completions",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {config['api_key']}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        with urlopen(request, timeout=45) as response:
-            response_payload = json.loads(response.read().decode("utf-8"))
-    except (OSError, json.JSONDecodeError):
-        exc_info = sys.exc_info()
-        update_langfuse_generation(
-            generation,
-            metadata={"status": "error", "error": str(exc_info[1])},
-        )
-        close_langfuse_generation(manager, exc_info)
-        return None
+        try:
+            request = Request(
+                f"{config['base_url'].rstrip('/')}/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={
+                    "Authorization": f"Bearer {config['api_key']}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            with urlopen(request, timeout=45) as response:
+                response_payload = json.loads(response.read().decode("utf-8"))
+        except (OSError, json.JSONDecodeError):
+            exc_info = sys.exc_info()
+            update_langfuse_generation(
+                generation,
+                metadata={"status": "error", "error": str(exc_info[1])},
+            )
+            return None
 
-    content = extract_chat_message_content(response_payload)
-    if content is None:
-        update_langfuse_generation(generation, metadata={"status": "missing_content"})
-        close_langfuse_generation(manager, exc_info)
-        return None
-    try:
-        decoded = json.loads(content)
-    except json.JSONDecodeError:
-        update_langfuse_generation(
-            generation,
-            output=content,
-            metadata={"status": "invalid_json"},
-            usage_details=openai_usage_details(response_payload),
-        )
-        close_langfuse_generation(manager, exc_info)
-        return None
-    if not isinstance(decoded, dict):
+        content = extract_chat_message_content(response_payload)
+        if content is None:
+            update_langfuse_generation(generation, metadata={"status": "missing_content"})
+            return None
+        try:
+            decoded = json.loads(content)
+        except json.JSONDecodeError:
+            exc_info = sys.exc_info()
+            update_langfuse_generation(
+                generation,
+                output=content,
+                metadata={"status": "invalid_json"},
+                usage_details=openai_usage_details(response_payload),
+            )
+            return None
+        if not isinstance(decoded, dict):
+            update_langfuse_generation(
+                generation,
+                output=decoded,
+                metadata={"status": "invalid_schema"},
+                usage_details=openai_usage_details(response_payload),
+            )
+            return None
         update_langfuse_generation(
             generation,
             output=decoded,
-            metadata={"status": "invalid_schema"},
+            metadata={"status": "success"},
             usage_details=openai_usage_details(response_payload),
         )
+        write_semantic_llm_cache(cache_path, decoded)
+        return decoded
+    finally:
+        current_exc_info = sys.exc_info()
+        if exc_info[0] is None and current_exc_info[0] is not None:
+            exc_info = current_exc_info
         close_langfuse_generation(manager, exc_info)
-        return None
-    update_langfuse_generation(
-        generation,
-        output=decoded,
-        metadata={"status": "success"},
-        usage_details=openai_usage_details(response_payload),
-    )
-    close_langfuse_generation(manager, exc_info)
-    write_semantic_llm_cache(cache_path, decoded)
-    return decoded
 
 
 def semantic_enrichment_evidence(
