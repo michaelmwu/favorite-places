@@ -102,6 +102,7 @@ _UI_ACTION_LABELS = {
 _DESCRIPTION_STOP_MARKERS = {
     "photos",
     "about this data",
+    "sponsored",
     "write a review",
     "claim this business",
     "suggest an edit",
@@ -109,6 +110,70 @@ _DESCRIPTION_STOP_MARKERS = {
     "get the most out of google maps",
     "our policies do not permit contributions to this type of place.",
 }
+_DESCRIPTION_STOP_MARKER_KEYS = {
+    marker.casefold().strip(" .") for marker in _DESCRIPTION_STOP_MARKERS
+}
+_DESCRIPTION_STOP_SUBSTRINGS = (
+    "mark as temporarily closed",
+    "remove this place",
+    "report a legal problem",
+)
+_DESCRIPTION_SERVICE_OPTION_SEGMENT_PATTERN = re.compile(
+    r"^(?:[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]\s*)?"
+    r"(?:dine-?in|takeout|delivery|curbside pickup|kerbside pickup|"
+    r"no-contact delivery|drive-through|drive thru|takeaway|reservations?|"
+    r"dogs allowed|onsite services?)$",
+    re.IGNORECASE,
+)
+_DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
+    "thank you for",
+    "we're thrilled",
+    "we apologize",
+    "ended up going",
+    "my research",
+    "my son and i",
+    "i had high hopes",
+    "i'm sorry to inform",
+)
+_DESCRIPTION_REVIEW_PROSE_MARKERS = (
+    "highly recommended",
+    "overrated",
+    "your children",
+    "your kids",
+    "you should",
+)
+_DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN = re.compile(
+    r"\b(?:[Ii]|[Ii]['’](?:m|d|ve)|[Mm]y|[Mm]e|[Ww]e|[Ww]e['’](?:re|d|ve)|[Oo]ur|[Uu]s)\b",
+)
+_DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS = (
+    "visited",
+    "attended",
+    "arrived",
+    "ordered",
+    "enjoyed",
+    "stopped by",
+    "spent",
+    "tried",
+    "came",
+    "went",
+    "found",
+    "felt",
+    "hit",
+    "think",
+    "saw",
+    "seen",
+    "chose",
+    "celebrate",
+    "celebrated",
+    "return",
+    "returned",
+)
+_DESCRIPTION_FIRST_PERSON_EXPERIENCE_PATTERN = re.compile(
+    r"\b(?:"
+    + "|".join(re.escape(marker) for marker in _DESCRIPTION_FIRST_PERSON_EXPERIENCE_MARKERS)
+    + r")\b",
+    re.IGNORECASE,
+)
 _SEARCH_RESULTS_LABELS = {
     "result",
     "results",
@@ -164,7 +229,7 @@ _STRONG_ADDRESS_KEYWORD_PATTERN = re.compile(
 # UI/review vocabulary that commonly appears next to real address rows.
 _PROSE_TERM_PATTERN = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|recommended|session)\b",
     re.IGNORECASE,
 )
 _ADDRESS_REJECT_SUBSTRINGS = (
@@ -210,7 +275,11 @@ _LOCALITY_ADDRESS_REJECT_VALUES = {
 }
 _ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 _ADDRESS_ENTITY_TOKEN_PATTERN = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
-_URL_LIKE_PATTERN = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+_URL_LIKE_PATTERN = re.compile(
+    r"(?:https?://|www\.|/(?:search|maps|url|local)(?:[/?#]|$))",
+    re.IGNORECASE,
+)
+_TRAVEL_PRODUCT_ADDRESS_PATTERN = re.compile(r"\b\d+\s*[-–]\s*day\b", re.IGNORECASE)
 # Locality-only addresses can legitimately contain periods in abbreviations
 # like "St. Louis" or "D.C."; prose with arbitrary periods is rejected later.
 _LOCALITY_ABBREVIATION_PERIOD_PATTERN = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
@@ -3112,12 +3181,22 @@ def _clean_address_text(value: object) -> str | None:
     if normalized is None:
         return None
 
+    if "·" in normalized:
+        segments = [segment.strip() for segment in normalized.split("·") if segment.strip()]
+        for candidate in reversed(segments):
+            if candidate == normalized:
+                continue
+            if _looks_like_address_line(candidate):
+                return candidate
+
     lowered = normalized.lower()
     if _URL_LIKE_PATTERN.search(normalized) is not None:
         return None
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
         return None
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
+        return None
+    if _TRAVEL_PRODUCT_ADDRESS_PATTERN.search(normalized) is not None:
         return None
     if _looks_like_review_snippet(normalized):
         return None
@@ -3133,14 +3212,6 @@ def _clean_address_text(value: object) -> str | None:
         and not _looks_like_locality_address_line(normalized)
     ):
         return None
-
-    if "·" in normalized:
-        segments = [segment.strip() for segment in normalized.split("·") if segment.strip()]
-        for candidate in reversed(segments):
-            if candidate == normalized:
-                continue
-            if _looks_like_address_line(candidate):
-                return candidate
 
     if _looks_like_address_line(normalized):
         return normalized
@@ -3272,6 +3343,8 @@ def _looks_like_address_line(line: str) -> bool:
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_SUBSTRINGS):
         return False
     if any(fragment in lowered for fragment in _ADDRESS_REJECT_HOST_FRAGMENTS):
+        return False
+    if _TRAVEL_PRODUCT_ADDRESS_PATTERN.search(line) is not None:
         return False
     if "saved in" in lowered or "report a problem" in lowered:
         return False
@@ -3569,11 +3642,23 @@ def _clean_description_text(value: object) -> str | None:
     normalized = _clean_text(value)
     if normalized is None:
         return None
-    if normalized.lower() in _DESCRIPTION_STOP_MARKERS:
+    normalized = _strip_description_service_options(normalized)
+    if normalized is None:
+        return None
+    lowered = normalized.lower()
+    if lowered in _DESCRIPTION_STOP_MARKERS or lowered.strip(" .") in _DESCRIPTION_STOP_MARKER_KEYS:
+        return None
+    if any(marker in lowered for marker in _DESCRIPTION_STOP_SUBSTRINGS):
         return None
     if _looks_like_status_text(normalized):
         return None
     if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
+        return None
+    if (
+        _looks_like_description_review_prose(normalized)
+        or _looks_like_review_response_text(normalized)
+        or _looks_like_first_person_review_text(normalized)
+    ):
         return None
     if not any(character.isalnum() for character in normalized):
         return None
@@ -3587,6 +3672,74 @@ def _clean_description_text(value: object) -> str | None:
     ):
         return None
     return normalized
+
+
+def _strip_description_service_options(value: str) -> str | None:
+    segments = [_clean_description_segment(part) for part in re.split(r"[·•⋅]+", value)]
+    cleaned_segments = [segment for segment in segments if segment]
+    if not cleaned_segments:
+        return None
+
+    is_service_segment = [
+        bool(_DESCRIPTION_SERVICE_OPTION_SEGMENT_PATTERN.fullmatch(segment))
+        for segment in cleaned_segments
+    ]
+    if all(is_service_segment):
+        return None
+
+    first_non_service_index = 0
+    while (
+        first_non_service_index < len(cleaned_segments)
+        and is_service_segment[first_non_service_index]
+    ):
+        first_non_service_index += 1
+    last_non_service_index = len(cleaned_segments) - 1
+    while (
+        last_non_service_index >= first_non_service_index
+        and is_service_segment[last_non_service_index]
+    ):
+        last_non_service_index -= 1
+
+    kept_segments = cleaned_segments[first_non_service_index : last_non_service_index + 1]
+    if len(kept_segments) == 1 and _looks_like_category_text(kept_segments[0]):
+        return None
+    trimmed = " · ".join(kept_segments).strip()
+    if first_non_service_index > 0 or last_non_service_index < len(cleaned_segments) - 1:
+        trimmed = trimmed.strip(" .")
+    return trimmed or None
+
+
+def _clean_description_segment(value: str) -> str | None:
+    normalized = _clean_text(value)
+    if normalized is None:
+        return None
+    normalized = normalized.strip("·•⋅ ").strip()
+    normalized = re.sub(r"^[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]+\s*", "", normalized)
+    normalized = re.sub(r"\s*[✓✔☑✗✕✖\ue5ca\ue5cb\ue5cc\ue5cd\ue5cf]+$", "", normalized)
+    normalized = normalized.strip()
+    return normalized or None
+
+
+def _looks_like_review_response_text(value: str) -> bool:
+    lowered = value.casefold().replace("’", "'")
+    if len(value.split()) < 10:
+        return False
+    return any(marker in lowered for marker in _DESCRIPTION_REVIEW_RESPONSE_MARKERS)
+
+
+def _looks_like_description_review_prose(value: str) -> bool:
+    if len(value.split()) < 12:
+        return False
+    lowered = value.casefold()
+    return any(marker in lowered for marker in _DESCRIPTION_REVIEW_PROSE_MARKERS)
+
+
+def _looks_like_first_person_review_text(value: str) -> bool:
+    if len(value.split()) < 12:
+        return False
+    if _DESCRIPTION_FIRST_PERSON_PRONOUN_PATTERN.search(value) is None:
+        return False
+    return _DESCRIPTION_FIRST_PERSON_EXPERIENCE_PATTERN.search(value) is not None
 
 
 def _extract_preview_website(strings: list[str]) -> str | None:

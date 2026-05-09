@@ -24,6 +24,7 @@ from gmaps_scraper.place_scraper import (
     _build_place_diagnostics,
     _build_place_llm_evidence,
     _clean_category_text,
+    _clean_description_text,
     _clean_name_text,
     _extract_address_from_lines,
     _extract_admission_price_from_lines,
@@ -1033,6 +1034,42 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.address)
 
+    def test_build_place_details_rejects_relative_search_url_addresses(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor",
+            resolved_url="https://www.google.com/maps/search/?api=1&query=Sendlinger+Tor",
+            snapshot={
+                "name": "Sendlinger-Tor-Platz 1",
+                "category": "Kebab shop",
+                "rating": "4.4",
+                "review_count": "8862",
+                "address": (
+                    "/search?sca_esv=6ce6d4092249d8a7&authuser=0&hl=en&gl=tw"
+                    "&output=search&tbm=map&q=Haferkater,+Sendlinger+Tor,+M%C3%BCnchen"
+                    "&ludocid=16588126363784805389"
+                ),
+                "body_text": "Sendlinger-Tor-Platz 1\nKebab shop",
+            },
+        )
+
+        self.assertIsNone(details.address)
+
+    def test_build_place_details_rejects_travel_product_address(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Nalati+Grassland",
+            resolved_url="https://www.google.com/maps/search/?api=1&query=Nalati+Grassland",
+            snapshot={
+                "name": "Nalati Grassland",
+                "category": "National park",
+                "rating": "4.5",
+                "review_count": "133",
+                "address": "8-Day Ili Pastoral RV Adventure (Duku Highway Crossing)",
+                "body_text": "Nalati Grassland\nNational park",
+            },
+        )
+
+        self.assertIsNone(details.address)
+
     def test_build_place_details_accepts_locality_only_address(self) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Nizami+Street",
@@ -1352,6 +1389,189 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertEqual(description, "Open now for lunch and dinner service.")
 
+    def test_clean_description_text_rejects_sponsored_label(self) -> None:
+        self.assertIsNone(_clean_description_text("Sponsored"))
+
+    def test_clean_description_text_keeps_structured_marketing_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Modern restaurant serving delicious food for lunch and dinner in a "
+                "friendly, relaxed setting."
+            ),
+            (
+                "Modern restaurant serving delicious food for lunch and dinner in a "
+                "friendly, relaxed setting."
+            ),
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "Casual cafe serving coffee all day in a sunny room near downtown."
+            ),
+            "Casual cafe serving coffee all day in a sunny room near downtown.",
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "Museum exhibits artifacts found across the US, with archival photos, "
+                "oral histories, rotating galleries, and educational programs."
+            ),
+            (
+                "Museum exhibits artifacts found across the US, with archival photos, "
+                "oral histories, rotating galleries, and educational programs."
+            ),
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "Instagram-worthy dessert cafe serving colorful macarons, "
+                "house-roasted coffee, brunch plates, and seasonal pastries daily."
+            ),
+            (
+                "Instagram-worthy dessert cafe serving colorful macarons, "
+                "house-roasted coffee, brunch plates, and seasonal pastries daily."
+            ),
+        )
+        self.assertEqual(
+            _clean_description_text(
+                "A must visit destination for families, with interactive science "
+                "exhibits, live demonstrations, and workshops."
+            ),
+            (
+                "A must visit destination for families, with interactive science "
+                "exhibits, live demonstrations, and workshops."
+            ),
+        )
+
+    def test_clean_description_text_rejects_first_person_review_prose(self) -> None:
+        self.assertIsNone(
+            _clean_description_text(
+                "This garden is absolutely beautiful and highly fragrant. "
+                "We visited in mid-April, and many of the roses were in bloom."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "Amazing quality loved the Kusama exhibit; I’ve seen her work elsewhere, "
+                "but the way it’s displayed here takes it to the next level."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "There are many Sichuan Opera Theatre Houses but so far this is the most "
+                "professional show I have attended. Was a bit skeptical at first."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "Beautiful view from the cellar and there’s access to the gallery below. "
+                "We arrived late so couldn’t do the tasting."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "After six p.m. You can reserve this onsen privately for one hour at a time. "
+                "It cost ¥2000 yen to reserve it. I think during normal hours it is cheaper."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "Huge Waves - they were really fun but you should not lie in the front rows "
+                "because an unexpectedly large wave hit our towel."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "This pond is a scenic and tranquil spot, just a five-minute bike "
+                "ride from the main street in Karuizawa. "
+                "It offers a peaceful retreat with serene water and lush surroundings. "
+                "The area is equipped with toilets and is perfect for taking your "
+                "children for a relaxing outing. "
+                "A wonderful place to unwind and enjoy nature. Highly recommended for families."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "Just an overrated place. Tiktok and instagram made it famous but I didn’t "
+                "feel like it is a must visit spot."
+            )
+        )
+
+    def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "We serve seasonal Italian dishes and cocktails in a relaxed dining room."
+            ),
+            "We serve seasonal Italian dishes and cocktails in a relaxed dining room.",
+        )
+
+    def test_clean_description_text_keeps_first_person_summary_with_word_prefixes(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "We are a family-owned restaurant founded in 1978, serving regional dishes "
+                "with local ingredients and warm hospitality."
+            ),
+            (
+                "We are a family-owned restaurant founded in 1978, serving regional dishes "
+                "with local ingredients and warm hospitality."
+            ),
+        )
+
+    def test_clean_description_text_keeps_owner_style_marketing_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Our team provides thoughtful care and we strive to make every visit feel easy."
+            ),
+            "Our team provides thoughtful care and we strive to make every visit feel easy.",
+        )
+
+    def test_clean_description_text_keeps_contact_us_business_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Contact us for reservations, catering, private events, seasonal menus, "
+                "and group dining in our relaxed neighborhood restaurant."
+            ),
+            (
+                "Contact us for reservations, catering, private events, seasonal menus, "
+                "and group dining in our relaxed neighborhood restaurant."
+            ),
+        )
+
+    def test_clean_description_text_keeps_first_person_words_containing_markers(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Our costume museum preserves regional theatre clothing and performance "
+                "objects with guided exhibits, public workshops, archival research, "
+                "and rotating displays for visitors."
+            ),
+            (
+                "Our costume museum preserves regional theatre clothing and performance "
+                "objects with guided exhibits, public workshops, archival research, "
+                "and rotating displays for visitors."
+            ),
+        )
+
+    def test_clean_description_text_rejects_option_only_amenity_labels(self) -> None:
+        self.assertIsNone(_clean_description_text("· \ue5ca Dogs allowed \ue5cc"))
+        self.assertIsNone(_clean_description_text("Onsite services"))
+        self.assertIsNone(_clean_description_text("Restaurant · Dine-in · Takeout"))
+        self.assertEqual(
+            _clean_description_text("Dine-in · Takeout · Cozy bistro with seasonal plates."),
+            "Cozy bistro with seasonal plates",
+        )
+
+    def test_clean_description_text_rejects_policy_prompt_without_period(self) -> None:
+        self.assertIsNone(
+            _clean_description_text(
+                "Our policies do not permit contributions to this type of place"
+            )
+        )
+
+    def test_clean_description_text_strips_trailing_google_maps_glyph(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Large museum showcasing ancient pottery, Buddhist art & exhibits. \ue5cc"
+            ),
+            "Large museum showcasing ancient pottery, Buddhist art & exhibits.",
+        )
+
     def test_extract_preview_place_enrichment_rejects_invalid_address_parts(self) -> None:
         payload_data = [
             [
@@ -1402,6 +1622,14 @@ class PlaceScraperTests(unittest.TestCase):
             ),
             "26-28 Cotham Rd, Kew VIC 3101, Australia",
         )
+        self.assertEqual(
+            _extract_preview_address(
+                [
+                    "/maps/place/Foo · 123 Main St, Springfield, IL 62701",
+                ]
+            ),
+            "123 Main St, Springfield, IL 62701",
+        )
 
     def test_extract_preview_address_uses_cleaned_segment_from_compound_value(self) -> None:
         self.assertEqual(
@@ -1412,6 +1640,14 @@ class PlaceScraperTests(unittest.TestCase):
                 ]
             ),
             "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+        )
+        self.assertEqual(
+            _extract_preview_address(["8-Day Ili Pastoral RV Adventure · 123 Main St"]),
+            "123 Main St",
+        )
+        self.assertEqual(
+            _extract_preview_address(["8 Day Street, Boston, MA 02111"]),
+            "8 Day Street, Boston, MA 02111",
         )
 
     def test_extract_preview_address_rejects_review_snippets(self) -> None:
@@ -1558,6 +1794,78 @@ class PlaceScraperTests(unittest.TestCase):
                 "name": "Ad Astra",
                 "description": "Taipei City, Zhongshan District",
                 "body_text": "Ad Astra\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_rejects_moderation_prompt_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/La+Quintessence",
+            resolved_url="https://www.google.com/maps/place/La+Quintessence",
+            snapshot={
+                "name": "La Quintessence Cannes",
+                "description": (
+                    "Mark as temporarily closed, or remove this place; "
+                    "report a legal problem"
+                ),
+                "body_text": "La Quintessence Cannes\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_rejects_service_option_only_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/La+Prosciutteria",
+            resolved_url="https://www.google.com/maps/place/La+Prosciutteria",
+            snapshot={
+                "name": "La Prosciutteria Bologna",
+                "description": (
+                    "· \ue5ca Dine-in · \ue5ca Curbside pickup · "
+                    "\ue5ca Delivery \ue5cc"
+                ),
+                "body_text": "La Prosciutteria Bologna\nRestaurant",
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_strips_service_option_suffix_from_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Rare+Steakhouse",
+            resolved_url="https://www.google.com/maps/place/Rare+Steakhouse",
+            snapshot={
+                "name": "Rare Steakhouse",
+                "description": (
+                    "Polished white-tablecloth operation dishing up traditional & "
+                    "Japanese-style cuts, plus cocktails. · \ue5ca Dine-in · "
+                    "\ue5ca Takeout · \ue5cd Delivery \ue5cc"
+                ),
+                "body_text": "Rare Steakhouse\nSteak house",
+            },
+        )
+
+        self.assertEqual(
+            details.description,
+            (
+                "Polished white-tablecloth operation dishing up "
+                "traditional & Japanese-style cuts, plus cocktails"
+            ),
+        )
+
+    def test_build_place_details_rejects_first_person_review_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/CANNES+sign",
+            resolved_url="https://www.google.com/maps/place/CANNES+sign",
+            snapshot={
+                "name": "CANNES sign",
+                "description": (
+                    "We took a very long cruise last summer from Venice to Portugal. On NCL. "
+                    "One stop was Cannes. We got off the ship and took a self guided walking "
+                    "tour using google maps and my research."
+                ),
+                "body_text": "CANNES sign\nTourist attraction",
             },
         )
 

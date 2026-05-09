@@ -140,6 +140,8 @@ OPERATIONAL_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
+PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS = 25_000.0
+PLACE_PAGE_ADDRESSLESS_SEARCH_COORDINATE_MATCH_METERS = 400.0
 MAP_PIN_DISTANCE_WARNING_MIN_METERS = 100_000.0
 MAP_PIN_DISTANCE_WARNING_BUFFER_METERS = 50_000.0
 MAP_PIN_DISTANCE_SUPPRESSION_MIN_METERS = 1_000_000.0
@@ -264,7 +266,7 @@ PRICE_AMOUNT_RE = re.compile(
     flags=re.IGNORECASE,
 )
 # Bump this for any SQLite schema or row-derivation semantic change that must force a rebuild.
-PLACES_SQLITE_SIGNATURE_VERSION = 3
+PLACES_SQLITE_SIGNATURE_VERSION = 4
 PLACES_SQLITE_BUILD_METADATA_KEY = "build_signature"
 STABLE_GENERATED_AT_FALLBACK = "1970-01-01T00:00:00+00:00"
 SQLITE_UNREADABLE_ERROR_MARKERS = (
@@ -277,92 +279,6 @@ PLACES_SQLITE_SCHEMA_SQL = """
 CREATE TABLE build_metadata (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
-);
-
-CREATE TABLE guides (
-    slug TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    source_url TEXT,
-    list_id TEXT,
-    country_name TEXT NOT NULL,
-    country_code TEXT,
-    city_name TEXT NOT NULL,
-    list_tags_json TEXT NOT NULL,
-    featured_place_ids_json TEXT NOT NULL,
-    best_hit_place_ids_json TEXT NOT NULL,
-    best_hit_min_rating REAL,
-    best_hit_min_reviews INTEGER,
-    top_categories_json TEXT NOT NULL,
-    generated_at TEXT NOT NULL,
-    place_count INTEGER NOT NULL,
-    center_lat REAL,
-    center_lng REAL
-);
-
-CREATE TABLE canonical_places (
-    place_id TEXT PRIMARY KEY,
-    first_seen_guide_slug TEXT NOT NULL,
-    raw_name TEXT,
-    raw_address TEXT,
-    raw_lat REAL,
-    raw_lng REAL,
-    raw_maps_url TEXT,
-    raw_cid TEXT,
-    raw_google_id TEXT,
-    raw_maps_place_token TEXT,
-    normalized_name TEXT NOT NULL,
-    normalized_address TEXT,
-    normalized_lat REAL,
-    normalized_lng REAL,
-    normalized_maps_url TEXT,
-    normalized_cid TEXT,
-    normalized_google_id TEXT,
-    normalized_google_place_id TEXT,
-    normalized_google_place_resource_name TEXT,
-    normalized_rating REAL,
-    normalized_user_rating_count INTEGER,
-    normalized_primary_category TEXT,
-    normalized_primary_category_localized TEXT,
-    normalized_tags_json TEXT NOT NULL,
-    normalized_vibe_tags_json TEXT NOT NULL,
-    normalized_neighborhood TEXT,
-    normalized_note TEXT,
-    normalized_why_recommended TEXT,
-    normalized_main_photo_path TEXT,
-    normalized_top_pick INTEGER NOT NULL,
-    normalized_hidden INTEGER NOT NULL,
-    normalized_manual_rank INTEGER NOT NULL,
-    normalized_status TEXT NOT NULL,
-    cache_fetched_at TEXT,
-    cache_last_verified_at TEXT,
-    cache_refresh_after TEXT,
-    cache_source TEXT,
-    cache_query TEXT,
-    cache_input_signature TEXT,
-    cache_matched INTEGER,
-    cache_score INTEGER,
-    cache_error TEXT,
-    cache_error_body TEXT,
-    enrichment_google_place_id TEXT,
-    enrichment_google_place_resource_name TEXT,
-    enrichment_display_name TEXT,
-    enrichment_formatted_address TEXT,
-    enrichment_google_maps_uri TEXT,
-    enrichment_rating REAL,
-    enrichment_user_rating_count INTEGER,
-    enrichment_primary_type TEXT,
-    enrichment_primary_type_display_name TEXT,
-    enrichment_primary_type_display_name_localized TEXT,
-    enrichment_types_json TEXT NOT NULL,
-    enrichment_business_status TEXT,
-    enrichment_website TEXT,
-    enrichment_phone TEXT,
-    enrichment_plus_code TEXT,
-    enrichment_description TEXT,
-    enrichment_main_photo_url TEXT,
-    enrichment_photo_url TEXT,
-    enrichment_limited_view INTEGER
 );
 
 CREATE TABLE guide_enrichment_cache (
@@ -382,53 +298,8 @@ CREATE TABLE guide_enrichment_cache (
     PRIMARY KEY (guide_slug, place_id)
 );
 
-CREATE TABLE guide_places (
-    guide_slug TEXT NOT NULL,
-    sort_order INTEGER NOT NULL,
-    place_id TEXT NOT NULL,
-    is_featured INTEGER NOT NULL,
-    is_best_hit INTEGER NOT NULL,
-    place_name TEXT NOT NULL,
-    neighborhood TEXT,
-    primary_category TEXT,
-    primary_category_localized TEXT,
-    rating REAL,
-    user_rating_count INTEGER,
-    status TEXT NOT NULL,
-    top_pick INTEGER NOT NULL,
-    hidden INTEGER NOT NULL,
-    manual_rank INTEGER NOT NULL,
-    note TEXT,
-    why_recommended TEXT,
-    main_photo_path TEXT,
-    maps_url TEXT NOT NULL,
-    PRIMARY KEY (guide_slug, sort_order),
-    FOREIGN KEY (guide_slug) REFERENCES guides(slug) ON DELETE CASCADE,
-    FOREIGN KEY (place_id) REFERENCES canonical_places(place_id) ON DELETE CASCADE
-);
-
-CREATE TABLE place_photos (
-    guide_slug TEXT NOT NULL,
-    sort_order INTEGER NOT NULL,
-    place_id TEXT NOT NULL,
-    source_photo_url TEXT,
-    local_path TEXT,
-    fetch_status TEXT NOT NULL,
-    last_fetched_at TEXT,
-    content_sha256 TEXT,
-    size_bytes INTEGER,
-    PRIMARY KEY (guide_slug, sort_order),
-    FOREIGN KEY (guide_slug, sort_order) REFERENCES guide_places(guide_slug, sort_order) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_canonical_places_google_place_id
-    ON canonical_places(enrichment_google_place_id);
 CREATE INDEX idx_guide_enrichment_cache_place_id
     ON guide_enrichment_cache(place_id);
-CREATE INDEX idx_guide_places_place_id
-    ON guide_places(place_id);
-CREATE INDEX idx_place_photos_local_path
-    ON place_photos(local_path);
 """
 SCRAPER_BLOCK_ERROR_MARKERS = (
     "429",
@@ -465,11 +336,7 @@ class PlacePhotoFlatIndex:
 
 @dataclass(frozen=True)
 class PlacesSqliteRows:
-    guide_rows: list[tuple[Any, ...]]
-    canonical_place_rows: list[tuple[Any, ...]]
     guide_cache_rows: list[tuple[Any, ...]]
-    guide_place_rows: list[tuple[Any, ...]]
-    photo_rows: list[tuple[Any, ...]]
 
 
 SCRAPER_SESSION_RESET_ERROR_MARKERS = SCRAPER_BLOCK_ERROR_MARKERS + (
@@ -492,6 +359,16 @@ COUNTRY_LOCALITY_ALIASES = (
     "España",
     "Espanya",
     "スペイン",
+    "France",
+    "フランス",
+    "Monaco",
+    "モナコ",
+    "Japan",
+    "日本",
+    "China",
+    "中国",
+    "South Korea",
+    "韓国",
     "Vatican City",
     "Ivory Coast",
 )
@@ -504,6 +381,19 @@ AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES = (
     "TAS",
     "NT",
     "ACT",
+)
+SUBNATIONAL_LOCALITY_ALIASES = AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES + (
+    "Xinjiang",
+    "Xinjiang Uygur Autonomous Region",
+    "Xinjiang Uyghur Autonomous Region",
+    "新疆",
+    "新疆维吾尔自治区",
+    "新疆維吾爾自治區",
+    "Sichuan",
+    "四川",
+    "四川省",
+    "Kitaazumi District",
+    "Kitasaku District",
 )
 SEMANTIC_NEIGHBORHOOD_DISPLAY_ALIASES = {
     "da an": "Da'an",
@@ -528,9 +418,70 @@ SEMANTIC_NEIGHBORHOOD_UPPERCASE_TOKENS = {
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
+SUBNATIONAL_LOCALITY_ABBREVIATIONS = frozenset(
+    {
+        "AL",
+        "AK",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "FL",
+        "GA",
+        "HI",
+        "ID",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "ME",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MS",
+        "MO",
+        "MT",
+        "NE",
+        "NV",
+        "NH",
+        "NJ",
+        "NM",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VT",
+        "VA",
+        "WA",
+        "WV",
+        "WI",
+        "WY",
+        "DC",
+    }
+)
 LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
+}
+LOCALITY_EQUIVALENCE_ALIASES: dict[str, str] = {
+    "donostia": "san sebastian",
+    "donostia san sebastián": "san sebastian",
+    "donostia san sebastian": "san sebastian",
+    "san sebastián": "san sebastian",
 }
 BROKEN_TAG_NORMALIZATION_MAP: dict[str, str] = {
     "gen-ve": "geneve",
@@ -963,10 +914,39 @@ GENERIC_ENRICHMENT_TYPE_TAGS = frozenset(
 )
 INVALID_ENRICHMENT_TYPE_TAG_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+-reviews?$"),
+    re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$"),
+    re.compile(
+        r"^(?:clear|cloudy|sunny|rain|snow|showers?|storms?|thunderstorms?|fog|haze|mist|overcast)"
+        r"(?:[_-](?:with|and|periodic|scattered|mostly|partly|light|heavy|clouds?|sun|rain|snow|"
+        r"showers?|storms?|thunderstorms?|fog|haze|mist|overcast))*$"
+    ),
+    re.compile(r"^adults(?:_|-)only(?:_|-).*$"),
+    re.compile(r"^beer$"),
+    re.compile(r"^transportation$"),
+    re.compile(r"^(?:light|heavy|mostly|partly)(?:_|-)(?:rain|snow|cloudy|sunny)$"),
+    re.compile(r"^free(?:_|-)breakfast$"),
+    re.compile(r"^free(?:_|-)?wi(?:_|-)?fi$"),
+    re.compile(r"^breakfast(?:_|-)included$"),
+    re.compile(r"^free(?:_|-)cancellation(?:_|-).*$"),
+    re.compile(r"^floor(?:_|-)\d+$"),
 )
 INVALID_ENRICHMENT_PRIMARY_CATEGORY_DISPLAY_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^\d+\s+reviews?$", re.IGNORECASE),
     re.compile(r"^floor\s+\d+$", re.IGNORECASE),
+    re.compile(r"^(?:open|closed|clear|cloudy|sunny|rain|snow)$", re.IGNORECASE),
+    re.compile(
+        r"^(?:clear|cloudy|sunny|rain|snow|showers?|storms?|thunderstorms?|fog|haze|mist|overcast)"
+        r"(?:\s+(?:with|and|periodic|scattered|mostly|partly|light|heavy|clouds?|sun|rain|snow|"
+        r"showers?|storms?|thunderstorms?|fog|haze|mist|overcast))*$",
+        re.IGNORECASE,
+    ),
+    re.compile(r"^adults\s+only\b", re.IGNORECASE),
+    re.compile(r"^beer$", re.IGNORECASE),
+    re.compile(r"^transportation$", re.IGNORECASE),
+    re.compile(r"^(?:light|heavy|mostly|partly)\s+(?:rain|snow|cloudy|sunny)$", re.IGNORECASE),
+    re.compile(r"^free\s+breakfast$", re.IGNORECASE),
+    re.compile(r"^free\s+wi-?fi$", re.IGNORECASE),
+    re.compile(r"^breakfast\s+included$", re.IGNORECASE),
     re.compile(r"^free cancellation\b", re.IGNORECASE),
 )
 PARENT_TYPE_TAG_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -2318,7 +2298,7 @@ def combine_place_note(note: Any, comment: Any) -> str | None:
 
 
 def name_from_maps_url(maps_url: str) -> str | None:
-    match = re.search(r"/place/([^/]+)/data=", maps_url)
+    match = re.search(r"/place/([^/?#]+)", maps_url)
     if not match:
         return None
     candidate = unquote(match.group(1).replace("+", " "))
@@ -2511,9 +2491,20 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             enrichment.description or enrichment.search_result_description,
             place.note,
         )
+        semantic_description = (
+            usable_semantic_description(
+                enrichment.semantic_description,
+                enrichment_place=enrichment,
+                raw_place=place,
+                city_name=city_name,
+                country_name=country_name,
+            )
+            if use_semantic_descriptions
+            else None
+        )
         why_recommended = (
             manual_note
-            or (enrichment.semantic_description if use_semantic_descriptions else None)
+            or semantic_description
             or base_recommendation
         )
         if "vibe_tags" in override:
@@ -3272,10 +3263,12 @@ def enrich_raw_sources(
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
         slug = raw_path.stem
-        city_name = infer_city_name(raw.title or "")
-        country_name = infer_country_name(raw.title or "", raw)
+        city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
+        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            save_places_cache(slug, cache_payload)
         cache_payloads[slug] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
@@ -3436,10 +3429,12 @@ def refresh_cached_semantic_enrichment(
     for raw_path in sorted(RAW_DIR.glob("*.json")):
         raw = RawSavedList.model_validate_json(raw_path.read_text(encoding="utf-8"))
         slug = raw_path.stem
-        city_name = infer_city_name(raw.title or "")
-        country_name = infer_country_name(raw.title or "", raw)
+        city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
+        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            save_places_cache(slug, cache_payload)
         cache_payloads[slug] = cache_payload
 
         for place in raw.places:
@@ -3469,8 +3464,12 @@ def refresh_cached_semantic_enrichment(
             missing_text = ", ".join(missing_selectors)
             raise RuntimeError(f"No configured place matched: {missing_text}")
 
-    changed_slugs: set[str] = set()
+    pending_save_slug: str | None = None
     for slug, place_id, place, entry, city_name, country_name, suppress_description in semantic_jobs:
+        if pending_save_slug is not None and slug != pending_save_slug:
+            save_places_cache(pending_save_slug, cache_payloads[pending_save_slug])
+            pending_save_slug = None
+
         assert entry.place is not None
         previous_semantics = semantic_enrichment_state(entry.place)
         previous_description = entry.place.semantic_description
@@ -3505,7 +3504,7 @@ def refresh_cached_semantic_enrichment(
             requested_label = " and ".join(requested)
             print(f"Generated {requested_label} for {slug}:{place_id} [{place.name}]", flush=True)
             updated_count += 1
-            changed_slugs.add(slug)
+            pending_save_slug = slug
         elif (
             (not enable_semantics or semantic_enrichment_state_is_populated(current_semantics))
             and (not enable_description or current_description)
@@ -3514,8 +3513,8 @@ def refresh_cached_semantic_enrichment(
         else:
             skipped_count += 1
 
-    for slug in sorted(changed_slugs):
-        save_places_cache(slug, cache_payloads[slug])
+    if pending_save_slug is not None:
+        save_places_cache(pending_save_slug, cache_payloads[pending_save_slug])
 
     print(
         "Semantic enrichment refresh complete: "
@@ -3564,16 +3563,23 @@ def enrich_place_job(
     override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
     suppress_description = bool(as_string(override.get("note")))
     override_google_place_id = as_string(override.get("google_place_id"))
+    allow_identity_mismatch = as_bool(override.get("allow_enrichment_identity_mismatch")) is True
+    existing_google_place_id = google_place_id_for_refresh_seed(
+        place,
+        existing_entry,
+        allow_identity_mismatch=allow_identity_mismatch,
+    )
     refreshed_entry = fetch_places_enrichment(
         place,
         city_name=city_name,
         country_name=country_name,
         google_place_id=override_google_place_id
-        or (existing_entry.place.google_place_id if existing_entry and existing_entry.place else None),
+        or existing_google_place_id,
         signature_google_place_id=override_google_place_id,
         api_key=api_key,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
+        allow_identity_mismatch=allow_identity_mismatch,
     )
     merged_entry, warning = preserve_existing_enrichment(
         slug=slug,
@@ -3581,10 +3587,29 @@ def enrich_place_job(
         place_name=place_name,
         existing_entry=existing_entry,
         refreshed_entry=refreshed_entry,
+        raw_place=place,
+        allow_identity_mismatch=allow_identity_mismatch,
     )
     if warning is not None:
         print(warning, flush=True)
     return merged_entry
+
+
+def google_place_id_for_refresh_seed(
+    raw_place: RawPlace,
+    existing_entry: EnrichmentCacheEntry | None,
+    *,
+    allow_identity_mismatch: bool = False,
+) -> str | None:
+    existing_place = existing_entry.place if existing_entry else None
+    if existing_place is None:
+        return None
+    google_place_id = as_string(existing_place.google_place_id)
+    if google_place_id is None:
+        return None
+    if not allow_identity_mismatch and not enrichment_identity_is_compatible_with_raw(raw_place, existing_place):
+        return None
+    return google_place_id
 
 
 def stable_place_id(place: RawPlace, *, source_type: str | None = None) -> str:
@@ -3732,6 +3757,13 @@ def humanize_type_id(value: str | None) -> str | None:
     normalized = as_string(value)
     if normalized is None:
         return None
+    tag = slugify(normalized.replace("_", "-"))
+    if (
+        not tag
+        or tag in GENERIC_ENRICHMENT_TYPE_TAGS
+        or any(pattern.match(tag) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS)
+    ):
+        return None
     phrase = normalized.replace("_", " ").replace("-", " ").strip().lower()
     if not phrase:
         return None
@@ -3755,8 +3787,13 @@ def localized_primary_category_label(
     canonical_display_name: str | None,
 ) -> str | None:
     sanitized_display_name = sanitize_enrichment_primary_category(raw_display_name)
-    if sanitized_display_name is None or looks_english_category_label(sanitized_display_name):
+    if (
+        sanitized_display_name is None
+        or looks_english_category_label(sanitized_display_name)
+    ):
         return None
+    if canonical_display_name is None:
+        return sanitized_display_name
     if (
         canonical_display_name
         and normalize_type_lookup_text(sanitized_display_name) == normalize_type_lookup_text(canonical_display_name)
@@ -3770,6 +3807,10 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
         return None
 
     raw_display_name = place.primary_type_display_name_localized or place.primary_type_display_name
+    if place.primary_type is not None and normalize_enrichment_type_tag(place.primary_type) is None:
+        if normalize_type_lookup_text(place.primary_type) == "item":
+            raw_display_name = None
+        place.primary_type = None
     canonical_display_name = canonical_primary_category_label(
         primary_type=place.primary_type,
         display_name=place.primary_type_display_name,
@@ -3781,9 +3822,13 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
 
     place.primary_type_display_name = canonical_display_name
     place.primary_type_display_name_localized = localized_display_name
+    place.primary_type, place.types = normalize_enrichment_place_type_fields(place)
+    place.display_name = sanitize_place_page_display_name(place.display_name)
     place.formatted_address = sanitize_place_page_formatted_address(place.formatted_address)
     place.address_display_en = sanitize_place_page_formatted_address(place.address_display_en)
     place.category_display_en = sanitize_enrichment_primary_category(place.category_display_en)
+    place.description = sanitize_place_page_description(place.description)
+    place.search_result_description = sanitize_place_page_description(place.search_result_description)
     place.phone = sanitize_place_page_phone(place.phone)
     place.plus_code = sanitize_place_page_plus_code(place.plus_code)
     place.main_photo_url = sanitize_place_photo_url(place.main_photo_url)
@@ -3880,11 +3925,23 @@ def normalized_enrichment_type_ids(
     )
 
 
+def normalize_enrichment_place_type_fields(place: EnrichmentPlace) -> tuple[str | None, list[str]]:
+    return normalized_enrichment_type_ids(
+        place.primary_type,
+        place.primary_type_display_name,
+        place.types,
+    )
+
+
 def normalize_enrichment_type_id_with_generic_fallback(value: str | None) -> str | None:
     if not value:
         return None
     normalized = slugify(value.replace("_", "-"))
-    if not normalized or any(pattern.match(normalized) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS):
+    if (
+        not normalized
+        or normalized in GENERIC_ENRICHMENT_TYPE_TAGS
+        or any(pattern.match(normalized) for pattern in INVALID_ENRICHMENT_TYPE_TAG_PATTERNS)
+    ):
         return None
     return normalized.replace("-", "_")
 
@@ -4184,6 +4241,14 @@ def infer_city_name(title: str) -> str | None:
     return parts[0]
 
 
+def guide_location_context(slug: str, raw: RawSavedList) -> tuple[str | None, str | None]:
+    list_override = read_json(LIST_OVERRIDES_DIR / f"{slug}.json")
+    title = as_string(list_override.get("title")) or raw.title or slug.replace("-", " ").title()
+    city_name = as_string(list_override.get("city_name")) or infer_city_name(title)
+    country_name = as_string(list_override.get("country_name")) or infer_country_name(title, raw)
+    return city_name, country_name
+
+
 def infer_country_name(title: str, raw: RawSavedList) -> str | None:
     parts = split_title_parts(title)
     if len(parts) > 1:
@@ -4348,12 +4413,12 @@ def infer_address_parts_localities(
             continue
         candidate_key = normalize_locality_key(normalized_candidate)
         city_key = normalize_locality_key(city_name)
-        city_equivalence_key = normalize_locality_equivalence_key(city_name)
+        city_equivalence_keys = normalize_locality_scope_equivalence_keys(city_name)
         candidate_equivalence_key = normalize_locality_equivalence_key(normalized_candidate)
         if (
             not candidate_key
             or candidate_key == city_key
-            or (city_equivalence_key and candidate_equivalence_key == city_equivalence_key)
+            or candidate_equivalence_key in city_equivalence_keys
             or is_subnational_locality(normalized_candidate)
         ):
             continue
@@ -4371,7 +4436,7 @@ def infer_address_localities(address: str | None, *, city_name: str | None = Non
 @lru_cache(maxsize=None)
 def _infer_address_localities_cached(address: str, city_name: str | None) -> tuple[str, ...]:
     city_key = normalize_locality_key(city_name)
-    city_equivalence_key = normalize_locality_equivalence_key(city_name)
+    city_equivalence_keys = normalize_locality_scope_equivalence_keys(city_name)
     neighborhoods: list[str] = []
     subcities: list[str] = []
 
@@ -4381,7 +4446,7 @@ def _infer_address_localities_cached(address: str, city_name: str | None) -> tup
             continue
         key = normalize_locality_key(candidate)
         equivalent_key = normalize_locality_equivalence_key(candidate)
-        if not key or key == city_key or (city_equivalence_key and equivalent_key == city_equivalence_key):
+        if not key or key == city_key or equivalent_key in city_equivalence_keys:
             continue
         if is_subnational_locality(candidate):
             continue
@@ -4394,7 +4459,12 @@ def _infer_address_localities_cached(address: str, city_name: str | None) -> tup
 
 
 @lru_cache(maxsize=None)
-def normalize_address_locality_part(part: str) -> str | None:
+def normalize_address_locality_part(
+    part: str,
+    *,
+    allow_explicit_subnational_label: bool = False,
+    strip_leading_preposition: bool = True,
+) -> str | None:
     candidate = part.strip()
     if not candidate:
         return None
@@ -4406,10 +4476,20 @@ def normalize_address_locality_part(part: str) -> str | None:
     candidate = re.sub(r"\s+\d{4}\b", "", candidate).strip()
     candidate = candidate.strip(" -−ー－/()[]{}.")
     candidate = strip_leading_numeric_locality_prefix(candidate)
+    if strip_leading_preposition:
+        candidate = strip_leading_locality_preposition(candidate)
     candidate = strip_country_locality_prefix(candidate)
+    candidate = strip_trailing_short_region_code(candidate)
     candidate = strip_subnational_locality_suffix(candidate)
+    candidate = strip_leading_localized_locality_prefix(candidate)
 
     if not candidate or is_country_locality(candidate):
+        return None
+    if is_subnational_locality(candidate):
+        return None
+    if is_subnational_locality_abbreviation(candidate):
+        return None
+    if is_explicit_subnational_locality_label(candidate) and not allow_explicit_subnational_label:
         return None
 
     if is_building_or_unit_part(candidate):
@@ -4451,6 +4531,22 @@ def strip_leading_numeric_locality_prefix(candidate: str) -> str:
     ).strip()
 
 
+def strip_leading_locality_preposition(candidate: str) -> str:
+    return re.sub(r"^(?:at|near)\s+", "", candidate, flags=re.IGNORECASE).strip()
+
+
+def strip_trailing_short_region_code(candidate: str) -> str:
+    return re.sub(r"\s+[A-Z]{2}$", "", candidate).strip(" -−ー－/()[]{}.")
+
+
+def strip_leading_localized_locality_prefix(candidate: str) -> str:
+    return re.sub(
+        r"^[\u3040-\u30ff\u3400-\u9fff][\u3040-\u30ff\u3400-\u9fff\s]*\s+(?=[A-Za-z])",
+        "",
+        candidate,
+    ).strip()
+
+
 def strip_subnational_locality_suffix(candidate: str) -> str:
     return re.sub(
         r"\s+(?:NSW|VIC|QLD|SA|WA|TAS|NT|ACT)\b$",
@@ -4477,6 +4573,34 @@ def extract_trailing_locality(candidate: str) -> str | None:
 
 def is_country_locality(candidate: str) -> bool:
     return normalize_locality_key(candidate) in get_country_locality_keys()
+
+
+def is_subnational_locality_abbreviation(candidate: str) -> bool:
+    compact = re.sub(r"[^A-Za-z]", "", candidate).upper()
+    return compact in SUBNATIONAL_LOCALITY_ABBREVIATIONS
+
+
+def is_explicit_subnational_locality_label(candidate: str) -> bool:
+    candidate_key = normalize_locality_key(candidate)
+    if candidate_key in {"county line", "state college"}:
+        return False
+    return bool(
+        re.match(
+            r"^(?:state|county|province|prefecture|region)\s+of\s+\S",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+        or re.match(
+            r"^(?:county|province|prefecture|region)\s+\S",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+        or re.search(
+            r"\b(?:county|province|prefecture|state|region)$",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
 
 
 def get_country_locality_keys() -> set[str]:
@@ -4513,7 +4637,7 @@ def get_subnational_locality_keys() -> set[str]:
         value = getattr(subdivision, "name", None)
         if value:
             subdivision_names.add(value)
-    subdivision_names.update(AUSTRALIAN_SUBNATIONAL_LOCALITY_ALIASES)
+    subdivision_names.update(SUBNATIONAL_LOCALITY_ALIASES)
 
     SUBNATIONAL_LOCALITY_KEYS = {
         normalize_locality_key(name)
@@ -4573,9 +4697,11 @@ def is_street_or_block_part(candidate: str) -> bool:
     return bool(
         re.search(
             (
-                r"\b(?:chome|丁目|st|street|rd|road|ln|lane|ave|avenue|dr|drive|blvd|boulevard|rue|via|"
-                r"carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|pg|placa|plaça|pl|passatge|travessera|moll)\b"
-                r"|^(?:c/|c\.|pg\.|av\.|rda\.|pl\.)\s"
+                r"\b(?:chome|丁目|st|str|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|piazza|"
+                r"placa|plaça|pl|bajada|jet[eé]e|palais|"
+                r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
+                r"|^(?:c/|c\.|v\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.za|p\.\s*º)\s"
             ),
             candidate,
             flags=re.IGNORECASE,
@@ -4600,11 +4726,25 @@ def normalize_locality_equivalence_key(value: str | None) -> str:
     key = normalize_locality_key(value)
     if not key:
         return ""
-    return re.sub(
+    key = re.sub(
         r"\s+(?:main\s+island|islands|island|city|ward|district|borough|county|prefecture|province|state|region|gu|ku)$",
         "",
         key,
     ).strip()
+    return LOCALITY_EQUIVALENCE_ALIASES.get(key, key)
+
+
+def normalize_locality_scope_equivalence_keys(value: str | None) -> set[str]:
+    normalized = as_string(value)
+    if normalized is None:
+        return set()
+    keys = {key for key in [normalize_locality_equivalence_key(normalized)] if key}
+    title_without_parentheticals = re.sub(r"\([^)]*\)", " ", normalized)
+    for part in re.split(r"\s+(?:and|&)\s+|/", title_without_parentheticals, flags=re.IGNORECASE):
+        key = normalize_locality_equivalence_key(part)
+        if key:
+            keys.add(key)
+    return keys
 
 
 def split_title_parts(title: str) -> list[str]:
@@ -5587,6 +5727,8 @@ def preserve_existing_enrichment(
     place_name: str,
     existing_entry: EnrichmentCacheEntry | None,
     refreshed_entry: EnrichmentCacheEntry,
+    raw_place: RawPlace | None = None,
+    allow_identity_mismatch: bool = False,
 ) -> tuple[EnrichmentCacheEntry, str | None]:
     canonicalize_enrichment_cache_entry(existing_entry)
     canonicalize_enrichment_cache_entry(refreshed_entry)
@@ -5606,6 +5748,11 @@ def preserve_existing_enrichment(
     refreshed_place = refreshed_entry.place
     assert previous_place is not None
     assert refreshed_place is not None
+    can_preserve_previous_identity = (
+        allow_identity_mismatch
+        or raw_place is None
+        or enrichment_identity_is_compatible_with_raw(raw_place, previous_place)
+    )
 
     preserved_fields: list[str] = []
 
@@ -5650,14 +5797,19 @@ def preserve_existing_enrichment(
         refreshed_place.business_status = previous_place.business_status
         append_unique_reason(preserved_fields, "status")
 
-    if google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri):
+    if (
+        can_preserve_previous_identity
+        and google_maps_uri_strength(refreshed_place.google_maps_uri)
+        < google_maps_uri_strength(previous_place.google_maps_uri)
+        and google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place)
+    ):
         refreshed_place.google_maps_uri = previous_place.google_maps_uri
         if not refreshed_place.google_place_id and previous_place.google_place_id:
             refreshed_place.google_place_id = previous_place.google_place_id
         if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
             refreshed_place.google_place_resource_name = previous_place.google_place_resource_name
         append_unique_reason(preserved_fields, "maps_url")
-    else:
+    elif can_preserve_previous_identity and google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place):
         if not refreshed_place.google_place_id and previous_place.google_place_id:
             refreshed_place.google_place_id = previous_place.google_place_id
         if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
@@ -5680,12 +5832,41 @@ def preserve_existing_enrichment(
     )
 
 
+def google_maps_uri_is_compatible_for_preservation(
+    previous_place: EnrichmentPlace,
+    refreshed_place: EnrichmentPlace,
+) -> bool:
+    previous_address = normalize_text(previous_place.formatted_address)
+    refreshed_address = normalize_text(refreshed_place.formatted_address)
+    if previous_address and refreshed_address and token_overlap_score(previous_address, refreshed_address) == 0:
+        return False
+    return True
+
+
 def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
     return load_places_cache_from_sqlite(slug) or {}
 
 
 def save_places_cache(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
     save_places_cache_to_sqlite(slug, payload)
+
+
+def prune_places_cache_to_raw_places(
+    payload: dict[str, EnrichmentCacheEntry],
+    raw: RawSavedList,
+) -> tuple[dict[str, EnrichmentCacheEntry], int]:
+    current_place_ids = {
+        stable_place_id(place, source_type=raw.configured_source_type)
+        for place in raw.places
+    }
+    if not current_place_ids:
+        return {}, len(payload)
+    pruned_payload = {
+        place_id: entry
+        for place_id, entry in payload.items()
+        if place_id in current_place_ids
+    }
+    return pruned_payload, len(payload) - len(pruned_payload)
 
 
 def export_places_cache_json(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
@@ -5704,6 +5885,16 @@ def sqlite_bool_or_none(value: bool | None) -> int | None:
     if value is None:
         return None
     return sqlite_bool(value)
+
+
+def serialized_enrichment_cache_entry(entry: EnrichmentCacheEntry) -> str:
+    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+    assert canonicalized_entry is not None
+    return json.dumps(
+        canonicalized_entry.model_dump(mode="json", exclude_none=True),
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
 
 
 def sqlite_error_is_unreadable_database(error: sqlite3.Error) -> bool:
@@ -5790,8 +5981,6 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
             if payload:
                 serialized_rows = []
                 for place_id, entry in sorted(payload.items()):
-                    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
-                    assert canonicalized_entry is not None
                     serialized_rows.append(
                         (
                             slug,
@@ -5806,11 +5995,7 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                             entry.score,
                             entry.error,
                             entry.error_body,
-                            json.dumps(
-                                canonicalized_entry.model_dump(mode="json"),
-                                ensure_ascii=False,
-                                separators=(",", ":"),
-                            ),
+                            serialized_enrichment_cache_entry(entry),
                         )
                     )
                 connection.executemany(
@@ -5934,47 +6119,21 @@ def build_places_sqlite_signature(
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> str:
-    photo_state_cache: dict[str, tuple[Any, ...]] = {}
-    photo_states: list[dict[str, Any]] = []
-
-    for guide in sorted(guides, key=lambda item: item.slug):
-        enrichment_cache = enrichment_caches.get(guide.slug, {})
-        for sort_order, place in enumerate(guide.places):
-            cache_entry = enrichment_cache.get(place.id)
-            source_photo_url = cached_place_photo_url(cache_entry)
-            if source_photo_url or place.main_photo_path:
-                photo_states.append(
-                    {
-                        "guide_slug": guide.slug,
-                        "sort_order": sort_order,
-                        "place_id": place.id,
-                        "state": place_photo_signature_state(
-                            place.main_photo_path,
-                            source_photo_url=source_photo_url,
-                            metadata_cache=photo_state_cache,
-                        ),
-                    }
-                )
+    _ = raw_lists, guides
 
     payload = {
         "signature_version": PLACES_SQLITE_SIGNATURE_VERSION,
         "schema_sha256": hashlib.sha256(PLACES_SQLITE_SCHEMA_SQL.encode("utf-8")).hexdigest(),
-        "raw_lists": {
-            slug: raw.model_dump(mode="json")
-            for slug, raw in sorted(raw_lists.items())
-        },
-        "guides": [
-            guide.model_dump(mode="json")
-            for guide in sorted(guides, key=lambda item: item.slug)
-        ],
         "enrichment_caches": {
             slug: {
-                place_id: entry.model_dump(mode="json")
+                place_id: canonicalized_enrichment_cache_entry_copy(entry).model_dump(
+                    mode="json",
+                    exclude_none=True,
+                )
                 for place_id, entry in sorted(cache_payload.items())
             }
             for slug, cache_payload in sorted(enrichment_caches.items())
         },
-        "photo_states": photo_states,
     }
     serialized = json.dumps(
         normalize_json_payload(payload),
@@ -6046,8 +6205,9 @@ def shared_enrichment_photo_identity_keys(
 
 def hydrate_shared_enrichment_photo_urls(
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
-) -> None:
+) -> int:
     photo_donors: dict[str, tuple[tuple[int, int, str], str | None, str | None]] = {}
+    hydrated_count = 0
 
     for payload in enrichment_caches.values():
         for place_id, entry in payload.items():
@@ -6082,8 +6242,11 @@ def hydrate_shared_enrichment_photo_urls(
             _, donor_main_photo_url, donor_photo_url = donor
             if not place.main_photo_url and donor_main_photo_url:
                 place.main_photo_url = donor_main_photo_url
+                hydrated_count += 1
             if not place.photo_url and donor_photo_url:
                 place.photo_url = donor_photo_url
+                hydrated_count += 1
+    return hydrated_count
 
 
 def build_places_sqlite_rows(
@@ -6092,118 +6255,7 @@ def build_places_sqlite_rows(
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> PlacesSqliteRows:
-    hydrate_shared_enrichment_photo_urls(enrichment_caches)
-    raw_place_maps = {
-        slug: {
-            stable_place_id(place, source_type=raw.configured_source_type): place
-            for place in raw.places
-        }
-        for slug, raw in raw_lists.items()
-    }
-    photo_metadata_cache: dict[str, tuple[str, str | None, str | None, int | None]] = {}
-    canonical_places: dict[str, tuple[tuple[int, int, int, int], tuple[Any, ...], str | None]] = {}
-    guide_rows: list[tuple[Any, ...]] = []
-    guide_place_rows: list[tuple[Any, ...]] = []
-    photo_rows: list[tuple[Any, ...]] = []
-
-    for guide in guides:
-        guide_rows.append(
-            (
-                guide.slug,
-                guide.title,
-                guide.description,
-                guide.source_url,
-                guide.list_id,
-                guide.country_name,
-                guide.country_code,
-                guide.city_name,
-                sqlite_json(guide.list_tags),
-                sqlite_json(guide.featured_place_ids),
-                sqlite_json(guide.best_hit_place_ids),
-                guide.best_hit_min_rating,
-                guide.best_hit_min_reviews,
-                sqlite_json(guide.top_categories),
-                guide.generated_at,
-                guide.place_count,
-                guide.center_lat,
-                guide.center_lng,
-            )
-        )
-
-        raw_places_by_id = raw_place_maps.get(guide.slug, {})
-        enrichment_cache = enrichment_caches.get(guide.slug, {})
-        featured_ids = set(guide.featured_place_ids)
-        best_hit_ids = set(guide.best_hit_place_ids)
-
-        for sort_order, place in enumerate(guide.places):
-            raw_place = raw_places_by_id.get(place.id)
-            cache_entry = enrichment_cache.get(place.id)
-            candidate_row = canonical_place_row(
-                guide_slug=guide.slug,
-                raw_place=raw_place,
-                place=place,
-                cache_entry=cache_entry,
-            )
-            candidate_score = canonical_place_score(place, cache_entry)
-            candidate_identity = canonical_place_identity_key(place, cache_entry)
-            current = canonical_places.get(place.id)
-            if current is None:
-                canonical_places[place.id] = (candidate_score, candidate_row, candidate_identity)
-            else:
-                _, _, current_identity = current
-                if current_identity and not candidate_identity:
-                    pass
-                elif current_identity and candidate_identity and current_identity != candidate_identity:
-                    pass
-                elif current_identity is None and candidate_identity is not None:
-                    canonical_places[place.id] = (candidate_score, candidate_row, candidate_identity)
-                elif candidate_score > current[0]:
-                    canonical_places[place.id] = (candidate_score, candidate_row, candidate_identity)
-
-            guide_place_rows.append(
-                (
-                    guide.slug,
-                    sort_order,
-                    place.id,
-                    sqlite_bool(place.id in featured_ids),
-                    sqlite_bool(place.id in best_hit_ids),
-                    place.name,
-                    place.neighborhood,
-                    place.primary_category,
-                    place.primary_category_localized,
-                    place.rating,
-                    place.user_rating_count,
-                    place.status,
-                    sqlite_bool(place.top_pick),
-                    sqlite_bool(place.hidden),
-                    place.manual_rank,
-                    place.note,
-                    place.why_recommended,
-                    place.main_photo_path,
-                    place.maps_url,
-                )
-            )
-
-            source_photo_url = cached_place_photo_url(cache_entry)
-            if source_photo_url or place.main_photo_path:
-                fetch_status, last_fetched_at, content_sha256, size_bytes = place_photo_metadata(
-                    place.main_photo_path,
-                    source_photo_url=source_photo_url,
-                    metadata_cache=photo_metadata_cache,
-                )
-                photo_rows.append(
-                    (
-                        guide.slug,
-                        sort_order,
-                        place.id,
-                        source_photo_url,
-                        place.main_photo_path,
-                        fetch_status,
-                        last_fetched_at,
-                        content_sha256,
-                        size_bytes,
-                    )
-                )
+    _ = raw_lists, guides
 
     guide_cache_rows = [
         (
@@ -6219,24 +6271,14 @@ def build_places_sqlite_rows(
             entry.score,
             entry.error,
             entry.error_body,
-            json.dumps(entry.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":")),
+            serialized_enrichment_cache_entry(entry),
         )
         for guide_slug, payload in sorted(enrichment_caches.items())
         for place_id, entry in sorted(payload.items())
     ]
 
     return PlacesSqliteRows(
-        guide_rows=guide_rows,
-        canonical_place_rows=[
-            row
-            for _, row, _ in (
-                canonical_places[place_id]
-                for place_id in sorted(canonical_places)
-            )
-        ],
         guide_cache_rows=guide_cache_rows,
-        guide_place_rows=guide_place_rows,
-        photo_rows=photo_rows,
     )
 
 
@@ -6251,31 +6293,9 @@ def write_places_sqlite(
 
     connection = sqlite3.connect(tmp_path)
     try:
-        connection.execute("PRAGMA foreign_keys = ON")
         connection.execute("PRAGMA journal_mode = DELETE")
         connection.execute("PRAGMA synchronous = NORMAL")
         connection.executescript(PLACES_SQLITE_SCHEMA_SQL)
-
-        canonical_place_columns = """
-            place_id, first_seen_guide_slug, raw_name, raw_address, raw_lat, raw_lng, raw_maps_url,
-            raw_cid, raw_google_id, raw_maps_place_token, normalized_name,
-            normalized_address, normalized_lat, normalized_lng, normalized_maps_url, normalized_cid,
-            normalized_google_id, normalized_google_place_id, normalized_google_place_resource_name,
-            normalized_rating, normalized_user_rating_count, normalized_primary_category,
-            normalized_primary_category_localized,
-            normalized_tags_json, normalized_vibe_tags_json, normalized_neighborhood, normalized_note,
-            normalized_why_recommended, normalized_main_photo_path, normalized_top_pick,
-            normalized_hidden, normalized_manual_rank, normalized_status, cache_fetched_at,
-            cache_last_verified_at, cache_refresh_after, cache_source, cache_query, cache_input_signature,
-            cache_matched, cache_score, cache_error, cache_error_body,
-            enrichment_google_place_id, enrichment_google_place_resource_name, enrichment_display_name,
-            enrichment_formatted_address, enrichment_google_maps_uri, enrichment_rating,
-            enrichment_user_rating_count, enrichment_primary_type, enrichment_primary_type_display_name,
-            enrichment_primary_type_display_name_localized,
-            enrichment_types_json, enrichment_business_status, enrichment_website, enrichment_phone,
-            enrichment_plus_code, enrichment_description, enrichment_main_photo_url, enrichment_photo_url,
-            enrichment_limited_view
-        """
 
         with connection:
             connection.execute(
@@ -6284,50 +6304,12 @@ def write_places_sqlite(
             )
             connection.executemany(
                 """
-                INSERT INTO guides (
-                    slug, title, description, source_url, list_id, country_name, country_code, city_name,
-                    list_tags_json, featured_place_ids_json, best_hit_place_ids_json, best_hit_min_rating,
-                    best_hit_min_reviews, top_categories_json, generated_at, place_count, center_lat, center_lng
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                rows.guide_rows,
-            )
-            for canonical_row in rows.canonical_place_rows:
-                placeholders = ", ".join("?" for _ in canonical_row)
-                connection.execute(
-                    """
-                    INSERT INTO canonical_places ({columns})
-                    VALUES ({placeholders})
-                    """.format(columns=canonical_place_columns, placeholders=placeholders),
-                    canonical_row,
-                )
-            connection.executemany(
-                """
                 INSERT INTO guide_enrichment_cache (
                     guide_slug, place_id, fetched_at, last_verified_at, refresh_after, source,
                     query, input_signature, matched, score, error, error_body, cache_json
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 rows.guide_cache_rows,
-            )
-            connection.executemany(
-                """
-                INSERT INTO guide_places (
-                    guide_slug, sort_order, place_id, is_featured, is_best_hit, place_name,
-                    neighborhood, primary_category, primary_category_localized, rating, user_rating_count,
-                    status, top_pick, hidden, manual_rank, note, why_recommended, main_photo_path, maps_url
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                rows.guide_place_rows,
-            )
-            connection.executemany(
-                """
-                INSERT INTO place_photos (
-                    guide_slug, sort_order, place_id, source_photo_url, local_path, fetch_status,
-                    last_fetched_at, content_sha256, size_bytes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                rows.photo_rows,
             )
     finally:
         connection.close()
@@ -6341,12 +6323,22 @@ def rebuild_places_sqlite(
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> None:
+    pruned_any = False
+    for slug, raw in raw_lists.items():
+        cache_payload = enrichment_caches.get(slug)
+        if cache_payload is None:
+            continue
+        pruned_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            enrichment_caches[slug] = pruned_payload
+            pruned_any = True
+    hydrated_count = hydrate_shared_enrichment_photo_urls(enrichment_caches)
     build_signature = build_places_sqlite_signature(
         raw_lists=raw_lists,
         guides=guides,
         enrichment_caches=enrichment_caches,
     )
-    if load_places_sqlite_build_signature() == build_signature:
+    if not pruned_any and not hydrated_count and load_places_sqlite_build_signature() == build_signature:
         return
 
     rows = build_places_sqlite_rows(
@@ -6357,153 +6349,8 @@ def rebuild_places_sqlite(
     write_places_sqlite(rows, build_signature=build_signature)
 
 
-def canonical_place_score(
-    place: NormalizedPlace,
-    cache_entry: EnrichmentCacheEntry | None,
-) -> tuple[int, int, int, int]:
-    enrichment_place = cache_entry.place if cache_entry else None
-    return (
-        1 if enrichment_place is not None else 0,
-        1 if place.main_photo_path else 0,
-        place.user_rating_count or -1,
-        sum(
-            1
-            for value in (
-                place.address,
-                place.neighborhood,
-                place.note,
-                place.why_recommended,
-                enrichment_place.display_name if enrichment_place else None,
-                enrichment_place.formatted_address if enrichment_place else None,
-                enrichment_place.website if enrichment_place else None,
-                enrichment_place.phone if enrichment_place else None,
-            )
-            if value
-        ),
-    )
-
-
-def canonical_place_identity_key(
-    place: NormalizedPlace,
-    cache_entry: EnrichmentCacheEntry | None,
-) -> str | None:
-    if place.google_place_id:
-        return f"google_place_id:{place.google_place_id}"
-    if place.google_place_resource_name:
-        return f"google_place_resource_name:{place.google_place_resource_name}"
-    enrichment_place = cache_entry.place if cache_entry else None
-    return enrichment_place_identity_key(enrichment_place)
-
-
-def canonical_place_row(
-    *,
-    guide_slug: str,
-    raw_place: RawPlace | None,
-    place: NormalizedPlace,
-    cache_entry: EnrichmentCacheEntry | None,
-) -> tuple[Any, ...]:
-    enrichment_place = cache_entry.place if cache_entry and cache_entry.place else None
-    return (
-        place.id,
-        guide_slug,
-        raw_place.name if raw_place else None,
-        raw_place.address if raw_place else None,
-        raw_place.lat if raw_place else None,
-        raw_place.lng if raw_place else None,
-        raw_place.maps_url if raw_place else None,
-        raw_place.cid if raw_place else None,
-        raw_place.google_id if raw_place else None,
-        raw_place.maps_place_token if raw_place else None,
-        place.name,
-        place.address,
-        place.lat,
-        place.lng,
-        place.maps_url,
-        place.cid,
-        place.google_id,
-        place.google_place_id,
-        place.google_place_resource_name,
-        place.rating,
-        place.user_rating_count,
-        place.primary_category,
-        place.primary_category_localized,
-        sqlite_json(place.tags),
-        sqlite_json(place.vibe_tags),
-        place.neighborhood,
-        place.note,
-        place.why_recommended,
-        place.main_photo_path,
-        sqlite_bool(place.top_pick),
-        sqlite_bool(place.hidden),
-        place.manual_rank,
-        place.status,
-        cache_entry.fetched_at if cache_entry else None,
-        cache_entry.last_verified_at if cache_entry else None,
-        cache_entry.refresh_after if cache_entry else None,
-        cache_entry.source if cache_entry else None,
-        cache_entry.query if cache_entry else None,
-        cache_entry.input_signature if cache_entry else None,
-        sqlite_bool(cache_entry.matched) if cache_entry and cache_entry.matched is not None else None,
-        cache_entry.score if cache_entry else None,
-        cache_entry.error if cache_entry else None,
-        cache_entry.error_body if cache_entry else None,
-        enrichment_place.google_place_id if enrichment_place else None,
-        enrichment_place.google_place_resource_name if enrichment_place else None,
-        enrichment_place.display_name if enrichment_place else None,
-        enrichment_place.formatted_address if enrichment_place else None,
-        enrichment_place.google_maps_uri if enrichment_place else None,
-        enrichment_place.rating if enrichment_place else None,
-        enrichment_place.user_rating_count if enrichment_place else None,
-        enrichment_place.primary_type if enrichment_place else None,
-        enrichment_place.primary_type_display_name if enrichment_place else None,
-        enrichment_place.primary_type_display_name_localized if enrichment_place else None,
-        sqlite_json(enrichment_place.types if enrichment_place else []),
-        enrichment_place.business_status if enrichment_place else None,
-        enrichment_place.website if enrichment_place else None,
-        enrichment_place.phone if enrichment_place else None,
-        enrichment_place.plus_code if enrichment_place else None,
-        enrichment_place.description if enrichment_place else None,
-        enrichment_place.main_photo_url if enrichment_place else None,
-        enrichment_place.photo_url if enrichment_place else None,
-        sqlite_bool(enrichment_place.limited_view) if enrichment_place else None,
-    )
-
-
-def sqlite_json(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True)
-
-
 def sqlite_bool(value: bool) -> int:
     return 1 if value else 0
-
-
-def place_photo_metadata(
-    public_path: str | None,
-    *,
-    source_photo_url: str | None,
-    metadata_cache: dict[str, tuple[str, str | None, str | None, int | None]],
-) -> tuple[str, str | None, str | None, int | None]:
-    cache_key = public_path or f"missing:{source_photo_url or 'none'}"
-    cached = metadata_cache.get(cache_key)
-    if cached is not None:
-        return cached
-
-    absolute_path = public_asset_absolute_path(public_path)
-    if absolute_path and absolute_path.exists():
-        stat_result = absolute_path.stat()
-        metadata = (
-            "downloaded",
-            datetime.fromtimestamp(stat_result.st_mtime, tz=UTC).isoformat(),
-            sha256_file(absolute_path),
-            stat_result.st_size,
-        )
-    elif source_photo_url:
-        metadata = ("missing_file", None, None, None)
-    else:
-        metadata = ("missing_url", None, None, None)
-
-    metadata_cache[cache_key] = metadata
-    return metadata
 
 
 def public_asset_absolute_path(public_path: str | None) -> Path | None:
@@ -7197,6 +7044,7 @@ def fetch_places_enrichment(
     strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
     existing_entry: EnrichmentCacheEntry | None = None,
     suppress_description: bool = False,
+    allow_identity_mismatch: bool = False,
 ) -> EnrichmentCacheEntry:
     if strategy is None:
         strategy = google_places_enrichment_strategy()
@@ -7210,6 +7058,7 @@ def fetch_places_enrichment(
             signature_google_place_id=signature_google_place_id,
             existing_entry=existing_entry,
             suppress_description=suppress_description,
+            allow_identity_mismatch=allow_identity_mismatch,
         )
 
     if strategy == "api":
@@ -7233,6 +7082,7 @@ def fetch_places_enrichment(
         signature_google_place_id=signature_google_place_id,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
+        allow_identity_mismatch=allow_identity_mismatch,
     )
     if page_entry.error is None and page_entry.place is not None:
         if api_key is None or not should_fallback_to_places_api(page_entry):
@@ -7268,6 +7118,7 @@ def fetch_place_page_enrichment(
     signature_google_place_id: str | None = None,
     existing_entry: EnrichmentCacheEntry | None = None,
     suppress_description: bool = False,
+    allow_identity_mismatch: bool = False,
 ) -> EnrichmentCacheEntry:
     query = build_place_page_search_query(
         place,
@@ -7389,9 +7240,49 @@ def fetch_place_page_enrichment(
             should_retry = should_retry_limited_place_page_result(details, enrichment_place)
             source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
             if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
-                if should_retry:
-                    defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
-                continue
+                usable_without_address = place_page_search_result_without_address_is_usable(
+                    place,
+                    details,
+                    enrichment_place,
+                )
+                search_result_url = localize_google_maps_scrape_url(
+                    as_string(getattr(details, "search_result_url", None)) or ""
+                )
+                if search_result_url and search_result_url not in candidate_urls:
+                    if usable_without_address:
+                        deferred_matched_entry = build_cache_entry(
+                            place,
+                            source="google_maps_page",
+                            query=query,
+                            city_name=city_name,
+                            country_name=country_name,
+                            signature_google_place_id=signature_google_place_id,
+                            matched=True,
+                            score=STRONG_MATCH_SCORE,
+                            enrichment_place=enrichment_place,
+                        )
+                    candidate_urls.insert(index + 1, search_result_url)
+                    continue
+                if index + 1 < len(candidate_urls):
+                    if usable_without_address:
+                        deferred_matched_entry = build_cache_entry(
+                            place,
+                            source="google_maps_page",
+                            query=query,
+                            city_name=city_name,
+                            country_name=country_name,
+                            signature_google_place_id=signature_google_place_id,
+                            matched=True,
+                            score=STRONG_MATCH_SCORE,
+                            enrichment_place=enrichment_place,
+                        )
+                    elif should_retry:
+                        defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
+                    continue
+                if not usable_without_address:
+                    if should_retry:
+                        defer_sparse_retry_candidate(details, enrichment_place, scrape_url)
+                    continue
             matched = place_page_has_meaningful_enrichment(details, enrichment_place)
             if not matched:
                 if should_retry:
@@ -7430,6 +7321,8 @@ def fetch_place_page_enrichment(
             ):
                 deferred_matched_entry = deferred_entry
                 continue
+            if not allow_identity_mismatch:
+                suppress_uncertain_place_page_identity_fields(place, enrichment_place)
             apply_semantic_enrichment(
                 enrichment_place,
                 raw_place=place,
@@ -7456,13 +7349,20 @@ def fetch_place_page_enrichment(
                 if should_retry_limited_place_page_result(details, enrichment_place):
                     continue
                 source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
-                if source_url and "/maps/search/" in source_url and not enrichment_place.formatted_address:
+                if (
+                    source_url
+                    and "/maps/search/" in source_url
+                    and not enrichment_place.formatted_address
+                    and not place_page_search_result_without_address_is_usable(place, details, enrichment_place)
+                ):
                     continue
                 matched = place_page_has_meaningful_enrichment(details, enrichment_place)
                 if matched and not place_page_candidate_is_confident_match(place, details, enrichment_place):
                     continue
                 if not matched:
                     continue
+                if not allow_identity_mismatch:
+                    suppress_uncertain_place_page_identity_fields(place, enrichment_place)
                 apply_semantic_enrichment(
                     enrichment_place,
                     raw_place=place,
@@ -7484,6 +7384,8 @@ def fetch_place_page_enrichment(
                     enrichment_place=enrichment_place,
                 )
         if deferred_matched_entry is not None and deferred_matched_entry.place is not None:
+            if not allow_identity_mismatch:
+                suppress_uncertain_place_page_identity_fields(place, deferred_matched_entry.place)
             apply_semantic_enrichment(
                 deferred_matched_entry.place,
                 raw_place=place,
@@ -7586,15 +7488,134 @@ def should_retry_limited_place_page_result(
     return enrichment_place.user_rating_count is None
 
 
+def place_page_search_result_without_address_is_usable(
+    raw_place: RawPlace,
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    return (
+        place_page_has_meaningful_enrichment(details, enrichment_place)
+        and place_page_candidate_is_confident_match(raw_place, details, enrichment_place)
+        and place_page_search_result_without_address_has_location_evidence(raw_place, details, enrichment_place)
+    )
+
+
+def place_page_search_result_without_address_has_location_evidence(
+    raw_place: RawPlace,
+    details: Any,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    _ = enrichment_place
+    distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
+    if distance_m is None:
+        return False
+    return distance_m <= PLACE_PAGE_ADDRESSLESS_SEARCH_COORDINATE_MATCH_METERS
+
+
 def place_page_candidate_is_confident_match(
     raw_place: RawPlace,
     details: Any,
     enrichment_place: EnrichmentPlace,
 ) -> bool:
+    distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
+    if (
+        distance_m is not None
+        and distance_m > PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS
+    ):
+        return False
+
     source_url = as_string(getattr(details, "source_url", None)) or enrichment_place.google_maps_uri
     if not source_url or "/maps/search/" not in source_url:
         return True
-    return score_place_page_candidate(raw_place, details, enrichment_place) >= 25
+    score = score_place_page_candidate(raw_place, details, enrichment_place)
+    if enrichment_place.formatted_address is None:
+        raw_name = normalize_text(raw_place.name)
+        candidate_name = normalize_text(enrichment_place.display_name)
+        if (
+            raw_name
+            and candidate_name
+            and raw_name != candidate_name
+            and place_page_candidate_name_is_address_artifact(raw_place, enrichment_place.display_name)
+        ):
+            return False
+        if raw_name and candidate_name and raw_name != candidate_name:
+            return score >= 60
+    return score >= 25
+
+
+def suppress_uncertain_place_page_identity_fields(
+    raw_place: RawPlace,
+    enrichment_place: EnrichmentPlace,
+) -> list[str]:
+    if enrichment_identity_is_compatible_with_raw(raw_place, enrichment_place):
+        return []
+
+    suppressed_fields: list[str] = []
+    for field_name in (
+        "display_name",
+        "google_place_id",
+        "google_place_resource_name",
+        "website",
+        "phone",
+    ):
+        if as_string(getattr(enrichment_place, field_name)) is not None:
+            setattr(enrichment_place, field_name, None)
+            suppressed_fields.append(field_name)
+
+    if resolved_google_maps_url_is_place_page(enrichment_place.google_maps_uri):
+        enrichment_place.google_maps_uri = None
+        suppressed_fields.append("google_maps_uri")
+    if resolved_google_maps_url_is_place_page(enrichment_place.search_result_url):
+        enrichment_place.search_result_url = None
+        suppressed_fields.append("search_result_url")
+
+    return suppressed_fields
+
+
+def enrichment_identity_is_compatible_with_raw(
+    raw_place: RawPlace,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    raw_name = as_string(raw_place.name)
+    if raw_name is None:
+        return True
+
+    identity_names = [
+        as_string(enrichment_place.display_name),
+        name_from_maps_url(enrichment_place.google_maps_uri or ""),
+        name_from_maps_url(enrichment_place.search_result_url or ""),
+    ]
+    return all(
+        raw_place_names_are_compatible(raw_name, identity_name)
+        for identity_name in identity_names
+        if identity_name is not None
+    )
+
+
+def place_page_candidate_name_is_address_artifact(
+    raw_place: RawPlace,
+    candidate_name: str | None,
+) -> bool:
+    candidate = normalize_text(candidate_name)
+    if not candidate:
+        return False
+    raw_address = normalize_text(raw_place.address)
+    if raw_address and (candidate in raw_address or raw_address in candidate):
+        return True
+    return bool(candidate_name and re.search(r"\d", candidate_name) and is_street_or_block_part(candidate_name))
+
+
+def place_page_candidate_coordinate_distance_meters(
+    raw_place: RawPlace,
+    details: Any,
+) -> float | None:
+    raw_lat = raw_place.lat
+    raw_lng = raw_place.lng
+    candidate_lat = as_float(getattr(details, "lat", None))
+    candidate_lng = as_float(getattr(details, "lng", None))
+    if raw_lat is None or raw_lng is None or candidate_lat is None or candidate_lng is None:
+        return None
+    return haversine_meters(raw_lat, raw_lng, candidate_lat, candidate_lng)
 
 
 def score_place_page_candidate(
@@ -7621,12 +7642,8 @@ def score_place_page_candidate(
     if raw_address and candidate_address:
         score += token_overlap_score(raw_address, candidate_address)
 
-    raw_lat = raw_place.lat
-    raw_lng = raw_place.lng
-    candidate_lat = as_float(getattr(details, "lat", None))
-    candidate_lng = as_float(getattr(details, "lng", None))
-    if raw_lat is not None and raw_lng is not None and candidate_lat is not None and candidate_lng is not None:
-        distance_m = haversine_meters(raw_lat, raw_lng, candidate_lat, candidate_lng)
+    distance_m = place_page_candidate_coordinate_distance_meters(raw_place, details)
+    if distance_m is not None:
         if distance_m <= 100:
             score += 40
         elif distance_m <= 400:
@@ -7669,7 +7686,7 @@ def build_place_page_candidate_urls(
         localized_maps_url=localized_maps_url,
         search_url=search_url,
     ):
-        candidates = [search_url, localized_maps_url, cid_url]
+        candidates = [cid_url, search_url, localized_maps_url]
         return dedupe_urls([*priority_candidates, *[url for url in candidates if url is not None]])
 
     candidates: list[str] = []
@@ -7784,7 +7801,11 @@ PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS = (
 )
 PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS = ("gstatic.com", "googleusercontent.com")
 PLACE_PAGE_ADDRESS_ENTITY_TOKEN_RE = re.compile(r"^/(?:g|m)/[A-Za-z0-9_-]+$")
-PLACE_PAGE_URL_LIKE_RE = re.compile(r"(?:https?://|www\.)", re.IGNORECASE)
+PLACE_PAGE_URL_LIKE_RE = re.compile(
+    r"(?:https?://|www\.|/(?:search|maps|url|local)(?:[/?#]|$))",
+    re.IGNORECASE,
+)
+PLACE_PAGE_TRAVEL_PRODUCT_ADDRESS_RE = re.compile(r"\b\d+\s*[-–]\s*day\b", re.IGNORECASE)
 PLACE_PAGE_LOCALITY_ABBREVIATION_PERIOD_RE = re.compile(r"(?:\bSt\.|\b[A-Z]\.(?:[A-Z]\.)+)")
 PLACE_PAGE_REGION_CODE_RE = re.compile(r"[A-Z]{2,3}")
 PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
@@ -7818,7 +7839,7 @@ PLACE_PAGE_LOCALITY_ADDRESS_REJECT_VALUES = {
 }
 PLACE_PAGE_PROSE_TERM_RE = re.compile(
     r"\b(?:best|good|great|delicious|dropped|experience|lunch|dinner|"
-    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|session)\b",
+    r"burger|burgers|coffee|food|friendly|nugget|nuggets|owner|recommend|recommended|session)\b",
     re.IGNORECASE,
 )
 PLACE_PAGE_PLUS_CODE_RE = re.compile(
@@ -7859,6 +7880,81 @@ def sanitize_place_page_display_name(value: Any) -> str | None:
     return normalized
 
 
+PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE = re.compile(
+    r"\b(?:[Ii]|[Ii]['’](?:m|d|ve)|[Mm]y|[Mm]e|[Ww]e|[Ww]e['’](?:re|d|ve)|[Oo]ur|[Uu]s)\b",
+)
+PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
+    "arrived",
+    "attended",
+    "came",
+    "chose",
+    "cost",
+    "enjoyed",
+    "felt",
+    "found",
+    "hit",
+    "ordered",
+    "return",
+    "returned",
+    "saw",
+    "seen",
+    "spent",
+    "stopped by",
+    "think",
+    "tried",
+    "visited",
+    "went",
+)
+PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS = (
+    "highly recommended",
+    "overrated",
+    "your children",
+    "your kids",
+    "you should",
+)
+
+
+def phrase_marker_pattern(marker: str) -> str:
+    return re.escape(marker).replace(r"\ ", r"\s+")
+
+
+PLACE_PAGE_REVIEW_DESCRIPTION_MARKER_RE = re.compile(
+    "|".join(
+        rf"(?<![\w-]){phrase_marker_pattern(marker)}(?![\w-])"
+        for marker in PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS
+    ),
+    re.IGNORECASE,
+)
+PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE = re.compile(
+    "|".join(
+        rf"(?<![\w-]){phrase_marker_pattern(marker)}(?![\w-])"
+        for marker in PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS
+    ),
+    re.IGNORECASE,
+)
+
+
+def sanitize_place_page_description(value: Any) -> str | None:
+    normalized = as_string(value)
+    if normalized is None:
+        return None
+    if looks_like_place_page_review_description(normalized):
+        return None
+    if looks_like_place_page_first_person_description(normalized):
+        return None
+    return normalized
+
+
+def looks_like_place_page_review_description(value: str) -> bool:
+    return PLACE_PAGE_REVIEW_DESCRIPTION_MARKER_RE.search(value) is not None
+
+
+def looks_like_place_page_first_person_description(value: str) -> bool:
+    if PLACE_PAGE_FIRST_PERSON_DESCRIPTION_PRONOUN_RE.search(value) is None:
+        return False
+    return PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE.search(value) is not None
+
+
 def sanitize_place_page_formatted_address(value: Any) -> str | None:
     normalized = as_string(value)
     if normalized is None:
@@ -7870,6 +7966,8 @@ def sanitize_place_page_formatted_address(value: Any) -> str | None:
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_SUBSTRINGS):
         return None
     if any(fragment in lowered for fragment in PLACE_PAGE_ADDRESS_REJECT_HOST_FRAGMENTS):
+        return None
+    if PLACE_PAGE_TRAVEL_PRODUCT_ADDRESS_RE.search(normalized) is not None:
         return None
     if looks_like_place_page_review_snippet(normalized):
         return None
@@ -8161,13 +8259,16 @@ def normalize_place_page_enrichment(details: Any) -> EnrichmentPlace:
     ):
         formatted_address = sanitize_place_page_formatted_address(plus_code)
     description = as_string(getattr(details, "description", None))
-    search_result_description = as_string(getattr(details, "search_result_description", None))
+    search_result_description = sanitize_place_page_description(
+        getattr(details, "search_result_description", None)
+    )
     search_result_url = as_string(getattr(details, "search_result_url", None))
     if formatted_address is None:
         description_address = sanitize_place_page_formatted_address(description)
         if description_address is not None:
             formatted_address = description_address
             description = None
+    description = sanitize_place_page_description(description)
     main_photo_url = sanitize_place_photo_url(getattr(details, "main_photo_url", None))
     photo_url = sanitize_place_photo_url(getattr(details, "photo_url", None))
     if from_search_url and not resolved_google_maps_url_is_place_page(resolved_url):
@@ -8248,7 +8349,45 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
     return items
 
 
-SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v3"
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v9"
+SEMANTIC_ENRICHMENT_SYSTEM_PROMPT = """
+You classify saved places for a travel guide. Return only compact JSON.
+
+Neighborhood:
+- Infer the guide-facing neighborhood only from address/geography evidence.
+- Prefer common local area names over the smallest administrative unit.
+- Return a human-facing display label, not a tag or slug.
+- Use normal local display casing such as Perth CBD, Northbridge, or Margaret River.
+- Preserve acronyms like CBD.
+- Never return kebab-case, snake_case, all-lowercase labels, or labels with stray spaces inside words.
+- For English-language guides, return the common English-facing neighborhood label when one exists.
+- Use established English names rather than mechanically preserving local-language administrative labels.
+- For Taiwan, village/li labels such as Kangle Village or Tonghua Village are usually too granular; prefer the district such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local area as the neighborhood.
+- Do not infer Ximen, Neihu, Longshan, or similar local areas from map knowledge alone; if the address only says Wanhua District or a street/night-market name, return Wanhua.
+
+Tags:
+- Generate broad, reusable kebab-case tags, vibe_tags, and types when requested.
+- Prefer 3-6 tags and 2-4 vibe_tags.
+
+Description:
+- Generate one concise, polished English place description when requested.
+- Prefer a description under 180 characters.
+- Use natural grammar and canonical capitalization for dish names, place types, and proper nouns when possible.
+- Return null rather than generic card-metadata prose.
+- Do not write descriptions whose only facts are the place name, category/type, address, city, or neighborhood, such as "X is a Y in Z."
+- A description must add a distinctive, guide-useful fact grounded in the official description, raw_note, review topics, review-signal patterns, about sections, or concrete page evidence; otherwise return null.
+- Treat google_maps_description and raw_note as the strongest description inputs, with raw_note as first-party saved-list context.
+- Treat search_result_description as lower-priority supporting context.
+- You may synthesize aggregate review-topic, review-signal, and about-section evidence into concise factual phrases such as popular dishes, format, setting, service style, or use case.
+- Do not quote individual reviews.
+- Do not mention reviewers, reviews, review counts, or source language such as "reviews say" or "customers praise."
+- Use direct factual wording instead of review/source phrasing: write "with warm service" rather than "praised for warm service."
+- Avoid hype and ranking claims such as "one of the best," "one of the most," "most photographed," "top-rated," "widely hailed," or "regarded as."
+- Do not preserve individual complaints.
+- Do not include one-off caveats or reviewer-style warnings such as "just expect..." or "separate charge."
+- Do not repeat raw UI labels, badges, or attributes like Accessibility, Service options, wheelchair-accessible, or LGBTQ+-friendly unless they are central to the place identity.
+- Do not copy raw_note verbatim; rewrite it as neutral, well-edited guide copy.
+""".strip()
 
 
 def apply_semantic_enrichment(
@@ -8302,6 +8441,21 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_description_signature = None
         if not semantic_enrichment_state_is_populated(semantic_enrichment_state(enrichment_place)):
             enrichment_place.semantic_source = None
+    if include_description and enrichment_place.semantic_description:
+        accepted_description = usable_semantic_description(
+            enrichment_place.semantic_description,
+            enrichment_place=enrichment_place,
+            raw_place=raw_place,
+            city_name=city_name,
+            country_name=country_name,
+        )
+        if accepted_description is None:
+            enrichment_place.semantic_description = None
+            enrichment_place.semantic_description_signature = None
+            if not semantic_enrichment_state_is_populated(semantic_enrichment_state(enrichment_place)):
+                enrichment_place.semantic_source = None
+        elif accepted_description != enrichment_place.semantic_description:
+            enrichment_place.semantic_description = accepted_description
     if (
         include_description
         and not force_description
@@ -8309,10 +8463,18 @@ def apply_semantic_enrichment(
         and previous_place.semantic_description
         and previous_place.semantic_description_signature == description_signature
     ):
-        enrichment_place.semantic_description = previous_place.semantic_description
-        enrichment_place.semantic_description_signature = previous_place.semantic_description_signature
-        enrichment_place.semantic_source = previous_place.semantic_source or "llm"
-        description_reused = True
+        previous_description = usable_semantic_description(
+            previous_place.semantic_description,
+            enrichment_place=enrichment_place,
+            raw_place=raw_place,
+            city_name=city_name,
+            country_name=country_name,
+        )
+        if previous_description is not None:
+            enrichment_place.semantic_description = previous_description
+            enrichment_place.semantic_description_signature = previous_place.semantic_description_signature
+            enrichment_place.semantic_source = previous_place.semantic_source or "llm"
+            description_reused = True
     if description_reused and not include_semantics:
         return
     repair = repair_semantic_enrichment_with_llm(
@@ -8338,9 +8500,17 @@ def apply_semantic_enrichment(
         enrichment_place.semantic_tags = normalize_semantic_tag_list(repair.get("tags"), limit=8)
         enrichment_place.semantic_vibe_tags = normalize_semantic_tag_list(repair.get("vibe_tags"), limit=8)
         enrichment_place.semantic_types = normalize_semantic_tag_list(repair.get("types"), limit=8)
+    description_source: str | None = None
     if include_description and not description_reused:
-        description = sanitize_semantic_description(repair.get("description"))
+        description = usable_semantic_description(
+            repair.get("description"),
+            enrichment_place=enrichment_place,
+            raw_place=raw_place,
+            city_name=city_name,
+            country_name=country_name,
+        )
         if description is not None:
+            description_source = "llm"
             enrichment_place.semantic_description = description
             enrichment_place.semantic_description_signature = description_signature
     if any(
@@ -8352,7 +8522,172 @@ def apply_semantic_enrichment(
             enrichment_place.semantic_description,
         )
     ):
-        enrichment_place.semantic_source = "llm"
+        if (
+            description_source == "fallback"
+            and not enrichment_place.semantic_neighborhood
+            and not enrichment_place.semantic_tags
+            and not enrichment_place.semantic_vibe_tags
+            and not enrichment_place.semantic_types
+        ):
+            enrichment_place.semantic_source = "fallback"
+        else:
+            enrichment_place.semantic_source = "llm"
+
+
+def fallback_semantic_description(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+) -> str | None:
+    name = semantic_place_name(enrichment_place, raw_place=raw_place)
+    if name is None:
+        return None
+    category = as_string(enrichment_place.primary_type_display_name)
+    location = fallback_semantic_description_location(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+    )
+    if normalize_text(location) == normalize_text(name):
+        location = as_string(city_name)
+    if category and location:
+        description = f"{name} is {indefinite_article(category)} {category.lower()} in {location}."
+    elif category:
+        description = f"{name} is {indefinite_article(category)} {category.lower()}."
+    elif location:
+        description = f"{name} is a saved place in {location}."
+    else:
+        return None
+    return sanitize_semantic_description(description)
+
+
+SEMANTIC_NAME_SEO_MARKER_RE = re.compile(
+    r"(?:\b(?:ig|ptt|dcard)\b|景點|好評|打卡|推薦|評價|必去|必吃|人氣|網美)",
+    re.IGNORECASE,
+)
+SEMANTIC_NAME_SEO_SPLIT_RE = re.compile(r"\s*[-－–—|｜:：]\s*")
+
+
+def semantic_place_name(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+) -> str | None:
+    return sanitize_semantic_place_name(enrichment_place.display_name) or sanitize_semantic_place_name(raw_place.name)
+
+
+def sanitize_semantic_place_name(value: Any) -> str | None:
+    name = as_string(value)
+    if name is None:
+        return None
+    name = re.sub(r"\s+", " ", name).strip()
+    if not name:
+        return None
+    parts = SEMANTIC_NAME_SEO_SPLIT_RE.split(name, maxsplit=1)
+    if (
+        len(parts) == 2
+        and 1 < len(parts[0]) <= 40
+        and SEMANTIC_NAME_SEO_MARKER_RE.search(parts[1])
+    ):
+        return parts[0].strip() or name
+    return name
+
+
+def fallback_semantic_description_location(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+) -> str | None:
+    for locality in infer_plus_code_localities(enrichment_place.plus_code, city_name=city_name):
+        locality_key = normalize_locality_key(locality)
+        if (
+            locality_key
+            and locality_key != normalize_locality_key(city_name)
+            and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
+        ):
+            return locality
+    address = enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
+    for locality in infer_address_localities(address, city_name=city_name):
+        locality_key = normalize_locality_key(locality)
+        if (
+            locality_key
+            and locality_key != normalize_locality_key(city_name)
+            and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
+        ):
+            return locality
+    for locality in infer_address_region_localities(address, city_name=city_name):
+        locality_key = normalize_locality_key(locality)
+        if (
+            locality_key
+            and locality_key != normalize_locality_key(city_name)
+            and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
+        ):
+            return locality
+    return as_string(city_name)
+
+
+def infer_address_region_localities(address: str | None, *, city_name: str | None = None) -> list[str]:
+    if address is None:
+        return []
+    city_key = normalize_locality_key(city_name)
+    localities: list[str] = []
+    for raw_part in re.split(r"[,、]", address):
+        candidate = normalize_address_locality_part(
+            raw_part,
+            allow_explicit_subnational_label=True,
+        )
+        if candidate is None:
+            continue
+        key = normalize_locality_key(candidate)
+        if not key or key == city_key:
+            continue
+        if is_explicit_subnational_locality_label(candidate):
+            append_unique_locality(localities, candidate)
+    return localities
+
+
+def infer_plus_code_localities(plus_code: str | None, *, city_name: str | None) -> list[str]:
+    normalized = as_string(plus_code)
+    if normalized is None:
+        return []
+    match = re.match(r"^[A-Z0-9]{4,}\+[A-Z0-9]{2,}\s+(.+)$", normalized.strip(), flags=re.IGNORECASE)
+    if match is None:
+        return []
+    first_part = match.group(1).split(",", 1)[0]
+    locality = normalize_address_locality_part(first_part)
+    return [locality] if locality else []
+
+
+def fallback_semantic_description_locality_is_usable(
+    locality: str,
+    *,
+    city_name: str | None,
+) -> bool:
+    normalized = " ".join(locality.split())
+    if not normalized:
+        return False
+    if re.search(r"^\+?\s*photos?\b", normalized, flags=re.IGNORECASE):
+        return False
+    if re.search(r"\b(?:centrico|habitaciones?|bedrooms?|ascensor|wifi|air\s*conditioning|\bac\b)\b", normalized, flags=re.IGNORECASE):
+        return False
+    if normalize_locality_key(normalized) == "plattl":
+        return False
+    if re.search(r"\b(?:broadway|bhf|bahnhof|ufer)\b", normalized, flags=re.IGNORECASE):
+        return False
+    if " - " in normalized and city_name and normalize_locality_key(city_name) in normalize_locality_key(normalized):
+        return False
+    return True
+
+
+def indefinite_article(value: str) -> str:
+    normalized = value.strip().lower()
+    if normalized.startswith(("eu", "uni", "use", "one")):
+        return "a"
+    if normalized.startswith(("honest", "hour", "heir")):
+        return "an"
+    return "an" if normalized[:1] in {"a", "e", "i", "o", "u"} else "a"
 
 
 def repair_semantic_enrichment_with_llm(
@@ -8398,31 +8733,7 @@ def repair_semantic_enrichment_with_llm(
         "messages": [
             {
                 "role": "system",
-                "content": (
-                    "You classify saved places for a travel guide. Return only compact JSON. "
-                    "Infer the guide-facing neighborhood only from address/geography evidence. Prefer common "
-                    "local area names over the smallest administrative unit. The neighborhood must be a "
-                    "human-facing display label, not a tag or slug: use normal local display casing such as "
-                    "Perth CBD, Northbridge, or Margaret River; preserve acronyms like CBD; never return "
-                    "kebab-case, snake_case, all-lowercase labels, or labels with stray spaces inside words. "
-                    "For English-language guides, return the common English-facing neighborhood label when "
-                    "one exists; use established English names rather than mechanically preserving local-language "
-                    "administrative labels. "
-                    "For Taiwan, village/li labels "
-                    "such as Kangle Village or Tonghua Village are usually too granular; prefer the district "
-                    "such as Zhongshan or Da'an unless the evidence explicitly names a more recognizable local "
-                    "area as the neighborhood. Do not infer Ximen, Neihu, Longshan, or similar local areas from "
-                    "map knowledge alone; if the address only says Wanhua District or a street/night-market name, "
-                    "return Wanhua. "
-                    "Generate broad, reusable kebab-case tags, vibe_tags, and types when requested. "
-                    "Generate one concise, non-hype place description when requested. Treat "
-                    "google_maps_description and raw_note as the strongest description inputs, with raw_note "
-                    "as first-party saved-list context. Treat search_result_description as lower-priority "
-                    "supporting context, then use other evidence only to fill gaps. Do not copy raw_note "
-                    "verbatim. Do not quote or summarize review text. Do not expose About or review details. "
-                    "Prefer 3-6 tags, 2-4 vibe_tags, "
-                    "and a description under 180 characters."
-                ),
+                "content": SEMANTIC_ENRICHMENT_SYSTEM_PROMPT,
             },
             {
                 "role": "user",
@@ -8534,7 +8845,7 @@ def semantic_enrichment_evidence(
         "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
         "city": city_name,
         "country": country_name,
-        "name": enrichment_place.display_name or raw_place.name,
+        "name": semantic_place_name(enrichment_place, raw_place=raw_place),
         "address": enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address,
         "raw_address": enrichment_place.formatted_address or raw_place.address,
         "category": enrichment_place.primary_type_display_name,
@@ -8567,7 +8878,7 @@ def semantic_description_signature(
         "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
         "city": city_name,
         "country": country_name,
-        "name": semantic_signature_text(enrichment_place.display_name or raw_place.name),
+        "name": semantic_signature_text(semantic_place_name(enrichment_place, raw_place=raw_place)),
         "address": semantic_signature_text(
             enrichment_place.address_display_en or enrichment_place.formatted_address or raw_place.address
         ),
@@ -8693,8 +9004,29 @@ def normalize_semantic_neighborhood_label(
     label = sanitize_semantic_label(value, max_length=64)
     if label is None:
         return None
+    if semantic_neighborhood_label_has_site_mapping_source(
+        label,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        label = re.sub(r"\s+", " ", label.strip()).strip(" -−ー－/()[]{}.")
+    else:
+        label = normalize_semantic_neighborhood_part(label)
+    if label is None:
+        return None
     country_key = normalize_locality_key(country_name)
     city_key = normalize_locality_key(city_name)
+    label_key = normalize_locality_key(label)
+    label_equivalence_key = normalize_locality_equivalence_key(label)
+    city_equivalence_keys = normalize_locality_scope_equivalence_keys(city_name)
+    country_equivalence_key = normalize_locality_equivalence_key(country_name)
+    if (
+        label_key == country_key
+        or label_key == city_key
+        or label_equivalence_key in city_equivalence_keys
+        or (country_equivalence_key and label_equivalence_key == country_equivalence_key)
+    ):
+        return None
     if country_key == "taiwan" or city_key in {"taipei", "taipei city"}:
         shortened = re.sub(r"\s+District$", "", label, flags=re.IGNORECASE).strip()
         if shortened:
@@ -8707,6 +9039,61 @@ def normalize_semantic_neighborhood_label(
     if alias:
         return alias
     return label
+
+
+def normalize_semantic_neighborhood_part(label: str) -> str | None:
+    normalized = normalize_address_locality_part(label, strip_leading_preposition=False)
+    if normalized is not None:
+        return normalized
+
+    candidate = re.sub(r"\s+", " ", label.strip()).strip(" -−ー－/()[]{}.")
+    if not candidate:
+        return None
+    if is_country_locality(candidate):
+        return None
+    if is_subnational_locality(candidate) or is_subnational_locality_abbreviation(candidate):
+        return None
+    if is_explicit_subnational_locality_label(candidate):
+        return None
+    if is_building_or_unit_part(candidate):
+        return None
+    if re.search(r"\d{3,}", candidate):
+        return None
+    if semantic_neighborhood_has_non_saint_street_marker(candidate):
+        return None
+    return candidate
+
+
+def semantic_neighborhood_label_has_site_mapping_source(
+    label: str,
+    *,
+    city_name: str | None,
+    country_name: str | None,
+) -> bool:
+    for rule in google_maps_place_neighborhood_mappings():
+        if not site_mapping_context_matches(rule.get("city"), city_name):
+            continue
+        if not site_mapping_context_matches(rule.get("country"), country_name):
+            continue
+        if site_mapping_values_match(rule.get("from"), [label]):
+            return True
+    return False
+
+
+def semantic_neighborhood_has_non_saint_street_marker(candidate: str) -> bool:
+    return bool(
+        re.search(
+            (
+                r"\b(?:chome|丁目|str|street|rd|road|rte|route|ct|court|ln|lane|ave|avenue|dr|drive|blvd|boulevard|"
+                r"prom|promenade|rue|via|carrer|calle|avinguda|avenida|av|rambla|ronda|rda|passeig|paseo|pg|bd|quai|piazza|"
+                r"placa|plaça|pl|bajada|jet[eé]e|"
+                r"passatge|travessera|moll|jalan|soi|gil|ro|daero)\b"
+                r"|^(?:c/|c\.|v\.|pg\.|av\.|bd\.|rda\.|pl\.|p\.za|p\.\s*º)\s"
+            ),
+            candidate,
+            flags=re.IGNORECASE,
+        )
+    )
 
 
 def semantic_neighborhood_comparison_key(value: str | None) -> str:
@@ -9192,14 +9579,264 @@ def normalize_exchange_rate_payload(payload: dict[Any, Any]) -> dict[str, float]
     return rates
 
 
+SEMANTIC_DESCRIPTION_MAX_CHARS = 320
+
+
 def sanitize_semantic_description(value: Any) -> str | None:
     description = as_string(value)
     if description is None:
         return None
     description = re.sub(r"\s+", " ", description).strip()
-    if not description or len(description) > 240:
+    if not description or len(description) > SEMANTIC_DESCRIPTION_MAX_CHARS:
+        return None
+    if looks_like_semantic_description_review_source_leak(description):
         return None
     return description
+
+
+SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
+    r"\b(?:"
+    r"(?:mixed\s+)?reviews?\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
+    r"(?:reviewers?|customers?|users?|people)\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
+    r"(?:highly\s+)?(?:praised|lauded|commended|celebrated|famed)\s+(?:for|as|\w+)|"
+    r"(?:widely\s+)?(?:hailed|regarded|considered)\s+as|"
+    r"one\s+of\s+(?:the\s+)?(?:(?:world'?s|italy'?s|city'?s|region'?s|area'?s)\s+)?(?:most|best|finest|top)|"
+    r"(?:most\s+photographed|top[-\s]?rated|number\s+one|\#1)|"
+    r"(?:just\s+expect|separate\s+charge|though\s+[^.?!]{0,80}\b(?:minimal|limited|expensive|pricey|crowded|slow|rude|disappointing))|"
+    r"(?:wheelchair[-\s]?accessible|lgbtq\+?[-\s]?friendly)|"
+    r"according\s+to\s+(?:reviews?|reviewers?|customers?|users?)"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def looks_like_semantic_description_review_source_leak(value: str) -> bool:
+    return SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE.search(value) is not None
+
+
+def usable_semantic_description(
+    value: Any,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    description = sanitize_semantic_description(value)
+    if description is None:
+        return None
+    if semantic_description_has_conflicting_location(
+        description,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        return None
+    if semantic_description_is_low_information(
+        description,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        return None
+    return description
+
+
+LOW_INFORMATION_SEMANTIC_DESCRIPTION_TEMPLATE_RE = re.compile(
+    r"^.{1,120}\s+is\s+(?:an?|the)\s+.{1,120}(?:\s+(?:in|near|around|at)\s+.{1,120})?\.$",
+    re.IGNORECASE,
+)
+LOW_INFORMATION_SEMANTIC_DESCRIPTION_LOCATED_TEMPLATE_RE = re.compile(
+    r"^(?:located|set|based)\s+(?:in|near|around|at)\s+.{1,120},\s+.{1,120}\s+is\s+(?:an?|the)\s+.{1,120}\.$",
+    re.IGNORECASE,
+)
+SEMANTIC_DESCRIPTION_RICH_CONTEXT_RE = re.compile(
+    r"\b(?:known for|famous for|specializing in|focused on|serving|serves|features|featuring|offers|offering|"
+    r"with|housed in|set in|built|dating|founded|opened|showcasing|highlighting)\b",
+    re.IGNORECASE,
+)
+SEMANTIC_DESCRIPTION_TOKEN_RE = re.compile(r"[\w]+(?:[-'][\w]+)*", re.UNICODE)
+SEMANTIC_DESCRIPTION_CONTEXT_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "around",
+    "as",
+    "at",
+    "based",
+    "by",
+    "for",
+    "from",
+    "in",
+    "into",
+    "is",
+    "it",
+    "its",
+    "near",
+    "of",
+    "on",
+    "or",
+    "place",
+    "saved",
+    "set",
+    "the",
+    "this",
+    "to",
+    "with",
+}
+
+
+def semantic_description_is_low_information(
+    description: str,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> bool:
+    if (
+        LOW_INFORMATION_SEMANTIC_DESCRIPTION_TEMPLATE_RE.match(description)
+        or LOW_INFORMATION_SEMANTIC_DESCRIPTION_LOCATED_TEMPLATE_RE.match(description)
+    ) and not SEMANTIC_DESCRIPTION_RICH_CONTEXT_RE.search(description):
+        return True
+
+    description_tokens = semantic_description_meaningful_tokens(description)
+    if not description_tokens:
+        return True
+    context_tokens = semantic_description_card_context_tokens(
+        enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    )
+    if description_tokens and description_tokens <= context_tokens:
+        return True
+
+    distinctive_tokens = description_tokens - context_tokens
+    if len(distinctive_tokens) <= 1 and not SEMANTIC_DESCRIPTION_RICH_CONTEXT_RE.search(description):
+        return True
+    return False
+
+
+def semantic_description_card_context_tokens(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> set[str]:
+    values: list[Any] = [
+        semantic_place_name(enrichment_place, raw_place=raw_place),
+        enrichment_place.display_name,
+        raw_place.name,
+        enrichment_place.primary_type,
+        enrichment_place.primary_type_display_name,
+        enrichment_place.primary_type_display_name_localized,
+        enrichment_place.category_display_en,
+        enrichment_place.formatted_address,
+        enrichment_place.address_display_en,
+        raw_place.address,
+        enrichment_place.plus_code,
+        city_name,
+        country_name,
+        *enrichment_place.types,
+    ]
+    tokens: set[str] = set()
+    for value in values:
+        tokens.update(semantic_description_meaningful_tokens(value))
+    return tokens
+
+
+def semantic_description_meaningful_tokens(value: Any) -> set[str]:
+    text = as_string(value)
+    if text is None:
+        return set()
+    normalized = unicodedata.normalize("NFKC", text).casefold().replace("_", " ").replace("-", " ")
+    tokens = {
+        token.strip("'")
+        for token in SEMANTIC_DESCRIPTION_TOKEN_RE.findall(normalized)
+        if len(token.strip("'")) >= 2 and not token.strip("'").isdigit()
+    }
+    return {token for token in tokens if token not in SEMANTIC_DESCRIPTION_CONTEXT_STOPWORDS}
+
+
+SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS: tuple[str, ...] = (
+    "nishi-shinjuku",
+    "shinjuku",
+    "shibuya",
+    "ginza",
+    "roppongi",
+    "tokyo",
+    "osaka",
+    "kyoto",
+    "sapporo",
+    "seoul",
+    "taipei",
+    "bangkok",
+    "singapore",
+    "paris",
+    "london",
+    "new york",
+    "los angeles",
+    "san francisco",
+    "shanghai",
+    "beijing",
+    "tianjin",
+    "beijing-tianjin-hebei",
+    "hong kong",
+)
+SEMANTIC_DESCRIPTION_LOCATION_NAME_SUFFIX_RE = re.compile(
+    r"^\s+(?:cafe|café|restaurant|bar|hotel|museum|market|gallery|theatre|theater|station|park|square)\b",
+    re.IGNORECASE,
+)
+SEMANTIC_DESCRIPTION_LOCATION_STYLE_SUFFIX_RE = re.compile(
+    r"^-(?:style|inspired|brest)\b",
+    re.IGNORECASE,
+)
+
+
+def semantic_description_has_conflicting_location(
+    description: str,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> bool:
+    description_key = normalize_locality_key(description)
+    if not description_key:
+        return False
+    allowed_location_key = normalize_locality_key(
+        " ".join(
+            candidate
+            for candidate in (
+                city_name,
+                country_name,
+                enrichment_place.formatted_address,
+                enrichment_place.address_display_en,
+                enrichment_place.plus_code,
+                raw_place.address,
+            )
+            if candidate
+        )
+    )
+    for term in SEMANTIC_DESCRIPTION_CONFLICT_LOCATION_TERMS:
+        term_key = normalize_locality_key(term)
+        if not term_key or term_key in allowed_location_key:
+            continue
+        term_pattern = re.escape(term_key).replace(r"\-", r"[- ]")
+        match = re.search(
+            rf"\b(?:in|near|around|at|from|serving)\s+(?:the\s+)?{term_pattern}(?:\s+s)?\b",
+            description_key,
+        )
+        if match and not SEMANTIC_DESCRIPTION_LOCATION_NAME_SUFFIX_RE.match(description_key[match.end() :]):
+            suffix = description_key[match.end() :]
+            if not SEMANTIC_DESCRIPTION_LOCATION_STYLE_SUFFIX_RE.match(suffix):
+                return True
+    return False
 
 
 def normalize_semantic_tag_list(value: Any, *, limit: int) -> list[str]:
@@ -9662,12 +10299,15 @@ def normalize_enrichment_match(candidate: dict[str, Any]) -> EnrichmentPlace:
         display_name_text(candidate.get("primaryTypeDisplayName"))
     )
     primary_type = as_string(candidate.get("primaryType"))
+    raw_localized_display_name = (
+        None if normalize_type_lookup_text(primary_type) == "item" else raw_primary_type_display_name
+    )
     primary_type_display_name = canonical_primary_category_label(
         primary_type=primary_type,
         display_name=raw_primary_type_display_name,
     )
     primary_type_display_name_localized = localized_primary_category_label(
-        raw_display_name=raw_primary_type_display_name,
+        raw_display_name=raw_localized_display_name,
         canonical_display_name=primary_type_display_name,
     )
     primary_type, types = normalized_enrichment_type_ids(
