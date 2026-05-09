@@ -4,12 +4,15 @@ import json
 import sys
 import tempfile
 import unittest
+import urllib.error
+from io import BytesIO
 from pathlib import Path
 from types import ModuleType
 from unittest.mock import patch
 
 from gmaps_scraper import llm as llm_module
 from gmaps_scraper.llm import (
+    LLMRepairError,
     cached_place_repairer,
     openai_compatible_place_repair,
     openai_compatible_place_repairer_from_env,
@@ -428,6 +431,66 @@ class LLMConfigTests(unittest.TestCase):
             fake_client.observation.updates[-1]["metadata"],
             {**fake_client.started["metadata"], "status": "success"},
         )
+
+    def test_openai_compatible_place_repair_redacts_http_error_body(self) -> None:
+        class FakeObservation:
+            def __init__(self) -> None:
+                self.updates: list[dict[str, object]] = []
+
+            def update(self, **kwargs: object) -> None:
+                self.updates.append(kwargs)
+
+        class FakeManager:
+            def __init__(self, observation: FakeObservation) -> None:
+                self.observation = observation
+                self.closed = False
+
+            def __enter__(self) -> FakeObservation:
+                return self.observation
+
+            def __exit__(self, exc_type: object, exc: object, tb: object) -> bool:
+                self.closed = True
+                return False
+
+        class FakeClient:
+            def __init__(self) -> None:
+                self.observation = FakeObservation()
+                self.manager = FakeManager(self.observation)
+
+            def start_as_current_observation(self, **kwargs: object) -> FakeManager:
+                del kwargs
+                return self.manager
+
+        fake_client = FakeClient()
+
+        def fake_urlopen(http_request: object, timeout: float) -> object:
+            del timeout
+            raise urllib.error.HTTPError(
+                url=http_request.full_url,
+                code=400,
+                msg="Bad Request",
+                hdrs={},
+                fp=BytesIO(b"request payload leaked by provider"),
+            )
+
+        with (
+            patch("urllib.request.urlopen", side_effect=fake_urlopen),
+            patch.object(llm_module, "_configured_langfuse_client", return_value=fake_client),
+            self.assertRaises(LLMRepairError),
+        ):
+            openai_compatible_place_repair(
+                _build_request(),
+                api_key="test-openai-key",
+                base_url="https://api.openai.com/v1",
+                model="gpt-5-mini",
+            )
+
+        self.assertTrue(fake_client.manager.closed)
+        metadata = fake_client.observation.updates[-1]["metadata"]
+        self.assertIsInstance(metadata, dict)
+        self.assertEqual(metadata["status"], "http_error")
+        self.assertEqual(metadata["status_code"], 400)
+        self.assertNotIn("error", metadata)
 
     def test_langfuse_client_uses_base_url_from_env(self) -> None:
         with (

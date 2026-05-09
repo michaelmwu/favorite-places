@@ -503,14 +503,16 @@ def openai_compatible_place_repair(
                 response_payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
+            metadata: dict[str, object] = {
+                **langfuse_metadata,
+                "status": "http_error",
+                "status_code": exc.code,
+            }
+            if full_langfuse_capture:
+                metadata["error"] = body
             _update_langfuse_generation(
                 generation,
-                metadata={
-                    **langfuse_metadata,
-                    "status": "http_error",
-                    "status_code": exc.code,
-                    "error": body,
-                },
+                metadata=metadata,
             )
             raise LLMRepairError(f"LLM repair HTTP {exc.code}: {body}") from exc
         except (OSError, json.JSONDecodeError) as exc:

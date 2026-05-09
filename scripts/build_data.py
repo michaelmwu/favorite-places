@@ -125,6 +125,8 @@ DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
 class _NoopLangfuseObservation:
     def update(self, **_: Any) -> None:
         return None
+
+
 SCRAPER_SESSION_SLOT_COUNT = 8
 SCRAPER_SESSION_LOCK_WRITE_GRACE = timedelta(seconds=5)
 SCRAPER_SESSION_MAX_AGE = timedelta(days=14)
