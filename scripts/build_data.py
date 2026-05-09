@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import csv
 import hashlib
 import importlib.util
@@ -12,6 +13,7 @@ import random
 import re
 import shutil
 import sqlite3
+import sys
 import time
 import unicodedata
 import uuid
@@ -23,6 +25,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from statistics import median
+from threading import Lock
 from typing import Any, Literal
 from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError, URLError
@@ -118,6 +121,13 @@ AUTO_REFRESH_WORKER_CAP = 4
 DEFAULT_REFRESH_RETRIES = 2
 DEFAULT_REFRESH_RETRY_BACKOFF_SECONDS = 10.0
 DEFAULT_REFRESH_STARTUP_JITTER_SECONDS = 8.0
+
+
+class _NoopLangfuseObservation:
+    def update(self, **_: Any) -> None:
+        return None
+
+
 SCRAPER_SESSION_SLOT_COUNT = 8
 SCRAPER_SESSION_LOCK_WRITE_GRACE = timedelta(seconds=5)
 SCRAPER_SESSION_MAX_AGE = timedelta(days=14)
@@ -8433,32 +8443,81 @@ def repair_semantic_enrichment_with_llm(
         ],
         "response_format": {"type": "json_object"},
     }
+    langfuse_metadata = {
+        "base_url": config["base_url"],
+        "cache_namespace": config["namespace"],
+        "evidence_hash": evidence_hash,
+        "prompt_version": SEMANTIC_LLM_PROMPT_VERSION,
+        "include_semantics": include_semantics,
+        "include_description": include_description,
+    }
+    manager, generation = open_langfuse_generation(
+        name="favorite-places.semantic-enrichment",
+        model=config["model"],
+        input_payload=payload,
+        metadata=langfuse_metadata,
+    )
+    exc_info: tuple[Any, Any, Any] = (None, None, None)
     try:
-        request = Request(
-            f"{config['base_url'].rstrip('/')}/chat/completions",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {config['api_key']}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        with urlopen(request, timeout=45) as response:
-            response_payload = json.loads(response.read().decode("utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
+        try:
+            request = Request(
+                f"{config['base_url'].rstrip('/')}/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={
+                    "Authorization": f"Bearer {config['api_key']}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            with urlopen(request, timeout=45) as response:
+                response_payload = json.loads(response.read().decode("utf-8"))
+        except (OSError, json.JSONDecodeError):
+            exc_info = sys.exc_info()
+            update_langfuse_generation(
+                generation,
+                metadata={**langfuse_metadata, "status": "error", "error": str(exc_info[1])},
+            )
+            return None
 
-    content = extract_chat_message_content(response_payload)
-    if content is None:
-        return None
-    try:
-        decoded = json.loads(content)
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(decoded, dict):
-        return None
-    write_semantic_llm_cache(cache_path, decoded)
-    return decoded
+        content = extract_chat_message_content(response_payload)
+        if content is None:
+            update_langfuse_generation(
+                generation,
+                metadata={**langfuse_metadata, "status": "missing_content"},
+            )
+            return None
+        try:
+            decoded = json.loads(content)
+        except json.JSONDecodeError:
+            exc_info = sys.exc_info()
+            update_langfuse_generation(
+                generation,
+                output=content,
+                metadata={**langfuse_metadata, "status": "invalid_json"},
+                usage_details=openai_usage_details(response_payload),
+            )
+            return None
+        if not isinstance(decoded, dict):
+            update_langfuse_generation(
+                generation,
+                output=decoded,
+                metadata={**langfuse_metadata, "status": "invalid_schema"},
+                usage_details=openai_usage_details(response_payload),
+            )
+            return None
+        update_langfuse_generation(
+            generation,
+            output=decoded,
+            metadata={**langfuse_metadata, "status": "success"},
+            usage_details=openai_usage_details(response_payload),
+        )
+        write_semantic_llm_cache(cache_path, decoded)
+        return decoded
+    finally:
+        current_exc_info = sys.exc_info()
+        if exc_info[0] is None and current_exc_info[0] is not None:
+            exc_info = current_exc_info
+        close_langfuse_generation(manager, exc_info)
 
 
 def semantic_enrichment_evidence(
@@ -9198,6 +9257,147 @@ def load_dotenv_values(path: Path) -> dict[str, str]:
         key, raw_value = stripped.split("=", 1)
         values[key.strip()] = raw_value.strip().strip("\"'")
     return values
+
+
+LANGFUSE_CLIENT_CACHE: dict[tuple[str, str, str | None], Any] = {}
+LANGFUSE_FLUSH_CLIENT_IDS: set[int] = set()
+LANGFUSE_CLIENT_CACHE_LOCK = Lock()
+
+
+def configured_langfuse_client() -> Any | None:
+    env = load_dotenv_values(ROOT / ".env")
+    public_key = os.environ.get("LANGFUSE_PUBLIC_KEY") or env.get("LANGFUSE_PUBLIC_KEY")
+    secret_key = os.environ.get("LANGFUSE_SECRET_KEY") or env.get("LANGFUSE_SECRET_KEY")
+    base_url = normalize_langfuse_base_url(
+        os.environ.get("LANGFUSE_BASE_URL")
+        or os.environ.get("LANGFUSE_HOST")
+        or env.get("LANGFUSE_BASE_URL")
+        or env.get("LANGFUSE_HOST")
+    )
+    if not public_key or not secret_key:
+        return None
+    return langfuse_client_for_config(public_key, secret_key, base_url)
+
+
+def langfuse_client_for_config(public_key: str, secret_key: str, base_url: str | None) -> Any | None:
+    cache_key = (public_key, secret_key, base_url)
+    cached = LANGFUSE_CLIENT_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    with LANGFUSE_CLIENT_CACHE_LOCK:
+        cached = LANGFUSE_CLIENT_CACHE.get(cache_key)
+        if cached is not None:
+            return cached
+        try:
+            from langfuse import Langfuse
+        except ImportError:
+            return None
+        kwargs = {"public_key": public_key, "secret_key": secret_key}
+        if base_url:
+            kwargs["base_url"] = base_url
+        try:
+            client = Langfuse(**kwargs)
+        except Exception:
+            return None
+        LANGFUSE_CLIENT_CACHE[cache_key] = client
+        register_langfuse_flush(client)
+        return client
+
+
+def clear_langfuse_client_cache() -> None:
+    with LANGFUSE_CLIENT_CACHE_LOCK:
+        LANGFUSE_CLIENT_CACHE.clear()
+        LANGFUSE_FLUSH_CLIENT_IDS.clear()
+
+
+def normalize_langfuse_base_url(value: str | None) -> str | None:
+    if value is None:
+        return None
+    stripped = value.strip().rstrip("/")
+    if not stripped:
+        return None
+    if "://" in stripped:
+        return stripped
+    return f"https://{stripped}"
+
+
+def register_langfuse_flush(client: Any) -> None:
+    client_id = id(client)
+    if client_id in LANGFUSE_FLUSH_CLIENT_IDS:
+        return
+    LANGFUSE_FLUSH_CLIENT_IDS.add(client_id)
+    atexit.register(flush_langfuse_client, client)
+
+
+def flush_langfuse_client(client: Any) -> None:
+    try:
+        client.flush()
+    except Exception:
+        return
+
+
+def flush_langfuse() -> None:
+    for client in list(LANGFUSE_CLIENT_CACHE.values()):
+        flush_langfuse_client(client)
+
+
+def open_langfuse_generation(
+    *,
+    name: str,
+    model: str,
+    input_payload: dict[str, Any],
+    metadata: dict[str, Any] | None = None,
+) -> tuple[Any, Any]:
+    client = configured_langfuse_client()
+    if client is None:
+        return None, _NoopLangfuseObservation()
+    try:
+        manager = client.start_as_current_observation(
+            as_type="generation",
+            name=name,
+            model=model,
+            input=input_payload,
+            metadata=metadata,
+        )
+        observation = manager.__enter__()
+    except Exception:
+        return None, _NoopLangfuseObservation()
+    return manager, observation
+
+
+def close_langfuse_generation(manager: Any, exc_info: tuple[Any, Any, Any]) -> None:
+    if manager is None:
+        return
+    try:
+        manager.__exit__(*exc_info)
+    except Exception:
+        return
+
+
+def update_langfuse_generation(observation: Any, **kwargs: Any) -> None:
+    try:
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
+        observation.update(**kwargs)
+    except Exception:
+        return
+
+
+def openai_usage_details(response_payload: Any) -> dict[str, int] | None:
+    if not isinstance(response_payload, dict):
+        return None
+    usage = response_payload.get("usage")
+    if not isinstance(usage, dict):
+        return None
+    details: dict[str, int] = {}
+    for langfuse_key, openai_key in (
+        ("input_tokens", "prompt_tokens"),
+        ("output_tokens", "completion_tokens"),
+        ("total_tokens", "total_tokens"),
+    ):
+        value = usage.get(openai_key)
+        if isinstance(value, int):
+            details[langfuse_key] = value
+    return details or None
 
 
 def google_maps_place_semantic_cache_dir() -> Path:
