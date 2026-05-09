@@ -5569,6 +5569,16 @@ class BuildDataTests(unittest.TestCase):
                 "Historic villa widely hailed as one of the world's most beautiful views."
             )
         )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "A medieval church considered one of the most photographed landmarks on the coast."
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "Gelato shop with wheelchair-accessible seating and LGBTQ+-friendly service."
+            )
+        )
 
     def test_apply_semantic_enrichment_preserves_semantic_source_when_semantics_remain_populated(self) -> None:
         raw_place = RawPlace(
