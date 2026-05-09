@@ -5739,7 +5739,7 @@ def preserve_existing_enrichment(
         if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
             refreshed_place.google_place_resource_name = previous_place.google_place_resource_name
         append_unique_reason(preserved_fields, "maps_url")
-    else:
+    elif google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place):
         if not refreshed_place.google_place_id and previous_place.google_place_id:
             refreshed_place.google_place_id = previous_place.google_place_id
         if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:

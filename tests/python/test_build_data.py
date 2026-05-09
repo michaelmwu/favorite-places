@@ -2470,6 +2470,8 @@ class BuildDataTests(unittest.TestCase):
                 display_name="Casa Montaña",
                 formatted_address="Carr. 413 KM 5.8 Interior Road Sec La Joya BO, Puerto Rico",
                 google_maps_uri="https://www.google.com/maps/place/Casa+Monta%C3%B1a/@18.3546206,-67.2517407,17z/",
+                google_place_id="stale-place-id",
+                google_place_resource_name="places/stale-place-id",
             ),
         )
         refreshed_entry = EnrichmentCacheEntry(
@@ -2495,6 +2497,8 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(warning)
         assert merged.place is not None
         self.assertEqual(merged.place.google_maps_uri, "https://maps.google.com/?cid=963849929162476527")
+        self.assertIsNone(merged.place.google_place_id)
+        self.assertIsNone(merged.place.google_place_resource_name)
 
     def test_preserve_existing_enrichment_keeps_compatible_stronger_maps_url(self) -> None:
         existing_entry = EnrichmentCacheEntry(
