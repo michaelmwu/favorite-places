@@ -5579,6 +5579,16 @@ class BuildDataTests(unittest.TestCase):
                 "Gelato shop with wheelchair-accessible seating and LGBTQ+-friendly service."
             )
         )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "Terrace with the coast's most photographed garden view."
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "Quiet spa hotel by the marina; just expect spa access to be a separate charge."
+            )
+        )
 
     def test_apply_semantic_enrichment_preserves_semantic_source_when_semantics_remain_populated(self) -> None:
         raw_place = RawPlace(
