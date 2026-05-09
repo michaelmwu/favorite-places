@@ -9853,6 +9853,41 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(loaded_payload["cid:111"].place.primary_type_display_name_localized, "レストラン")
         self.assertIsNone(loaded_payload["cid:111"].place.photo_url)
 
+    def test_prune_places_cache_to_raw_places_drops_stale_place_ids(self) -> None:
+        raw = RawSavedList(
+            title="Aguas Calientes",
+            places=[
+                RawPlace(
+                    name="Mapacho Craft Beer Restaurant",
+                    maps_url="https://maps.google.com/?cid=14063537238082844765",
+                    cid="14063537238082844765",
+                    google_id="/g/11c59xr4t8",
+                )
+            ],
+        )
+        current_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Mapacho current",
+            matched=True,
+        )
+        stale_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-01T00:00:00+00:00",
+            query="Mapacho stale gid",
+            matched=True,
+        )
+
+        pruned_payload, pruned_count = build_data.prune_places_cache_to_raw_places(
+            {
+                "cid:14063537238082844765": current_entry,
+                "gid:g-11c59xr4t8": stale_entry,
+            },
+            raw,
+        )
+
+        self.assertEqual(pruned_count, 1)
+        self.assertEqual(list(pruned_payload), ["cid:14063537238082844765"])
+        self.assertIs(pruned_payload["cid:14063537238082844765"], current_entry)
+
     def test_export_places_cache_json_writes_debug_output(self) -> None:
         cache_entry = EnrichmentCacheEntry(
             fetched_at="2026-04-20T00:00:00+00:00",

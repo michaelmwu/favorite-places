@@ -3233,6 +3233,9 @@ def enrich_raw_sources(
         city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
+        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            save_places_cache(slug, cache_payload)
         cache_payloads[slug] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
@@ -3396,6 +3399,9 @@ def refresh_cached_semantic_enrichment(
         city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
+        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            save_places_cache(slug, cache_payload)
         cache_payloads[slug] = cache_payload
 
         for place in raw.places:
@@ -5749,6 +5755,24 @@ def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
 
 def save_places_cache(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
     save_places_cache_to_sqlite(slug, payload)
+
+
+def prune_places_cache_to_raw_places(
+    payload: dict[str, EnrichmentCacheEntry],
+    raw: RawSavedList,
+) -> tuple[dict[str, EnrichmentCacheEntry], int]:
+    current_place_ids = {
+        stable_place_id(place, source_type=raw.configured_source_type)
+        for place in raw.places
+    }
+    if not current_place_ids:
+        return payload, 0
+    pruned_payload = {
+        place_id: entry
+        for place_id, entry in payload.items()
+        if place_id in current_place_ids
+    }
+    return pruned_payload, len(payload) - len(pruned_payload)
 
 
 def export_places_cache_json(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
