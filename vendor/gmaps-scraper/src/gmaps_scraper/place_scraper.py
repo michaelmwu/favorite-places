@@ -129,7 +129,6 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
     "thank you for",
     "we're thrilled",
     "we apologize",
-    "contact us",
     "we took",
     "we got",
     "we decided",

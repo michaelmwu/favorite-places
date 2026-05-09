@@ -2496,6 +2496,42 @@ class BuildDataTests(unittest.TestCase):
         assert merged.place is not None
         self.assertEqual(merged.place.google_maps_uri, "https://maps.google.com/?cid=963849929162476527")
 
+    def test_preserve_existing_enrichment_keeps_compatible_stronger_maps_url(self) -> None:
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Casa Montaña, Valencia, Spain",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Casa Montaña",
+                formatted_address="C/ de Josep Benlliure, 69, Poblats Marítims, València, Spain",
+                google_maps_uri="https://maps.google.com/?cid=963849929162476527",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Casa Montaña, Valencia, Spain",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Casa Montaña",
+                formatted_address="C/ de Josep Benlliure, 69, Poblats Marítims, València, Spain",
+                google_maps_uri="https://www.google.com/maps/search/?api=1&query=Casa+Monta%C3%B1a",
+            ),
+        )
+
+        merged, warning = build_data.preserve_existing_enrichment(
+            slug="valencia-spain",
+            place_id="cid:963849929162476527",
+            place_name="Casa Montaña",
+            existing_entry=existing_entry,
+            refreshed_entry=refreshed_entry,
+        )
+
+        self.assertIsNotNone(warning)
+        assert merged.place is not None
+        self.assertEqual(merged.place.google_maps_uri, "https://maps.google.com/?cid=963849929162476527")
+
     def test_place_page_has_meaningful_enrichment_rejects_limited_view_without_review_count(self) -> None:
         details = SimpleNamespace(limited_view=True)
         enrichment_place = EnrichmentPlace(
@@ -6249,7 +6285,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(place.primary_type)
         self.assertEqual(place.types, [])
 
-    def test_canonicalize_enrichment_place_drops_types_from_invalid_cached_primary_type(self) -> None:
+    def test_canonicalize_enrichment_place_keeps_usable_types_from_invalid_cached_primary_type(self) -> None:
         place = build_data.canonicalize_enrichment_place(
             EnrichmentPlace(
                 display_name="Russafa",
@@ -6260,9 +6296,24 @@ class BuildDataTests(unittest.TestCase):
         )
 
         assert place is not None
-        self.assertIsNone(place.primary_type)
+        self.assertEqual(place.primary_type, "shopping")
         self.assertIsNone(place.primary_type_display_name)
-        self.assertEqual(place.types, [])
+        self.assertEqual(place.types, ["shopping"])
+
+    def test_canonicalize_enrichment_place_recovers_category_from_types_when_primary_is_generic(self) -> None:
+        place = build_data.canonicalize_enrichment_place(
+            EnrichmentPlace(
+                display_name="Cafe North",
+                primary_type="point_of_interest",
+                primary_type_display_name="Point of interest",
+                types=["restaurant", "food", "point_of_interest"],
+            )
+        )
+
+        assert place is not None
+        self.assertEqual(place.primary_type, "restaurant")
+        self.assertIsNone(place.primary_type_display_name)
+        self.assertEqual(place.types, ["restaurant", "food"])
 
     def test_humanize_type_id_rejects_generic_item(self) -> None:
         self.assertIsNone(build_data.humanize_type_id("item"))
@@ -6521,6 +6572,12 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             build_data.normalize_address_locality_part("青羊宫商圈 Qingyang District"),
             "Qingyang District",
+        )
+
+    def test_normalize_semantic_neighborhood_part_keeps_near_prefixed_neighborhood(self) -> None:
+        self.assertEqual(
+            build_data.normalize_semantic_neighborhood_part("Near North Side"),
+            "Near North Side",
         )
 
     def test_fallback_semantic_description_uses_explicit_region_when_no_locality(self) -> None:
@@ -10335,7 +10392,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(result.place.business_status, "CLOSED_TEMPORARILY")
         self.assertEqual(
             result.place.google_maps_uri,
-            "https://www.google.com/maps/search/?api=1&query=First+Place",
+            "https://www.google.com/maps/search/?api=1&query=First+Place&query_place_id=place123",
         )
         self.assertEqual(result.place.google_place_id, "place123")
         self.assertEqual(result.place.photo_url, "https://photos.example/old.jpg")
@@ -10343,7 +10400,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             print_mock.call_args_list[1].args[0],
             "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
-            "rating, user_rating_count, primary_category, status, photo_url.",
+            "rating, user_rating_count, primary_category, status, maps_url, photo_url.",
         )
 
     def test_enrich_place_job_preserves_valid_previous_address_when_refresh_loses_it(self) -> None:
@@ -10497,7 +10554,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             print_mock.call_args_list[1].args[0],
             "WARNING: Preserving previous enrichment fields for tokyo-japan:cid:111 [First Place]: "
-            "rating, user_rating_count.",
+            "rating, user_rating_count, maps_url.",
         )
 
     def test_refresh_retries_transient_parse_failure(self) -> None:

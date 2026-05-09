@@ -1474,6 +1474,18 @@ class PlaceScraperTests(unittest.TestCase):
             "Our team provides thoughtful care and we strive to make every visit feel easy.",
         )
 
+    def test_clean_description_text_keeps_contact_us_business_summary(self) -> None:
+        self.assertEqual(
+            _clean_description_text(
+                "Contact us for reservations, catering, private events, seasonal menus, "
+                "and group dining in our relaxed neighborhood restaurant."
+            ),
+            (
+                "Contact us for reservations, catering, private events, seasonal menus, "
+                "and group dining in our relaxed neighborhood restaurant."
+            ),
+        )
+
     def test_clean_description_text_keeps_first_person_words_containing_markers(self) -> None:
         self.assertEqual(
             _clean_description_text(

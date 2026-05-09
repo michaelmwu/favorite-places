@@ -3764,7 +3764,6 @@ def canonicalize_enrichment_place(place: EnrichmentPlace | None) -> EnrichmentPl
     if place.primary_type is not None and normalize_enrichment_type_tag(place.primary_type) is None:
         raw_display_name = None
         place.primary_type = None
-        place.types = []
     canonical_display_name = canonical_primary_category_label(
         primary_type=place.primary_type,
         display_name=place.primary_type_display_name,
@@ -4416,6 +4415,7 @@ def normalize_address_locality_part(
     part: str,
     *,
     allow_explicit_subnational_label: bool = False,
+    strip_leading_preposition: bool = True,
 ) -> str | None:
     candidate = part.strip()
     if not candidate:
@@ -4428,7 +4428,8 @@ def normalize_address_locality_part(
     candidate = re.sub(r"\s+\d{4}\b", "", candidate).strip()
     candidate = candidate.strip(" -−ー－/()[]{}.")
     candidate = strip_leading_numeric_locality_prefix(candidate)
-    candidate = strip_leading_locality_preposition(candidate)
+    if strip_leading_preposition:
+        candidate = strip_leading_locality_preposition(candidate)
     candidate = strip_country_locality_prefix(candidate)
     candidate = strip_trailing_short_region_code(candidate)
     candidate = strip_subnational_locality_suffix(candidate)
@@ -5729,8 +5730,7 @@ def preserve_existing_enrichment(
         append_unique_reason(preserved_fields, "status")
 
     if (
-        refreshed_place.google_maps_uri is None
-        and google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri)
+        google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri)
         and google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place)
     ):
         refreshed_place.google_maps_uri = previous_place.google_maps_uri
@@ -8814,7 +8814,7 @@ def normalize_semantic_neighborhood_label(
 
 
 def normalize_semantic_neighborhood_part(label: str) -> str | None:
-    normalized = normalize_address_locality_part(label)
+    normalized = normalize_address_locality_part(label, strip_leading_preposition=False)
     if normalized is not None:
         return normalized
 
