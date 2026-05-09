@@ -2287,7 +2287,7 @@ def combine_place_note(note: Any, comment: Any) -> str | None:
 
 
 def name_from_maps_url(maps_url: str) -> str | None:
-    match = re.search(r"/place/([^/]+)/data=", maps_url)
+    match = re.search(r"/place/([^/?#]+)", maps_url)
     if not match:
         return None
     candidate = unquote(match.group(1).replace("+", " "))
@@ -3554,16 +3554,23 @@ def enrich_place_job(
     override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
     suppress_description = bool(as_string(override.get("note")))
     override_google_place_id = as_string(override.get("google_place_id"))
+    allow_identity_mismatch = as_bool(override.get("allow_enrichment_identity_mismatch")) is True
+    existing_google_place_id = google_place_id_for_refresh_seed(
+        place,
+        existing_entry,
+        allow_identity_mismatch=allow_identity_mismatch,
+    )
     refreshed_entry = fetch_places_enrichment(
         place,
         city_name=city_name,
         country_name=country_name,
         google_place_id=override_google_place_id
-        or (existing_entry.place.google_place_id if existing_entry and existing_entry.place else None),
+        or existing_google_place_id,
         signature_google_place_id=override_google_place_id,
         api_key=api_key,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
+        allow_identity_mismatch=allow_identity_mismatch,
     )
     merged_entry, warning = preserve_existing_enrichment(
         slug=slug,
@@ -3571,10 +3578,29 @@ def enrich_place_job(
         place_name=place_name,
         existing_entry=existing_entry,
         refreshed_entry=refreshed_entry,
+        raw_place=place,
+        allow_identity_mismatch=allow_identity_mismatch,
     )
     if warning is not None:
         print(warning, flush=True)
     return merged_entry
+
+
+def google_place_id_for_refresh_seed(
+    raw_place: RawPlace,
+    existing_entry: EnrichmentCacheEntry | None,
+    *,
+    allow_identity_mismatch: bool = False,
+) -> str | None:
+    existing_place = existing_entry.place if existing_entry else None
+    if existing_place is None:
+        return None
+    google_place_id = as_string(existing_place.google_place_id)
+    if google_place_id is None:
+        return None
+    if not allow_identity_mismatch and not enrichment_identity_is_compatible_with_raw(raw_place, existing_place):
+        return None
+    return google_place_id
 
 
 def stable_place_id(place: RawPlace, *, source_type: str | None = None) -> str:
@@ -5677,6 +5703,8 @@ def preserve_existing_enrichment(
     place_name: str,
     existing_entry: EnrichmentCacheEntry | None,
     refreshed_entry: EnrichmentCacheEntry,
+    raw_place: RawPlace | None = None,
+    allow_identity_mismatch: bool = False,
 ) -> tuple[EnrichmentCacheEntry, str | None]:
     canonicalize_enrichment_cache_entry(existing_entry)
     canonicalize_enrichment_cache_entry(refreshed_entry)
@@ -5696,6 +5724,11 @@ def preserve_existing_enrichment(
     refreshed_place = refreshed_entry.place
     assert previous_place is not None
     assert refreshed_place is not None
+    can_preserve_previous_identity = (
+        allow_identity_mismatch
+        or raw_place is None
+        or enrichment_identity_is_compatible_with_raw(raw_place, previous_place)
+    )
 
     preserved_fields: list[str] = []
 
@@ -5741,7 +5774,9 @@ def preserve_existing_enrichment(
         append_unique_reason(preserved_fields, "status")
 
     if (
-        google_maps_uri_strength(refreshed_place.google_maps_uri) < google_maps_uri_strength(previous_place.google_maps_uri)
+        can_preserve_previous_identity
+        and google_maps_uri_strength(refreshed_place.google_maps_uri)
+        < google_maps_uri_strength(previous_place.google_maps_uri)
         and google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place)
     ):
         refreshed_place.google_maps_uri = previous_place.google_maps_uri
@@ -5750,7 +5785,7 @@ def preserve_existing_enrichment(
         if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
             refreshed_place.google_place_resource_name = previous_place.google_place_resource_name
         append_unique_reason(preserved_fields, "maps_url")
-    elif google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place):
+    elif can_preserve_previous_identity and google_maps_uri_is_compatible_for_preservation(previous_place, refreshed_place):
         if not refreshed_place.google_place_id and previous_place.google_place_id:
             refreshed_place.google_place_id = previous_place.google_place_id
         if not refreshed_place.google_place_resource_name and previous_place.google_place_resource_name:
@@ -6973,6 +7008,7 @@ def fetch_places_enrichment(
     strategy: Literal["scrape", "api", "scrape_then_api"] | None = None,
     existing_entry: EnrichmentCacheEntry | None = None,
     suppress_description: bool = False,
+    allow_identity_mismatch: bool = False,
 ) -> EnrichmentCacheEntry:
     if strategy is None:
         strategy = google_places_enrichment_strategy()
@@ -6986,6 +7022,7 @@ def fetch_places_enrichment(
             signature_google_place_id=signature_google_place_id,
             existing_entry=existing_entry,
             suppress_description=suppress_description,
+            allow_identity_mismatch=allow_identity_mismatch,
         )
 
     if strategy == "api":
@@ -7009,6 +7046,7 @@ def fetch_places_enrichment(
         signature_google_place_id=signature_google_place_id,
         existing_entry=existing_entry,
         suppress_description=suppress_description,
+        allow_identity_mismatch=allow_identity_mismatch,
     )
     if page_entry.error is None and page_entry.place is not None:
         if api_key is None or not should_fallback_to_places_api(page_entry):
@@ -7044,6 +7082,7 @@ def fetch_place_page_enrichment(
     signature_google_place_id: str | None = None,
     existing_entry: EnrichmentCacheEntry | None = None,
     suppress_description: bool = False,
+    allow_identity_mismatch: bool = False,
 ) -> EnrichmentCacheEntry:
     query = build_place_page_search_query(
         place,
@@ -7228,6 +7267,8 @@ def fetch_place_page_enrichment(
             ):
                 deferred_matched_entry = deferred_entry
                 continue
+            if not allow_identity_mismatch:
+                suppress_uncertain_place_page_identity_fields(place, enrichment_place)
             apply_semantic_enrichment(
                 enrichment_place,
                 raw_place=place,
@@ -7266,6 +7307,8 @@ def fetch_place_page_enrichment(
                     continue
                 if not matched:
                     continue
+                if not allow_identity_mismatch:
+                    suppress_uncertain_place_page_identity_fields(place, enrichment_place)
                 apply_semantic_enrichment(
                     enrichment_place,
                     raw_place=place,
@@ -7287,6 +7330,8 @@ def fetch_place_page_enrichment(
                     enrichment_place=enrichment_place,
                 )
         if deferred_matched_entry is not None and deferred_matched_entry.place is not None:
+            if not allow_identity_mismatch:
+                suppress_uncertain_place_page_identity_fields(place, deferred_matched_entry.place)
             apply_semantic_enrichment(
                 deferred_matched_entry.place,
                 raw_place=place,
@@ -7429,6 +7474,55 @@ def place_page_candidate_is_confident_match(
         if raw_name and candidate_name and raw_name != candidate_name:
             return score >= 60
     return score >= 25
+
+
+def suppress_uncertain_place_page_identity_fields(
+    raw_place: RawPlace,
+    enrichment_place: EnrichmentPlace,
+) -> list[str]:
+    if enrichment_identity_is_compatible_with_raw(raw_place, enrichment_place):
+        return []
+
+    suppressed_fields: list[str] = []
+    for field_name in (
+        "display_name",
+        "google_place_id",
+        "google_place_resource_name",
+        "website",
+        "phone",
+    ):
+        if as_string(getattr(enrichment_place, field_name)) is not None:
+            setattr(enrichment_place, field_name, None)
+            suppressed_fields.append(field_name)
+
+    if resolved_google_maps_url_is_place_page(enrichment_place.google_maps_uri):
+        enrichment_place.google_maps_uri = None
+        suppressed_fields.append("google_maps_uri")
+    if resolved_google_maps_url_is_place_page(enrichment_place.search_result_url):
+        enrichment_place.search_result_url = None
+        suppressed_fields.append("search_result_url")
+
+    return suppressed_fields
+
+
+def enrichment_identity_is_compatible_with_raw(
+    raw_place: RawPlace,
+    enrichment_place: EnrichmentPlace,
+) -> bool:
+    raw_name = as_string(raw_place.name)
+    if raw_name is None:
+        return True
+
+    identity_names = [
+        as_string(enrichment_place.display_name),
+        name_from_maps_url(enrichment_place.google_maps_uri or ""),
+        name_from_maps_url(enrichment_place.search_result_url or ""),
+    ]
+    return all(
+        raw_place_names_are_compatible(raw_name, identity_name)
+        for identity_name in identity_names
+        if identity_name is not None
+    )
 
 
 def place_page_candidate_name_is_address_artifact(
@@ -9401,11 +9495,11 @@ SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
     r"\b(?:"
     r"(?:mixed\s+)?reviews?\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
     r"(?:reviewers?|customers?|users?|people)\s+(?:note|notes|say|says|mention|mentions|praise|praises|call|calls)|"
-    r"(?:praised|lauded|commended|celebrated|famed)\s+(?:for|as)|"
+    r"(?:highly\s+)?(?:praised|lauded|commended|celebrated|famed)\s+(?:for|as|\w+)|"
     r"(?:widely\s+)?(?:hailed|regarded|considered)\s+as|"
     r"one\s+of\s+(?:the\s+)?(?:(?:world'?s|italy'?s|city'?s|region'?s|area'?s)\s+)?(?:most|best|finest|top)|"
     r"(?:most\s+photographed|top[-\s]?rated|number\s+one|\#1)|"
-    r"(?:just\s+expect|separate\s+charge)|"
+    r"(?:just\s+expect|separate\s+charge|though\s+[^.?!]{0,80}\b(?:minimal|limited|expensive|pricey|crowded|slow|rude|disappointing))|"
     r"(?:wheelchair[-\s]?accessible|lgbtq\+?[-\s]?friendly)|"
     r"according\s+to\s+(?:reviews?|reviewers?|customers?|users?)"
     r")\b",

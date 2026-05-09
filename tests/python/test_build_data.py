@@ -2536,6 +2536,218 @@ class BuildDataTests(unittest.TestCase):
         assert merged.place is not None
         self.assertEqual(merged.place.google_maps_uri, "https://maps.google.com/?cid=963849929162476527")
 
+    def test_uncertain_place_page_identity_suppresses_publishable_identity_fields(self) -> None:
+        raw_place = RawPlace(
+            name="Lola Underground",
+            address="Hay St &, Cathedral Ave, Perth WA 6000, Australia",
+            lat=-31.9549688,
+            lng=115.8609673,
+            maps_url=(
+                "https://www.google.com/maps/search/?api=1&query=Lola+Underground%2C+"
+                "Hay+St+%26%2C+Cathedral+Ave%2C+Perth+WA+6000%2C+Australia"
+            ),
+            cid="3040698308894550531",
+            google_id="/g/11wqqpwh8_",
+        )
+        enrichment_place = EnrichmentPlace(
+            display_name="Pooles Temple",
+            formatted_address="Hay St &, Cathedral Ave, Perth WA 6000, Australia",
+            google_maps_uri=(
+                "https://www.google.com/maps/place/Pooles+Temple/@-31.9549688,115.8609673,17z/"
+                "data=!3m1!4b1!4m6!3m5!1s0x2a32bb006aca6a03:0xe5ba64f4222eb894!"
+                "8m2!3d-31.9549688!4d115.8609673!16s%2Fg%2F11wqqpwh8_"
+            ),
+            google_place_id="ChIJA2rKagC7MioRlLguIvRkuuU",
+            google_place_resource_name="places/ChIJA2rKagC7MioRlLguIvRkuuU",
+            website="https://statebuildings.com/functions/pooles-temple",
+            phone="+61 8 1234 5678",
+            primary_type_display_name="Event venue",
+            review_topics=[{"label": "cocktails"}],
+        )
+
+        suppressed_fields = build_data.suppress_uncertain_place_page_identity_fields(
+            raw_place,
+            enrichment_place,
+        )
+
+        self.assertIn("display_name", suppressed_fields)
+        self.assertIn("google_maps_uri", suppressed_fields)
+        self.assertIsNone(enrichment_place.display_name)
+        self.assertIsNone(enrichment_place.google_maps_uri)
+        self.assertIsNone(enrichment_place.google_place_id)
+        self.assertIsNone(enrichment_place.google_place_resource_name)
+        self.assertIsNone(enrichment_place.website)
+        self.assertIsNone(enrichment_place.phone)
+        self.assertEqual(enrichment_place.formatted_address, "Hay St &, Cathedral Ave, Perth WA 6000, Australia")
+        self.assertEqual(enrichment_place.primary_type_display_name, "Event venue")
+        self.assertEqual(enrichment_place.review_topics, [{"label": "cocktails"}])
+
+    def test_uncertain_place_page_identity_keeps_partial_name_matches(self) -> None:
+        raw_place = RawPlace(
+            name="McDonald's",
+            address=None,
+            lat=35.6595,
+            lng=139.7005,
+            maps_url="https://www.google.com/maps/search/?api=1&query=McDonald%27s",
+        )
+        enrichment_place = EnrichmentPlace(
+            display_name="McDonald's Shibuya",
+            google_maps_uri="https://www.google.com/maps/place/McDonald%27s+Shibuya/",
+            google_place_id="compatible-place-id",
+            website="https://www.mcdonalds.co.jp/",
+        )
+
+        suppressed_fields = build_data.suppress_uncertain_place_page_identity_fields(
+            raw_place,
+            enrichment_place,
+        )
+
+        self.assertEqual(suppressed_fields, [])
+        self.assertEqual(enrichment_place.display_name, "McDonald's Shibuya")
+        self.assertEqual(enrichment_place.google_place_id, "compatible-place-id")
+
+    def test_google_place_id_refresh_seed_ignores_incompatible_existing_name(self) -> None:
+        raw_place = RawPlace(
+            name="Lola Underground",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Lola Underground, Perth",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Pooles Temple",
+                google_place_id="ChIJA2rKagC7MioRlLguIvRkuuU",
+            ),
+        )
+
+        self.assertIsNone(build_data.google_place_id_for_refresh_seed(raw_place, existing_entry))
+
+        self.assertEqual(
+            build_data.google_place_id_for_refresh_seed(
+                raw_place,
+                existing_entry,
+                allow_identity_mismatch=True,
+            ),
+            "ChIJA2rKagC7MioRlLguIvRkuuU",
+        )
+
+    def test_google_place_id_refresh_seed_ignores_incompatible_existing_url_name(self) -> None:
+        raw_place = RawPlace(
+            name="Lola Underground",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Lola Underground, Perth",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name=None,
+                google_maps_uri="https://www.google.com/maps/place/Pooles+Temple/@-31.9549688,115.8609673,17z/",
+                google_place_id="ChIJA2rKagC7MioRlLguIvRkuuU",
+            ),
+        )
+
+        self.assertIsNone(build_data.google_place_id_for_refresh_seed(raw_place, existing_entry))
+
+    def test_google_place_id_refresh_seed_keeps_compatible_existing_name(self) -> None:
+        raw_place = RawPlace(
+            name="McDonald's",
+            maps_url="https://www.google.com/maps/search/?api=1&query=McDonald%27s",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="McDonald's",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="McDonald's Shibuya",
+                google_place_id="compatible-place-id",
+            ),
+        )
+
+        self.assertEqual(build_data.google_place_id_for_refresh_seed(raw_place, existing_entry), "compatible-place-id")
+
+    def test_preserve_existing_enrichment_does_not_restore_incompatible_previous_identity(self) -> None:
+        raw_place = RawPlace(
+            name="Lola Underground",
+            address="Hay St &, Cathedral Ave, Perth WA 6000, Australia",
+            maps_url="https://www.google.com/maps/search/?api=1&query=Lola+Underground",
+            cid="3040698308894550531",
+        )
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Lola Underground, Perth",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name=None,
+                formatted_address="Hay St &, Cathedral Ave, Perth WA 6000, Australia",
+                google_maps_uri="https://www.google.com/maps/place/Pooles+Temple/@-31.9549688,115.8609673,17z/",
+                google_place_id="ChIJA2rKagC7MioRlLguIvRkuuU",
+                business_status="OPERATIONAL",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Lola Underground, Perth",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name=None,
+                formatted_address="Hay St &, Cathedral Ave, Perth WA 6000, Australia",
+                google_maps_uri=None,
+                google_place_id=None,
+            ),
+        )
+
+        merged, warning = build_data.preserve_existing_enrichment(
+            slug="perth-and-fremantle-australia",
+            place_id="cid:3040698308894550531",
+            place_name="Lola Underground",
+            existing_entry=existing_entry,
+            refreshed_entry=refreshed_entry,
+            raw_place=raw_place,
+        )
+
+        self.assertIsNotNone(warning)
+        assert merged.place is not None
+        self.assertIsNone(merged.place.google_maps_uri)
+        self.assertIsNone(merged.place.google_place_id)
+        self.assertEqual(merged.place.business_status, "OPERATIONAL")
+
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Lola Underground, Perth",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name=None,
+                formatted_address="Hay St &, Cathedral Ave, Perth WA 6000, Australia",
+                google_maps_uri=None,
+                google_place_id=None,
+            ),
+        )
+        merged, warning = build_data.preserve_existing_enrichment(
+            slug="perth-and-fremantle-australia",
+            place_id="cid:3040698308894550531",
+            place_name="Lola Underground",
+            existing_entry=existing_entry,
+            refreshed_entry=refreshed_entry,
+            raw_place=raw_place,
+            allow_identity_mismatch=True,
+        )
+
+        self.assertIsNotNone(warning)
+        assert merged.place is not None
+        self.assertEqual(
+            merged.place.google_maps_uri,
+            "https://www.google.com/maps/place/Pooles+Temple/@-31.9549688,115.8609673,17z/",
+        )
+        self.assertEqual(merged.place.google_place_id, "ChIJA2rKagC7MioRlLguIvRkuuU")
+
     def test_place_page_has_meaningful_enrichment_rejects_limited_view_without_review_count(self) -> None:
         details = SimpleNamespace(limited_view=True)
         enrichment_place = EnrichmentPlace(
@@ -5566,6 +5778,11 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertIsNone(
             build_data.sanitize_semantic_description(
+                "A hidden speakeasy bar with an intimate atmosphere and highly praised cocktails."
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
                 "Historic villa widely hailed as one of the world's most beautiful views."
             )
         )
@@ -5587,6 +5804,11 @@ class BuildDataTests(unittest.TestCase):
         self.assertIsNone(
             build_data.sanitize_semantic_description(
                 "Quiet spa hotel by the marina; just expect spa access to be a separate charge."
+            )
+        )
+        self.assertIsNone(
+            build_data.sanitize_semantic_description(
+                "A moody cocktail bar with a romantic atmosphere, though food options are minimal."
             )
         )
 
@@ -8264,6 +8486,7 @@ class BuildDataTests(unittest.TestCase):
             signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
+            allow_identity_mismatch=False,
         )
         api_fetch.assert_not_called()
         self.assertIs(entry, page_entry)
@@ -8387,6 +8610,7 @@ class BuildDataTests(unittest.TestCase):
             signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
+            allow_identity_mismatch=False,
         )
         api_fetch.assert_called_once_with(
             place,
@@ -8454,6 +8678,7 @@ class BuildDataTests(unittest.TestCase):
             signature_google_place_id=None,
             existing_entry=None,
             suppress_description=False,
+            allow_identity_mismatch=False,
         )
         api_fetch.assert_called_once_with(
             place,
