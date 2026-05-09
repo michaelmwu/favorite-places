@@ -6482,6 +6482,25 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(description, "Belvedere Tragara is an observation deck in Capri.")
 
+    def test_normalize_address_locality_part_strips_localized_prefix_before_english(self) -> None:
+        self.assertEqual(
+            build_data.normalize_address_locality_part("青羊宫商圈 Qingyang District"),
+            "Qingyang District",
+        )
+
+    def test_fallback_semantic_description_uses_explicit_region_when_no_locality(self) -> None:
+        description = build_data.fallback_semantic_description(
+            EnrichmentPlace(
+                display_name="Ka Nasi Lake",
+                primary_type_display_name="Lake",
+                formatted_address="Burqin County, Altay Prefecture, China",
+            ),
+            raw_place=RawPlace(name="Ka Nasi Lake", maps_url="https://maps.example/kanas", address=None),
+            city_name="Urumqi",
+        )
+
+        self.assertEqual(description, "Ka Nasi Lake is a lake in Burqin County.")
+
     def test_derive_marker_icon_uses_place_name_keyword_fallback_without_enrichment(self) -> None:
         test_cases = [
             ("Bar Rooster", "bar"),

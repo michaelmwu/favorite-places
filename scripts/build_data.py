@@ -4401,7 +4401,11 @@ def _infer_address_localities_cached(address: str, city_name: str | None) -> tup
 
 
 @lru_cache(maxsize=None)
-def normalize_address_locality_part(part: str) -> str | None:
+def normalize_address_locality_part(
+    part: str,
+    *,
+    allow_explicit_subnational_label: bool = False,
+) -> str | None:
     candidate = part.strip()
     if not candidate:
         return None
@@ -4417,6 +4421,7 @@ def normalize_address_locality_part(part: str) -> str | None:
     candidate = strip_country_locality_prefix(candidate)
     candidate = strip_trailing_short_region_code(candidate)
     candidate = strip_subnational_locality_suffix(candidate)
+    candidate = strip_leading_localized_locality_prefix(candidate)
 
     if not candidate or is_country_locality(candidate):
         return None
@@ -4424,7 +4429,7 @@ def normalize_address_locality_part(part: str) -> str | None:
         return None
     if is_subnational_locality_abbreviation(candidate):
         return None
-    if is_explicit_subnational_locality_label(candidate):
+    if is_explicit_subnational_locality_label(candidate) and not allow_explicit_subnational_label:
         return None
 
     if is_building_or_unit_part(candidate):
@@ -4472,6 +4477,14 @@ def strip_leading_locality_preposition(candidate: str) -> str:
 
 def strip_trailing_short_region_code(candidate: str) -> str:
     return re.sub(r"\s+[A-Z]{2}$", "", candidate).strip(" -−ー－/()[]{}.")
+
+
+def strip_leading_localized_locality_prefix(candidate: str) -> str:
+    return re.sub(
+        r"^[\u3040-\u30ff\u3400-\u9fff][\u3040-\u30ff\u3400-\u9fff\s]*\s+(?=[A-Za-z])",
+        "",
+        candidate,
+    ).strip()
 
 
 def strip_subnational_locality_suffix(candidate: str) -> str:
@@ -8358,7 +8371,35 @@ def fallback_semantic_description_location(
             and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
         ):
             return locality
+    for locality in infer_address_region_localities(address, city_name=city_name):
+        locality_key = normalize_locality_key(locality)
+        if (
+            locality_key
+            and locality_key != normalize_locality_key(city_name)
+            and fallback_semantic_description_locality_is_usable(locality, city_name=city_name)
+        ):
+            return locality
     return as_string(city_name)
+
+
+def infer_address_region_localities(address: str | None, *, city_name: str | None = None) -> list[str]:
+    if address is None:
+        return []
+    city_key = normalize_locality_key(city_name)
+    localities: list[str] = []
+    for raw_part in re.split(r"[,、]", address):
+        candidate = normalize_address_locality_part(
+            raw_part,
+            allow_explicit_subnational_label=True,
+        )
+        if candidate is None:
+            continue
+        key = normalize_locality_key(candidate)
+        if not key or key == city_key:
+            continue
+        if is_explicit_subnational_locality_label(candidate):
+            append_unique_locality(localities, candidate)
+    return localities
 
 
 def infer_plus_code_localities(plus_code: str | None, *, city_name: str | None) -> list[str]:
