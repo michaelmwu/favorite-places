@@ -79,6 +79,18 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIn('element.closest("[data-review-id]")', _PLACE_JS_EXTRACTOR)
         self.assertIn("root.querySelectorAll(selector)", _PLACE_JS_EXTRACTOR)
         self.assertIn(r"return /(^|\W)reviews?(\W|$)/i.test(label);", _PLACE_JS_EXTRACTOR)
+        self.assertIn("const descriptionValue = () => {", _PLACE_JS_EXTRACTOR)
+        self.assertIn('firstText([".WeS02d", ".PYvSYb"])', _PLACE_JS_EXTRACTOR)
+        self.assertIn("const descriptionBoundaryTop = () => {", _PLACE_JS_EXTRACTOR)
+
+    def test_place_js_extractor_uses_structural_panel_photo_selectors(self) -> None:
+        self.assertIn("div.RZ66Rb button[jsaction*='heroHeaderImage'] img", _PLACE_JS_EXTRACTOR)
+        self.assertIn("div.ZKCDEc [data-photo-index='0'] img", _PLACE_JS_EXTRACTOR)
+        self.assertIn("[data-photo-index='0'] img", _PLACE_JS_EXTRACTOR)
+        self.assertNotIn("button[jsaction*='image'] img", _PLACE_JS_EXTRACTOR)
+        self.assertNotIn("button[jsaction*='photo'] img", _PLACE_JS_EXTRACTOR)
+        self.assertNotIn("button[aria-label^='Photo of'] img", _PLACE_JS_EXTRACTOR)
+        self.assertNotIn("], document)\n    || firstBackgroundImageUrl", _PLACE_JS_EXTRACTOR)
 
     def test_collect_place_snapshot_can_skip_reviews_and_about_tabs(self) -> None:
         class _FakePage:
@@ -451,6 +463,7 @@ class PlaceScraperTests(unittest.TestCase):
                 "rating": "4.5",
                 "review_count": "40,001",
                 "price_range": "NT$320",
+                "admission_prices": ["NT$320"],
                 "address": "4 Chome-2-8 Shibakoen, Minato City, Tokyo 105-0011, Japan",
                 "body_text": "\n".join(
                     [
@@ -624,6 +637,12 @@ class PlaceScraperTests(unittest.TestCase):
         )
         self.assertIn("searchResultTitleLabels", _PLACE_SEARCH_RESULT_CLICK_JS)
         self.assertIn("parseCardReviewCount", _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertIn(
+            "const cardDescription = (article, excludedValues) => {",
+            _PLACE_SEARCH_RESULT_CLICK_JS,
+        )
+        self.assertIn('article.querySelectorAll("div.W4Efsd")', _PLACE_SEARCH_RESULT_CLICK_JS)
+        self.assertNotIn("findDescriptionLine", _PLACE_SEARCH_RESULT_CLICK_JS)
         self.assertIn("getBoundingClientRect()", _PLACE_SEARCH_RESULT_OPEN_JS)
         self.assertIn("const placePanelRoot = () => {", _PLACE_JS_EXTRACTOR)
         self.assertIn("visibleArea", _PLACE_JS_EXTRACTOR)
@@ -950,7 +969,11 @@ class PlaceScraperTests(unittest.TestCase):
         assert details.diagnostics is not None
         self.assertEqual(details.diagnostics.field_sources.get("name"), "search_result")
 
-    def test_build_place_details_uses_dom_fields_and_body_fallbacks(self) -> None:
+    def test_build_place_details_uses_structured_dom_fields(self) -> None:
+        description = (
+            "Seasonal menus of strikingly presented contemporary dishes, with wine "
+            "pairings, in a stylish space."
+        )
         details = _build_place_details(
             "https://www.google.com/maps/place/Den",
             resolved_url="https://www.google.com/maps/place/Den/@35.6731762,139.7127216,17z",
@@ -969,6 +992,7 @@ class PlaceScraperTests(unittest.TestCase):
                 "website": "http://www.jimbochoden.com/",
                 "phone": "+81 3-6455-5433",
                 "plus_code": "MPF7+73 Shibuya, Tokyo, Japan",
+                "description": description,
                 "limited_view": True,
                 "body_text": "\n".join(
                     [
@@ -976,10 +1000,7 @@ class PlaceScraperTests(unittest.TestCase):
                         "傳",
                         "4.4",
                         "Japanese restaurant·",
-                        (
-                            "Seasonal menus of strikingly presented contemporary dishes, "
-                            "with wine pairings, in a stylish space."
-                        ),
+                        description,
                     ]
                 ),
             },
@@ -990,16 +1011,52 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertEqual(details.category, "Japanese restaurant")
         self.assertEqual(details.rating, 4.4)
         self.assertEqual(details.review_count, 324)
-        self.assertEqual(
-            details.description,
-            (
-                "Seasonal menus of strikingly presented contemporary dishes, with wine "
-                "pairings, in a stylish space."
-            ),
-        )
+        self.assertEqual(details.description, description)
         self.assertEqual(details.lat, 35.6731762)
         self.assertEqual(details.lng, 139.7127216)
         self.assertTrue(details.limited_view)
+
+    def test_build_place_details_does_not_promote_body_text_to_description(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Den",
+            resolved_url="https://www.google.com/maps/place/Den",
+            snapshot={
+                "name": "Den",
+                "category": "Japanese restaurant",
+                "body_text": "\n".join(
+                    [
+                        "Share",
+                        (
+                            "Seasonal menus of strikingly presented contemporary dishes, "
+                            "with wine pairings, in a stylish space."
+                        ),
+                    ]
+                ),
+            },
+        )
+
+        self.assertIsNone(details.description)
+
+    def test_build_place_details_does_not_promote_share_adjacent_panel_text(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/place/CANNES+sign",
+            resolved_url="https://www.google.com/maps/place/CANNES+sign",
+            snapshot={
+                "name": "CANNES sign",
+                "category": "Tourist attraction",
+                "panel_text": "\n".join(
+                    [
+                        "Share",
+                        (
+                            "We took a very long cruise last summer from Venice to Portugal. "
+                            "One stop was Cannes, and this sign was on the walking tour."
+                        ),
+                    ]
+                ),
+            },
+        )
+
+        self.assertIsNone(details.description)
 
     def test_build_place_details_preserves_zero_coordinates(self) -> None:
         details = _build_place_details(
@@ -1493,6 +1550,42 @@ class PlaceScraperTests(unittest.TestCase):
                 "feel like it is a must visit spot."
             )
         )
+        self.assertIsNone(
+            _clean_description_text(
+                "Best ramen we've ever had. It helps that you get to make it yourself "
+                "(the noodles at least). Everything tastes better when you do it yourself! "
+                "Date day for a Saturday morning class. Great experience overall."
+            )
+        )
+        self.assertIsNone(
+            _clean_description_text(
+                "That’s gotta be one of the best hot chocolate drink I’ve tasted in my life! "
+                "The long wait was definitely worth it. There was quite a line before we got "
+                "a seat, but boy was it worth every minute. Definitely recommend this place."
+            )
+        )
+        for review_description in (
+            "It was my first attempt to eat mukhata. The food was so delicious and "
+            "the clerks were very kind.",
+            "Best place to stay in Hanoi. I’d just finished Ha Giang loop and "
+            "needed a place to rest.",
+            "The katsu burger!!! Omfg!!! So yummy and the young man with blonde "
+            "curly hair from England.",
+            "What a great hotel! The rooms were huge and have balconies with a seating area.",
+            "Had a great time here with my friends! The barkeeper made us feel "
+            "welcomed and we had a lot of fun.",
+            "The lady was just so so lovely. My feet are just gorgeous. "
+            "Would recommend to everyone.",
+            "My stay in Alila was wonderful. Special shout out to the staff for "
+            "making it memorable.",
+            "The hotel have a sense of peace and tranquility once step in. "
+            "The personal service was delicate.",
+            "The staffs also offered great recommendation for drinks based on your preference.",
+            "Directions Save Nearby Send to phone Share About this data "
+            "Get the most out of Google Maps Sign in",
+            "\ue52e Directions \ue866 Save \uf05f Nearby \ue702 Send to phone \ue80d Share",
+        ):
+            self.assertIsNone(_clean_description_text(review_description))
 
     def test_clean_description_text_keeps_first_person_business_summary(self) -> None:
         self.assertEqual(
@@ -1885,6 +1978,21 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.name)
 
+    def test_build_place_details_rejects_sponsored_name_label(self) -> None:
+        details = _build_place_details(
+            "https://www.google.com/maps/search/?api=1&query=Nakameguro+Iguchi",
+            resolved_url="https://www.google.com/maps/search/?api=1&query=Nakameguro+Iguchi",
+            snapshot={
+                "name": "Sponsored \ue5d4",
+                "category": "Restaurant",
+                "rating": "3.7",
+                "review_count": "186",
+                "body_text": "\n".join(["Sponsored \ue5d4", "Restaurant", "3.7"]),
+            },
+        )
+
+        self.assertIsNone(details.name)
+
     def test_build_place_details_rejects_ui_action_fallback_name_and_marks_diagnostics(
         self,
     ) -> None:
@@ -1921,7 +2029,7 @@ class PlaceScraperTests(unittest.TestCase):
             snapshot={
                 "name": "Share",
                 "category": "Event venue",
-                "body_text": "\n".join(
+                "panel_text": "\n".join(
                     ["Share", "Saved", "Directions", "Pooles Temple", "Event venue"]
                 ),
             },
@@ -2091,14 +2199,16 @@ class PlaceScraperTests(unittest.TestCase):
 
         self.assertIsNone(details.address_parts)
 
-    def test_build_place_details_rejects_page_chrome_address_and_falls_back_to_body(self) -> None:
+    def test_build_place_details_rejects_page_chrome_address_and_falls_back_to_panel_text(
+        self,
+    ) -> None:
         details = _build_place_details(
             "https://www.google.com/maps/place/Bianchetto",
             resolved_url="https://www.google.com/maps/place/Bianchetto",
             snapshot={
                 "name": "Bianchetto",
                 "address": "Imagery © 2026 Google TermsPrivacySend Product Feedback",
-                "body_text": "\n".join(
+                "panel_text": "\n".join(
                     [
                         "Bianchetto",
                         "Restaurant",
@@ -2142,7 +2252,7 @@ class PlaceScraperTests(unittest.TestCase):
             snapshot={
                 "name": "Den",
                 "plus_code": "https://www.google.com/maps/place/Den",
-                "body_text": "\n".join(
+                "panel_text": "\n".join(
                     [
                         "Den",
                         "Japanese restaurant",
@@ -2352,7 +2462,8 @@ class PlaceScraperTests(unittest.TestCase):
         )
 
     def test_place_js_extractor_keeps_place_page_description_selectors(self) -> None:
-        self.assertIn('description: firstText([".WeS02d", ".PYvSYb"])', _PLACE_JS_EXTRACTOR)
+        self.assertIn('const direct = firstText([".WeS02d", ".PYvSYb"])', _PLACE_JS_EXTRACTOR)
+        self.assertIn("description: descriptionValue()", _PLACE_JS_EXTRACTOR)
 
     def test_looks_like_google_maps_place_url_accepts_google_tlds_only(self) -> None:
         self.assertTrue(
@@ -2435,6 +2546,23 @@ class PlaceScraperTests(unittest.TestCase):
             _normalize_photo_url("https://lh3.googleusercontent.com/p/example=s680-w680-h510"),
             "https://lh3.googleusercontent.com/p/example=s680-w680-h510",
         )
+        self.assertEqual(
+            _normalize_photo_url(
+                "https://lh3.googleusercontent.com/gps-cs-s/example=w408-h306-k-no"
+            ),
+            "https://lh3.googleusercontent.com/gps-cs-s/example=w408-h306-k-no",
+        )
+
+    def test_normalize_photo_url_rejects_ad_thumbnails_and_unshaped_hosts(self) -> None:
+        for photo_url in (
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcExample&s=3",
+            "https://www.gstatic.com/faviconV2?url=https://example.com",
+            "https://www.gstatic.com/ads-travel/example.png",
+            "https://lh3.googleusercontent.com/p/example",
+            "https://lh3.googleusercontent.com.example/p/example=w680-h510-k-no",
+        ):
+            with self.subTest(photo_url=photo_url):
+                self.assertIsNone(_normalize_photo_url(photo_url))
 
     def test_normalize_photo_url_rejects_google_static_map_urls(self) -> None:
         self.assertIsNone(
