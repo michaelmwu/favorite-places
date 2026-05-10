@@ -4,6 +4,10 @@
     "neighborhood": "Xinyi",
     "google_place_id": "ChIJraeA2rarQjQRPBBjyR3RxKw",
     "note": "Still the easiest big-view landmark in Taipei, with shopping, food, and transit wrapped around the tower.",
+    "added_by": {
+      "name": "Sample Collaborator",
+      "avatar_mode": "initials"
+    },
     "top_pick": true,
     "manual_rank": 20,
     "tags": ["skyline", "viewpoint"],

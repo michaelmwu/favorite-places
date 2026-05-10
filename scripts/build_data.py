@@ -2487,6 +2487,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         manual_note = as_string(override.get("note"))
         note = manual_note or place.note
+        added_by = place_added_by_for_ui(place, override=override)
         base_recommendation = combine_recommendation_copy(
             enrichment.description or enrichment.search_result_description,
             place.note,
@@ -2583,6 +2584,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
+            added_by=added_by,
             main_photo_path=None,
             top_pick=top_pick,
             hidden=hidden,
@@ -2774,6 +2776,12 @@ def build_place_provenance(
             manual_place_field(normalized.why_recommended)
             if manual_note
             else None
+        )
+    if normalized.added_by:
+        provenance.added_by = (
+            manual_place_field(normalized.added_by)
+            if "added_by" in override
+            else google_list_field(normalized.added_by, raw)
         )
     provenance.top_pick = (
         manual_place_field(normalized.top_pick)
@@ -4904,6 +4912,12 @@ def guide_author_for_ui(raw: RawSavedList, *, list_override: dict[str, Any]) -> 
     return raw.owner
 
 
+def place_added_by_for_ui(place: RawPlace, *, override: dict[str, Any]) -> ListAuthor | None:
+    if "added_by" in override:
+        return coerce_list_author(override.get("added_by"))
+    return place.added_by
+
+
 def load_raw_saved_list(path: Path) -> RawSavedList | None:
     if not path.exists():
         return None
@@ -5242,6 +5256,9 @@ def preserve_existing_raw_place(
     if names_compatible and not refreshed_place.is_favorite and existing_place.is_favorite:
         updates["is_favorite"] = True
         preserved_fields.append("is_favorite")
+    if names_compatible and refreshed_place.added_by is None and existing_place.added_by is not None:
+        updates["added_by"] = existing_place.added_by
+        preserved_fields.append("added_by")
 
     if not updates:
         return refreshed_place, preserved_fields

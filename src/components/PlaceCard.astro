@@ -4,11 +4,13 @@ import { siteConfig } from "../data/site";
 import { buildMapMarkerSvg, getMapMarkerColors } from "../lib/mapMarkerIcons";
 import { getDisplayGuideTags, getDisplayPlaceTags, getTagComparisonValue } from "../lib/placeTags";
 import { renderRichText } from "../lib/renderRichText";
-import type { Place } from "../lib/types";
+import type { ListAuthor, Place } from "../lib/types";
+import AuthorByline from "./AuthorByline.astro";
 
 interface Props {
   bestHit?: boolean;
   featured?: boolean;
+  guideAuthor?: ListAuthor | null;
   guideContext?: {
     cityName?: string | null;
     countryCode?: string | null;
@@ -17,7 +19,21 @@ interface Props {
   place: Place;
 }
 
-const { bestHit = false, featured = false, guideContext = {}, place } = Astro.props;
+function authorsReferToSamePerson(left: ListAuthor | null | undefined, right: ListAuthor | null | undefined): boolean {
+  if (!left || !right) {
+    return false;
+  }
+
+  const leftProfileId = left.profile_id?.trim();
+  const rightProfileId = right.profile_id?.trim();
+  if (leftProfileId && rightProfileId) {
+    return leftProfileId === rightProfileId;
+  }
+
+  return left.name.trim().toLocaleLowerCase() === right.name.trim().toLocaleLowerCase();
+}
+
+const { bestHit = false, featured = false, guideAuthor = null, guideContext = {}, place } = Astro.props;
 const placeTags = place.tags ?? [];
 const configuredVisibleTags = place.visible_tags ?? [];
 const placeVibeTags = place.vibe_tags ?? [];
@@ -87,6 +103,14 @@ const badges = [
   ...(bestHit ? [{ className: "badge badge--best-hit", label: siteConfig.placeCard.bestHitLabel }] : []),
 ];
 const isTemporarilyClosed = siteConfig.placeCard.showStatus && place.status === "temporarily-closed";
+const placeAttribution =
+  place.added_by && place.added_by.name.trim().length > 0
+    ? place.added_by
+    : null;
+const showPlaceAttribution =
+  siteConfig.placeCard.showAttribution &&
+  placeAttribution &&
+  (siteConfig.placeCard.showGuideAuthorAttribution || !authorsReferToSamePerson(placeAttribution, guideAuthor));
 ---
 
 <article
@@ -209,6 +233,11 @@ const isTemporarilyClosed = siteConfig.placeCard.showStatus && place.status === 
     )}
   </div>
 
+  {showPlaceAttribution && (
+    <div class="place-card-attribution">
+      <AuthorByline author={placeAttribution} label={siteConfig.placeCard.attributionLabel} variant="card" />
+    </div>
+  )}
   {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && (
     <p class="rich-copy ui-copy place-card-description" set:html={whyRecommendedHtml} />
   )}

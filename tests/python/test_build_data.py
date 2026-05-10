@@ -63,6 +63,23 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(saved_list.collaborators[0].name, "Second Curator")
         self.assertEqual(saved_list.collaborators[0].photo_url, "https://example.com/second.jpg")
 
+    def test_raw_place_keeps_added_by_metadata_from_json(self) -> None:
+        place = RawPlace.model_validate(
+            {
+                "name": "Coffee Spot",
+                "maps_url": "https://maps.example/coffee",
+                "added_by": {
+                    "name": "Second Curator",
+                    "profile_id": "second-curator-id",
+                },
+            }
+        )
+
+        self.assertIsNotNone(place.added_by)
+        assert place.added_by is not None
+        self.assertEqual(place.added_by.name, "Second Curator")
+        self.assertEqual(place.added_by.profile_id, "second-curator-id")
+
     def test_normalize_guide_uses_raw_owner_as_author(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
@@ -161,6 +178,76 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(guide.author.avatar_mode, "initials")
         self.assertIsNone(guide.author.photo_url)
         self.assertIsNone(guide.author.photo_path)
+
+    def test_normalize_guide_preserves_place_added_by(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            owner=ListAuthor(name="Guide Owner", profile_id="owner-id"),
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                    added_by=ListAuthor(name="Second Curator", profile_id="second-id"),
+                )
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        self.assertEqual(guide.places[0].added_by, ListAuthor(name="Second Curator", profile_id="second-id"))
+        self.assertIsNotNone(guide.places[0].provenance.added_by)
+        assert guide.places[0].provenance.added_by is not None
+        self.assertEqual(guide.places[0].provenance.added_by.source, "google_list")
+
+    def test_normalize_guide_allows_place_added_by_override_and_suppression(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                    cid="1",
+                    added_by=ListAuthor(name="Raw Curator"),
+                ),
+                RawPlace(
+                    name="Tea Spot",
+                    maps_url="https://maps.example/tea",
+                    cid="2",
+                    added_by=ListAuthor(name="Raw Curator"),
+                ),
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {
+                    "cid:1": {"added_by": {"name": "Manual Curator", "avatar_mode": "initials"}},
+                    "cid:2": {"added_by": None},
+                }
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        places_by_id = {place.id: place for place in guide.places}
+        self.assertEqual(
+            places_by_id["cid:1"].added_by,
+            ListAuthor(name="Manual Curator", avatar_mode="initials"),
+        )
+        self.assertIsNotNone(places_by_id["cid:1"].provenance.added_by)
+        assert places_by_id["cid:1"].provenance.added_by is not None
+        self.assertEqual(places_by_id["cid:1"].provenance.added_by.source, "manual")
+        self.assertIsNone(places_by_id["cid:2"].added_by)
 
     def test_sync_list_author_photo_downloads_local_photo_path(self) -> None:
         author = ListAuthor(
@@ -762,6 +849,7 @@ class BuildDataTests(unittest.TestCase):
                     cid="8935267511126082507",
                     google_id="/g/1tdwf48w",
                     maps_place_token="0xdeadbeef:0x1",
+                    added_by=ListAuthor(name="Second Curator", profile_id="second-id"),
                 )
             ],
         )
@@ -778,6 +866,7 @@ class BuildDataTests(unittest.TestCase):
                     cid="8935267511126082507",
                     google_id=None,
                     maps_place_token=None,
+                    added_by=None,
                 )
             ],
         )
@@ -794,6 +883,7 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertEqual(merged.places[0].google_id, "/g/1tdwf48w")
         self.assertEqual(merged.places[0].maps_place_token, "0xdeadbeef:0x1")
+        self.assertEqual(merged.places[0].added_by, ListAuthor(name="Second Curator", profile_id="second-id"))
         self.assertTrue(merged.places[0].is_favorite)
 
     def test_preserve_existing_raw_saved_list_does_not_apply_to_non_matching_place(self) -> None:
