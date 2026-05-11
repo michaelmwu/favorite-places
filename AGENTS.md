@@ -19,6 +19,17 @@
 - Use `bun run check` and `bun run build` before closing out frontend changes.
 - Use `.venv/bin/python` if `uv run` hits sandbox cache issues in Codex.
 
+## Agent Workflow
+
+- State assumptions before acting when a request has more than one reasonable interpretation. If an assumption would materially change the result, ask instead of guessing.
+- Read before you write. Before adding or replacing code, inspect the relevant exports, immediate callers, and obvious shared utilities.
+- Keep changes surgical. Touch only what the task requires; do not refactor adjacent code or add speculative abstractions.
+- Match the existing codebase conventions for naming, structure, error handling, and tests. If two patterns conflict, pick one, say why, and do not blend them silently.
+- Use code for deterministic decisions and the model for judgment calls. Do not push routing, retries, status handling, or other rule-based transforms into prompts or model output when code can decide directly.
+- For non-trivial changes, reason through state ownership, observability, blast radius, and timing before shipping. Surface risks instead of hand-waving them away.
+- Verify intent, not just motion. "Done" is wrong if important work was skipped silently, and "tests pass" is not enough if the tests would still pass after breaking the intended behavior.
+- Checkpoint multi-step work. After each significant step, be able to say what changed, what was verified, and what remains.
+
 ## Self-Hosted Refresh Runner
 
 The `data-refresh` workflow is intentionally tied to a self-hosted Linux runner. Treat the runner image or host provisioning as the contract for OS-level tools and browser libraries; do not install them ad hoc inside the workflow.
