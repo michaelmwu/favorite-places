@@ -1425,6 +1425,29 @@
     line-height: 1.48;
   }
 
+  .place-card-attribution {
+    width: 100%;
+    padding-top: 0.1rem;
+  }
+
+  .place-card-attribution .guide-author {
+    font-size: 0.78rem;
+  }
+
+  .place-card-attribution .guide-author-mark {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+
+  .place-card-attribution .guide-author-icon {
+    width: 0.88rem;
+    height: 0.88rem;
+  }
+
+  .place-card-attribution .guide-author-initials {
+    font-size: 0.62rem;
+  }
+
   .place-card-tags {
     width: 100%;
     gap: 0.38rem;

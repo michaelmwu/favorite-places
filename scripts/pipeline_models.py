@@ -145,6 +145,7 @@ class RawPlace(PipelineModel):
     address: str | None = None
     note: str | None = None
     is_favorite: bool = False
+    added_by: ListAuthor | None = None
     lat: float | None = None
     lng: float | None = None
     maps_url: str
@@ -286,6 +287,7 @@ class PlaceProvenance(PipelineModel):
     neighborhood: PlaceField | None = None
     note: PlaceField | None = None
     why_recommended: PlaceField | None = None
+    added_by: PlaceField | None = None
     top_pick: PlaceField | None = None
     hidden: PlaceField | None = None
     manual_rank: PlaceField | None = None
@@ -315,6 +317,7 @@ class NormalizedPlace(PipelineModel):
     neighborhood: str | None = None
     note: str | None = None
     why_recommended: str | None = None
+    added_by: ListAuthor | None = None
     main_photo_path: str | None = None
     top_pick: bool = False
     hidden: bool = False

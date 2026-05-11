@@ -82,6 +82,8 @@ interface GuideConfig {
 interface PlaceCardConfig {
   showPhoto: boolean;
   showMapLink: boolean;
+  showAttribution: boolean;
+  showGuideAuthorAttribution: boolean;
   showCategory: boolean;
   showNeighborhood: boolean;
   showRating: boolean;
@@ -95,6 +97,7 @@ interface PlaceCardConfig {
   showStatus: boolean;
   bestHitLabel: string;
   topPickLabel: string;
+  attributionLabel: string;
   mapsLabel: string;
   savedPlaceLabel: string;
   photoPlaceholderFallback: string;
@@ -226,6 +229,8 @@ const defaultSiteConfig: SiteConfig = {
   placeCard: {
     showPhoto: true,
     showMapLink: true,
+    showAttribution: true,
+    showGuideAuthorAttribution: false,
     showCategory: true,
     showNeighborhood: true,
     showRating: true,
@@ -239,6 +244,7 @@ const defaultSiteConfig: SiteConfig = {
     showStatus: true,
     bestHitLabel: "Popular",
     topPickLabel: "Top pick",
+    attributionLabel: "Added by",
     mapsLabel: "Maps",
     savedPlaceLabel: "Saved place",
     photoPlaceholderFallback: "Saved favorite",

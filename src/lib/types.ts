@@ -46,6 +46,7 @@ export interface PlaceProvenance {
   neighborhood?: PlaceField<string> | null;
   note?: PlaceField<string> | null;
   why_recommended?: PlaceField<string> | null;
+  added_by?: PlaceField<ListAuthor> | null;
   top_pick?: PlaceField<boolean> | null;
   hidden?: PlaceField<boolean> | null;
   manual_rank?: PlaceField<number> | null;
@@ -76,6 +77,7 @@ export interface Place {
   neighborhood: string | null;
   note: string | null;
   why_recommended: string | null;
+  added_by?: ListAuthor | null;
   main_photo_path: string | null;
   top_pick: boolean;
   hidden: boolean;

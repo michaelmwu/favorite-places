@@ -88,7 +88,9 @@ Supported sources:
 
 Google My Maps URLs are not supported yet.
 
-For Google Maps URL sources, raw snapshots preserve the list `owner` object, including `name`, `photo_url`, `photo_path`, `avatar_mode`, and `profile_id`, plus any `collaborators` the scraper can recover. When the scraped owner is the effective published author, source refresh downloads a square local author image into `site/public/author-photos/` and stores its `photo_path`. Guide list overrides can optionally set, replace, or suppress the generated guide `author`; use `photo_path` to point at a site-owned image under `site/public/`, or set `avatar_mode` to `photo`, `initials`, or `icon`.
+For Google Maps URL sources, raw snapshots preserve the list `owner` object, including `name`, `photo_url`, `photo_path`, `avatar_mode`, and `profile_id`, plus any `collaborators` the scraper can recover. Individual places can also carry an `added_by` author with `name` and `profile_id`. When the scraped owner is the effective published author, source refresh downloads a square local author image into `site/public/author-photos/` and stores its `photo_path`. Guide list overrides can optionally set, replace, or suppress the generated guide `author`; use `photo_path` to point at a site-owned image under `site/public/`, or set `avatar_mode` to `photo`, `initials`, or `icon`.
+
+Place-level `added_by` metadata is preserved in generated place data. Cards show it by default only when it differs from the guide author, so collaborator additions are visible without repeating the guide owner on every card. Override a place with `"added_by": {"name": "Name", "avatar_mode": "initials"}` to set it manually, or `"added_by": null` to suppress it for that place. Set `placeCard.showAttribution: false` in `site/config.ts` to hide all individual place attributions, or `placeCard.showGuideAuthorAttribution: true` to also show places added by the guide author.
 
 ## Build Your Data
 

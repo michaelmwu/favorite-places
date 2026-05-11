@@ -263,7 +263,7 @@ The project keeps these layers separate:
 1. `site/data/raw/`: raw scraper or CSV import snapshots
 2. `site/data/cache/places.sqlite`: cached Google Places lookups keyed by guide slug and stable place id
 3. `site/data/cache/google-places/`: optional debug export directory, gitignored
-4. `site/overrides/`: handwritten metadata, tags, notes, visibility, and ranking
+4. `site/overrides/`: handwritten metadata, tags, notes, visibility, attribution, and ranking
 5. `src/data/generated/`: static JSON that Astro reads at build time, gitignored
 6. `public/data/search-index.json`: browser search index, gitignored
 
@@ -274,6 +274,8 @@ Merge precedence:
 3. Raw scraped list data
 
 Manual overrides always win over machine-enriched fields.
+
+Google Maps list imports may attach `added_by` to individual raw places. The build preserves that attribution into generated place JSON, and place overrides can replace it with an author object or suppress it with `null`. The frontend default is to show individual place attribution only when it is not the effective guide author; `site/config.ts` can disable all card attributions with `placeCard.showAttribution: false`.
 
 ## Google Places Enrichment
 

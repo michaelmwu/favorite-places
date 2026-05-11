@@ -446,6 +446,7 @@ const guideJsonLd = [
           {visiblePlaces.map((place) => (
             <PlaceCard
               place={place}
+              guideAuthor={guide.author}
               guideContext={placeTagGuideContext}
               featured={featuredPlaceIds.has(place.id)}
               bestHit={bestHitPlaceIds.has(place.id)}
