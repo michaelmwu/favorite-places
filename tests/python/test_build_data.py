@@ -248,6 +248,7 @@ class BuildDataTests(unittest.TestCase):
         assert places_by_id["cid:1"].provenance.added_by is not None
         self.assertEqual(places_by_id["cid:1"].provenance.added_by.source, "manual")
         self.assertIsNone(places_by_id["cid:2"].added_by)
+        self.assertIsNone(places_by_id["cid:2"].provenance.added_by)
 
     def test_sync_list_author_photo_downloads_local_photo_path(self) -> None:
         author = ListAuthor(

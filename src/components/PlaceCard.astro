@@ -30,7 +30,13 @@ function authorsReferToSamePerson(left: ListAuthor | null | undefined, right: Li
     return leftProfileId === rightProfileId;
   }
 
-  return left.name.trim().toLocaleLowerCase() === right.name.trim().toLocaleLowerCase();
+  const leftName = left.name?.trim();
+  const rightName = right.name?.trim();
+  if (!leftName || !rightName) {
+    return false;
+  }
+
+  return leftName.toLowerCase() === rightName.toLowerCase();
 }
 
 const { bestHit = false, featured = false, guideAuthor = null, guideContext = {}, place } = Astro.props;
@@ -107,10 +113,12 @@ const placeAttribution =
   place.added_by && place.added_by.name.trim().length > 0
     ? place.added_by
     : null;
-const showPlaceAttribution =
+const showPlaceAttribution = Boolean(
   siteConfig.placeCard.showAttribution &&
   placeAttribution &&
-  (siteConfig.placeCard.showGuideAuthorAttribution || !authorsReferToSamePerson(placeAttribution, guideAuthor));
+  (siteConfig.placeCard.showGuideAuthorAttribution || !authorsReferToSamePerson(placeAttribution, guideAuthor)),
+);
+const displayedPlaceAttribution = showPlaceAttribution ? placeAttribution : null;
 ---
 
 <article
@@ -233,9 +241,9 @@ const showPlaceAttribution =
     )}
   </div>
 
-  {showPlaceAttribution && (
+  {displayedPlaceAttribution && (
     <div class="place-card-attribution">
-      <AuthorByline author={placeAttribution} label={siteConfig.placeCard.attributionLabel} variant="card" />
+      <AuthorByline author={displayedPlaceAttribution} label={siteConfig.placeCard.attributionLabel} variant="card" />
     </div>
   )}
   {siteConfig.placeCard.showWhyRecommended && whyRecommendedHtml && (
