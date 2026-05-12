@@ -2699,6 +2699,70 @@ class BuildDataTests(unittest.TestCase):
         assert merged.place is not None
         self.assertEqual(merged.place.google_maps_uri, "https://maps.google.com/?cid=963849929162476527")
 
+    def test_preserve_existing_enrichment_keeps_thinner_successful_refresh_fields(self) -> None:
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="The Bob Hawke Beer and Leisure Centre, Sydney",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="The Bob Hawke Beer and Leisure Centre",
+                formatted_address="8-12 Sydney St, Marrickville NSW 2204, Australia",
+                review_topics=[{"label": "beer", "count": 10}],
+                reviews=[{"text": "Great pub"}],
+                about_sections=[
+                    {
+                        "title": "Offerings",
+                        "items": [{"label": "Beer", "aria_label": "Serves beer"}],
+                    }
+                ],
+                semantic_description="A brewery-backed leisure centre with pub food and a retro Australian beer-hall feel.",
+                semantic_description_signature="old-signature",
+                semantic_source="llm",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="The Bob Hawke Beer and Leisure Centre, Sydney",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="The Bob Hawke Beer and Leisure Centre",
+                formatted_address="8-12 Sydney St, Marrickville NSW 2204, Australia",
+                rating=4.5,
+            ),
+        )
+
+        merged, warning = build_data.preserve_existing_enrichment(
+            slug="sydney-australia",
+            place_id="cid:4697974207037271879",
+            place_name="The Bob Hawke Beer and Leisure Centre",
+            existing_entry=existing_entry,
+            refreshed_entry=refreshed_entry,
+        )
+
+        self.assertIsNotNone(warning)
+        assert merged.place is not None
+        self.assertEqual(merged.place.review_topics, [{"label": "beer", "count": 10}])
+        self.assertEqual(merged.place.reviews, [{"text": "Great pub"}])
+        self.assertEqual(
+            merged.place.about_sections,
+            [
+                {
+                    "title": "Offerings",
+                    "items": [{"label": "Beer", "aria_label": "Serves beer"}],
+                }
+            ],
+        )
+        self.assertEqual(
+            merged.place.semantic_description,
+            "A brewery-backed leisure centre with pub food and a retro Australian beer-hall feel.",
+        )
+        self.assertEqual(merged.place.semantic_description_signature, "old-signature")
+        self.assertEqual(merged.place.semantic_source, "llm")
+        self.assertIn("about", warning or "")
+        self.assertIn("semantic_description", warning or "")
+
     def test_uncertain_place_page_identity_suppresses_publishable_identity_fields(self) -> None:
         raw_place = RawPlace(
             name="Lola Underground",

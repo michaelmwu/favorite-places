@@ -5845,6 +5845,22 @@ def preserve_existing_enrichment(
         refreshed_place.photo_url = previous_place.photo_url
         append_unique_reason(preserved_fields, "photo_url")
 
+    if can_preserve_previous_identity:
+        if not refreshed_place.review_topics and previous_place.review_topics:
+            refreshed_place.review_topics = previous_place.review_topics[:]
+            append_unique_reason(preserved_fields, "review_topics")
+        if not refreshed_place.reviews and previous_place.reviews:
+            refreshed_place.reviews = previous_place.reviews[:]
+            append_unique_reason(preserved_fields, "reviews")
+        if not refreshed_place.about_sections and previous_place.about_sections:
+            refreshed_place.about_sections = previous_place.about_sections[:]
+            append_unique_reason(preserved_fields, "about")
+        if not refreshed_place.semantic_description and previous_place.semantic_description:
+            refreshed_place.semantic_description = previous_place.semantic_description
+            refreshed_place.semantic_description_signature = previous_place.semantic_description_signature
+            refreshed_place.semantic_source = previous_place.semantic_source
+            append_unique_reason(preserved_fields, "semantic_description")
+
     if not preserved_fields:
         return refreshed_entry, None
 
