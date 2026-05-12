@@ -107,6 +107,10 @@ class EvaluateLLMsTest(unittest.TestCase):
 
         self.assertEqual(cost, 0.00228)
 
+    def test_validate_api_url_rejects_non_http_scheme(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "API URL"):
+            evaluate_llms.validate_api_url("file:///tmp/model-response.json", "test profile")
+
     def test_semantic_case_labels_mark_sparse_and_non_english(self) -> None:
         labels = evaluate_llms.semantic_case_labels(
             raw_place=RawPlace(

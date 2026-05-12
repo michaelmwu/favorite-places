@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 try:
@@ -491,6 +492,7 @@ def select_stratified_semantic_cases(cases: Sequence[dict[str, Any]], *, limit: 
     selected: list[dict[str, Any]] = []
     selected_ids: set[str] = set()
     covered: set[str] = set()
+    sparse_count = 0
 
     for target in targets:
         candidate = best_semantic_case_for_target(
@@ -499,10 +501,13 @@ def select_stratified_semantic_cases(cases: Sequence[dict[str, Any]], *, limit: 
             selected_ids=selected_ids,
             covered=covered,
             max_sparse=max_sparse,
+            sparse_count=sparse_count,
         )
         if candidate is None:
             continue
         append_semantic_case_selection(selected, selected_ids, covered, candidate)
+        if semantic_case_is_sparse(candidate):
+            sparse_count += 1
         if len(selected) >= limit:
             return selected
 
@@ -513,10 +518,13 @@ def select_stratified_semantic_cases(cases: Sequence[dict[str, Any]], *, limit: 
             selected_ids=selected_ids,
             covered=covered,
             max_sparse=max_sparse,
+            sparse_count=sparse_count,
         )
         if candidate is None:
             break
         append_semantic_case_selection(selected, selected_ids, covered, candidate)
+        if semantic_case_is_sparse(candidate):
+            sparse_count += 1
     return selected
 
 
@@ -527,10 +535,10 @@ def best_semantic_case_for_target(
     selected_ids: set[str],
     covered: set[str],
     max_sparse: int,
+    sparse_count: int,
 ) -> dict[str, Any] | None:
     best_case: dict[str, Any] | None = None
     best_score = -1
-    sparse_count = sum(1 for case_id in selected_ids for case in cases if case.get("case_id") == case_id and "evidence:sparse" in case.get("fixture_labels", []))
     for case in cases:
         case_id = string_value(case.get("case_id"))
         if case_id is None or case_id in selected_ids:
@@ -568,6 +576,11 @@ def append_semantic_case_selection(
     selected.append(case)
     selected_ids.add(case_id)
     covered.update(label for label in case.get("fixture_labels", []) if isinstance(label, str))
+
+
+def semantic_case_is_sparse(case: Mapping[str, Any]) -> bool:
+    labels = case.get("fixture_labels")
+    return isinstance(labels, list) and "evidence:sparse" in labels
 
 
 def collect_dom_repair_cases(
@@ -849,6 +862,7 @@ def call_openai_compatible_json_model(
 ) -> dict[str, Any]:
     if not profile.base_url:
         raise RuntimeError(f"Model profile {profile.name} is missing base_url.")
+    validate_api_url(profile.base_url, f"Model profile {profile.name}")
     payload: dict[str, Any] = {
         "model": profile.model,
         "messages": [
@@ -882,6 +896,7 @@ def call_anthropic_json_model(
     timeout_seconds: float,
 ) -> dict[str, Any]:
     base_url = profile.base_url or "https://api.anthropic.com"
+    validate_api_url(base_url, f"Model profile {profile.name}")
     payload: dict[str, Any] = {
         "model": profile.model,
         "max_tokens": int(profile.request_options.get("max_tokens", 1200)),
@@ -909,6 +924,12 @@ def call_anthropic_json_model(
         "json": decode_json_object(content),
         "usage": response_payload.get("usage") if isinstance(response_payload, dict) else None,
     }
+
+
+def validate_api_url(url: str, context: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise RuntimeError(f"{context}: API URL must use http:// or https://, got {url!r}.")
 
 
 def read_json_response(request: Request, *, timeout_seconds: float) -> dict[str, Any]:
