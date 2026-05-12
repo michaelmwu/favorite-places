@@ -6372,6 +6372,16 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(build_data.sanitize_semantic_description(description), description)
 
+    def test_semantic_description_accepts_valid_english_words_that_overlap_french_leak_terms(
+        self,
+    ) -> None:
+        for description in (
+            "A convivial neighborhood wine bar with a compact list and relaxed counter seating.",
+            "Contemporary bistro menus propose a focused set of seasonal plates for sharing.",
+        ):
+            with self.subTest(description=description):
+                self.assertEqual(build_data.sanitize_semantic_description(description), description)
+
     def test_semantic_description_rejects_paragraph_length_text(self) -> None:
         self.assertIsNone(build_data.sanitize_semantic_description("x" * 321))
 
@@ -10842,6 +10852,58 @@ class BuildDataTests(unittest.TestCase):
             finally:
                 connection.close()
 
+    def test_rebuild_places_sqlite_rejects_empty_payload_over_existing_nonempty_guide(self) -> None:
+        raw = RawSavedList(
+            configured_source_type="google_list_url",
+            title="Tokyo",
+            places=[
+                RawPlace(
+                    name="Coffee House",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                )
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0], source_type=raw.configured_source_type)
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id=place_id,
+                    name="Coffee House",
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Coffee+House",
+                    status="active",
+                )
+            ],
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Coffee House",
+            matched=True,
+            place=EnrichmentPlace(display_name="Coffee House"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "cache" / "places.sqlite"
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                build_data.save_places_cache("tokyo-japan", {place_id: cache_entry})
+                with self.assertRaisesRegex(RuntimeError, "tokyo-japan"):
+                    build_data.rebuild_places_sqlite(
+                        raw_lists={"tokyo-japan": raw},
+                        guides=[guide],
+                        enrichment_caches={"tokyo-japan": {}},
+                    )
+                loaded_payload = build_data.load_places_cache("tokyo-japan")
+
+        self.assertEqual(list(loaded_payload), [place_id])
+
     def test_rebuild_places_sqlite_hydrates_matching_guide_cache_photo_urls(self) -> None:
         shared_place_id = "cid:111"
         photo_url = "https://images.example/shared-photo.webp"
@@ -11447,6 +11509,7 @@ class BuildDataTests(unittest.TestCase):
             tmpdir_path = Path(tmpdir)
             raw_dir = tmpdir_path / "raw"
             cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
             raw_dir.mkdir()
             cache_dir.mkdir()
             (raw_dir / "tokyo-japan.json").write_text(
@@ -11480,6 +11543,7 @@ class BuildDataTests(unittest.TestCase):
             with (
                 patch.object(build_data, "RAW_DIR", raw_dir),
                 patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
                 patch.object(build_data, "google_places_api_key", return_value=None),
                 patch.object(build_data, "ThreadPoolExecutor", FakeExecutor),
                 patch.object(build_data, "as_completed", return_value=[future]),

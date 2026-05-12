@@ -18,7 +18,7 @@ import time
 import unicodedata
 import uuid
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
@@ -6054,6 +6054,26 @@ def save_places_cache_to_sqlite(
         connection.close()
 
 
+def existing_places_cache_sqlite_row_counts(slugs: Iterable[str]) -> dict[str, int]:
+    if not PLACES_SQLITE_PATH.exists():
+        return {}
+    connection = sqlite3.connect(PLACES_SQLITE_PATH)
+    try:
+        if not sqlite_table_exists(connection, "guide_enrichment_cache"):
+            return {}
+        return {
+            slug: connection.execute(
+                "SELECT COUNT(*) FROM guide_enrichment_cache WHERE guide_slug = ?",
+                (slug,),
+            ).fetchone()[0]
+            for slug in slugs
+        }
+    except sqlite3.Error:
+        return {}
+    finally:
+        connection.close()
+
+
 def export_all_places_cache_json() -> int:
     PLACES_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     exported = 0
@@ -6366,6 +6386,20 @@ def rebuild_places_sqlite(
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> None:
+    existing_row_counts = existing_places_cache_sqlite_row_counts(raw_lists.keys())
+    empty_replacements = [
+        slug
+        for slug, raw in raw_lists.items()
+        if raw.places
+        and not enrichment_caches.get(slug)
+        and existing_row_counts.get(slug, 0) > 0
+    ]
+    if empty_replacements:
+        joined_slugs = ", ".join(sorted(empty_replacements))
+        raise RuntimeError(
+            "Refusing to rebuild enrichment cache with empty payloads for "
+            f"non-empty guide(s): {joined_slugs}."
+        )
     pruned_any = False
     for slug, raw in raw_lists.items():
         cache_payload = enrichment_caches.get(slug)
@@ -9688,9 +9722,7 @@ SEMANTIC_DESCRIPTION_MALFORMED_RE = re.compile(
     r"(?:"
     r"^\s*(?:great|good|nice|amazing|awesome)\s+spot\b|"
     r"\b(?:top\s+notch|kinda|at\s+this\s+price\s+point|doesn[’']?t\s+feel|"
-    r"feels?\s+(?:kinda\s+)?cheap|clueless)\b|"
-    r"\b(?:vous|propose|sélection|raffinés|méticuleusement|choisis|convivial|"
-    r"chaleureux|feutré|partage)\b"
+    r"feels?\s+(?:kinda\s+)?cheap|clueless)\b"
     r")",
     re.IGNORECASE,
 )

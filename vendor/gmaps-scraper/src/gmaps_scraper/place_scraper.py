@@ -2421,6 +2421,7 @@ def _search_result_snapshot(candidate: str | Mapping[str, object]) -> dict[str, 
         "category",
         "address",
         "search_result_description",
+        "panel_text",
         "body_text",
     ):
         value = candidate.get(key)

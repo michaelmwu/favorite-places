@@ -51,6 +51,7 @@ from gmaps_scraper.place_scraper import (
     _parse_price_amount,
     _parse_review_count,
     _search_result_candidate_url,
+    _search_result_snapshot,
     _seed_google_consent_cookies,
     _should_use_llm_repair,
     collect_place_snapshot,
@@ -1992,6 +1993,30 @@ class PlaceScraperTests(unittest.TestCase):
         )
 
         self.assertIsNone(details.name)
+
+    def test_search_result_snapshot_preserves_panel_text_for_fallback_parsing(self) -> None:
+        snapshot = _search_result_snapshot(
+            {
+                "href": "https://www.google.com/maps/place/Open+Kitchen",
+                "name": "Open Kitchen",
+                "panel_text": "\n".join(
+                    [
+                        "Open Kitchen",
+                        "Restaurant · MPF7+73 Shibuya, Tokyo, Japan",
+                    ]
+                ),
+            }
+        )
+
+        details = _build_place_details(
+            "https://www.google.com/maps/place/Open+Kitchen",
+            resolved_url="https://www.google.com/maps/place/Open+Kitchen",
+            snapshot=snapshot,
+        )
+
+        self.assertEqual(snapshot["panel_text"], "Open Kitchen\nRestaurant · MPF7+73 Shibuya, Tokyo, Japan")
+        self.assertEqual(details.category, "Restaurant")
+        self.assertEqual(details.plus_code, "MPF7+73 Shibuya, Tokyo, Japan")
 
     def test_build_place_details_rejects_ui_action_fallback_name_and_marks_diagnostics(
         self,
