@@ -2014,7 +2014,10 @@ class PlaceScraperTests(unittest.TestCase):
             snapshot=snapshot,
         )
 
-        self.assertEqual(snapshot["panel_text"], "Open Kitchen\nRestaurant · MPF7+73 Shibuya, Tokyo, Japan")
+        self.assertEqual(
+            snapshot["panel_text"],
+            "Open Kitchen\nRestaurant · MPF7+73 Shibuya, Tokyo, Japan",
+        )
         self.assertEqual(details.category, "Restaurant")
         self.assertEqual(details.plus_code, "MPF7+73 Shibuya, Tokyo, Japan")
 
