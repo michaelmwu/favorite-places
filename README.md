@@ -146,6 +146,8 @@ bun run refresh:semantic-descriptions
 bun run refresh:semantic-descriptions:force
 ```
 
+Compare LLM model choices for semantic enrichment and scraper DOM repair with the eval harness documented in [`docs/llm-evals.md`](docs/llm-evals.md). The package aliases are `bun run eval:llm`, `bun run eval:llm:semantic`, and `bun run eval:llm:dom-repair`.
+
 The behavior is configurable in a few places:
 
 - `GOOGLE_PLACES_ENRICHMENT_STRATEGY` controls enrichment source selection. Use `scrape` for scraper-only, `api` for API-only, or `scrape_then_api` for scraper first with API fallback. The default is `scrape_then_api`.
