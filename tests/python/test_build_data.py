@@ -9882,6 +9882,62 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(refreshed_cache["cid:111"].place.semantic_neighborhood, "Zhongshan")
         self.assertEqual(refreshed_cache["cid:111"].place.semantic_tags, ["fine-dining"])
 
+    def test_refresh_cached_semantic_enrichment_with_place_selector_preserves_unselected_guide_cache(self) -> None:
+        tokyo_raw = RawSavedList(
+            title="Tokyo",
+            places=[RawPlace(name="Current Tokyo Place", maps_url="https://maps.google.com/?cid=111", cid="111")],
+        )
+        taipei_raw = RawSavedList(
+            title="Taipei",
+            places=[RawPlace(name="Selected Taipei Place", maps_url="https://maps.google.com/?cid=222", cid="222")],
+        )
+        stale_tokyo_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Deleted Tokyo Place",
+            matched=True,
+            place=EnrichmentPlace(display_name="Deleted Tokyo Place"),
+        )
+        taipei_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Selected Taipei Place",
+            matched=True,
+            place=EnrichmentPlace(display_name="Selected Taipei Place"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(tokyo_raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(taipei_raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+            ):
+                build_data.save_places_cache("tokyo-japan", {"cid:999": stale_tokyo_entry})
+                build_data.save_places_cache("taipei-taiwan", {"cid:222": taipei_entry})
+                updated_count, reused_count, skipped_count = build_data.refresh_cached_semantic_enrichment(
+                    enable_semantics=False,
+                    enable_description=False,
+                    place_selectors=["taipei-taiwan:cid:222"],
+                )
+                tokyo_cache = build_data.load_places_cache("tokyo-japan")
+
+        self.assertEqual((updated_count, reused_count, skipped_count), (0, 1, 0))
+        self.assertEqual(list(tokyo_cache), ["cid:999"])
+        self.assertEqual(tokyo_cache["cid:999"].query, "Deleted Tokyo Place")
+
     def test_enrich_raw_sources_prioritizes_missing_entries_before_expired_refreshes(self) -> None:
         raw = RawSavedList(
             title="Tokyo",
@@ -10067,6 +10123,69 @@ class BuildDataTests(unittest.TestCase):
                 )
 
             self.assertEqual(seen_places, ["Second Place"])
+
+    def test_enrich_raw_sources_with_place_selector_preserves_unselected_guide_cache(self) -> None:
+        tokyo_raw = RawSavedList(
+            title="Tokyo",
+            places=[RawPlace(name="Current Tokyo Place", maps_url="https://maps.google.com/?cid=111", cid="111")],
+        )
+        taipei_raw = RawSavedList(
+            title="Taipei",
+            places=[RawPlace(name="Selected Taipei Place", maps_url="https://maps.google.com/?cid=222", cid="222")],
+        )
+        stale_tokyo_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Deleted Tokyo Place",
+            matched=True,
+            place=EnrichmentPlace(display_name="Deleted Tokyo Place"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            raw_dir = tmpdir_path / "raw"
+            cache_dir = tmpdir_path / "cache"
+            db_path = tmpdir_path / "places.sqlite"
+            raw_dir.mkdir()
+            cache_dir.mkdir()
+            (raw_dir / "tokyo-japan.json").write_text(
+                json.dumps(tokyo_raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (raw_dir / "taipei-taiwan.json").write_text(
+                json.dumps(taipei_raw.model_dump(mode="json"), ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            seen_places: list[str] = []
+
+            def fake_enrich_place_job(_slug, _place_id, place_name, _refresh_reason, _place_payload, **_kwargs):
+                seen_places.append(place_name)
+                return EnrichmentCacheEntry(
+                    fetched_at="2026-04-20T00:00:00+00:00",
+                    query=place_name,
+                    matched=True,
+                    place=EnrichmentPlace(display_name=place_name),
+                )
+
+            with (
+                patch.object(build_data, "RAW_DIR", raw_dir),
+                patch.object(build_data, "PLACES_CACHE_DIR", cache_dir),
+                patch.object(build_data, "PLACES_SQLITE_PATH", db_path),
+                patch.object(build_data, "google_places_api_key", return_value=None),
+                patch.object(build_data, "enrich_place_job", side_effect=fake_enrich_place_job),
+            ):
+                build_data.save_places_cache("tokyo-japan", {"cid:999": stale_tokyo_entry})
+                build_data.enrich_raw_sources(
+                    force_refresh=True,
+                    place_selectors=["taipei-taiwan:cid:222"],
+                    refresh_workers=1,
+                    refresh_startup_jitter_seconds=0,
+                )
+                tokyo_cache = build_data.load_places_cache("tokyo-japan")
+
+        self.assertEqual(seen_places, ["Selected Taipei Place"])
+        self.assertEqual(list(tokyo_cache), ["cid:999"])
+        self.assertEqual(tokyo_cache["cid:999"].query, "Deleted Tokyo Place")
 
     def test_enrich_raw_sources_matches_cid_derived_from_maps_url(self) -> None:
         raw = RawSavedList(
@@ -11191,6 +11310,27 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(loaded_payload["cid:111"].place.primary_type_display_name, "Restaurant")
         self.assertEqual(loaded_payload["cid:111"].place.primary_type_display_name_localized, "レストラン")
         self.assertIsNone(loaded_payload["cid:111"].place.photo_url)
+
+    def test_save_places_cache_to_sqlite_rejects_empty_overwrite_of_existing_cache(self) -> None:
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Open Kitchen",
+            matched=True,
+            place=EnrichmentPlace(display_name="Open Kitchen"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "places.sqlite"
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                build_data.save_places_cache_to_sqlite("tokyo-japan", {"cid:111": cache_entry})
+                with self.assertRaisesRegex(RuntimeError, "Refusing to replace non-empty enrichment cache"):
+                    build_data.save_places_cache_to_sqlite("tokyo-japan", {})
+                loaded_payload = build_data.load_places_cache("tokyo-japan")
+
+        self.assertEqual(list(loaded_payload), ["cid:111"])
+        self.assertEqual(loaded_payload["cid:111"].query, "Open Kitchen")
 
     def test_prune_places_cache_to_raw_places_drops_stale_place_ids(self) -> None:
         raw = RawSavedList(

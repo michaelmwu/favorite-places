@@ -3280,9 +3280,10 @@ def enrich_raw_sources(
         city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
-        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
-        if pruned_count:
-            save_places_cache(slug, cache_payload)
+        if not normalized_place_selectors:
+            cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+            if pruned_count:
+                save_places_cache(slug, cache_payload)
         cache_payloads[slug] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
@@ -3446,9 +3447,10 @@ def refresh_cached_semantic_enrichment(
         city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
-        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
-        if pruned_count:
-            save_places_cache(slug, cache_payload)
+        if not normalized_place_selectors:
+            cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+            if pruned_count:
+                save_places_cache(slug, cache_payload)
         cache_payloads[slug] = cache_payload
 
         for place in raw.places:
@@ -5995,6 +5997,16 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
     try:
         with connection:
             ensure_guide_enrichment_cache_table(connection)
+            if not payload:
+                existing_count = connection.execute(
+                    "SELECT COUNT(*) FROM guide_enrichment_cache WHERE guide_slug = ?",
+                    (slug,),
+                ).fetchone()[0]
+                if existing_count:
+                    raise RuntimeError(
+                        f"Refusing to replace non-empty enrichment cache for {slug} "
+                        "with an empty payload."
+                    )
             connection.execute(
                 "DELETE FROM guide_enrichment_cache WHERE guide_slug = ?",
                 (slug,),
