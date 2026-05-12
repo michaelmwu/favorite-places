@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts import evaluate_llms
 from scripts.pipeline_models import EnrichmentPlace, RawPlace
@@ -61,6 +65,73 @@ class EvaluateLLMsTest(unittest.TestCase):
         self.assertEqual(profiles[0].api_key_env, "FIREWORKS_API_KEY")
         self.assertEqual(profiles[0].model, "accounts/fireworks/models/example")
 
+    def test_unknown_model_with_base_url_can_override_api_key_env(self) -> None:
+        profiles = evaluate_llms.resolve_model_profiles(
+            "custom-model",
+            profiles_path=None,
+            fallback_base_url="http://localhost:8080/v1",
+            fallback_api_key_env="CUSTOM_LLM_API_KEY",
+        )
+
+        self.assertEqual(profiles[0].api_key_env, "CUSTOM_LLM_API_KEY")
+        self.assertEqual(profiles[0].base_url, "http://localhost:8080/v1")
+
+    def test_task_alias_style_arguments_accept_global_options_after_subcommand(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            cases_file = root / "semantic-cases.jsonl"
+            cases_file.write_text("", encoding="utf-8")
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                exit_code = evaluate_llms.main(
+                    [
+                        "semantic",
+                        "--models",
+                        "gpt-5.4-mini",
+                        "--run-name",
+                        "alias-semantic",
+                        "--output-root",
+                        str(root),
+                        "--cases-file",
+                        str(cases_file),
+                        "--capture-only",
+                    ]
+                )
+
+            run = json.loads((root / "alias-semantic" / "run.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(run["command"], "semantic")
+        self.assertEqual([model["name"] for model in run["models"]], ["gpt-5.4-mini"])
+
+    def test_task_alias_style_arguments_work_for_dom_repair(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            cases_file = root / "dom-repair-cases.jsonl"
+            cases_file.write_text("", encoding="utf-8")
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                exit_code = evaluate_llms.main(
+                    [
+                        "dom-repair",
+                        "--models",
+                        "kimi-k2p6-fireworks",
+                        "--run-name",
+                        "alias-dom",
+                        "--output-root",
+                        str(root),
+                        "--cases-file",
+                        str(cases_file),
+                        "--capture-only",
+                    ]
+                )
+
+            run = json.loads((root / "alias-dom" / "run.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(run["command"], "dom-repair")
+        self.assertEqual([model["name"] for model in run["models"]], ["kimi-k2p6-fireworks"])
+
     def test_write_semantic_judge_pack_prioritizes_baseline_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             path = Path(tmp_dir) / "judge-pack.md"
@@ -110,6 +181,38 @@ class EvaluateLLMsTest(unittest.TestCase):
     def test_validate_api_url_rejects_non_http_scheme(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "API URL"):
             evaluate_llms.validate_api_url("file:///tmp/model-response.json", "test profile")
+
+    def test_anthropic_request_options_are_merged_into_payload(self) -> None:
+        captured: dict[str, object] = {}
+
+        def fake_read_json_response(request: object, *, timeout_seconds: float) -> dict[str, object]:
+            captured["payload"] = json.loads(request.data.decode("utf-8"))  # type: ignore[attr-defined]
+            captured["timeout_seconds"] = timeout_seconds
+            return {"content": [{"type": "text", "text": "{}"}], "usage": {}}
+
+        profile = evaluate_llms.ModelProfile(
+            name="claude-test",
+            provider="anthropic",
+            model="claude-test",
+            api_key_env="ANTHROPIC_API_KEY",
+            request_options={"max_tokens": "321", "temperature": 0.2, "top_p": 0.9},
+        )
+
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch.object(evaluate_llms, "read_json_response", side_effect=fake_read_json_response):
+                evaluate_llms.call_anthropic_json_model(
+                    profile,
+                    system="Return JSON.",
+                    user_payload={"case": "example"},
+                    timeout_seconds=12.5,
+                )
+
+        payload = captured["payload"]
+        self.assertIsInstance(payload, dict)
+        self.assertEqual(payload["max_tokens"], 321)
+        self.assertEqual(payload["temperature"], 0.2)
+        self.assertEqual(payload["top_p"], 0.9)
+        self.assertEqual(captured["timeout_seconds"], 12.5)
 
     def test_semantic_case_labels_mark_sparse_and_non_english(self) -> None:
         labels = evaluate_llms.semantic_case_labels(

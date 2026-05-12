@@ -62,30 +62,53 @@ class ModelProfile:
 DEFAULT_MODEL_PROFILES_PATH = ROOT / "scripts" / "llm_model_profiles.json"
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+def add_global_arguments(parser: argparse.ArgumentParser, *, suppress_defaults: bool = False) -> None:
+    default = argparse.SUPPRESS if suppress_defaults else None
     parser.add_argument(
         "--models",
-        default="kimi-k2p6-turbo-fireworks,gpt-5.5",
+        default=argparse.SUPPRESS if suppress_defaults else "kimi-k2p6-turbo-fireworks,gpt-5.5",
         help="Comma-separated model profile names or model ids. Unknown ids use OpenAI defaults unless --base-url is set.",
     )
-    parser.add_argument("--baseline", default="gpt-5.5", help="Model name to label as baseline in judge packs.")
+    parser.add_argument(
+        "--baseline",
+        default=argparse.SUPPRESS if suppress_defaults else "gpt-5.5",
+        help="Model name to label as baseline in judge packs.",
+    )
     parser.add_argument(
         "--profiles",
         type=Path,
+        default=default,
         help=(
             "Optional JSON file with extra/overridden model profiles layered on top of "
             "scripts/llm_model_profiles.json."
         ),
     )
-    parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
-    parser.add_argument("--run-name", help="Output directory name. Defaults to a UTC timestamp.")
-    parser.add_argument("--seed", type=int, default=7)
-    parser.add_argument("--timeout-seconds", type=float, default=DEFAULT_TIMEOUT_SECONDS)
-    parser.add_argument("--base-url", help="Base URL for unknown OpenAI-compatible model ids.")
+    parser.add_argument("--output-root", type=Path, default=argparse.SUPPRESS if suppress_defaults else DEFAULT_OUTPUT_ROOT)
+    parser.add_argument("--run-name", default=default, help="Output directory name. Defaults to a UTC timestamp.")
+    parser.add_argument("--seed", type=int, default=argparse.SUPPRESS if suppress_defaults else 7)
+    parser.add_argument(
+        "--timeout-seconds",
+        type=float,
+        default=argparse.SUPPRESS if suppress_defaults else DEFAULT_TIMEOUT_SECONDS,
+    )
+    parser.add_argument("--base-url", default=default, help="Base URL for unknown OpenAI-compatible model ids.")
+    parser.add_argument(
+        "--api-key-env",
+        default=default,
+        help=(
+            "Environment variable for unknown model ids. Defaults to OPENAI_API_KEY, or LLM_API_KEY when "
+            "--base-url is set."
+        ),
+    )
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_global_arguments(parser)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     semantic = subparsers.add_parser("semantic", help="Evaluate semantic description, tags, vibe tags, and type tags.")
+    add_global_arguments(semantic, suppress_defaults=True)
     semantic.add_argument("--limit", type=int, default=DEFAULT_SEMANTIC_LIMIT)
     semantic.add_argument("--guide", action="append", dest="guides", help="Guide slug to include. Repeatable.")
     semantic.add_argument("--place", action="append", dest="places", help="Place selector substring/id to include. Repeatable.")
@@ -101,6 +124,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     semantic.add_argument("--force", action="store_true", help="Ignore cached eval model responses.")
 
     dom = subparsers.add_parser("dom-repair", help="Evaluate DOM repair JSON from live Google Maps place evidence.")
+    add_global_arguments(dom, suppress_defaults=True)
     dom.add_argument("--limit", type=int, default=DEFAULT_DOM_LIMIT)
     dom.add_argument("--guide", action="append", dest="guides", help="Guide slug to include. Repeatable.")
     dom.add_argument("--place", action="append", dest="places", help="Place selector substring/id to include. Repeatable.")
@@ -117,6 +141,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.models,
         profiles_path=args.profiles,
         fallback_base_url=args.base_url,
+        fallback_api_key_env=args.api_key_env,
     )
     run_dir = build_run_dir(args.output_root, args.run_name, args.command)
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -202,6 +227,7 @@ def resolve_model_profiles(
     *,
     profiles_path: Path | None,
     fallback_base_url: str | None,
+    fallback_api_key_env: str | None = None,
 ) -> list[ModelProfile]:
     available = load_model_profiles(DEFAULT_MODEL_PROFILES_PATH)
     if profiles_path is not None:
@@ -222,11 +248,12 @@ def resolve_model_profiles(
                 request_options={"response_format": {"type": "json_object"}},
             )
         if profile is None:
+            api_key_env = fallback_api_key_env or ("OPENAI_API_KEY" if not fallback_base_url else "LLM_API_KEY")
             profile = ModelProfile(
                 name=name,
                 provider="openai-compatible",
                 model=name,
-                api_key_env="OPENAI_API_KEY" if not fallback_base_url else "LLM_API_KEY",
+                api_key_env=api_key_env,
                 base_url=fallback_base_url or "https://api.openai.com/v1",
                 request_options={"response_format": {"type": "json_object"}},
             )
@@ -899,7 +926,7 @@ def call_anthropic_json_model(
     validate_api_url(base_url, f"Model profile {profile.name}")
     payload: dict[str, Any] = {
         "model": profile.model,
-        "max_tokens": int(profile.request_options.get("max_tokens", 1200)),
+        "max_tokens": 1200,
         "system": f"{system}\nReturn only a single JSON object.",
         "messages": [
             {
@@ -908,6 +935,8 @@ def call_anthropic_json_model(
             }
         ],
     }
+    payload.update(profile.request_options)
+    payload["max_tokens"] = int(payload.get("max_tokens", 1200))
     request = Request(
         f"{base_url.rstrip('/')}/v1/messages",
         data=json.dumps(payload).encode("utf-8"),

@@ -51,6 +51,8 @@ Use `--profiles path/to/profiles.json` to layer local additions or overrides on 
 
 You can also use `openrouter:<model-id>` without adding a profile. For example, `openrouter:anthropic/claude-sonnet-4.5` maps to `OPENROUTER_API_KEY` and `https://openrouter.ai/api/v1`.
 
+Unknown model ids use `OPENAI_API_KEY` by default. If you also pass `--base-url`, they use `LLM_API_KEY` by default; override that with `--api-key-env FIREWORKS_API_KEY` or define the model in a profile JSON when you want provider-specific credentials.
+
 ## Semantic Eval
 
 Semantic evals should usually run from captured fixture cases. This keeps model comparisons stable and avoids spending time rebuilding the same sample set.
@@ -137,4 +139,8 @@ bun run eval:llm:semantic -- --help
 bun run eval:llm:dom-repair -- --help
 ```
 
-Pass global options such as `--models`, `--profiles`, and `--run-name` before the subcommand when using `uv run python3 scripts/evaluate_llms.py` directly or the `bun run eval:llm -- ...` alias. The task-specific package aliases already include the subcommand, so they are most useful for subcommand-local options like `--limit`, `--cases-file`, and `--capture-only`.
+Pass global options such as `--models`, `--profiles`, and `--run-name` before the subcommand when using `uv run python3 scripts/evaluate_llms.py` directly or the `bun run eval:llm -- ...` alias. The task-specific package aliases already include the subcommand, so the same global options are accepted after the alias:
+
+```bash
+bun run eval:llm:semantic -- --models gpt-5.5,kimi-k2p6-fireworks --cases-file .context/llm-evals/semantic-stratified-cases/semantic-cases.jsonl
+```
