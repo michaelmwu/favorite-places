@@ -11332,6 +11332,25 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(list(loaded_payload), ["cid:111"])
         self.assertEqual(loaded_payload["cid:111"].query, "Open Kitchen")
 
+    def test_save_places_cache_to_sqlite_allows_explicit_empty_prune(self) -> None:
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Open Kitchen",
+            matched=True,
+            place=EnrichmentPlace(display_name="Open Kitchen"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "places.sqlite"
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                build_data.save_places_cache_to_sqlite("tokyo-japan", {"cid:111": cache_entry})
+                build_data.save_places_cache_to_sqlite("tokyo-japan", {}, allow_empty_overwrite=True)
+                loaded_payload = build_data.load_places_cache("tokyo-japan")
+
+        self.assertEqual(loaded_payload, {})
+
     def test_prune_places_cache_to_raw_places_drops_stale_place_ids(self) -> None:
         raw = RawSavedList(
             title="Aguas Calientes",

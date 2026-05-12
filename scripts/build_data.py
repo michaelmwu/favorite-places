@@ -3283,7 +3283,7 @@ def enrich_raw_sources(
         if not normalized_place_selectors:
             cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
             if pruned_count:
-                save_places_cache(slug, cache_payload)
+                save_places_cache(slug, cache_payload, allow_empty_overwrite=True)
         cache_payloads[slug] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
@@ -3450,7 +3450,7 @@ def refresh_cached_semantic_enrichment(
         if not normalized_place_selectors:
             cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
             if pruned_count:
-                save_places_cache(slug, cache_payload)
+                save_places_cache(slug, cache_payload, allow_empty_overwrite=True)
         cache_payloads[slug] = cache_payload
 
         for place in raw.places:
@@ -5870,8 +5870,13 @@ def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
     return load_places_cache_from_sqlite(slug) or {}
 
 
-def save_places_cache(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
-    save_places_cache_to_sqlite(slug, payload)
+def save_places_cache(
+    slug: str,
+    payload: dict[str, EnrichmentCacheEntry],
+    *,
+    allow_empty_overwrite: bool = False,
+) -> None:
+    save_places_cache_to_sqlite(slug, payload, allow_empty_overwrite=allow_empty_overwrite)
 
 
 def prune_places_cache_to_raw_places(
@@ -5991,13 +5996,18 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
     return result
 
 
-def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
+def save_places_cache_to_sqlite(
+    slug: str,
+    payload: dict[str, EnrichmentCacheEntry],
+    *,
+    allow_empty_overwrite: bool = False,
+) -> None:
     PLACES_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(PLACES_SQLITE_PATH)
     try:
         with connection:
             ensure_guide_enrichment_cache_table(connection)
-            if not payload:
+            if not payload and not allow_empty_overwrite:
                 existing_count = connection.execute(
                     "SELECT COUNT(*) FROM guide_enrichment_cache WHERE guide_slug = ?",
                     (slug,),

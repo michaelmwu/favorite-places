@@ -350,6 +350,26 @@ class ParserTests(unittest.TestCase):
             "https://www.google.com/maps/search/?api=1&query=Northwind+Cafe%2C+Example+District",
         )
 
+    def test_does_not_use_owner_payload_inside_metadata_as_place_cid(self) -> None:
+        runtime_state = copy.deepcopy(["noise", _LIST_NODE])
+        first_place = runtime_state[1][8][0]
+        assert isinstance(first_place, list)
+        first_metadata = first_place[1]
+        assert isinstance(first_metadata, list)
+
+        first_metadata[6] = [
+            "Fixture Owner",
+            "https://lh3.googleusercontent.com/a-/fixture-owner",
+            "104356373423434804635",
+        ]
+
+        parsed = parse_saved_list_artifacts(_LIST_URL, runtime_state=runtime_state)
+
+        self.assertEqual(len(parsed.places), 2)
+        self.assertEqual(parsed.places[0].cid, None)
+        self.assertEqual(parsed.places[0].google_id, "/g/11northwind")
+        self.assertNotEqual(parsed.places[0].cid, "104356373423434804635")
+
     def test_extracts_favorite_and_note_from_user_payload_shape(self) -> None:
         runtime_state = [
             "noise",

@@ -644,6 +644,9 @@ def _find_cid_in_value(value: JSONValue | None) -> str | None:
         return _normalize_cid_token(value)
     if not isinstance(value, list):
         return None
+    owner = _parse_list_owner(value)
+    if owner is not None and (owner.photo_url is not None or owner.profile_id is not None):
+        return None
 
     numeric_texts = [
         text
