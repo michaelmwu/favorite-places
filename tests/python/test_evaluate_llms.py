@@ -230,6 +230,16 @@ class EvaluateLLMsTest(unittest.TestCase):
         self.assertIn("type:food", labels)
         self.assertIn("geo:asia", labels)
 
+    def test_semantic_place_type_prefers_cafe_before_generic_food(self) -> None:
+        enrichment = EnrichmentPlace(
+            primary_type_display_name="Coffee shop",
+            types=["food", "point_of_interest"],
+        )
+
+        label = evaluate_llms.semantic_place_type_label(enrichment)
+
+        self.assertEqual(label, "cafe")
+
     def test_select_stratified_semantic_cases_prefers_coverage(self) -> None:
         cases = [
             {"case_id": "a", "fixture_labels": ["evidence:sparse", "geo:asia"]},
@@ -242,6 +252,18 @@ class EvaluateLLMsTest(unittest.TestCase):
         self.assertEqual(len(selected), 2)
         selected_labels = {label for case in selected for label in case["fixture_labels"]}
         self.assertTrue({"evidence:sparse", "evidence:raw-note"} <= selected_labels)
+
+    def test_select_stratified_semantic_cases_tolerates_missing_fixture_labels(self) -> None:
+        cases = [
+            {"case_id": "a", "fixture_labels": None},
+            {"case_id": "b"},
+            {"case_id": "c", "fixture_labels": ["evidence:raw-note"]},
+        ]
+
+        selected = evaluate_llms.select_stratified_semantic_cases(cases, limit=2)
+
+        self.assertEqual(len(selected), 2)
+        self.assertIn("c", {case["case_id"] for case in selected})
 
 
 if __name__ == "__main__":

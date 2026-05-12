@@ -422,10 +422,10 @@ def semantic_place_type_label(enrichment: Any) -> str | None:
         if isinstance(value, str)
     }
     text = " ".join([category, *sorted(types)])
-    if any(token in text for token in ("restaurant", "food", "meal", "pizza", "noodle")):
-        return "food"
     if any(token in text for token in ("cafe", "coffee", "bakery", "tea")):
         return "cafe"
+    if any(token in text for token in ("restaurant", "food", "meal", "pizza", "noodle")):
+        return "food"
     if any(token in text for token in ("bar", "night", "wine", "pub", "lounge")):
         return "bar-nightlife"
     if any(token in text for token in ("museum", "gallery", "tourist", "landmark", "park")):
@@ -570,7 +570,7 @@ def best_semantic_case_for_target(
         case_id = string_value(case.get("case_id"))
         if case_id is None or case_id in selected_ids:
             continue
-        labels = set(label for label in case.get("fixture_labels", []) if isinstance(label, str))
+        labels = set(semantic_fixture_labels(case))
         is_sparse = "evidence:sparse" in labels
         if is_sparse and sparse_count >= max_sparse:
             continue
@@ -602,12 +602,18 @@ def append_semantic_case_selection(
         return
     selected.append(case)
     selected_ids.add(case_id)
-    covered.update(label for label in case.get("fixture_labels", []) if isinstance(label, str))
+    covered.update(semantic_fixture_labels(case))
 
 
 def semantic_case_is_sparse(case: Mapping[str, Any]) -> bool:
+    return "evidence:sparse" in semantic_fixture_labels(case)
+
+
+def semantic_fixture_labels(case: Mapping[str, Any]) -> list[str]:
     labels = case.get("fixture_labels")
-    return isinstance(labels, list) and "evidence:sparse" in labels
+    if not isinstance(labels, list):
+        return []
+    return [label for label in labels if isinstance(label, str)]
 
 
 def collect_dom_repair_cases(
