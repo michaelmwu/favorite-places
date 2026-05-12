@@ -118,6 +118,7 @@ jobs:
               - "src/components/GuideMap.astro"
               - "src/components/PlaceCard.astro"
               - "public/scripts/guide-filters.js"
+              - "public/scripts/place-search.js"
             home:
               - "src/pages/index.astro"
               - "src/components/HomeGuideMap.astro"
