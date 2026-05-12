@@ -37,7 +37,7 @@ class EvaluateLLMsTest(unittest.TestCase):
         self.assertEqual(profiles[0].cost_per_1m["input"], 0.75)
         self.assertEqual(profiles[1].api_key_env, "FIREWORKS_API_KEY")
 
-    def test_load_profile_overrides_supports_custom_provider(self) -> None:
+    def test_resolve_model_profiles_uses_custom_profiles_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             path = Path(tmp_dir) / "profiles.json"
             path.write_text(
@@ -240,6 +240,16 @@ class EvaluateLLMsTest(unittest.TestCase):
 
         self.assertEqual(label, "cafe")
 
+    def test_semantic_place_type_prefers_bar_before_generic_food(self) -> None:
+        enrichment = EnrichmentPlace(
+            primary_type_display_name="Wine bar",
+            types=["food", "point_of_interest"],
+        )
+
+        label = evaluate_llms.semantic_place_type_label(enrichment)
+
+        self.assertEqual(label, "bar-nightlife")
+
     def test_select_stratified_semantic_cases_prefers_coverage(self) -> None:
         cases = [
             {"case_id": "a", "fixture_labels": ["evidence:sparse", "geo:asia"]},
@@ -264,6 +274,23 @@ class EvaluateLLMsTest(unittest.TestCase):
 
         self.assertEqual(len(selected), 2)
         self.assertIn("c", {case["case_id"] for case in selected})
+
+    def test_build_run_dir_sanitizes_run_name_inside_output_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            output_root = Path(tmp_dir)
+
+            run_dir = evaluate_llms.build_run_dir(output_root, "../outside", "semantic")
+
+        self.assertEqual(run_dir.name, "outside")
+        self.assertEqual(run_dir.parent, output_root)
+
+    def test_safe_filename_adds_hash_suffix_to_avoid_collisions(self) -> None:
+        first = evaluate_llms.safe_filename("a/b")
+        second = evaluate_llms.safe_filename("a-b")
+
+        self.assertNotEqual(first, second)
+        self.assertTrue(first.startswith("a-b-"))
+        self.assertTrue(second.startswith("a-b-"))
 
 
 if __name__ == "__main__":

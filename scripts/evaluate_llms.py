@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -289,10 +290,6 @@ def load_model_profiles(path: Path) -> dict[str, ModelProfile]:
     return profiles
 
 
-def load_profile_overrides(path: Path) -> dict[str, ModelProfile]:
-    return load_model_profiles(path)
-
-
 def collect_semantic_cases(
     *,
     limit: int,
@@ -424,10 +421,10 @@ def semantic_place_type_label(enrichment: Any) -> str | None:
     text = " ".join([category, *sorted(types)])
     if any(token in text for token in ("cafe", "coffee", "bakery", "tea")):
         return "cafe"
-    if any(token in text for token in ("restaurant", "food", "meal", "pizza", "noodle")):
-        return "food"
     if any(token in text for token in ("bar", "night", "wine", "pub", "lounge")):
         return "bar-nightlife"
+    if any(token in text for token in ("restaurant", "food", "meal", "pizza", "noodle")):
+        return "food"
     if any(token in text for token in ("museum", "gallery", "tourist", "landmark", "park")):
         return "culture-attraction"
     if any(token in text for token in ("hotel", "lodging", "spa", "bath")):
@@ -1227,14 +1224,28 @@ def selector_matches(slug: str, place_id: str, name: str, selectors: Sequence[st
 
 
 def build_run_dir(output_root: Path, run_name: str | None, command: str) -> Path:
+    output_root = output_root.expanduser()
     if run_name:
-        return output_root / run_name
-    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    return output_root / f"{timestamp}-{command}"
+        run_dir = output_root / safe_path_component(run_name, fallback="run")
+    else:
+        timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        run_dir = output_root / f"{timestamp}-{command}"
+    resolved_output_root = output_root.resolve()
+    resolved_run_dir = run_dir.resolve()
+    if resolved_run_dir != resolved_output_root and resolved_output_root not in resolved_run_dir.parents:
+        raise RuntimeError(f"Eval run directory must stay inside {output_root}.")
+    return run_dir
 
 
 def safe_filename(value: str) -> str:
-    return "".join(char if char.isalnum() or char in "-._" else "-" for char in value)[:180]
+    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
+    stem = safe_path_component(value, fallback="value")
+    return f"{stem[:167]}-{digest}"
+
+
+def safe_path_component(value: str, *, fallback: str) -> str:
+    sanitized = "".join(char if char.isalnum() or char in "-._" else "-" for char in value).strip(".-")
+    return sanitized[:180] or fallback
 
 
 def write_json(path: Path, value: Any) -> None:
