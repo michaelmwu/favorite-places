@@ -66,6 +66,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   test-e2e:
@@ -106,18 +107,18 @@ jobs:
               - "site/public/**"
               - "site.example/**"
               - "src/data/**"
+              - "src/lib/**"
               - "scripts/config/**"
               - "public/icons/**"
               - "public/marker-icons/**"
+              - "tests/e2e/**"
               - ".github/workflows/playwright.yml"
             guide:
-              - "tests/e2e/guide-filters.spec.ts"
               - "src/pages/guides/**"
               - "src/components/GuideMap.astro"
               - "src/components/PlaceCard.astro"
               - "public/scripts/guide-filters.js"
             home:
-              - "tests/e2e/home-browser.spec.ts"
               - "src/pages/index.astro"
               - "src/components/HomeGuideMap.astro"
               - "src/components/GuideCard.astro"
@@ -125,7 +126,9 @@ jobs:
               - "public/scripts/home-browser-*.js"
               - "public/scripts/place-search.js"
             shared_ui:
+              - "src/components/AuthorByline.astro"
               - "src/components/Layout.astro"
+              - "src/components/ui/**"
               - "src/styles/**"
               - "public/scripts/scroll-jump*.js"
 
