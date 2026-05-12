@@ -65,6 +65,17 @@ class EvaluateLLMsTest(unittest.TestCase):
         self.assertEqual(profiles[0].api_key_env, "FIREWORKS_API_KEY")
         self.assertEqual(profiles[0].model, "accounts/fireworks/models/example")
 
+    def test_load_model_profiles_rejects_mismatched_name_field(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "profiles.json"
+            path.write_text(
+                json.dumps({"models": {"profile-key": {"name": "different-name", "model": "example"}}}),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "mismatched name"):
+                evaluate_llms.load_model_profiles(path)
+
     def test_unknown_model_with_base_url_can_override_api_key_env(self) -> None:
         profiles = evaluate_llms.resolve_model_profiles(
             "custom-model",
@@ -249,6 +260,20 @@ class EvaluateLLMsTest(unittest.TestCase):
         label = evaluate_llms.semantic_place_type_label(enrichment)
 
         self.assertEqual(label, "bar-nightlife")
+
+    def test_semantic_place_type_matches_whole_tokens(self) -> None:
+        steak_house = EnrichmentPlace(primary_type_display_name="Steak house")
+        movie_theater = EnrichmentPlace(primary_type_display_name="Movie theater")
+        barber_shop = EnrichmentPlace(primary_type_display_name="Barber shop")
+
+        self.assertEqual(evaluate_llms.semantic_place_type_label(steak_house), "steak-house")
+        self.assertEqual(evaluate_llms.semantic_place_type_label(movie_theater), "culture-attraction")
+        self.assertEqual(evaluate_llms.semantic_place_type_label(barber_shop), "shopping")
+
+    def test_allowed_dom_repair_fields_requires_scraper_constants(self) -> None:
+        with patch.object(evaluate_llms, "GMAPS_SCRAPER_FIELD_CONSTANTS_AVAILABLE", False):
+            with self.assertRaisesRegex(RuntimeError, "gmaps-scraper field constants"):
+                evaluate_llms.allowed_dom_repair_fields(["dom_repair"])
 
     def test_select_stratified_semantic_cases_prefers_coverage(self) -> None:
         cases = [

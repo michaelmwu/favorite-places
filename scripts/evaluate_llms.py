@@ -29,11 +29,13 @@ except ModuleNotFoundError:
 try:
     from gmaps_scraper import PlaceLLMRepairRequest, scrape_place
     from gmaps_scraper.models import PLACE_LLM_DISPLAY_TRANSLATION_FIELDS, PLACE_LLM_DOM_REPAIR_FIELDS
+    GMAPS_SCRAPER_FIELD_CONSTANTS_AVAILABLE = True
 except ImportError:
     PlaceLLMRepairRequest = Any  # type: ignore[misc,assignment]
     scrape_place = None  # type: ignore[assignment]
     PLACE_LLM_DISPLAY_TRANSLATION_FIELDS = ()
     PLACE_LLM_DOM_REPAIR_FIELDS = ()
+    GMAPS_SCRAPER_FIELD_CONSTANTS_AVAILABLE = False
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -275,6 +277,9 @@ def load_model_profiles(path: Path) -> dict[str, ModelProfile]:
     for name, value in profiles_payload.items():
         if not isinstance(name, str) or not isinstance(value, Mapping):
             continue
+        explicit_name = string_value(value.get("name"))
+        if explicit_name is not None and explicit_name != name:
+            raise RuntimeError(f"{path} profile {name} has mismatched name field {explicit_name}.")
         provider = string_value(value.get("provider")) or "openai-compatible"
         if provider not in ("openai-compatible", "anthropic"):
             raise RuntimeError(f"{path} profile {name} has unsupported provider {provider}.")
@@ -418,22 +423,31 @@ def semantic_place_type_label(enrichment: Any) -> str | None:
         for value in getattr(enrichment, "types", [])
         if isinstance(value, str)
     }
-    text = " ".join([category, *sorted(types)])
-    if any(token in text for token in ("cafe", "coffee", "bakery", "tea")):
+    tokens = semantic_type_tokens([category, *sorted(types)])
+    if tokens & {"cafe", "coffee", "bakery", "tea"}:
         return "cafe"
-    if any(token in text for token in ("bar", "night", "wine", "pub", "lounge")):
+    if tokens & {"bar", "night", "wine", "pub", "lounge"}:
         return "bar-nightlife"
-    if any(token in text for token in ("restaurant", "food", "meal", "pizza", "noodle")):
+    if tokens & {"restaurant", "food", "meal", "pizza", "noodle"}:
         return "food"
-    if any(token in text for token in ("museum", "gallery", "tourist", "landmark", "park")):
+    if tokens & {"museum", "gallery", "tourist", "landmark", "park", "theater"}:
         return "culture-attraction"
-    if any(token in text for token in ("hotel", "lodging", "spa", "bath")):
+    if tokens & {"hotel", "lodging", "spa", "bath"}:
         return "lodging-wellness"
-    if any(token in text for token in ("shop", "store", "market", "mall")):
+    if tokens & {"shop", "store", "market", "mall"}:
         return "shopping"
-    if any(token in text for token in ("transit", "bus", "train", "government", "office")):
+    if tokens & {"transit", "bus", "train", "government", "office"}:
         return "service-transit"
     return category or None
+
+
+def semantic_type_tokens(slugs: Iterable[str]) -> set[str]:
+    return {
+        token
+        for slug in slugs
+        for token in slug.split("-")
+        if token
+    }
 
 
 def semantic_geography_label(*, country_name: str | None) -> str | None:
@@ -1140,6 +1154,8 @@ def load_sqlite_cache_rows() -> dict[tuple[str, str], EnrichmentCacheEntry]:
 
 
 def allowed_dom_repair_fields(tasks: Sequence[str]) -> list[str]:
+    if not GMAPS_SCRAPER_FIELD_CONSTANTS_AVAILABLE:
+        raise RuntimeError("gmaps-scraper field constants are required for dom-repair eval replay.")
     allowed: list[str] = []
     if "dom_repair" in tasks:
         allowed.extend(PLACE_LLM_DOM_REPAIR_FIELDS)
