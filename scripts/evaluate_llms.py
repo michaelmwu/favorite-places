@@ -287,7 +287,8 @@ def load_model_profiles(path: Path) -> dict[str, ModelProfile]:
             name=name,
             provider=provider,
             model=string_value(value.get("model")) or name,
-            api_key_env=string_value(value.get("api_key_env")) or "OPENAI_API_KEY",
+            api_key_env=string_value(value.get("api_key_env"))
+            or ("ANTHROPIC_API_KEY" if provider == "anthropic" else "OPENAI_API_KEY"),
             base_url=string_value(value.get("base_url")),
             request_options=dict_value(value.get("request_options")),
             cost_per_1m=float_dict_value(value.get("cost_per_1m")),
@@ -843,6 +844,7 @@ def call_dom_repair_model(
     started = time.monotonic()
     request_payload = case["repair_request"]
     tasks = request_payload.get("tasks")
+    allowed_fields = allowed_dom_repair_fields(tasks if isinstance(tasks, list) else [])
     response = call_json_model(
         profile,
         system=(
@@ -852,7 +854,7 @@ def call_dom_repair_model(
             "Never translate review topic labels. Do not return user-generated review text."
         ),
         user_payload={
-            "allowed_fields": allowed_dom_repair_fields(tasks if isinstance(tasks, list) else []),
+            "allowed_fields": allowed_fields,
             "review_topic_shape": {"label": "string", "count": "integer or null"},
             "about_section_shape": {
                 "title": "string",
@@ -864,14 +866,19 @@ def call_dom_repair_model(
     )
     decoded = response["json"] if isinstance(response.get("json"), dict) else {}
     fields = decoded.get("fields") if isinstance(decoded.get("fields"), dict) else decoded
+    parsed_fields = fields if isinstance(fields, dict) else {}
+    allowed = set(allowed_fields)
+    unexpected_fields = sorted(key for key in parsed_fields if isinstance(key, str) and key not in allowed)
+    accepted_fields = {key: value for key, value in parsed_fields.items() if isinstance(key, str) and key in allowed}
     return {
         "model": profile.name,
-        "status": "ok",
+        "status": "invalid_fields" if unexpected_fields else "ok",
         "elapsed_seconds": round(time.monotonic() - started, 3),
         "usage": response.get("usage"),
         "estimated_cost_usd": estimated_response_cost_usd(profile, response.get("usage")),
         "raw": decoded,
-        "fields": fields if isinstance(fields, dict) else {},
+        "fields": accepted_fields,
+        "unexpected_fields": unexpected_fields,
     }
 
 
@@ -976,6 +983,8 @@ def validate_api_url(url: str, context: str) -> None:
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise RuntimeError(f"{context}: API URL must use http:// or https://, got {url!r}.")
+    if parsed.scheme == "http" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
+        raise RuntimeError(f"{context}: remote API URLs must use https://, got {url!r}.")
 
 
 def read_json_response(request: Request, *, timeout_seconds: float) -> dict[str, Any]:
@@ -1030,7 +1039,7 @@ def write_judge_pack(
     lines = [
         f"# LLM {task} Judge Pack",
         "",
-        "Use this to compare candidates against the baseline or paste individual cases into this Codex GPT-5.5 chat.",
+        f"Use this to compare candidates against `{baseline}` or paste individual cases into an LLM review chat.",
         "",
     ]
     if task == "semantic":

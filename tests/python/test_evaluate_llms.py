@@ -76,6 +76,18 @@ class EvaluateLLMsTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "mismatched name"):
                 evaluate_llms.load_model_profiles(path)
 
+    def test_load_model_profiles_defaults_anthropic_api_key_env(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "profiles.json"
+            path.write_text(
+                json.dumps({"models": {"claude-example": {"provider": "anthropic", "model": "claude-example"}}}),
+                encoding="utf-8",
+            )
+
+            profiles = evaluate_llms.load_model_profiles(path)
+
+        self.assertEqual(profiles["claude-example"].api_key_env, "ANTHROPIC_API_KEY")
+
     def test_unknown_model_with_base_url_can_override_api_key_env(self) -> None:
         profiles = evaluate_llms.resolve_model_profiles(
             "custom-model",
@@ -167,6 +179,7 @@ class EvaluateLLMsTest(unittest.TestCase):
             content = path.read_text(encoding="utf-8")
 
         self.assertIn("LLM semantic Judge Pack", content)
+        self.assertIn("compare candidates against `gpt-5.5`", content)
         self.assertLess(content.index("### gpt-5.5"), content.index("### kimi-k2p6-turbo-fireworks"))
 
     def test_estimated_response_cost_uses_cached_input_pricing(self) -> None:
@@ -192,6 +205,12 @@ class EvaluateLLMsTest(unittest.TestCase):
     def test_validate_api_url_rejects_non_http_scheme(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "API URL"):
             evaluate_llms.validate_api_url("file:///tmp/model-response.json", "test profile")
+
+    def test_validate_api_url_requires_https_for_remote_hosts(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "remote API URLs"):
+            evaluate_llms.validate_api_url("http://api.example.com/v1", "test profile")
+
+        evaluate_llms.validate_api_url("http://localhost:8080/v1", "test profile")
 
     def test_anthropic_request_options_are_merged_into_payload(self) -> None:
         captured: dict[str, object] = {}
@@ -224,6 +243,24 @@ class EvaluateLLMsTest(unittest.TestCase):
         self.assertEqual(payload["temperature"], 0.2)
         self.assertEqual(payload["top_p"], 0.9)
         self.assertEqual(captured["timeout_seconds"], 12.5)
+
+    def test_dom_repair_model_filters_unexpected_fields(self) -> None:
+        case = {"repair_request": {"tasks": ["dom_repair"]}}
+        profile = evaluate_llms.ModelProfile(
+            name="repair-test",
+            provider="openai-compatible",
+            model="repair-test",
+            api_key_env="OPENAI_API_KEY",
+        )
+
+        with patch.object(evaluate_llms, "PLACE_LLM_DOM_REPAIR_FIELDS", ("name", "rating")):
+            with patch.object(evaluate_llms, "PLACE_LLM_DISPLAY_TRANSLATION_FIELDS", ()):
+                with patch.object(evaluate_llms, "call_json_model", return_value={"json": {"fields": {"name": "Cafe", "made_up": True}}}):
+                    result = evaluate_llms.call_dom_repair_model(profile, case, timeout_seconds=1)
+
+        self.assertEqual(result["status"], "invalid_fields")
+        self.assertEqual(result["fields"], {"name": "Cafe"})
+        self.assertEqual(result["unexpected_fields"], ["made_up"])
 
     def test_semantic_case_labels_mark_sparse_and_non_english(self) -> None:
         labels = evaluate_llms.semantic_case_labels(
