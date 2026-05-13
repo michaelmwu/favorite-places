@@ -83,6 +83,7 @@ class PlaceScraperTests(unittest.TestCase):
         self.assertIn("const descriptionValue = () => {", _PLACE_JS_EXTRACTOR)
         self.assertIn('firstText([".WeS02d", ".PYvSYb"])', _PLACE_JS_EXTRACTOR)
         self.assertIn("const descriptionBoundaryTop = () => {", _PLACE_JS_EXTRACTOR)
+        self.assertIn("[role='button'], [role='tab'], [role='tablist']", _PLACE_JS_EXTRACTOR)
 
     def test_place_js_extractor_uses_structural_panel_photo_selectors(self) -> None:
         self.assertIn("div.RZ66Rb button[jsaction*='heroHeaderImage'] img", _PLACE_JS_EXTRACTOR)
@@ -1449,6 +1450,9 @@ class PlaceScraperTests(unittest.TestCase):
 
     def test_clean_description_text_rejects_sponsored_label(self) -> None:
         self.assertIsNone(_clean_description_text("Sponsored"))
+
+    def test_clean_description_text_rejects_place_tab_strip(self) -> None:
+        self.assertIsNone(_clean_description_text("Overview Reviews About"))
 
     def test_clean_description_text_keeps_structured_marketing_summary(self) -> None:
         self.assertEqual(

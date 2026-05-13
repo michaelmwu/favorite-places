@@ -113,6 +113,7 @@ _DESCRIPTION_STOP_MARKERS = {
     "write a review",
     "claim this business",
     "suggest an edit",
+    "overview reviews about",
     "limited view of google maps",
     "get the most out of google maps",
     "our policies do not permit contributions to this type of place.",
@@ -645,7 +646,8 @@ _PLACE_JS_EXTRACTOR = r"""
       }
       if (
         element.closest(
-          "button, a, [role='button'], [data-item-id], [data-review-id], div.F7nice",
+          "button, a, [role='button'], [role='tab'], [role='tablist'], "
+            + "[data-item-id], [data-review-id], div.F7nice",
         )
       ) {
         continue;
