@@ -2763,6 +2763,57 @@ class BuildDataTests(unittest.TestCase):
         self.assertIn("about", warning or "")
         self.assertIn("semantic_description", warning or "")
 
+    def test_preserve_existing_enrichment_skips_invalid_cached_semantic_description(self) -> None:
+        existing_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-01T00:00:00+00:00",
+            source="google_maps_page",
+            query="Sushi Okeya Kyujiro, Montreal",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Sushi Okeya Kyujiro",
+                formatted_address="1227 Rue de la Montagne, Montréal, QC H3G 1Z2, Canada",
+                semantic_description=(
+                    "$180 lunch omakase; food is top notch, though it doesn’t feel that "
+                    "elevated at this price point (dishware feels kinda cheap and "
+                    "servers are a bit clueless about alcohol options)"
+                ),
+                semantic_description_signature="old-signature",
+                semantic_source="llm",
+            ),
+        )
+        refreshed_entry = EnrichmentCacheEntry(
+            fetched_at="2026-05-02T00:00:00+00:00",
+            source="google_maps_page",
+            query="Sushi Okeya Kyujiro, Montreal",
+            matched=True,
+            place=EnrichmentPlace(
+                display_name="Sushi Okeya Kyujiro",
+                formatted_address="1227 Rue de la Montagne, Montréal, QC H3G 1Z2, Canada",
+                rating=4.6,
+            ),
+        )
+        raw_place = RawPlace(
+            name="Sushi Okeya Kyujiro",
+            address="1227 Rue de la Montagne, Montréal, QC H3G 1Z2, Canada",
+            maps_url="https://maps.google.com/?cid=123",
+            cid="123",
+        )
+
+        merged, warning = build_data.preserve_existing_enrichment(
+            slug="montreal-canada",
+            place_id="cid:123",
+            place_name="Sushi Okeya Kyujiro",
+            existing_entry=existing_entry,
+            refreshed_entry=refreshed_entry,
+            raw_place=raw_place,
+        )
+
+        self.assertIsNone(warning)
+        assert merged.place is not None
+        self.assertIsNone(merged.place.semantic_description)
+        self.assertIsNone(merged.place.semantic_description_signature)
+        self.assertIsNone(merged.place.semantic_source)
+
     def test_uncertain_place_page_identity_suppresses_publishable_identity_fields(self) -> None:
         raw_place = RawPlace(
             name="Lola Underground",
@@ -6454,6 +6505,20 @@ class BuildDataTests(unittest.TestCase):
         ):
             with self.subTest(description=description):
                 self.assertEqual(build_data.sanitize_semantic_description(description), description)
+
+    def test_semantic_description_accepts_common_recommendation_openers(self) -> None:
+        for description in (
+            "Great spot for handmade soba with a quiet counter and seasonal sides.",
+            "Amazing spot for seasonal gelato and espresso near the old market.",
+            "Nice spot for small plates, natural wine, and a low-key patio dinner.",
+        ):
+            with self.subTest(description=description):
+                self.assertEqual(build_data.sanitize_semantic_description(description), description)
+
+    def test_semantic_description_accepts_slash_abbreviations(self) -> None:
+        description = "Counter-service breakfast/lunch cafe with vegetarian/vegan bowls and house coffee."
+
+        self.assertEqual(build_data.sanitize_semantic_description(description), description)
 
     def test_semantic_description_rejects_paragraph_length_text(self) -> None:
         self.assertIsNone(build_data.sanitize_semantic_description("x" * 321))

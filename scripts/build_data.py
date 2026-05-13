@@ -5855,8 +5855,13 @@ def preserve_existing_enrichment(
         if not refreshed_place.about_sections and previous_place.about_sections:
             refreshed_place.about_sections = previous_place.about_sections[:]
             append_unique_reason(preserved_fields, "about")
-        if not refreshed_place.semantic_description and previous_place.semantic_description:
-            refreshed_place.semantic_description = previous_place.semantic_description
+        preserved_semantic_description = semantic_description_for_preservation(
+            previous_place,
+            refreshed_place,
+            raw_place=raw_place,
+        )
+        if not refreshed_place.semantic_description and preserved_semantic_description:
+            refreshed_place.semantic_description = preserved_semantic_description
             refreshed_place.semantic_description_signature = previous_place.semantic_description_signature
             refreshed_place.semantic_source = previous_place.semantic_source
             append_unique_reason(preserved_fields, "semantic_description")
@@ -5868,6 +5873,25 @@ def preserve_existing_enrichment(
         refreshed_entry,
         f"WARNING: Preserving previous enrichment fields for {slug}:{place_id} [{place_name}]: "
         f"{', '.join(preserved_fields)}.",
+    )
+
+
+def semantic_description_for_preservation(
+    previous_place: EnrichmentPlace,
+    refreshed_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace | None,
+) -> str | None:
+    if not previous_place.semantic_description:
+        return None
+    if raw_place is None:
+        return sanitize_semantic_description(previous_place.semantic_description)
+    return usable_semantic_description(
+        previous_place.semantic_description,
+        enrichment_place=refreshed_place,
+        raw_place=raw_place,
+        city_name=None,
+        country_name=None,
     )
 
 
@@ -9735,21 +9759,34 @@ def sanitize_semantic_description(value: Any) -> str | None:
 
 
 SEMANTIC_DESCRIPTION_MALFORMED_RE = re.compile(
-    r"(?:"
-    r"^\s*(?:great|good|nice|amazing|awesome)\s+spot\b|"
-    r"\b(?:top\s+notch|kinda|at\s+this\s+price\s+point|doesn[’']?t\s+feel|"
-    r"feels?\s+(?:kinda\s+)?cheap|clueless)\b"
-    r")",
+    r"\b(?:"
+    r"top\s+notch|kinda|at\s+this\s+price\s+point|doesn[’']?t\s+feel|"
+    r"feels?\s+(?:kinda\s+)?cheap|clueless)\b",
     re.IGNORECASE,
 )
 
 
 def looks_like_malformed_semantic_description(value: str) -> bool:
-    if value.count("/") >= 2:
+    if looks_like_slash_delimited_phrase_leak(value):
         return True
     malformed_markers = SEMANTIC_DESCRIPTION_MALFORMED_RE.findall(value)
     has_chatty_structure = any(marker in value for marker in ("$", ";", "(", ")"))
     return has_chatty_structure and len(malformed_markers) >= 2
+
+
+SEMANTIC_DESCRIPTION_SLASH_SEPARATOR_RE = re.compile(r"(?:(?<=\s)/|/(?=\s))")
+
+
+def looks_like_slash_delimited_phrase_leak(value: str) -> bool:
+    if len(SEMANTIC_DESCRIPTION_SLASH_SEPARATOR_RE.findall(value)) < 2:
+        return False
+    segments = [segment.strip() for segment in re.split(r"\s*/\s*", value) if segment.strip()]
+    phrase_like_segments = 0
+    for segment in segments:
+        words = SEMANTIC_DESCRIPTION_TOKEN_RE.findall(segment)
+        if len(words) >= 3 or len(segment) >= 35:
+            phrase_like_segments += 1
+    return phrase_like_segments >= 2
 
 
 SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
