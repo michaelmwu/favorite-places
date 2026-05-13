@@ -18,7 +18,7 @@ import time
 import unicodedata
 import uuid
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from dataclasses import dataclass
@@ -368,6 +368,7 @@ COUNTRY_LOCALITY_ALIASES = (
     "China",
     "中国",
     "South Korea",
+    "Korea",
     "韓国",
     "Vatican City",
     "Ivory Coast",
@@ -417,7 +418,6 @@ SEMANTIC_NEIGHBORHOOD_UPPERCASE_TOKENS = {
 }
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
-SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_ABBREVIATIONS = frozenset(
     {
         "AL",
@@ -473,14 +473,22 @@ SUBNATIONAL_LOCALITY_ABBREVIATIONS = frozenset(
         "DC",
     }
 )
+SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
 LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
 }
 LOCALITY_EQUIVALENCE_ALIASES: dict[str, str] = {
+    "brussel": "brussels",
+    "bruxelles": "brussels",
     "donostia": "san sebastian",
     "donostia san sebastián": "san sebastian",
     "donostia san sebastian": "san sebastian",
+    "genève": "geneva",
+    "geneve": "geneva",
+    "københavn": "copenhagen",
+    "münchen": "munich",
+    "nürnberg": "nuremberg",
     "san sebastián": "san sebastian",
 }
 BROKEN_TAG_NORMALIZATION_MAP: dict[str, str] = {
@@ -2487,9 +2495,14 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         manual_note = as_string(override.get("note"))
         note = manual_note or place.note
-        added_by = place_added_by_for_ui(place, override=override)
+        enrichment_identity_compatible = enrichment_identity_is_compatible_with_raw(place, enrichment)
+        enrichment_recommendation_copy = (
+            enrichment.description or enrichment.search_result_description
+            if enrichment_identity_compatible
+            else None
+        )
         base_recommendation = combine_recommendation_copy(
-            enrichment.description or enrichment.search_result_description,
+            enrichment_recommendation_copy,
             place.note,
         )
         semantic_description = (
@@ -2584,7 +2597,6 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
-            added_by=added_by,
             main_photo_path=None,
             top_pick=top_pick,
             hidden=hidden,
@@ -2776,12 +2788,6 @@ def build_place_provenance(
             manual_place_field(normalized.why_recommended)
             if manual_note
             else None
-        )
-    if normalized.added_by:
-        provenance.added_by = (
-            manual_place_field(normalized.added_by)
-            if "added_by" in override
-            else google_list_field(normalized.added_by, raw)
         )
     provenance.top_pick = (
         manual_place_field(normalized.top_pick)
@@ -3274,9 +3280,10 @@ def enrich_raw_sources(
         city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
-        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
-        if pruned_count:
-            save_places_cache(slug, cache_payload)
+        if not normalized_place_selectors:
+            cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+            if pruned_count:
+                save_places_cache(slug, cache_payload, allow_empty_overwrite=True)
         cache_payloads[slug] = cache_payload
         for place in raw.places:
             place_id = stable_place_id(place, source_type=raw.configured_source_type)
@@ -3440,9 +3447,10 @@ def refresh_cached_semantic_enrichment(
         city_name, country_name = guide_location_context(slug, raw)
         place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
         cache_payload = load_places_cache(slug)
-        cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
-        if pruned_count:
-            save_places_cache(slug, cache_payload)
+        if not normalized_place_selectors:
+            cache_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+            if pruned_count:
+                save_places_cache(slug, cache_payload, allow_empty_overwrite=True)
         cache_payloads[slug] = cache_payload
 
         for place in raw.places:
@@ -3869,7 +3877,14 @@ def sanitize_place_photo_url(value: str | None) -> str | None:
     url_parts = urlsplit(normalized)
     host = (url_parts.hostname or "").lower()
     path = url_parts.path.lower()
+    query = url_parts.query.lower()
     if "staticmap" in path:
+        return None
+    if host.endswith("gstatic.com") and (
+        host.startswith("encrypted-tbn")
+        or path.startswith(("/faviconv2", "/ads-travel/"))
+        or "tbn:" in query
+    ):
         return None
     if (
         (host.endswith("googleusercontent.com") or host.endswith("ggpht.com"))
@@ -4426,7 +4441,7 @@ def infer_address_parts_localities(
         if (
             not candidate_key
             or candidate_key == city_key
-            or candidate_equivalence_key in city_equivalence_keys
+            or (candidate_equivalence_key in city_equivalence_keys)
             or is_subnational_locality(normalized_candidate)
         ):
             continue
@@ -4912,12 +4927,6 @@ def guide_author_for_ui(raw: RawSavedList, *, list_override: dict[str, Any]) -> 
     return raw.owner
 
 
-def place_added_by_for_ui(place: RawPlace, *, override: dict[str, Any]) -> ListAuthor | None:
-    if "added_by" in override:
-        return coerce_list_author(override.get("added_by"))
-    return place.added_by
-
-
 def load_raw_saved_list(path: Path) -> RawSavedList | None:
     if not path.exists():
         return None
@@ -5256,9 +5265,6 @@ def preserve_existing_raw_place(
     if names_compatible and not refreshed_place.is_favorite and existing_place.is_favorite:
         updates["is_favorite"] = True
         preserved_fields.append("is_favorite")
-    if names_compatible and refreshed_place.added_by is None and existing_place.added_by is not None:
-        updates["added_by"] = existing_place.added_by
-        preserved_fields.append("added_by")
 
     if not updates:
         return refreshed_place, preserved_fields
@@ -5839,6 +5845,27 @@ def preserve_existing_enrichment(
         refreshed_place.photo_url = previous_place.photo_url
         append_unique_reason(preserved_fields, "photo_url")
 
+    if can_preserve_previous_identity:
+        if not refreshed_place.review_topics and previous_place.review_topics:
+            refreshed_place.review_topics = previous_place.review_topics[:]
+            append_unique_reason(preserved_fields, "review_topics")
+        if not refreshed_place.reviews and previous_place.reviews:
+            refreshed_place.reviews = previous_place.reviews[:]
+            append_unique_reason(preserved_fields, "reviews")
+        if not refreshed_place.about_sections and previous_place.about_sections:
+            refreshed_place.about_sections = previous_place.about_sections[:]
+            append_unique_reason(preserved_fields, "about")
+        preserved_semantic_description = semantic_description_for_preservation(
+            previous_place,
+            refreshed_place,
+            raw_place=raw_place,
+        )
+        if not refreshed_place.semantic_description and preserved_semantic_description:
+            refreshed_place.semantic_description = preserved_semantic_description
+            refreshed_place.semantic_description_signature = previous_place.semantic_description_signature
+            refreshed_place.semantic_source = previous_place.semantic_source
+            append_unique_reason(preserved_fields, "semantic_description")
+
     if not preserved_fields:
         return refreshed_entry, None
 
@@ -5846,6 +5873,25 @@ def preserve_existing_enrichment(
         refreshed_entry,
         f"WARNING: Preserving previous enrichment fields for {slug}:{place_id} [{place_name}]: "
         f"{', '.join(preserved_fields)}.",
+    )
+
+
+def semantic_description_for_preservation(
+    previous_place: EnrichmentPlace,
+    refreshed_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace | None,
+) -> str | None:
+    if not previous_place.semantic_description:
+        return None
+    if raw_place is None:
+        return sanitize_semantic_description(previous_place.semantic_description)
+    return usable_semantic_description(
+        previous_place.semantic_description,
+        enrichment_place=refreshed_place,
+        raw_place=raw_place,
+        city_name=None,
+        country_name=None,
     )
 
 
@@ -5864,8 +5910,13 @@ def load_places_cache(slug: str) -> dict[str, EnrichmentCacheEntry]:
     return load_places_cache_from_sqlite(slug) or {}
 
 
-def save_places_cache(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
-    save_places_cache_to_sqlite(slug, payload)
+def save_places_cache(
+    slug: str,
+    payload: dict[str, EnrichmentCacheEntry],
+    *,
+    allow_empty_overwrite: bool = False,
+) -> None:
+    save_places_cache_to_sqlite(slug, payload, allow_empty_overwrite=allow_empty_overwrite)
 
 
 def prune_places_cache_to_raw_places(
@@ -5985,12 +6036,27 @@ def load_places_cache_from_sqlite(slug: str) -> dict[str, EnrichmentCacheEntry] 
     return result
 
 
-def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEntry]) -> None:
+def save_places_cache_to_sqlite(
+    slug: str,
+    payload: dict[str, EnrichmentCacheEntry],
+    *,
+    allow_empty_overwrite: bool = False,
+) -> None:
     PLACES_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(PLACES_SQLITE_PATH)
     try:
         with connection:
             ensure_guide_enrichment_cache_table(connection)
+            if not payload and not allow_empty_overwrite:
+                existing_count = connection.execute(
+                    "SELECT COUNT(*) FROM guide_enrichment_cache WHERE guide_slug = ?",
+                    (slug,),
+                ).fetchone()[0]
+                if existing_count:
+                    raise RuntimeError(
+                        f"Refusing to replace non-empty enrichment cache for {slug} "
+                        "with an empty payload."
+                    )
             connection.execute(
                 "DELETE FROM guide_enrichment_cache WHERE guide_slug = ?",
                 (slug,),
@@ -6024,6 +6090,26 @@ def save_places_cache_to_sqlite(slug: str, payload: dict[str, EnrichmentCacheEnt
                     """,
                     serialized_rows,
                 )
+    finally:
+        connection.close()
+
+
+def existing_places_cache_sqlite_row_counts(slugs: Iterable[str]) -> dict[str, int]:
+    if not PLACES_SQLITE_PATH.exists():
+        return {}
+    connection = sqlite3.connect(PLACES_SQLITE_PATH)
+    try:
+        if not sqlite_table_exists(connection, "guide_enrichment_cache"):
+            return {}
+        return {
+            slug: connection.execute(
+                "SELECT COUNT(*) FROM guide_enrichment_cache WHERE guide_slug = ?",
+                (slug,),
+            ).fetchone()[0]
+            for slug in slugs
+        }
+    except sqlite3.Error:
+        return {}
     finally:
         connection.close()
 
@@ -6340,6 +6426,7 @@ def rebuild_places_sqlite(
     guides: list[Guide],
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> None:
+    existing_row_counts = existing_places_cache_sqlite_row_counts(raw_lists.keys())
     pruned_any = False
     for slug, raw in raw_lists.items():
         cache_payload = enrichment_caches.get(slug)
@@ -6349,6 +6436,19 @@ def rebuild_places_sqlite(
         if pruned_count:
             enrichment_caches[slug] = pruned_payload
             pruned_any = True
+    empty_replacements = [
+        slug
+        for slug, raw in raw_lists.items()
+        if raw.places
+        and not enrichment_caches.get(slug)
+        and existing_row_counts.get(slug, 0) > 0
+    ]
+    if empty_replacements:
+        joined_slugs = ", ".join(sorted(empty_replacements))
+        raise RuntimeError(
+            "Refusing to rebuild enrichment cache with empty payloads for "
+            f"non-empty guide(s): {joined_slugs}."
+        )
     hydrated_count = hydrate_shared_enrichment_photo_urls(enrichment_caches)
     build_signature = build_places_sqlite_signature(
         raw_lists=raw_lists,
@@ -7884,6 +7984,7 @@ PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES = {
     "save",
     "saved",
     "share",
+    "sponsored",
     "website",
 }
 
@@ -7892,7 +7993,10 @@ def sanitize_place_page_display_name(value: Any) -> str | None:
     normalized = as_string(value)
     if normalized is None:
         return None
-    if normalize_text(normalized) in PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES:
+    normalized_lookup = normalize_text(normalized)
+    if normalized_lookup in PLACE_PAGE_DISPLAY_NAME_REJECT_VALUES:
+        return None
+    if normalized_lookup.startswith("sponsored "):
         return None
     return normalized
 
@@ -7923,8 +8027,33 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKERS = (
     "went",
 )
 PLACE_PAGE_REVIEW_DESCRIPTION_MARKERS = (
+    "best place to stay",
+    "boy was it worth",
+    "definitely recommend this place",
+    "great experience overall",
+    "had a great time",
+    "hidden gem-literally",
     "highly recommended",
+    "i forgot his name",
+    "i'd just finished",
+    "i've tasted",
+    "i’d just finished",
+    "i’ve tasted",
+    "it was my first attempt",
+    "my stay in",
+    "once step in",
+    "offered great recommendation",
+    "omfg",
     "overrated",
+    "so yummy",
+    "the katsu burger",
+    "the rooms were huge",
+    "we have ever had",
+    "we've ever had",
+    "what a great hotel",
+    "would recommend to everyone",
+    "about this data",
+    "get the most out of google maps",
     "your children",
     "your kids",
     "you should",
@@ -7949,17 +8078,33 @@ PLACE_PAGE_FIRST_PERSON_DESCRIPTION_MARKER_RE = re.compile(
     ),
     re.IGNORECASE,
 )
+PLACE_PAGE_UI_ACTION_CLUSTER_LABEL_PATTERN = (
+    r"(?:call|directions|save|saved|nearby|send to phone|share|website|sign in)"
+)
+PLACE_PAGE_UI_ACTION_CLUSTER_RE = re.compile(
+    rf"^{PLACE_PAGE_UI_ACTION_CLUSTER_LABEL_PATTERN}"
+    rf"(?:\s+{PLACE_PAGE_UI_ACTION_CLUSTER_LABEL_PATTERN}){{2,}}$",
+    re.IGNORECASE,
+)
 
 
 def sanitize_place_page_description(value: Any) -> str | None:
     normalized = as_string(value)
     if normalized is None:
         return None
+    if looks_like_place_page_ui_action_cluster(normalized):
+        return None
     if looks_like_place_page_review_description(normalized):
         return None
     if looks_like_place_page_first_person_description(normalized):
         return None
     return normalized
+
+
+def looks_like_place_page_ui_action_cluster(value: str) -> bool:
+    normalized = re.sub(r"[\ue000-\uf8ff]", " ", value)
+    normalized = re.sub(r"\s+", " ", normalized).strip(" .")
+    return PLACE_PAGE_UI_ACTION_CLUSTER_RE.fullmatch(normalized) is not None
 
 
 def looks_like_place_page_review_description(value: str) -> bool:
@@ -9606,9 +9751,42 @@ def sanitize_semantic_description(value: Any) -> str | None:
     description = re.sub(r"\s+", " ", description).strip()
     if not description or len(description) > SEMANTIC_DESCRIPTION_MAX_CHARS:
         return None
+    if looks_like_malformed_semantic_description(description):
+        return None
     if looks_like_semantic_description_review_source_leak(description):
         return None
     return description
+
+
+SEMANTIC_DESCRIPTION_MALFORMED_RE = re.compile(
+    r"\b(?:"
+    r"top\s+notch|kinda|at\s+this\s+price\s+point|doesn[’']?t\s+feel|"
+    r"feels?\s+(?:kinda\s+)?cheap|clueless)\b",
+    re.IGNORECASE,
+)
+
+
+def looks_like_malformed_semantic_description(value: str) -> bool:
+    if looks_like_slash_delimited_phrase_leak(value):
+        return True
+    malformed_markers = SEMANTIC_DESCRIPTION_MALFORMED_RE.findall(value)
+    has_chatty_structure = any(marker in value for marker in ("$", ";", "(", ")"))
+    return has_chatty_structure and len(malformed_markers) >= 2
+
+
+SEMANTIC_DESCRIPTION_SLASH_SEPARATOR_RE = re.compile(r"(?:(?<=\s)/|/(?=\s))")
+
+
+def looks_like_slash_delimited_phrase_leak(value: str) -> bool:
+    if len(SEMANTIC_DESCRIPTION_SLASH_SEPARATOR_RE.findall(value)) < 2:
+        return False
+    segments = [segment.strip() for segment in re.split(r"\s*/\s*", value) if segment.strip()]
+    phrase_like_segments = 0
+    for segment in segments:
+        words = SEMANTIC_DESCRIPTION_TOKEN_RE.findall(segment)
+        if len(words) >= 3 or len(segment) >= 35:
+            phrase_like_segments += 1
+    return phrase_like_segments >= 2
 
 
 SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
@@ -9641,6 +9819,8 @@ def usable_semantic_description(
 ) -> str | None:
     description = sanitize_semantic_description(value)
     if description is None:
+        return None
+    if not enrichment_identity_is_compatible_with_raw(raw_place, enrichment_place):
         return None
     if semantic_description_has_conflicting_location(
         description,

@@ -99,6 +99,13 @@ _UI_ACTION_LABELS = {
     "share",
     "website",
 }
+_UI_ACTION_CLUSTER_LABEL_PATTERN = (
+    r"(?:call|directions|save|saved|nearby|send to phone|share|website|sign in)"
+)
+_UI_ACTION_CLUSTER_RE = re.compile(
+    rf"^{_UI_ACTION_CLUSTER_LABEL_PATTERN}(?:\s+{_UI_ACTION_CLUSTER_LABEL_PATTERN}){{2,}}$",
+    re.IGNORECASE,
+)
 _DESCRIPTION_STOP_MARKERS = {
     "photos",
     "about this data",
@@ -106,6 +113,7 @@ _DESCRIPTION_STOP_MARKERS = {
     "write a review",
     "claim this business",
     "suggest an edit",
+    "overview reviews about",
     "limited view of google maps",
     "get the most out of google maps",
     "our policies do not permit contributions to this type of place.",
@@ -136,8 +144,33 @@ _DESCRIPTION_REVIEW_RESPONSE_MARKERS = (
     "i'm sorry to inform",
 )
 _DESCRIPTION_REVIEW_PROSE_MARKERS = (
+    "best place to stay",
+    "boy was it worth",
+    "definitely recommend this place",
+    "great experience overall",
+    "had a great time",
+    "hidden gem-literally",
     "highly recommended",
+    "i forgot his name",
+    "i'd just finished",
+    "i've tasted",
+    "i’d just finished",
+    "i’ve tasted",
+    "it was my first attempt",
+    "my stay in",
+    "once step in",
+    "offered great recommendation",
+    "omfg",
     "overrated",
+    "so yummy",
+    "the katsu burger",
+    "the rooms were huge",
+    "we have ever had",
+    "we've ever had",
+    "what a great hotel",
+    "would recommend to everyone",
+    "about this data",
+    "get the most out of google maps",
     "your children",
     "your kids",
     "you should",
@@ -573,6 +606,68 @@ _PLACE_JS_EXTRACTOR = r"""
     }
     return null;
   };
+  const elementTop = (element) => {
+    const rect = element?.getBoundingClientRect?.();
+    return rect && rect.height > 0 ? rect.top : null;
+  };
+  const elementBottom = (element) => {
+    const rect = element?.getBoundingClientRect?.();
+    return rect && rect.height > 0 ? rect.bottom : null;
+  };
+  const descriptionBoundaryTop = () => {
+    const rows = Array.from(panel.querySelectorAll("[data-item-id]"))
+      .map(elementTop)
+      .filter((value) => value !== null);
+    if (rows.length > 0) {
+      return Math.min(...rows);
+    }
+    const addressRow = addressRowElement();
+    const addressTop = elementTop(addressRow);
+    return addressTop === null ? Infinity : addressTop;
+  };
+  const descriptionValue = () => {
+    const direct = firstText([".WeS02d", ".PYvSYb"]);
+    if (direct) {
+      return direct;
+    }
+    const titleBottom = Math.max(
+      ...[
+        elementBottom(titleElement),
+        ...Array.from(panel.querySelectorAll("div.F7nice")).map(elementBottom),
+      ].filter((value) => value !== null),
+      0,
+    );
+    const boundaryTop = descriptionBoundaryTop();
+    const candidates = [];
+    for (const element of panel.querySelectorAll("div, span")) {
+      const text = cleanLine(element.innerText || element.textContent || "");
+      if (!text || text.includes("·")) {
+        continue;
+      }
+      if (
+        element.closest(
+          "button, a, [role='button'], [role='tab'], [role='tablist'], "
+            + "[data-item-id], [data-review-id], div.F7nice",
+        )
+      ) {
+        continue;
+      }
+      if (
+        Array.from(element.children).some(
+          (child) => cleanLine(child.innerText || child.textContent || "") === text,
+        )
+      ) {
+        continue;
+      }
+      const top = elementTop(element);
+      if (top === null || top <= titleBottom || top >= boundaryTop) {
+        continue;
+      }
+      candidates.push({top, text});
+    }
+    candidates.sort((left, right) => left.top - right.top);
+    return candidates[0]?.text || null;
+  };
 
   const normalizeCount = (value) => {
     if (!value) {
@@ -683,22 +778,19 @@ _PLACE_JS_EXTRACTOR = r"""
   }
 
   const mainPhotoUrl = firstImageUrl([
+    "div.RZ66Rb button[jsaction*='heroHeaderImage'] img",
     "button[jsaction*='heroHeaderImage'] img",
-    "button[aria-label^='Photo of'] img",
-    "button[aria-label^='写真'] img",
-    "button[jsaction*='image'] img",
-    "button[jsaction*='photo'] img",
+    "div.ZKCDEc [data-photo-index='0'] img",
+    "[data-photo-index='0'] img",
     "[data-photo-index] img",
-  ], document)
+  ])
     || firstBackgroundImageUrl([
-      "button[jsaction*='image']",
-      "button[jsaction*='photo']",
+      "div.RZ66Rb button[jsaction*='heroHeaderImage']",
+      "button[jsaction*='heroHeaderImage']",
+      "div.ZKCDEc [data-photo-index='0']",
+      "[data-photo-index='0']",
       "[data-photo-index]",
-      "[aria-label*='Photo']",
-      "[aria-label*='photo']",
-      "[aria-label*='写真']",
-      "[aria-label*='画像']",
-    ], document);
+    ]);
   const photoUrl = mainPhotoUrl
     || firstAttr(["meta[property='og:image']", "meta[itemprop='image']"], "content", document);
 
@@ -1033,7 +1125,7 @@ _PLACE_JS_EXTRACTOR = r"""
       "button[data-item-id^='phone:']",
     ]),
     plus_code: itemValue("oloc"),
-    description: firstText([".WeS02d", ".PYvSYb"]),
+    description: descriptionValue(),
     review_topics: collectReviewTopics(),
     admission_prices: collectLeafPrices(sectionRootByHeading([
       "Admission",
@@ -1324,24 +1416,33 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
     }
     return {category: null, address: null};
   };
-  const findDescriptionLine = (lines, excludedValues) => {
+  const cardDescription = (article, excludedValues) => {
     const excluded = new Set(excludedValues.map(cleanLine).filter(Boolean));
-    return lines.find((line) => {
-      const text = cleanLine(line);
+    const rows = Array.from(article.querySelectorAll("div.W4Efsd"));
+    for (const row of rows) {
+      const text = cleanLine(row.innerText || row.textContent || "");
       if (!text || excluded.has(text)) {
-        return false;
+        continue;
       }
       if (text.includes("·") || parseCardRating(text) || parseCardReviewCount(text)) {
-        return false;
+        continue;
+      }
+      if (
+        row.querySelector(
+          ".AJB7ye, .UsdlK, [role='img'][aria-label*='star' i], a[href^='tel:']",
+        )
+      ) {
+        continue;
       }
       if (/^(open|closed|temporarily closed|website|directions|saved in)\b/i.test(text)) {
-        return false;
+        continue;
       }
       if (/^[+()\d\s.-]{7,}$/.test(text)) {
-        return false;
+        continue;
       }
-      return text.length >= 12;
-    }) || null;
+      return text;
+    }
+    return null;
   };
   const safeDecodeURIComponent = (value) => {
     try {
@@ -1373,10 +1474,11 @@ _PLACE_SEARCH_RESULT_CLICK_JS = r"""
       review_count: reviewCount,
       category: categoryAddress.category,
       address: categoryAddress.address,
-      search_result_description: findDescriptionLine(
-        lines,
+      search_result_description: cardDescription(
+        article,
         [name, categoryAddress.category, categoryAddress.address],
       ),
+      panel_text: lines.join("\n"),
       body_text: lines.join("\n"),
     };
   };
@@ -2321,6 +2423,7 @@ def _search_result_snapshot(candidate: str | Mapping[str, object]) -> dict[str, 
         "category",
         "address",
         "search_result_description",
+        "panel_text",
         "body_text",
     ):
         value = candidate.get(key)
@@ -2390,9 +2493,8 @@ def _build_place_details(
     snapshot: Mapping[str, object],
 ) -> PlaceDetails:
     panel_lines = _body_lines(snapshot.get("panel_text"))
-    body_lines = _body_lines(snapshot.get("body_text"))
-    search_lines = panel_lines or body_lines
-    combined_lines = _dedupe_lines([*panel_lines, *body_lines])
+    search_lines = panel_lines
+    combined_lines = _dedupe_lines(panel_lines)
     category = _clean_category_text(snapshot.get("category")) or _extract_category_from_lines(
         search_lines
     )
@@ -2484,7 +2586,7 @@ def _build_place_details(
         plus_code=_clean_plus_code_text(snapshot.get("plus_code"))
         or _extract_plus_code_from_lines(combined_lines),
         address_parts=_extract_address_parts(snapshot.get("address_parts")),
-        description=_extract_description(snapshot, combined_lines),
+        description=_extract_description(snapshot),
         search_result_description=_clean_description_text(
             snapshot.get("search_result_description")
         ),
@@ -3624,18 +3726,8 @@ def _extract_plus_code_from_lines(lines: list[str]) -> str | None:
     return None
 
 
-def _extract_description(snapshot: Mapping[str, object], lines: list[str]) -> str | None:
-    direct = _clean_description_text(snapshot.get("description"))
-    if direct is not None:
-        return direct
-    for index, line in enumerate(lines):
-        if line.startswith("Seasonal ") or line.startswith("Modern setting "):
-            return line
-        if line == "Share" and index + 1 < len(lines):
-            candidate = _clean_description_text(lines[index + 1])
-            if candidate is not None and candidate.lower() not in _DESCRIPTION_STOP_MARKERS:
-                return candidate
-    return None
+def _extract_description(snapshot: Mapping[str, object]) -> str | None:
+    return _clean_description_text(snapshot.get("description"))
 
 
 def _clean_description_text(value: object) -> str | None:
@@ -3652,7 +3744,11 @@ def _clean_description_text(value: object) -> str | None:
         return None
     if _looks_like_status_text(normalized):
         return None
-    if _looks_like_search_results_label(normalized) or _looks_like_ui_action_label(normalized):
+    if (
+        _looks_like_search_results_label(normalized)
+        or _looks_like_ui_action_label(normalized)
+        or _looks_like_ui_action_cluster(normalized)
+    ):
         return None
     if (
         _looks_like_description_review_prose(normalized)
@@ -3672,6 +3768,12 @@ def _clean_description_text(value: object) -> str | None:
     ):
         return None
     return normalized
+
+
+def _looks_like_ui_action_cluster(value: str) -> bool:
+    text = re.sub(r"[\ue000-\uf8ff]", " ", value)
+    text = re.sub(r"\s+", " ", text).strip(" .")
+    return _UI_ACTION_CLUSTER_RE.fullmatch(text) is not None
 
 
 def _strip_description_service_options(value: str) -> str | None:
@@ -3795,6 +3897,10 @@ def _normalize_photo_url(value: object) -> str | None:
     if (
         "googleusercontent.com" in host or host.endswith("ggpht.com")
     ) and path.startswith(("/a-", "/a/")):
+        return None
+    if re.fullmatch(r"lh[0-9]+\.(?:googleusercontent\.com|ggpht\.com)", host) is None:
+        return None
+    if re.search(r"(?:=|-)w[0-9]+-h[0-9]+(?:-|$)", normalized) is None:
         return None
     return normalized
 
@@ -4241,7 +4347,10 @@ def _looks_like_search_results_label(value: str) -> bool:
     normalized = _clean_text(value)
     if normalized is None:
         return False
-    return normalized.casefold() in _SEARCH_RESULTS_LABELS
+    normalized_lookup = normalized.casefold()
+    return normalized_lookup in _SEARCH_RESULTS_LABELS or normalized_lookup.startswith(
+        "sponsored "
+    )
 
 
 def _looks_like_ui_action_label(value: str) -> bool:
