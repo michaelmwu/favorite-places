@@ -6446,6 +6446,15 @@ class BuildDataTests(unittest.TestCase):
             with self.subTest(description=description):
                 self.assertEqual(build_data.sanitize_semantic_description(description), description)
 
+    def test_semantic_description_accepts_common_phrases_that_overlap_chat_leaks(self) -> None:
+        for description in (
+            "A top notch omakase counter with seasonal nigiri and polished service.",
+            "Kinda hidden cocktail bar with a compact menu and relaxed late-night energy.",
+            "Great spot for a banh mi and don’t miss the whelk papaya salad.",
+        ):
+            with self.subTest(description=description):
+                self.assertEqual(build_data.sanitize_semantic_description(description), description)
+
     def test_semantic_description_rejects_paragraph_length_text(self) -> None:
         self.assertIsNone(build_data.sanitize_semantic_description("x" * 321))
 
@@ -6509,7 +6518,6 @@ class BuildDataTests(unittest.TestCase):
                 "plats à partager, des cocktails raffinés et une sélection de vins "
                 "méticuleusement choisis / Annette reçoit dans un décor tendance et feutré"
             ),
-            "Great spot for a banh mi and don’t miss the whelk papaya salad",
         ):
             with self.subTest(description=description):
                 self.assertIsNone(build_data.sanitize_semantic_description(description))
@@ -10967,6 +10975,69 @@ class BuildDataTests(unittest.TestCase):
                 loaded_payload = build_data.load_places_cache("tokyo-japan")
 
         self.assertEqual(list(loaded_payload), [place_id])
+
+    def test_rebuild_places_sqlite_rejects_empty_payload_after_pruning_stale_ids(self) -> None:
+        stale_raw = RawPlace(
+            name="Old Coffee House",
+            maps_url="https://maps.google.com/?cid=111",
+            cid="111",
+        )
+        current_raw = RawPlace(
+            name="Coffee House",
+            maps_url="https://maps.google.com/?cid=222",
+            cid="222",
+        )
+        raw = RawSavedList(
+            configured_source_type="google_list_url",
+            title="Tokyo",
+            places=[current_raw],
+        )
+        stale_place_id = build_data.stable_place_id(
+            stale_raw,
+            source_type=raw.configured_source_type,
+        )
+        current_place_id = build_data.stable_place_id(
+            current_raw,
+            source_type=raw.configured_source_type,
+        )
+        guide = Guide(
+            slug="tokyo-japan",
+            title="Tokyo",
+            country_name="Japan",
+            city_name="Tokyo",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id=current_place_id,
+                    name="Coffee House",
+                    maps_url="https://www.google.com/maps/search/?api=1&query=Coffee+House",
+                    status="active",
+                )
+            ],
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at="2026-04-20T00:00:00+00:00",
+            query="Old Coffee House",
+            matched=True,
+            place=EnrichmentPlace(display_name="Old Coffee House"),
+        )
+
+        with TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            db_path = tmpdir_path / "cache" / "places.sqlite"
+
+            with patch.object(build_data, "PLACES_SQLITE_PATH", db_path):
+                build_data.save_places_cache("tokyo-japan", {stale_place_id: cache_entry})
+                with self.assertRaisesRegex(RuntimeError, "tokyo-japan"):
+                    build_data.rebuild_places_sqlite(
+                        raw_lists={"tokyo-japan": raw},
+                        guides=[guide],
+                        enrichment_caches={"tokyo-japan": {stale_place_id: cache_entry}},
+                    )
+                loaded_payload = build_data.load_places_cache("tokyo-japan")
+
+        self.assertEqual(list(loaded_payload), [stale_place_id])
 
     def test_rebuild_places_sqlite_hydrates_matching_guide_cache_photo_urls(self) -> None:
         shared_place_id = "cid:111"

@@ -6403,6 +6403,15 @@ def rebuild_places_sqlite(
     enrichment_caches: dict[str, dict[str, EnrichmentCacheEntry]],
 ) -> None:
     existing_row_counts = existing_places_cache_sqlite_row_counts(raw_lists.keys())
+    pruned_any = False
+    for slug, raw in raw_lists.items():
+        cache_payload = enrichment_caches.get(slug)
+        if cache_payload is None:
+            continue
+        pruned_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
+        if pruned_count:
+            enrichment_caches[slug] = pruned_payload
+            pruned_any = True
     empty_replacements = [
         slug
         for slug, raw in raw_lists.items()
@@ -6416,15 +6425,6 @@ def rebuild_places_sqlite(
             "Refusing to rebuild enrichment cache with empty payloads for "
             f"non-empty guide(s): {joined_slugs}."
         )
-    pruned_any = False
-    for slug, raw in raw_lists.items():
-        cache_payload = enrichment_caches.get(slug)
-        if cache_payload is None:
-            continue
-        pruned_payload, pruned_count = prune_places_cache_to_raw_places(cache_payload, raw)
-        if pruned_count:
-            enrichment_caches[slug] = pruned_payload
-            pruned_any = True
     hydrated_count = hydrate_shared_enrichment_photo_urls(enrichment_caches)
     build_signature = build_places_sqlite_signature(
         raw_lists=raw_lists,
@@ -9747,7 +9747,9 @@ SEMANTIC_DESCRIPTION_MALFORMED_RE = re.compile(
 def looks_like_malformed_semantic_description(value: str) -> bool:
     if value.count("/") >= 2:
         return True
-    return SEMANTIC_DESCRIPTION_MALFORMED_RE.search(value) is not None
+    malformed_markers = SEMANTIC_DESCRIPTION_MALFORMED_RE.findall(value)
+    has_chatty_structure = any(marker in value for marker in ("$", ";", "(", ")"))
+    return has_chatty_structure and len(malformed_markers) >= 2
 
 
 SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
