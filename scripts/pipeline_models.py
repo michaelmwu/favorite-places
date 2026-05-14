@@ -227,6 +227,7 @@ class EnrichmentCacheEntry(PipelineModel):
     last_verified_at: str | None = None
     refresh_after: str | None = None
     source: Literal["google_maps_page", "google_places_api"] | None = None
+    merged_sources: list[Literal["google_maps_page", "google_places_api"]] = Field(default_factory=list)
     query: str
     input_signature: str | None = None
     matched: bool | None = None

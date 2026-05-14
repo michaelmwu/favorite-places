@@ -3870,6 +3870,15 @@ def canonicalized_enrichment_cache_entry_copy(entry: EnrichmentCacheEntry | None
     )
 
 
+def enrichment_cache_entry_payload(entry: EnrichmentCacheEntry) -> dict[str, Any]:
+    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+    assert canonicalized_entry is not None
+    payload = canonicalized_entry.model_dump(mode="json", exclude_none=True)
+    if not payload.get("merged_sources"):
+        payload.pop("merged_sources", None)
+    return payload
+
+
 def sanitize_place_photo_url(value: str | None) -> str | None:
     normalized = as_string(value)
     if normalized is None:
@@ -5691,11 +5700,36 @@ def cache_entry_needs_photo_url_retry(entry: EnrichmentCacheEntry) -> bool:
     return bool(
         entry.error is None
         and entry.matched is True
-        and entry.source != "google_places_api"
+        and cache_entry_has_page_scrape_enrichment(entry)
         and place is not None
         and not place.main_photo_url
         and not place.photo_url
         and enrichment_place_has_real_place_identity(place)
+    )
+
+
+def cache_entry_has_page_scrape_enrichment(entry: EnrichmentCacheEntry) -> bool:
+    if entry.source == "google_maps_page":
+        return True
+    if "google_maps_page" in entry.merged_sources:
+        return True
+    place = entry.place
+    return bool(
+        entry.source == "google_places_api"
+        and place is not None
+        and (
+            place.address_display_en
+            or place.address_display_en_source
+            or place.category_display_en
+            or place.category_display_en_source
+            or place.plus_code
+            or place.description
+            or place.search_result_description
+            or place.search_result_url
+            or place.review_topics
+            or place.reviews
+            or place.about_sections
+        )
     )
 
 
@@ -5773,7 +5807,16 @@ def merge_page_place_into_api_entry(
     if google_maps_uri_strength(page_place.google_maps_uri) > google_maps_uri_strength(api_place.google_maps_uri):
         api_place.google_maps_uri = page_place.google_maps_uri
 
+    api_entry.merged_sources = merged_enrichment_sources(api_entry, page_entry)
     return api_entry
+
+
+def merged_enrichment_sources(*entries: EnrichmentCacheEntry) -> list[Literal["google_maps_page", "google_places_api"]]:
+    sources: list[Literal["google_maps_page", "google_places_api"]] = []
+    for source in ("google_maps_page", "google_places_api"):
+        if any(entry.source == source or source in entry.merged_sources for entry in entries):
+            sources.append(source)
+    return sources
 
 
 def preserve_existing_enrichment(
@@ -5989,10 +6032,8 @@ def sqlite_bool_or_none(value: bool | None) -> int | None:
 
 
 def serialized_enrichment_cache_entry(entry: EnrichmentCacheEntry) -> str:
-    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
-    assert canonicalized_entry is not None
     return json.dumps(
-        canonicalized_entry.model_dump(mode="json", exclude_none=True),
+        enrichment_cache_entry_payload(entry),
         ensure_ascii=False,
         separators=(",", ":"),
     )
@@ -6262,10 +6303,7 @@ def build_places_sqlite_signature(
         "schema_sha256": hashlib.sha256(PLACES_SQLITE_SCHEMA_SQL.encode("utf-8")).hexdigest(),
         "enrichment_caches": {
             slug: {
-                place_id: canonicalized_enrichment_cache_entry_copy(entry).model_dump(
-                    mode="json",
-                    exclude_none=True,
-                )
+                place_id: enrichment_cache_entry_payload(entry)
                 for place_id, entry in sorted(cache_payload.items())
             }
             for slug, cache_payload in sorted(enrichment_caches.items())

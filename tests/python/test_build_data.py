@@ -9508,6 +9508,7 @@ class BuildDataTests(unittest.TestCase):
             [{"title": "Amenities", "items": [{"label": "Restroom"}]}],
         )
         self.assertEqual(entry.place.google_maps_uri, "https://maps.google.com/?cid=1")
+        self.assertEqual(entry.merged_sources, ["google_maps_page", "google_places_api"])
 
     def test_fetch_places_enrichment_keeps_page_result_when_api_fallback_fails(self) -> None:
         place = RawPlace(
@@ -10923,6 +10924,53 @@ class BuildDataTests(unittest.TestCase):
         )
 
         self.assertIsNone(refresh_reason)
+
+    def test_cache_refresh_reason_retries_merged_api_page_entry_without_photo_url(self) -> None:
+        place = RawPlace(
+            name="Tokyo Metropolitan Government Building",
+            address=None,
+            maps_url="https://maps.google.com/?cid=6924439272315041697",
+            cid="6924439272315041697",
+            lat=35.6894807,
+            lng=139.6916863,
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=(
+                datetime.now(UTC)
+                - build_data.PHOTOLESS_REAL_PLACE_CACHE_TTL
+                - timedelta(hours=1)
+            ).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=6)).isoformat(),
+            source="google_places_api",
+            merged_sources=["google_maps_page", "google_places_api"],
+            query="Tokyo Metropolitan Government Building, Tokyo, Japan",
+            input_signature=build_data.enrichment_input_signature(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            ),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Tokyo Metropolitan Government Building",
+                formatted_address="2 Chome-8-1 Nishishinjuku, Shinjuku City, Tokyo 160-0023, Japan",
+                google_place_id="ChIJ-d5eaQCNGGARG9gXAP513iw",
+                google_place_resource_name="places/ChIJ-d5eaQCNGGARG9gXAP513iw",
+                google_maps_uri=(
+                    "https://www.google.com/maps/place/Tokyo+Metropolitan+Government+Building/"
+                    "@35.6895569,139.6919911,17z"
+                ),
+            ),
+        )
+
+        refresh_reason = build_data.cache_refresh_reason(
+            place,
+            cache_entry,
+            city_name="Tokyo",
+            country_name="Japan",
+        )
+
+        self.assertEqual(refresh_reason, "missing-photo-url")
 
     def test_cache_refresh_ttl_uses_short_retry_for_real_place_without_photo_url(self) -> None:
         cache_entry = EnrichmentCacheEntry(
