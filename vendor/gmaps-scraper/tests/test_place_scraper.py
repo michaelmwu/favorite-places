@@ -167,6 +167,14 @@ class PlaceScraperTests(unittest.TestCase):
             review_signal.assert_not_called()
             self.assertEqual(screenshot_path.read_bytes(), b"screenshot")
 
+    def test_collect_place_snapshot_wraps_browser_launch_failures(self) -> None:
+        with patch(
+            "gmaps_scraper.place_scraper._launch_browser_context",
+            side_effect=RuntimeError("context launch failed"),
+        ):
+            with self.assertRaisesRegex(ScrapeError, "Failed to launch browser context"):
+                collect_place_snapshot("https://www.google.com/maps/place/Den")
+
     def test_scrape_places_reuses_context_and_retries_quality_flags(self) -> None:
         class _FakeContext:
             def __init__(self) -> None:

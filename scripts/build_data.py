@@ -342,6 +342,8 @@ class PlacesSqliteRows:
 
 SCRAPER_SESSION_RESET_ERROR_MARKERS = SCRAPER_BLOCK_ERROR_MARKERS + (
     "failed to load http cookie jar",
+    "failed to launch browser context",
+    "launch_persistent_context",
 )
 COUNTRY_LOCALITY_ALIASES = (
     "England",

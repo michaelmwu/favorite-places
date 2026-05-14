@@ -31,6 +31,19 @@ from scripts.pipeline_models import (
 
 
 class BuildDataTests(unittest.TestCase):
+    def test_scraper_session_reset_detects_browser_launch_failures(self) -> None:
+        cases = (
+            "Failed to launch browser context: Timeout 180000ms exceeded",
+            "BrowserType.launch_persistent_context: Timeout 180000ms exceeded",
+        )
+        for message in cases:
+            with self.subTest(message=message):
+                self.assertTrue(
+                    build_data.should_reset_scraper_session(
+                        build_data.ScrapeError(message)
+                    )
+                )
+
     def test_raw_saved_list_keeps_owner_metadata_from_json(self) -> None:
         saved_list = RawSavedList.model_validate(
             {

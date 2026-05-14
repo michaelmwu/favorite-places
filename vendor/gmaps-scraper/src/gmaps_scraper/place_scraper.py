@@ -2147,10 +2147,13 @@ def collect_place_snapshot(
     overview_screenshot_path: Path | None = None,
 ) -> dict[str, object]:
     """Collect a normalized DOM snapshot for a Google Maps place page."""
-    context = _launch_browser_context(
-        headless=headless,
-        browser_session=browser_session,
-    )
+    try:
+        context = _launch_browser_context(
+            headless=headless,
+            browser_session=browser_session,
+        )
+    except Exception as exc:  # pragma: no cover - browser launch error path
+        raise ScrapeError(f"Failed to launch browser context: {exc}") from exc
     try:
         return _collect_place_snapshot_with_context(
             place_url,
