@@ -137,6 +137,7 @@ LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
 RATINGS_CACHE_TTL = timedelta(days=7)
 NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
 OPERATIONAL_CACHE_TTL = timedelta(days=14)
+PHOTOLESS_REAL_PLACE_CACHE_TTL = timedelta(days=1)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
@@ -5490,9 +5491,17 @@ def cache_refresh_reason(
     if cache_entry.input_signature != expected_signature:
         return "raw-place-changed"
 
+    if cache_entry_needs_photo_url_retry(cache_entry):
+        try:
+            fetched_at_dt = parse_metadata_datetime(cache_entry.fetched_at)
+        except ValueError:
+            return "invalid-fetched-at"
+        if datetime.now(UTC) - fetched_at_dt >= PHOTOLESS_REAL_PLACE_CACHE_TTL:
+            return "missing-photo-url"
+
     if cache_entry.refresh_after:
         try:
-            refresh_after_dt = datetime.fromisoformat(cache_entry.refresh_after)
+            refresh_after_dt = parse_metadata_datetime(cache_entry.refresh_after)
         except ValueError:
             return "invalid-refresh-after"
         if datetime.now(UTC) >= refresh_after_dt:
@@ -5500,7 +5509,7 @@ def cache_refresh_reason(
         return None
 
     try:
-        fetched_at_dt = datetime.fromisoformat(cache_entry.fetched_at)
+        fetched_at_dt = parse_metadata_datetime(cache_entry.fetched_at)
     except ValueError:
         return "invalid-fetched-at"
     if datetime.now(UTC) - fetched_at_dt > OPERATIONAL_CACHE_TTL:
@@ -5516,6 +5525,7 @@ ENRICHMENT_REFRESH_REASON_PRIORITY = {
     "invalid-refresh-after": 2,
     "invalid-fetched-at": 2,
     "missing-input-signature": 2,
+    "missing-photo-url": 3,
     "legacy-cache-entry": 3,
     "refresh-window-expired": 4,
     "forced": 5,
@@ -5627,6 +5637,8 @@ def cache_refresh_ttl(cache_entry: EnrichmentCacheEntry) -> timedelta:
         return LOW_CONFIDENCE_CACHE_TTL
 
     place = cache_entry.place
+    if cache_entry_needs_photo_url_retry(cache_entry):
+        return PHOTOLESS_REAL_PLACE_CACHE_TTL
     if place.business_status and place.business_status != "OPERATIONAL":
         return NON_OPERATIONAL_CACHE_TTL
     if place.rating is not None or place.user_rating_count is not None:
@@ -5672,6 +5684,27 @@ def build_cache_entry(
 
 def cache_entry_has_publishable_enrichment(entry: EnrichmentCacheEntry | None) -> bool:
     return bool(entry and entry.error is None and entry.matched is True and entry.place is not None)
+
+
+def cache_entry_needs_photo_url_retry(entry: EnrichmentCacheEntry) -> bool:
+    place = entry.place
+    return bool(
+        entry.error is None
+        and entry.matched is True
+        and entry.source != "google_places_api"
+        and place is not None
+        and not place.main_photo_url
+        and not place.photo_url
+        and enrichment_place_has_real_place_identity(place)
+    )
+
+
+def enrichment_place_has_real_place_identity(place: EnrichmentPlace) -> bool:
+    return bool(
+        place.google_place_id
+        or place.google_place_resource_name
+        or resolved_google_maps_url_is_place_page(place.google_maps_uri)
+    )
 
 
 def append_unique_reason(reasons: list[str], reason: str) -> None:
@@ -8511,7 +8544,7 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
     return items
 
 
-SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v9"
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v11"
 SEMANTIC_ENRICHMENT_SYSTEM_PROMPT = """
 You classify saved places for a travel guide. Return only compact JSON.
 
@@ -8545,6 +8578,8 @@ Description:
 - Do not mention reviewers, reviews, review counts, or source language such as "reviews say" or "customers praise."
 - Use direct factual wording instead of review/source phrasing: write "with warm service" rather than "praised for warm service."
 - Avoid hype and ranking claims such as "one of the best," "one of the most," "most photographed," "top-rated," "widely hailed," or "regarded as."
+- Do not write curation-meta copy about the saved list, favorite-worthiness, surfacing, ranking, manual curation, or tourist checklists.
+- Do not write accessibility or amenities boilerplate such as wheelchair accessibility, accessible facilities, accessible amenities, parking, restrooms, or service options unless the place is primarily about accessibility.
 - Do not preserve individual complaints.
 - Do not include one-off caveats or reviewer-style warnings such as "just expect..." or "separate charge."
 - Do not repeat raw UI labels, badges, or attributes like Accessibility, Service options, wheelchair-accessible, or LGBTQ+-friendly unless they are central to the place identity.
@@ -9755,6 +9790,10 @@ def sanitize_semantic_description(value: Any) -> str | None:
         return None
     if looks_like_semantic_description_review_source_leak(description):
         return None
+    if looks_like_semantic_description_curation_meta(description):
+        return None
+    if looks_like_semantic_description_attribute_boilerplate(description):
+        return None
     return description
 
 
@@ -9807,6 +9846,42 @@ SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
 
 def looks_like_semantic_description_review_source_leak(value: str) -> bool:
     return SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE.search(value) is not None
+
+
+SEMANTIC_DESCRIPTION_CURATION_META_RE = re.compile(
+    r"\b(?:"
+    r"favorite[-\s]?worthy|"
+    r"surface(?:s|d|ing)?\s+(?:without|in|on|as|for)\b|"
+    r"(?:extra\s+)?manual\s+curation|"
+    r"tourist\s+checklists?|"
+    r"personal\s+recommendation|"
+    r"saved[-\s]?list\s+(?:context|copy|curation|metadata|note)|"
+    r"curation\s+(?:copy|metadata|note)"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def looks_like_semantic_description_curation_meta(value: str) -> bool:
+    return SEMANTIC_DESCRIPTION_CURATION_META_RE.search(value) is not None
+
+
+SEMANTIC_DESCRIPTION_ATTRIBUTE_BOILERPLATE_RE = re.compile(
+    r"\b(?:"
+    r"(?:full|easy)?\s*wheelchair\s+accessibility|"
+    r"wheelchair[-\s]?(?:friendly|access|accessible|amenit(?:y|ies))|"
+    r"(?:family[-\s]?friendly|notable|comprehensive|visitor|onsite)?\s*accessibility(?:[-\s]?(?:conscious|features?|amenit(?:y|ies)))?|"
+    r"accessible\s+(?:amenit(?:y|ies)|facilit(?:y|ies)|parking|restrooms?|seating|setting|green\s+space)|"
+    r"(?:with|featuring|offering|and)\s+(?:accessible|full accessibility)\b|"
+    r"full\s+accessibility(?:\s+features?)?|"
+    r"\bthis\s+accessible\s+\w+"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def looks_like_semantic_description_attribute_boilerplate(value: str) -> bool:
+    return SEMANTIC_DESCRIPTION_ATTRIBUTE_BOILERPLATE_RE.search(value) is not None
 
 
 def usable_semantic_description(
