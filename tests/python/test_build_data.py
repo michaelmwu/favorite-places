@@ -6068,7 +6068,7 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(fake_client.started["as_type"], "generation")
         self.assertEqual(fake_client.started["name"], "favorite-places.semantic-enrichment")
         self.assertEqual(fake_client.started["model"], "gpt-test")
-        self.assertEqual(fake_client.started["metadata"]["prompt_version"], "favorite-places-semantic-v9")
+        self.assertEqual(fake_client.started["metadata"]["prompt_version"], "favorite-places-semantic-v11")
         self.assertTrue(fake_client.manager.closed)
         self.assertEqual(
             fake_client.observation.updates[-1]["usage_details"],
@@ -6583,6 +6583,29 @@ class BuildDataTests(unittest.TestCase):
                 "plats à partager, des cocktails raffinés et une sélection de vins "
                 "méticuleusement choisis / Annette reçoit dans un décor tendance et feutré"
             ),
+        ):
+            with self.subTest(description=description):
+                self.assertIsNone(build_data.sanitize_semantic_description(description))
+
+    def test_semantic_description_rejects_curation_meta_copy(self) -> None:
+        for description in (
+            "A favorite-worthy dinner stop, so it should surface without extra manual curation.",
+            "Feels more like a personal recommendation than a tourist checklist stop.",
+            "Saved-list metadata for a top pick in the guide.",
+        ):
+            with self.subTest(description=description):
+                self.assertIsNone(build_data.sanitize_semantic_description(description))
+
+    def test_semantic_description_rejects_attribute_boilerplate(self) -> None:
+        for description in (
+            "Upscale restaurant in De Pijp with full wheelchair accessibility and a refined dining experience.",
+            "A scenic waterfall with suspension bridges and observation decks, featuring free admission and accessible facilities.",
+            "Women-owned taquería offering fast service, great cocktails, and accessible amenities.",
+            "High-end Hawaiian fusion dishes served in a contemporary, accessible setting.",
+            "This accessible izakaya offers counter and outdoor seating with accommodating staff.",
+            "A cozy spot drawing solo diners and accessibility-conscious visitors alike.",
+            "Museum showcasing vintage cars with a multilingual audio guide and family-friendly accessibility.",
+            "Hand-made dumplings served in a cozy setting with notable accessibility.",
         ):
             with self.subTest(description=description):
                 self.assertIsNone(build_data.sanitize_semantic_description(description))
@@ -9485,6 +9508,7 @@ class BuildDataTests(unittest.TestCase):
             [{"title": "Amenities", "items": [{"label": "Restroom"}]}],
         )
         self.assertEqual(entry.place.google_maps_uri, "https://maps.google.com/?cid=1")
+        self.assertEqual(entry.merged_sources, ["google_maps_page", "google_places_api"])
 
     def test_fetch_places_enrichment_keeps_page_result_when_api_fallback_fails(self) -> None:
         place = RawPlace(
@@ -10735,6 +10759,236 @@ class BuildDataTests(unittest.TestCase):
         )
 
         self.assertEqual(refresh_reason, "raw-place-changed")
+
+    def test_cache_refresh_reason_retries_old_real_place_without_photo_url(self) -> None:
+        place = RawPlace(
+            name="Tokyo Metropolitan Government Building",
+            address=None,
+            maps_url="https://maps.google.com/?cid=6924439272315041697",
+            cid="6924439272315041697",
+            lat=35.6894807,
+            lng=139.6916863,
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=(
+                datetime.now(UTC)
+                - build_data.PHOTOLESS_REAL_PLACE_CACHE_TTL
+                - timedelta(hours=1)
+            ).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=6)).isoformat(),
+            source="google_maps_page",
+            query="Tokyo Metropolitan Government Building, Tokyo, Japan",
+            input_signature=build_data.enrichment_input_signature(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            ),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Tokyo Metropolitan Government Building",
+                formatted_address="2 Chome-8-1 Nishishinjuku, Shinjuku City, Tokyo 160-0023, Japan",
+                google_place_id="ChIJ-d5eaQCNGGARG9gXAP513iw",
+                google_maps_uri=(
+                    "https://www.google.com/maps/place/Tokyo+Metropolitan+Government+Building/"
+                    "@35.6895569,139.6919911,17z"
+                ),
+            ),
+        )
+
+        refresh_reason = build_data.cache_refresh_reason(
+            place,
+            cache_entry,
+            city_name="Tokyo",
+            country_name="Japan",
+        )
+
+        self.assertEqual(refresh_reason, "missing-photo-url")
+
+    def test_cache_refresh_reason_keeps_fresh_real_place_without_photo_url(self) -> None:
+        place = RawPlace(
+            name="Zass",
+            address=None,
+            maps_url="https://maps.google.com/?cid=1385867432453075065",
+            cid="1385867432453075065",
+            lat=40.6231077,
+            lng=14.5037538,
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=datetime.now(UTC).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=1)).isoformat(),
+            source="google_maps_page",
+            query="Zass, Amalfi Coast, Italy",
+            input_signature=build_data.enrichment_input_signature(
+                place,
+                city_name="Amalfi Coast",
+                country_name="Italy",
+            ),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Zass",
+                formatted_address="Via Laurito, 2, 84017 Positano SA, Italy",
+                google_place_id="ChIJTTegVVqXOxMRX4nA4MSAv-I",
+            ),
+        )
+
+        refresh_reason = build_data.cache_refresh_reason(
+            place,
+            cache_entry,
+            city_name="Amalfi Coast",
+            country_name="Italy",
+        )
+
+        self.assertIsNone(refresh_reason)
+
+    def test_cache_refresh_reason_handles_naive_photo_retry_timestamp(self) -> None:
+        place = RawPlace(
+            name="Tokyo Metropolitan Government Building",
+            address=None,
+            maps_url="https://maps.google.com/?cid=6924439272315041697",
+            cid="6924439272315041697",
+            lat=35.6894807,
+            lng=139.6916863,
+        )
+        naive_fetched_at = (
+            datetime.now(UTC)
+            - build_data.PHOTOLESS_REAL_PLACE_CACHE_TTL
+            - timedelta(hours=1)
+        ).replace(tzinfo=None)
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=naive_fetched_at.isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=6)).isoformat(),
+            source="google_maps_page",
+            query="Tokyo Metropolitan Government Building, Tokyo, Japan",
+            input_signature=build_data.enrichment_input_signature(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            ),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Tokyo Metropolitan Government Building",
+                google_place_id="ChIJ-d5eaQCNGGARG9gXAP513iw",
+            ),
+        )
+
+        refresh_reason = build_data.cache_refresh_reason(
+            place,
+            cache_entry,
+            city_name="Tokyo",
+            country_name="Japan",
+        )
+
+        self.assertEqual(refresh_reason, "missing-photo-url")
+
+    def test_cache_refresh_reason_does_not_photo_retry_api_only_entry(self) -> None:
+        place = RawPlace(
+            name="Michael's",
+            address="9777 Las Vegas Blvd S, Las Vegas, NV 89183, USA",
+            maps_url="https://maps.google.com/?cid=3558656038997305861",
+            cid="3558656038997305861",
+            lat=36.012782,
+            lng=-115.175648,
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=(
+                datetime.now(UTC)
+                - build_data.PHOTOLESS_REAL_PLACE_CACHE_TTL
+                - timedelta(hours=1)
+            ).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=6)).isoformat(),
+            source="google_places_api",
+            query="Michael's, Las Vegas",
+            input_signature=build_data.enrichment_input_signature(
+                place,
+                city_name="Las Vegas",
+                country_name="USA",
+            ),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Michael's",
+                formatted_address="9777 Las Vegas Blvd S, Las Vegas, NV 89183, USA",
+                google_place_id="ChIJwZX119rOyIAR5Tx-nEKkSgE",
+                google_place_resource_name="places/ChIJwZX119rOyIAR5Tx-nEKkSgE",
+            ),
+        )
+
+        refresh_reason = build_data.cache_refresh_reason(
+            place,
+            cache_entry,
+            city_name="Las Vegas",
+            country_name="USA",
+        )
+
+        self.assertIsNone(refresh_reason)
+
+    def test_cache_refresh_reason_retries_merged_api_page_entry_without_photo_url(self) -> None:
+        place = RawPlace(
+            name="Tokyo Metropolitan Government Building",
+            address=None,
+            maps_url="https://maps.google.com/?cid=6924439272315041697",
+            cid="6924439272315041697",
+            lat=35.6894807,
+            lng=139.6916863,
+        )
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=(
+                datetime.now(UTC)
+                - build_data.PHOTOLESS_REAL_PLACE_CACHE_TTL
+                - timedelta(hours=1)
+            ).isoformat(),
+            refresh_after=(datetime.now(UTC) + timedelta(days=6)).isoformat(),
+            source="google_places_api",
+            merged_sources=["google_maps_page", "google_places_api"],
+            query="Tokyo Metropolitan Government Building, Tokyo, Japan",
+            input_signature=build_data.enrichment_input_signature(
+                place,
+                city_name="Tokyo",
+                country_name="Japan",
+            ),
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Tokyo Metropolitan Government Building",
+                formatted_address="2 Chome-8-1 Nishishinjuku, Shinjuku City, Tokyo 160-0023, Japan",
+                google_place_id="ChIJ-d5eaQCNGGARG9gXAP513iw",
+                google_place_resource_name="places/ChIJ-d5eaQCNGGARG9gXAP513iw",
+                google_maps_uri=(
+                    "https://www.google.com/maps/place/Tokyo+Metropolitan+Government+Building/"
+                    "@35.6895569,139.6919911,17z"
+                ),
+            ),
+        )
+
+        refresh_reason = build_data.cache_refresh_reason(
+            place,
+            cache_entry,
+            city_name="Tokyo",
+            country_name="Japan",
+        )
+
+        self.assertEqual(refresh_reason, "missing-photo-url")
+
+    def test_cache_refresh_ttl_uses_short_retry_for_real_place_without_photo_url(self) -> None:
+        cache_entry = EnrichmentCacheEntry(
+            fetched_at=datetime.now(UTC).isoformat(),
+            source="google_maps_page",
+            query="Tokyo Metropolitan Government Building, Tokyo, Japan",
+            matched=True,
+            score=build_data.STRONG_MATCH_SCORE,
+            place=EnrichmentPlace(
+                display_name="Tokyo Metropolitan Government Building",
+                google_place_id="ChIJ-d5eaQCNGGARG9gXAP513iw",
+            ),
+        )
+
+        self.assertEqual(
+            build_data.cache_refresh_ttl(cache_entry),
+            build_data.PHOTOLESS_REAL_PLACE_CACHE_TTL,
+        )
 
     def test_build_places_sqlite_signature_changes_when_version_or_schema_changes(self) -> None:
         raw = RawSavedList(

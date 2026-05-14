@@ -137,6 +137,7 @@ LOW_CONFIDENCE_CACHE_TTL = timedelta(days=3)
 RATINGS_CACHE_TTL = timedelta(days=7)
 NON_OPERATIONAL_CACHE_TTL = timedelta(days=3)
 OPERATIONAL_CACHE_TTL = timedelta(days=14)
+PHOTOLESS_REAL_PLACE_CACHE_TTL = timedelta(days=1)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
 STRONG_MATCH_SCORE = 45
@@ -3869,6 +3870,15 @@ def canonicalized_enrichment_cache_entry_copy(entry: EnrichmentCacheEntry | None
     )
 
 
+def enrichment_cache_entry_payload(entry: EnrichmentCacheEntry) -> dict[str, Any]:
+    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
+    assert canonicalized_entry is not None
+    payload = canonicalized_entry.model_dump(mode="json", exclude_none=True)
+    if not payload.get("merged_sources"):
+        payload.pop("merged_sources", None)
+    return payload
+
+
 def sanitize_place_photo_url(value: str | None) -> str | None:
     normalized = as_string(value)
     if normalized is None:
@@ -5490,9 +5500,17 @@ def cache_refresh_reason(
     if cache_entry.input_signature != expected_signature:
         return "raw-place-changed"
 
+    if cache_entry_needs_photo_url_retry(cache_entry):
+        try:
+            fetched_at_dt = parse_metadata_datetime(cache_entry.fetched_at)
+        except ValueError:
+            return "invalid-fetched-at"
+        if datetime.now(UTC) - fetched_at_dt >= PHOTOLESS_REAL_PLACE_CACHE_TTL:
+            return "missing-photo-url"
+
     if cache_entry.refresh_after:
         try:
-            refresh_after_dt = datetime.fromisoformat(cache_entry.refresh_after)
+            refresh_after_dt = parse_metadata_datetime(cache_entry.refresh_after)
         except ValueError:
             return "invalid-refresh-after"
         if datetime.now(UTC) >= refresh_after_dt:
@@ -5500,7 +5518,7 @@ def cache_refresh_reason(
         return None
 
     try:
-        fetched_at_dt = datetime.fromisoformat(cache_entry.fetched_at)
+        fetched_at_dt = parse_metadata_datetime(cache_entry.fetched_at)
     except ValueError:
         return "invalid-fetched-at"
     if datetime.now(UTC) - fetched_at_dt > OPERATIONAL_CACHE_TTL:
@@ -5516,6 +5534,7 @@ ENRICHMENT_REFRESH_REASON_PRIORITY = {
     "invalid-refresh-after": 2,
     "invalid-fetched-at": 2,
     "missing-input-signature": 2,
+    "missing-photo-url": 3,
     "legacy-cache-entry": 3,
     "refresh-window-expired": 4,
     "forced": 5,
@@ -5627,6 +5646,8 @@ def cache_refresh_ttl(cache_entry: EnrichmentCacheEntry) -> timedelta:
         return LOW_CONFIDENCE_CACHE_TTL
 
     place = cache_entry.place
+    if cache_entry_needs_photo_url_retry(cache_entry):
+        return PHOTOLESS_REAL_PLACE_CACHE_TTL
     if place.business_status and place.business_status != "OPERATIONAL":
         return NON_OPERATIONAL_CACHE_TTL
     if place.rating is not None or place.user_rating_count is not None:
@@ -5672,6 +5693,52 @@ def build_cache_entry(
 
 def cache_entry_has_publishable_enrichment(entry: EnrichmentCacheEntry | None) -> bool:
     return bool(entry and entry.error is None and entry.matched is True and entry.place is not None)
+
+
+def cache_entry_needs_photo_url_retry(entry: EnrichmentCacheEntry) -> bool:
+    place = entry.place
+    return bool(
+        entry.error is None
+        and entry.matched is True
+        and cache_entry_has_page_scrape_enrichment(entry)
+        and place is not None
+        and not place.main_photo_url
+        and not place.photo_url
+        and enrichment_place_has_real_place_identity(place)
+    )
+
+
+def cache_entry_has_page_scrape_enrichment(entry: EnrichmentCacheEntry) -> bool:
+    if entry.source == "google_maps_page":
+        return True
+    if "google_maps_page" in entry.merged_sources:
+        return True
+    place = entry.place
+    return bool(
+        entry.source == "google_places_api"
+        and place is not None
+        and (
+            place.address_display_en
+            or place.address_display_en_source
+            or place.category_display_en
+            or place.category_display_en_source
+            or place.plus_code
+            or place.description
+            or place.search_result_description
+            or place.search_result_url
+            or place.review_topics
+            or place.reviews
+            or place.about_sections
+        )
+    )
+
+
+def enrichment_place_has_real_place_identity(place: EnrichmentPlace) -> bool:
+    return bool(
+        place.google_place_id
+        or place.google_place_resource_name
+        or resolved_google_maps_url_is_place_page(place.google_maps_uri)
+    )
 
 
 def append_unique_reason(reasons: list[str], reason: str) -> None:
@@ -5740,7 +5807,16 @@ def merge_page_place_into_api_entry(
     if google_maps_uri_strength(page_place.google_maps_uri) > google_maps_uri_strength(api_place.google_maps_uri):
         api_place.google_maps_uri = page_place.google_maps_uri
 
+    api_entry.merged_sources = merged_enrichment_sources(api_entry, page_entry)
     return api_entry
+
+
+def merged_enrichment_sources(*entries: EnrichmentCacheEntry) -> list[Literal["google_maps_page", "google_places_api"]]:
+    sources: list[Literal["google_maps_page", "google_places_api"]] = []
+    for source in ("google_maps_page", "google_places_api"):
+        if any(entry.source == source or source in entry.merged_sources for entry in entries):
+            sources.append(source)
+    return sources
 
 
 def preserve_existing_enrichment(
@@ -5956,10 +6032,8 @@ def sqlite_bool_or_none(value: bool | None) -> int | None:
 
 
 def serialized_enrichment_cache_entry(entry: EnrichmentCacheEntry) -> str:
-    canonicalized_entry = canonicalized_enrichment_cache_entry_copy(entry)
-    assert canonicalized_entry is not None
     return json.dumps(
-        canonicalized_entry.model_dump(mode="json", exclude_none=True),
+        enrichment_cache_entry_payload(entry),
         ensure_ascii=False,
         separators=(",", ":"),
     )
@@ -6229,10 +6303,7 @@ def build_places_sqlite_signature(
         "schema_sha256": hashlib.sha256(PLACES_SQLITE_SCHEMA_SQL.encode("utf-8")).hexdigest(),
         "enrichment_caches": {
             slug: {
-                place_id: canonicalized_enrichment_cache_entry_copy(entry).model_dump(
-                    mode="json",
-                    exclude_none=True,
-                )
+                place_id: enrichment_cache_entry_payload(entry)
                 for place_id, entry in sorted(cache_payload.items())
             }
             for slug, cache_payload in sorted(enrichment_caches.items())
@@ -8511,7 +8582,7 @@ def coerce_json_object_list(value: Any) -> list[dict[str, Any]]:
     return items
 
 
-SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v9"
+SEMANTIC_LLM_PROMPT_VERSION = "favorite-places-semantic-v11"
 SEMANTIC_ENRICHMENT_SYSTEM_PROMPT = """
 You classify saved places for a travel guide. Return only compact JSON.
 
@@ -8545,6 +8616,8 @@ Description:
 - Do not mention reviewers, reviews, review counts, or source language such as "reviews say" or "customers praise."
 - Use direct factual wording instead of review/source phrasing: write "with warm service" rather than "praised for warm service."
 - Avoid hype and ranking claims such as "one of the best," "one of the most," "most photographed," "top-rated," "widely hailed," or "regarded as."
+- Do not write curation-meta copy about the saved list, favorite-worthiness, surfacing, ranking, manual curation, or tourist checklists.
+- Do not write accessibility or amenities boilerplate such as wheelchair accessibility, accessible facilities, accessible amenities, parking, restrooms, or service options unless the place is primarily about accessibility.
 - Do not preserve individual complaints.
 - Do not include one-off caveats or reviewer-style warnings such as "just expect..." or "separate charge."
 - Do not repeat raw UI labels, badges, or attributes like Accessibility, Service options, wheelchair-accessible, or LGBTQ+-friendly unless they are central to the place identity.
@@ -9755,6 +9828,10 @@ def sanitize_semantic_description(value: Any) -> str | None:
         return None
     if looks_like_semantic_description_review_source_leak(description):
         return None
+    if looks_like_semantic_description_curation_meta(description):
+        return None
+    if looks_like_semantic_description_attribute_boilerplate(description):
+        return None
     return description
 
 
@@ -9807,6 +9884,42 @@ SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE = re.compile(
 
 def looks_like_semantic_description_review_source_leak(value: str) -> bool:
     return SEMANTIC_DESCRIPTION_REVIEW_SOURCE_LEAK_RE.search(value) is not None
+
+
+SEMANTIC_DESCRIPTION_CURATION_META_RE = re.compile(
+    r"\b(?:"
+    r"favorite[-\s]?worthy|"
+    r"surface(?:s|d|ing)?\s+(?:without|in|on|as|for)\b|"
+    r"(?:extra\s+)?manual\s+curation|"
+    r"tourist\s+checklists?|"
+    r"personal\s+recommendation|"
+    r"saved[-\s]?list\s+(?:context|copy|curation|metadata|note)|"
+    r"curation\s+(?:copy|metadata|note)"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def looks_like_semantic_description_curation_meta(value: str) -> bool:
+    return SEMANTIC_DESCRIPTION_CURATION_META_RE.search(value) is not None
+
+
+SEMANTIC_DESCRIPTION_ATTRIBUTE_BOILERPLATE_RE = re.compile(
+    r"\b(?:"
+    r"(?:full|easy)?\s*wheelchair\s+accessibility|"
+    r"wheelchair[-\s]?(?:friendly|access|accessible|amenit(?:y|ies))|"
+    r"(?:family[-\s]?friendly|notable|comprehensive|visitor|onsite)?\s*accessibility(?:[-\s]?(?:conscious|features?|amenit(?:y|ies)))?|"
+    r"accessible\s+(?:amenit(?:y|ies)|facilit(?:y|ies)|parking|restrooms?|seating|setting|green\s+space)|"
+    r"(?:with|featuring|offering|and)\s+(?:accessible|full accessibility)\b|"
+    r"full\s+accessibility(?:\s+features?)?|"
+    r"\bthis\s+accessible\s+\w+"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def looks_like_semantic_description_attribute_boilerplate(value: str) -> bool:
+    return SEMANTIC_DESCRIPTION_ATTRIBUTE_BOILERPLATE_RE.search(value) is not None
 
 
 def usable_semantic_description(
