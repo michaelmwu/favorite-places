@@ -6,5 +6,11 @@
   {
     "slug": "tokyo-japan",
     "url": "https://maps.app.goo.gl/oJYkP7QRYcV1Assy8"
+  },
+  {
+    "slug": "hong-kong-wanderlog-example",
+    "type": "wanderlog_view_url",
+    "url": "https://wanderlog.com/view/otooauorfe/hong-kong-recommendations",
+    "title": "Hong Kong Recommendations (Wanderlog example)"
   }
 ]

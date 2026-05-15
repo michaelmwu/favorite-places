@@ -79,6 +79,7 @@ export interface Place {
   why_recommended: string | null;
   added_by?: ListAuthor | null;
   main_photo_path: string | null;
+  photo_url: string | null;
   top_pick: boolean;
   hidden: boolean;
   manual_rank: number;
@@ -99,6 +100,7 @@ export interface Guide {
   title: string;
   description: string | null;
   author?: ListAuthor | null;
+  place_photo_mode: "local_cache" | "remote_url";
   source_url: string | null;
   list_id: string | null;
   country_name: string;
