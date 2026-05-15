@@ -76,6 +76,23 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(saved_list.collaborators[0].name, "Second Curator")
         self.assertEqual(saved_list.collaborators[0].photo_url, "https://example.com/second.jpg")
 
+    def test_raw_place_keeps_added_by_metadata_from_json(self) -> None:
+        place = RawPlace.model_validate(
+            {
+                "name": "Coffee Spot",
+                "maps_url": "https://maps.example/coffee",
+                "added_by": {
+                    "name": "Second Curator",
+                    "profile_id": "second-curator-id",
+                },
+            }
+        )
+
+        self.assertIsNotNone(place.added_by)
+        assert place.added_by is not None
+        self.assertEqual(place.added_by.name, "Second Curator")
+        self.assertEqual(place.added_by.profile_id, "second-curator-id")
+
     def test_normalize_guide_uses_raw_owner_as_author(self) -> None:
         raw = RawSavedList(
             title="Tokyo, Japan",
@@ -174,6 +191,100 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(guide.author.avatar_mode, "initials")
         self.assertIsNone(guide.author.photo_url)
         self.assertIsNone(guide.author.photo_path)
+
+    def test_normalize_guide_allows_remote_photo_mode_override(self) -> None:
+        raw = RawSavedList(
+            title="Hong Kong",
+            places=[
+                RawPlace(
+                    name="Hotel",
+                    maps_url="https://maps.example/hotel",
+                )
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "hong-kong.json":
+                return {"place_photo_mode": "remote_url"}
+            if path == build_data.PLACE_OVERRIDES_DIR / "hong-kong.json":
+                return {}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("hong-kong", raw, enrichment_cache={})
+
+        self.assertEqual(guide.place_photo_mode, "remote_url")
+
+    def test_normalize_guide_preserves_place_added_by(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            owner=ListAuthor(name="Guide Owner", profile_id="owner-id"),
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                    added_by=ListAuthor(name="Second Curator", profile_id="second-id"),
+                )
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        self.assertEqual(guide.places[0].added_by, ListAuthor(name="Second Curator", profile_id="second-id"))
+        self.assertIsNotNone(guide.places[0].provenance.added_by)
+        assert guide.places[0].provenance.added_by is not None
+        self.assertEqual(guide.places[0].provenance.added_by.source, "google_list")
+
+    def test_normalize_guide_allows_place_added_by_override_and_suppression(self) -> None:
+        raw = RawSavedList(
+            title="Tokyo, Japan",
+            places=[
+                RawPlace(
+                    name="Coffee Spot",
+                    maps_url="https://maps.example/coffee",
+                    cid="1",
+                    added_by=ListAuthor(name="Raw Curator"),
+                ),
+                RawPlace(
+                    name="Tea Spot",
+                    maps_url="https://maps.example/tea",
+                    cid="2",
+                    added_by=ListAuthor(name="Raw Curator"),
+                ),
+            ],
+        )
+
+        def read_json_side_effect(path: Path) -> dict[str, object]:
+            if path == build_data.LIST_OVERRIDES_DIR / "tokyo-japan.json":
+                return {}
+            if path == build_data.PLACE_OVERRIDES_DIR / "tokyo-japan.json":
+                return {
+                    "cid:1": {"added_by": {"name": "Manual Curator", "avatar_mode": "initials"}},
+                    "cid:2": {"added_by": None},
+                }
+            return {}
+
+        with patch.object(build_data, "read_json", side_effect=read_json_side_effect):
+            guide = build_data.normalize_guide("tokyo-japan", raw, enrichment_cache={})
+
+        places_by_id = {place.id: place for place in guide.places}
+        self.assertEqual(
+            places_by_id["cid:1"].added_by,
+            ListAuthor(name="Manual Curator", avatar_mode="initials"),
+        )
+        self.assertIsNotNone(places_by_id["cid:1"].provenance.added_by)
+        assert places_by_id["cid:1"].provenance.added_by is not None
+        self.assertEqual(places_by_id["cid:1"].provenance.added_by.source, "manual")
+        self.assertIsNone(places_by_id["cid:2"].added_by)
+        self.assertIsNone(places_by_id["cid:2"].provenance.added_by)
 
     def test_sync_list_author_photo_downloads_local_photo_path(self) -> None:
         author = ListAuthor(
@@ -718,6 +829,14 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertEqual(source.type, "google_export_csv")
 
+    def test_source_config_infers_wanderlog_view_url_from_url(self) -> None:
+        source = SourceConfig(
+            slug="hong-kong",
+            url="https://wanderlog.com/view/otooauorfe/hong-kong-recommendations",
+        )
+
+        self.assertEqual(source.type, "wanderlog_view_url")
+
     def test_source_config_rejects_type_that_disagrees_with_maps_url(self) -> None:
         with self.assertRaises(ValidationError) as context:
             SourceConfig(
@@ -749,6 +868,283 @@ class BuildDataTests(unittest.TestCase):
 
         self.assertIn("supported Google Maps URL", str(context.exception))
 
+    def test_source_config_rejects_non_wanderlog_url_for_wanderlog_view_url(self) -> None:
+        with self.assertRaises(ValidationError) as context:
+            SourceConfig(
+                slug="example",
+                type="wanderlog_view_url",
+                url="https://example.com/list",
+            )
+
+        self.assertIn("supported Wanderlog view URL", str(context.exception))
+
+    def test_parse_wanderlog_view_html_extracts_places(self) -> None:
+        mobx_state = {
+            "tripPlanStore": {
+                "data": {
+                    "seoDescription": "Michael Wu's travel guide for Hong Kong with 2 favorite places to visit",
+                    "tripPlan": {
+                        "name": "DEM Flyers Hong Kong recommendations",
+                        "itinerary": {
+                            "sections": [
+                                {
+                                    "heading": "Restaurants",
+                                    "blocks": [
+                                        {
+                                            "type": "place",
+                                            "rating": "mustGo",
+                                            "text": {
+                                                "ops": [
+                                                    {
+                                                        "insert": (
+                                                            "Order the pineapple bun and milk tea.\n"
+                                                        )
+                                                    }
+                                                ]
+                                            },
+                                            "reactions": {"❤️": [1667], "🍵": [1667]},
+                                            "imageKeys": ["sample-image-key"],
+                                            "place": {
+                                                "name": "Kam Wah Cafe",
+                                                "place_id": "ChIJ1234567890",
+                                                "formatted_address": "47 Bute St, Mong Kok, Hong Kong",
+                                                "rating": 4.2,
+                                                "user_ratings_total": 1234,
+                                                "price_level": 1,
+                                                "types": ["restaurant", "chinese_tea_house"],
+                                                "business_status": "OPERATIONAL",
+                                                "geometry": {
+                                                    "location": {
+                                                        "lat": 22.3201,
+                                                        "lng": 114.1702,
+                                                    }
+                                                },
+                                                "url": "https://maps.google.com/?cid=1234567890",
+                                            },
+                                        },
+                                        {
+                                            "type": "place",
+                                            "place": {
+                                                "name": "Nan Lian Garden",
+                                                "place_id": "ChIJABCDEFGHIJ",
+                                                "formatted_address": "60 Fung Tak Rd, Diamond Hill, Hong Kong",
+                                                "geometry": {
+                                                    "location": {
+                                                        "lat": 22.339611,
+                                                        "lng": 114.204515,
+                                                    }
+                                                },
+                                            },
+                                        },
+                                    ],
+                                }
+                            ]
+                        },
+                    },
+                }
+            }
+        }
+        html = (
+            "<html><head>"
+            "<title>DEM Flyers Hong Kong recommendations – Wanderlog</title>"
+            "<meta name=\"description\" "
+            "content=\"Michael Wu&#x27;s travel guide for Hong Kong with 2 favorite places to visit\">"
+            "</head><body><script>"
+            f"window.__MOBX_STATE__ = {json.dumps(mobx_state)};\n"
+            "window.__CONFIG__ = {};\n"
+            "</script></body></html>"
+        )
+
+        payload = build_data.parse_wanderlog_view_html(
+            "https://wanderlog.com/view/otooauorfe/hong-kong-recommendations",
+            html,
+        )
+
+        self.assertEqual(payload.source_url, "https://wanderlog.com/view/otooauorfe/hong-kong-recommendations")
+        self.assertEqual(payload.list_id, "otooauorfe")
+        self.assertEqual(payload.title, "DEM Flyers Hong Kong recommendations")
+        self.assertEqual(
+            payload.description,
+            "Michael Wu's travel guide for Hong Kong with 2 favorite places to visit",
+        )
+        self.assertEqual(len(payload.places), 2)
+        self.assertEqual(payload.places[0].name, "Kam Wah Cafe")
+        self.assertEqual(payload.places[0].google_id, "ChIJ1234567890")
+        self.assertEqual(payload.places[0].maps_url, "https://maps.google.com/?cid=1234567890")
+        self.assertTrue(payload.places[0].is_favorite)
+        self.assertEqual(payload.places[0].rating, 4.2)
+        self.assertEqual(payload.places[0].user_rating_count, 1234)
+        self.assertEqual(payload.places[0].price_level, 1)
+        self.assertEqual(payload.places[0].types, ["restaurant", "chinese_tea_house"])
+        self.assertEqual(payload.places[0].business_status, "OPERATIONAL")
+        self.assertEqual(
+            payload.places[0].photo_url,
+            "https://itin-dev.wanderlogstatic.com/freeImageMedium/sample-image-key",
+        )
+        self.assertEqual(payload.places[0].note, "Order the pineapple bun and milk tea.\n❤️ 🍵")
+        self.assertEqual(payload.places[1].name, "Nan Lian Garden")
+        self.assertEqual(payload.places[1].google_id, "ChIJABCDEFGHIJ")
+        self.assertEqual(
+            payload.places[1].maps_url,
+            (
+                "https://www.google.com/maps/search/?api=1&query="
+                "Nan+Lian+Garden%2C+60+Fung+Tak+Rd%2C+Diamond+Hill%2C+Hong+Kong&"
+                "query_place_id=ChIJABCDEFGHIJ"
+            ),
+        )
+
+    def test_parse_wanderlog_view_html_preserves_reactions_without_text_note(self) -> None:
+        mobx_state = {
+            "tripPlanStore": {
+                "data": {
+                    "tripPlan": {
+                        "name": "Hong Kong reactions",
+                        "itinerary": {
+                            "sections": [
+                                {
+                                    "blocks": [
+                                        {
+                                            "type": "place",
+                                            "text": {"ops": [{"insert": "\n"}]},
+                                            "rating": "mustGo",
+                                            "reactions": {"⭐": [1]},
+                                            "place": {
+                                                "name": "Australia Dairy Company",
+                                                "place_id": "ChIJREACTIONONLY",
+                                                "formatted_address": "47 Parkes St, Jordan, Hong Kong",
+                                                "url": "https://maps.google.com/?cid=18038164721409490895",
+                                            },
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                    }
+                }
+            }
+        }
+        html = (
+            "<html><head><title>Hong Kong reactions – Wanderlog</title></head><body><script>"
+            f"window.__MOBX_STATE__ = {json.dumps(mobx_state, ensure_ascii=False)};\n"
+            "window.__CONFIG__ = {};\n"
+            "</script></body></html>"
+        )
+
+        payload = build_data.parse_wanderlog_view_html(
+            "https://wanderlog.com/view/reactions/hong-kong-reactions",
+            html,
+        )
+
+        self.assertEqual(payload.places[0].note, "⭐")
+        self.assertTrue(payload.places[0].is_favorite)
+
+    def test_parse_wanderlog_view_html_strips_from_the_web_prefix(self) -> None:
+        mobx_state = {
+            "tripPlanStore": {
+                "data": {
+                    "tripPlan": {
+                        "name": "Hong Kong notes",
+                        "itinerary": {
+                            "sections": [
+                                {
+                                    "blocks": [
+                                        {
+                                            "type": "place",
+                                            "text": {
+                                                "ops": [
+                                                    {
+                                                        "insert": (
+                                                            "From the web: Historic district of narrow streets "
+                                                            "& alleys lined with restaurants.\n"
+                                                        )
+                                                    }
+                                                ]
+                                            },
+                                            "place": {
+                                                "name": "Lan Kwai Fong",
+                                                "place_id": "ChIJLAN",
+                                                "formatted_address": "Central, Hong Kong",
+                                                "types": ["tourist_attraction", "point_of_interest"],
+                                                "url": "https://maps.google.com/?cid=1",
+                                            },
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                    }
+                }
+            }
+        }
+        html = (
+            "<html><head><title>Hong Kong notes – Wanderlog</title></head><body><script>"
+            f"window.__MOBX_STATE__ = {json.dumps(mobx_state, ensure_ascii=False)};\n"
+            "window.__CONFIG__ = {};\n"
+            "</script></body></html>"
+        )
+
+        payload = build_data.parse_wanderlog_view_html(
+            "https://wanderlog.com/view/notes/hong-kong-notes",
+            html,
+        )
+
+        self.assertEqual(
+            payload.places[0].note,
+            "Historic district of narrow streets & alleys lined with restaurants.",
+        )
+
+    def test_parse_wanderlog_view_html_drops_route_note_without_place_name(self) -> None:
+        mobx_state = {
+            "tripPlanStore": {
+                "data": {
+                    "tripPlan": {
+                        "name": "Hong Kong route notes",
+                        "itinerary": {
+                            "sections": [
+                                {
+                                    "blocks": [
+                                        {
+                                            "type": "place",
+                                            "text": {
+                                                "ops": [
+                                                    {
+                                                        "insert": (
+                                                            "From the web: Central is Hong Kong's business and "
+                                                            "retail heart with nightlife in nearby SoHo.\n"
+                                                        )
+                                                    }
+                                                ]
+                                            },
+                                            "place": {
+                                                "name": "Stanley Street",
+                                                "place_id": "ChIJSTANLEY",
+                                                "formatted_address": "Stanley St, Central, Hong Kong",
+                                                "types": ["route"],
+                                                "url": "https://maps.google.com/?cid=2",
+                                            },
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                    }
+                }
+            }
+        }
+        html = (
+            "<html><head><title>Hong Kong route notes – Wanderlog</title></head><body><script>"
+            f"window.__MOBX_STATE__ = {json.dumps(mobx_state, ensure_ascii=False)};\n"
+            "window.__CONFIG__ = {};\n"
+            "</script></body></html>"
+        )
+
+        payload = build_data.parse_wanderlog_view_html(
+            "https://wanderlog.com/view/routes/hong-kong-route-notes",
+            html,
+        )
+
+        self.assertIsNone(payload.places[0].note)
+
     def test_source_config_rejects_google_mymaps_url(self) -> None:
         with self.assertRaises(ValidationError) as context:
             SourceConfig(
@@ -775,6 +1171,7 @@ class BuildDataTests(unittest.TestCase):
                     cid="8935267511126082507",
                     google_id="/g/1tdwf48w",
                     maps_place_token="0xdeadbeef:0x1",
+                    added_by=ListAuthor(name="Second Curator", profile_id="second-id"),
                 )
             ],
         )
@@ -791,6 +1188,7 @@ class BuildDataTests(unittest.TestCase):
                     cid="8935267511126082507",
                     google_id=None,
                     maps_place_token=None,
+                    added_by=None,
                 )
             ],
         )
@@ -807,6 +1205,7 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertEqual(merged.places[0].google_id, "/g/1tdwf48w")
         self.assertEqual(merged.places[0].maps_place_token, "0xdeadbeef:0x1")
+        self.assertEqual(merged.places[0].added_by, ListAuthor(name="Second Curator", profile_id="second-id"))
         self.assertTrue(merged.places[0].is_favorite)
 
     def test_preserve_existing_raw_saved_list_does_not_apply_to_non_matching_place(self) -> None:
@@ -3822,6 +4221,46 @@ class BuildDataTests(unittest.TestCase):
         )
         self.assertIn("Photo extraction may be failing on this runner.", stdout.getvalue())
 
+    def test_populate_place_photos_for_guides_skips_remote_url_mode(self) -> None:
+        guide = Guide(
+            slug="hong-kong",
+            title="Hong Kong",
+            place_photo_mode="remote_url",
+            country_name="Hong Kong",
+            city_name="Hong Kong",
+            generated_at="2026-04-20T00:00:00+00:00",
+            place_count=1,
+            places=[
+                NormalizedPlace(
+                    id="cid:123",
+                    name="Hotel",
+                    maps_url="https://maps.google.com/?cid=123",
+                    main_photo_path="/place-photos/existing.webp",
+                    status="active",
+                )
+            ],
+        )
+
+        with patch.object(build_data, "sync_place_photo", side_effect=AssertionError("should not refresh")):
+            build_data.populate_place_photos_for_guides(
+                [guide],
+                enrichment_caches={
+                    "hong-kong": {
+                        "cid:123": EnrichmentCacheEntry(
+                            fetched_at="2026-04-20T00:00:00+00:00",
+                            query="Hotel",
+                            matched=True,
+                            place=EnrichmentPlace(main_photo_url="https://example.com/hotel.jpg"),
+                        )
+                    }
+                },
+                refresh_photos=True,
+                photo_workers=4,
+                startup_jitter_seconds=8,
+            )
+
+        self.assertIsNone(guide.places[0].main_photo_path)
+
     def test_optimize_place_photo_asset_resizes_to_card_ratio(self) -> None:
         source = BytesIO()
         Image.new("RGB", (1400, 1000), color=(10, 50, 200)).save(source, format="PNG")
@@ -4647,6 +5086,136 @@ class BuildDataTests(unittest.TestCase):
         self.assertEqual(
             guide.places[0].why_recommended,
             "Sizable zoo with a gondola & kids' area\n\nGo early for the panda house.",
+        )
+
+    def test_normalize_guide_rejects_low_information_enrichment_description(self) -> None:
+        raw = RawSavedList(
+            title="Hong Kong",
+            places=[
+                RawPlace(
+                    name="Star Ferry Pier",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-15T00:00:00+00:00",
+                source="google_maps_page",
+                query="Star Ferry Pier, Hong Kong",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Star Ferry Pier",
+                    description="Building",
+                    primary_type_display_name="Restaurant",
+                ),
+            )
+        }
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+        ):
+            guide = build_data.normalize_guide(
+                "hong-kong",
+                raw,
+                enrichment_cache=enrichment_cache,
+            )
+
+        self.assertIsNone(guide.places[0].why_recommended)
+
+    def test_normalize_guide_rejects_enrichment_category_for_ambiguous_location_types(self) -> None:
+        raw = RawSavedList(
+            title="Hong Kong",
+            places=[
+                RawPlace(
+                    name="Star Ferry Pier",
+                    maps_url="https://maps.google.com/?cid=111",
+                    google_id="ChIJSTARFERRY",
+                    types=["premise"],
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-15T00:00:00+00:00",
+                source="google_maps_page",
+                query="Star Ferry Pier, Hong Kong",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Star Ferry Pier",
+                    description="Building",
+                    primary_type="restaurant",
+                    primary_type_display_name="Restaurant",
+                    types=["restaurant"],
+                ),
+            )
+        }
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+        ):
+            guide = build_data.normalize_guide(
+                "hong-kong",
+                raw,
+                enrichment_cache=enrichment_cache,
+            )
+
+        self.assertIsNone(guide.places[0].primary_category)
+
+    def test_raw_place_primary_category_prefers_lodging_over_leading_cafe_tag(self) -> None:
+        place = RawPlace(
+            name="Harbour View Hotel",
+            maps_url="https://maps.google.com/?cid=111",
+            types=["cafe", "lodging", "restaurant", "food", "point_of_interest", "establishment"],
+        )
+
+        self.assertEqual(build_data.raw_place_primary_category(place), "Lodging")
+
+    def test_normalize_guide_prefers_raw_note_when_enrichment_description_is_only_local_name(self) -> None:
+        raw = RawSavedList(
+            title="Hong Kong",
+            places=[
+                RawPlace(
+                    name="Tai O",
+                    note="From the web: Fishing town on western Lantau known for stilt houses and seafood.",
+                    maps_url="https://maps.google.com/?cid=111",
+                    cid="111",
+                ),
+            ],
+        )
+        place_id = build_data.stable_place_id(raw.places[0])
+        enrichment_cache = {
+            place_id: EnrichmentCacheEntry(
+                fetched_at="2026-05-15T00:00:00+00:00",
+                source="google_maps_page",
+                query="Tai O, Hong Kong",
+                matched=True,
+                place=EnrichmentPlace(
+                    display_name="Tai O",
+                    description="大澳",
+                    formatted_address="Tai O, Hong Kong",
+                ),
+            )
+        }
+
+        with (
+            patch.object(build_data, "google_maps_place_semantic_descriptions_enabled", return_value=False),
+            patch.object(build_data, "google_maps_place_semantic_llm_enabled", return_value=False),
+        ):
+            guide = build_data.normalize_guide(
+                "hong-kong",
+                raw,
+                enrichment_cache=enrichment_cache,
+            )
+
+        self.assertEqual(
+            guide.places[0].why_recommended,
+            "From the web: Fishing town on western Lantau known for stilt houses and seafood.",
         )
 
     def test_normalize_guide_prefers_display_address_over_raw_saved_list_address(self) -> None:
@@ -9317,6 +9886,8 @@ class BuildDataTests(unittest.TestCase):
             patch.object(build_data, "build_scraper_sessions", return_value=(SimpleNamespace(), None, None)),
             patch.object(build_data, "record_scraper_session_use"),
             patch.object(build_data, "release_scraper_session_lock"),
+            patch.object(build_data, "google_maps_place_collect_reviews", return_value=True),
+            patch.object(build_data, "google_maps_place_collect_about", return_value=True),
             patch.object(build_data, "scrape_place", return_value=details) as scrape,
         ):
             entry = build_data.fetch_place_page_enrichment(place)

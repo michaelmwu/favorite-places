@@ -1,5 +1,6 @@
 {
   "description": "A tiny public Google Maps list used by the template demo. It keeps the sample deterministic while showing real list imports.",
+  "place_photo_mode": "remote_url",
   "author": {
     "name": "Example Curator",
     "photo_path": "/author-photos/example-curator.svg"

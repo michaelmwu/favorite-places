@@ -65,7 +65,7 @@ class PlacesSettings(BaseSettings):
 
 class SourceConfig(PipelineModel):
     slug: str
-    type: Literal["google_list_url", "google_export_csv"] | None = None
+    type: Literal["google_list_url", "wanderlog_view_url", "google_export_csv"] | None = None
     url: str | None = None
     path: str | None = None
     title: str | None = None
@@ -103,6 +103,10 @@ class SourceConfig(PipelineModel):
             raise ValueError("google_list_url sources require a supported Google Maps URL.")
         if self.type == "google_list_url" and not self.url:
             raise ValueError("google_list_url sources require `url`")
+        if self.type == "wanderlog_view_url" and self.url and not is_supported_wanderlog_source_url(self.url):
+            raise ValueError("wanderlog_view_url sources require a supported Wanderlog view URL.")
+        if self.type == "wanderlog_view_url" and not self.url:
+            raise ValueError("wanderlog_view_url sources require `url`")
         if self.type == "google_export_csv" and not self.path:
             raise ValueError("google_export_csv sources require `path`")
         if self.type == "google_export_csv" and not self.title:
@@ -122,6 +126,8 @@ def infer_source_type_from_fields(*, url: str | None, path: str | None) -> str |
         raise ValueError("Google My Maps URLs are not supported as list sources.")
     if url and is_supported_google_maps_source_url(url):
         return "google_list_url"
+    if url and is_supported_wanderlog_source_url(url):
+        return "wanderlog_view_url"
     if path:
         return "google_export_csv"
     return None
@@ -140,6 +146,13 @@ def is_unsupported_google_mymaps_url(url: str) -> bool:
     return normalized.startswith("https://www.google.com/maps/d/")
 
 
+def is_supported_wanderlog_source_url(url: str) -> bool:
+    normalized = url.strip().lower()
+    return normalized.startswith("https://wanderlog.com/view/") or normalized.startswith(
+        "https://www.wanderlog.com/view/"
+    )
+
+
 class RawPlace(PipelineModel):
     name: str
     address: str | None = None
@@ -152,6 +165,12 @@ class RawPlace(PipelineModel):
     cid: str | None = None
     google_id: str | None = None
     maps_place_token: str | None = None
+    rating: float | None = None
+    user_rating_count: int | None = None
+    price_level: int | None = None
+    types: list[str] = Field(default_factory=list)
+    business_status: str | None = None
+    photo_url: str | None = None
 
 
 class ListAuthor(PipelineModel):
@@ -320,6 +339,7 @@ class NormalizedPlace(PipelineModel):
     why_recommended: str | None = None
     added_by: ListAuthor | None = None
     main_photo_path: str | None = None
+    photo_url: str | None = None
     top_pick: bool = False
     hidden: bool = False
     manual_rank: int = 0
@@ -332,6 +352,7 @@ class Guide(PipelineModel):
     title: str
     description: str | None = None
     author: ListAuthor | None = None
+    place_photo_mode: Literal["local_cache", "remote_url"] = "local_cache"
     source_url: str | None = None
     list_id: str | None = None
     country_name: str

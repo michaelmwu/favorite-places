@@ -7,7 +7,7 @@ Favorite Places turns personal saved lists into a small shareable site: guide pa
 ## What You Get
 
 - An Astro static site for browsing guides and places
-- A Python + `uv` data pipeline for importing Google Maps lists
+- A Python + `uv` data pipeline for importing Google Maps and Wanderlog lists
 - A `site/` overlay for your config, theme, source lists, raw data, overrides, templates, and assets
 - Optional Google Places enrichment for categories, status, Maps links, ratings, and photos
 - A tiny committed `site.example/` pack that works as a demo
@@ -42,7 +42,7 @@ FAVORITE_PLACES_SITE_DIR=site.example bun run dev
 
 Then open the local URL printed by Astro.
 
-The example pack uses two public Google Maps example lists, five places, manual overrides, tags, top picks, and template aside blocks. It does not need API keys to render.
+The example pack uses two public Google Maps example lists, one public Wanderlog guide example, committed raw snapshots, manual overrides, tags, top picks, and template aside blocks. It does not need API keys to render.
 
 ## Create Your Site
 
@@ -56,7 +56,7 @@ Edit:
 
 - `site/config.ts` for site name, nav, copy, labels, map provider, and display options
 - `site/theme.css` for colors, fonts, spacing, and custom styling
-- `site/list_sources.json` for your Google Maps list sources
+- `site/list_sources.json` for your Google Maps or Wanderlog list sources
 - `site/overrides/` for handwritten notes, tags, top picks, and ranking
 - `site/content/templates/` for optional trusted HTML insertion points
 - `site/public/` for logos, favicons, and site-owned assets
@@ -67,11 +67,25 @@ After `site/` exists, it is the default. You only need `FAVORITE_PLACES_SITE_DIR
 
 Each source in `site/list_sources.json` needs a stable `slug`.
 
+- `url` sources infer `type: "google_list_url"` for supported Google Maps links, including `https://maps.app.goo.gl/...` shortlinks and `https://www.google.com/maps/...` share links.
+- `url` sources also infer `type: "wanderlog_view_url"` for supported Wanderlog guide URLs like `https://wanderlog.com/view/...`.
+- `path` sources infer `type: "google_export_csv"` and require `title`.
+- `type` can still be included explicitly, but it must match the configured `url` or `path`.
+- `title` is optional for Google Maps URL sources and acts as a fallback list title.
+- `title` is optional for Wanderlog URL sources and acts as a fallback guide title.
+- Google My Maps URLs such as `https://www.google.com/maps/d/...` are not supported yet.
+
 ```json
 [
   {
     "slug": "tokyo-japan",
     "url": "https://maps.app.goo.gl/your-public-list"
+  },
+  {
+    "slug": "hong-kong-wanderlog-example",
+    "type": "wanderlog_view_url",
+    "url": "https://wanderlog.com/view/your-guide/hong-kong-recommendations",
+    "title": "Hong Kong Recommendations (Wanderlog example)"
   },
   {
     "slug": "taipei-taiwan",
@@ -84,11 +98,14 @@ Each source in `site/list_sources.json` needs a stable `slug`.
 Supported sources:
 
 - Public Google Maps saved-list URLs, including `https://maps.app.goo.gl/...` shortlinks
+- Public Wanderlog guide URLs, including `https://wanderlog.com/view/...`
 - Google Takeout saved-list CSV exports
 
 Google My Maps URLs are not supported yet.
 
 For Google Maps URL sources, raw snapshots preserve the list `owner` object, including `name`, `photo_url`, `photo_path`, `avatar_mode`, and `profile_id`, plus any `collaborators` the scraper can recover. Individual places can also carry an `added_by` author with `name` and `profile_id`. When the scraped owner is the effective published author, source refresh downloads a square local author image into `site/public/author-photos/` and stores its `photo_path`. Guide list overrides can optionally set, replace, or suppress the generated guide `author`; use `photo_path` to point at a site-owned image under `site/public/`, or set `avatar_mode` to `photo`, `initials`, or `icon`.
+
+Guide list overrides can also set `"place_photo_mode": "remote_url"` to force a guide to skip local `site/public/place-photos/` assets and render cards from direct `photo_url` values instead. The default is `"local_cache"`.
 
 Place-level `added_by` metadata is preserved in generated place data. Cards show it by default only when it differs from the guide author, so collaborator additions are visible without repeating the guide owner on every card. Override a place with `"added_by": {"name": "Name", "avatar_mode": "initials"}` to set it manually, or `"added_by": null` to suppress it for that place. Set `placeCard.showAttribution: false` in `site/config.ts` to hide all individual place attributions, or `placeCard.showGuideAuthorAttribution: true` to also show places added by the guide author.
 

@@ -4,6 +4,7 @@ import argparse
 import atexit
 import csv
 import hashlib
+import html as html_lib
 import importlib.util
 import io
 import json
@@ -140,6 +141,13 @@ OPERATIONAL_CACHE_TTL = timedelta(days=14)
 PHOTOLESS_REAL_PLACE_CACHE_TTL = timedelta(days=1)
 RAW_SOURCE_CACHE_TTL = timedelta(days=14)
 RAW_SOURCE_REFRESH_JITTER = timedelta(days=3)
+SOURCE_HTTP_TIMEOUT_SECONDS = 30
+SOURCE_HTTP_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+)
+WANDERLOG_MOBX_STATE_MARKER = "window.__MOBX_STATE__ = "
+WANDERLOG_CONFIG_MARKER = "window.__CONFIG__ = "
 STRONG_MATCH_SCORE = 45
 PLACE_PAGE_COORDINATE_MISMATCH_REJECT_METERS = 25_000.0
 PLACE_PAGE_ADDRESSLESS_SEARCH_COORDINATE_MATCH_METERS = 400.0
@@ -421,6 +429,7 @@ SEMANTIC_NEIGHBORHOOD_UPPERCASE_TOKENS = {
 }
 COUNTRY_LOCALITY_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_KEYS: set[str] | None = None
+SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
 SUBNATIONAL_LOCALITY_ABBREVIATIONS = frozenset(
     {
         "AL",
@@ -476,7 +485,6 @@ SUBNATIONAL_LOCALITY_ABBREVIATIONS = frozenset(
         "DC",
     }
 )
-SUBNATIONAL_LOCALITY_CODE_KEYS: set[str] | None = None
 LOCATION_TAG_ALIASES: dict[str, tuple[str, ...]] = {
     "geneve": ("geneva",),
     "geneva": ("geneve",),
@@ -1834,7 +1842,7 @@ def refresh_raw_sources(
         failures: list[str] = []
         for source, raw_path, backup_available, existing_payload in refresh_jobs:
             try:
-                payload = scrape_google_list_url_with_retries(
+                payload = scrape_url_source_with_retries(
                     source,
                     headed=headed,
                     refresh_retries=refresh_retries,
@@ -1867,7 +1875,7 @@ def refresh_raw_sources(
     try:
         future_map = {
             executor.submit(
-                scrape_google_list_url_with_retries,
+                scrape_url_source_with_retries,
                 source,
                 headed=False,
                 refresh_retries=refresh_retries,
@@ -1903,6 +1911,30 @@ def refresh_raw_sources(
     if failures:
         failure_text = "\n".join(failures)
         raise RuntimeError(f"Raw refresh failed for {len(failures)} source(s):\n{failure_text}")
+
+
+def scrape_url_source_with_retries(
+    source: SourceConfig,
+    *,
+    headed: bool,
+    refresh_retries: int,
+    refresh_retry_backoff_seconds: float,
+    refresh_startup_jitter_seconds: float,
+) -> RawSavedList:
+    if source.type == "wanderlog_view_url":
+        return scrape_wanderlog_view_url_with_retries(
+            source,
+            refresh_retries=refresh_retries,
+            refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
+            refresh_startup_jitter_seconds=refresh_startup_jitter_seconds,
+        )
+    return scrape_google_list_url_with_retries(
+        source,
+        headed=headed,
+        refresh_retries=refresh_retries,
+        refresh_retry_backoff_seconds=refresh_retry_backoff_seconds,
+        refresh_startup_jitter_seconds=refresh_startup_jitter_seconds,
+    )
 
 
 def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedList:
@@ -1951,6 +1983,305 @@ def scrape_google_list_url(source: SourceConfig, *, headed: bool) -> RawSavedLis
         release_scraper_session_lock(session_state)
 
 
+def scrape_wanderlog_view_url(source: SourceConfig) -> RawSavedList:
+    source_url = source.url
+    if not source_url:
+        raise RuntimeError(f"Configured source {source.slug} is missing a URL.")
+
+    request = Request(
+        source_url,
+        headers={
+            "User-Agent": SOURCE_HTTP_USER_AGENT,
+            "Accept-Language": "en-US,en;q=0.9",
+        },
+    )
+    try:
+        with urlopen(request, timeout=SOURCE_HTTP_TIMEOUT_SECONDS) as response:
+            resolved_url = response.geturl() or source_url
+            page_html = response.read().decode("utf-8", errors="replace")
+    except (HTTPError, URLError, OSError) as exc:
+        raise ScrapeError(f"Failed to fetch Wanderlog view {source_url}: {exc}") from exc
+
+    payload = parse_wanderlog_view_html(resolved_url, page_html)
+    if source.title and not payload.title:
+        payload.title = source.title
+    stamp_raw_saved_list(payload, source, source_signature=raw_source_signature(source))
+    return payload
+
+
+def parse_wanderlog_view_html(source_url: str, page_html: str) -> RawSavedList:
+    state = extract_wanderlog_mobx_state(page_html)
+    trip_store = state.get("tripPlanStore")
+    if not isinstance(trip_store, dict):
+        raise ParseError("Wanderlog payload missing tripPlanStore")
+    data = trip_store.get("data")
+    if not isinstance(data, dict):
+        raise ParseError("Wanderlog payload missing trip data")
+    trip_plan = data.get("tripPlan")
+    if not isinstance(trip_plan, dict):
+        raise ParseError("Wanderlog payload missing tripPlan")
+    itinerary = trip_plan.get("itinerary")
+    if not isinstance(itinerary, dict):
+        raise ParseError("Wanderlog payload missing itinerary")
+    sections = itinerary.get("sections")
+    if not isinstance(sections, list):
+        raise ParseError("Wanderlog payload missing itinerary sections")
+
+    places: list[RawPlace] = []
+    for section in sections:
+        if not isinstance(section, dict):
+            continue
+        blocks = section.get("blocks")
+        if not isinstance(blocks, list):
+            continue
+        for block in blocks:
+            if not isinstance(block, dict) or block.get("type") != "place":
+                continue
+            place_payload = block.get("place")
+            if not isinstance(place_payload, dict):
+                continue
+
+            name = as_string(place_payload.get("name")) or "Saved place"
+            place_id = as_string(place_payload.get("place_id"))
+            geometry = place_payload.get("geometry")
+            location = geometry.get("location") if isinstance(geometry, dict) else None
+            lat = as_float(location.get("lat")) if isinstance(location, dict) else None
+            lng = as_float(location.get("lng")) if isinstance(location, dict) else None
+            address = as_string(place_payload.get("formatted_address"))
+            maps_url = build_wanderlog_place_maps_url(
+                name=name,
+                address=address,
+                lat=lat,
+                lng=lng,
+                place_id=place_id,
+                place_payload=place_payload,
+            )
+            if maps_url is None:
+                continue
+
+            places.append(
+                RawPlace(
+                    name=name,
+                    address=address,
+                    note=extract_wanderlog_block_note(block),
+                    is_favorite=wanderlog_block_is_favorite(block),
+                    lat=lat,
+                    lng=lng,
+                    maps_url=maps_url,
+                    cid=extract_maps_cid(maps_url),
+                    google_id=place_id,
+                    maps_place_token=extract_maps_place_token(maps_url),
+                    rating=as_float(place_payload.get("rating")),
+                    user_rating_count=as_int(place_payload.get("user_ratings_total")),
+                    price_level=as_int(place_payload.get("price_level")),
+                    types=coerce_string_list(place_payload.get("types")),
+                    business_status=extract_wanderlog_business_status(place_payload),
+                    photo_url=build_wanderlog_place_photo_url(block),
+                )
+            )
+
+    title = (
+        as_string(trip_plan.get("name"))
+        or as_string(trip_plan.get("title"))
+        or extract_html_title(page_html)
+        or fallback_source_title(SourceConfig(slug=extract_wanderlog_view_key(source_url) or "wanderlog", url=source_url))
+    )
+    description = (
+        as_string(trip_plan.get("description"))
+        or as_string(data.get("seoDescription"))
+        or extract_wanderlog_meta_description(page_html)
+    )
+    return RawSavedList(
+        source_url=source_url,
+        list_id=extract_wanderlog_view_key(source_url),
+        title=title,
+        description=description,
+        places=places,
+    )
+
+
+def extract_wanderlog_mobx_state(page_html: str) -> dict[str, Any]:
+    start = page_html.find(WANDERLOG_MOBX_STATE_MARKER)
+    if start < 0:
+        raise ParseError("Wanderlog page missing MOBX state marker")
+    start += len(WANDERLOG_MOBX_STATE_MARKER)
+    end = page_html.find(WANDERLOG_CONFIG_MARKER, start)
+    if end < 0:
+        raise ParseError("Wanderlog page missing config marker")
+
+    serialized = page_html[start:end].strip()
+    if serialized.endswith(";"):
+        serialized = serialized[:-1].rstrip()
+
+    try:
+        state = json.loads(serialized)
+    except json.JSONDecodeError as exc:
+        raise ParseError("Could not decode Wanderlog MOBX state") from exc
+    if not isinstance(state, dict):
+        raise ParseError("Unexpected Wanderlog MOBX state payload")
+    return state
+
+
+def build_wanderlog_place_maps_url(
+    *,
+    name: str,
+    address: str | None,
+    lat: float | None,
+    lng: float | None,
+    place_id: str | None,
+    place_payload: dict[str, Any],
+) -> str | None:
+    direct_url = as_string(place_payload.get("url"))
+    if direct_url:
+        return direct_url
+
+    query = build_maps_link_query(name=name, address=address, lat=lat, lng=lng)
+    if not query:
+        return None
+    return build_google_maps_search_url(query, google_place_id=place_id)
+
+
+def extract_wanderlog_block_note(block: dict[str, Any]) -> str | None:
+    fragments: list[str] = []
+    text_payload = block.get("text")
+    if isinstance(text_payload, dict):
+        ops = text_payload.get("ops")
+        if isinstance(ops, list):
+            for op in ops:
+                if not isinstance(op, dict):
+                    continue
+                insert = op.get("insert")
+                if isinstance(insert, str):
+                    fragments.append(insert)
+
+    note = "".join(fragments).strip()
+    reactions = extract_wanderlog_block_reactions(block)
+    place_payload = block.get("place")
+    place_name = as_string(place_payload.get("name")) if isinstance(place_payload, dict) else None
+    place_types = coerce_string_list(place_payload.get("types")) if isinstance(place_payload, dict) else []
+    if reactions:
+        note = f"{note}\n{reactions}" if note else reactions
+    return sanitize_wanderlog_imported_note(
+        note or None,
+        place_name=place_name,
+        place_types=place_types,
+    )
+
+
+def wanderlog_block_is_favorite(block: dict[str, Any]) -> bool:
+    return as_string(block.get("rating")) == "mustGo"
+
+
+WANDERLOG_IMPORTED_WEB_NOTE_PREFIX_RE = re.compile(r"^\s*from the web:\s*", re.IGNORECASE)
+WANDERLOG_LOCATION_STYLE_RAW_TYPE_TAGS = frozenset({"route", "premise", "political", "neighborhood"})
+
+
+def sanitize_wanderlog_imported_note(
+    value: str | None,
+    *,
+    place_name: str | None,
+    place_types: list[str],
+) -> str | None:
+    note = normalize_text_blocks(value)
+    if note is None:
+        return None
+
+    had_from_web_prefix = WANDERLOG_IMPORTED_WEB_NOTE_PREFIX_RE.match(note) is not None
+    note = WANDERLOG_IMPORTED_WEB_NOTE_PREFIX_RE.sub("", note).strip()
+    if not note:
+        return None
+
+    raw_type_tags = {
+        normalized
+        for raw_type in place_types
+        if (normalized := slugify(raw_type.replace("_", "-")))
+    }
+    if (
+        had_from_web_prefix
+        and raw_type_tags & WANDERLOG_LOCATION_STYLE_RAW_TYPE_TAGS
+        and not text_mentions_place_name(note, place_name)
+    ):
+        return None
+
+    return note
+
+
+def text_mentions_place_name(value: str, place_name: str | None) -> bool:
+    normalized_text = normalize_text(value)
+    normalized_name = normalize_text(place_name)
+    if not normalized_text or not normalized_name:
+        return False
+    return normalized_name in normalized_text
+
+
+def extract_wanderlog_block_reactions(block: dict[str, Any]) -> str | None:
+    reactions_payload = block.get("reactions")
+    if not isinstance(reactions_payload, dict):
+        return None
+
+    reactions: list[str] = []
+    for key in reactions_payload:
+        reaction = as_string(key)
+        if reaction:
+            reactions.append(reaction)
+    if not reactions:
+        return None
+    return " ".join(reactions)
+
+
+def extract_wanderlog_business_status(place_payload: dict[str, Any]) -> str | None:
+    if place_payload.get("permanently_closed") is True:
+        return "CLOSED_PERMANENTLY"
+    status = as_string(place_payload.get("business_status")) or as_string(place_payload.get("status"))
+    if status in {"OPERATIONAL", "CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY", "FUTURE_OPENING"}:
+        return status
+    return normalize_place_page_business_status(status)
+
+
+def build_wanderlog_place_photo_url(block: dict[str, Any]) -> str | None:
+    image_keys = block.get("imageKeys")
+    if not isinstance(image_keys, list):
+        return None
+    for image_key in image_keys:
+        normalized = as_string(image_key)
+        if normalized:
+            return f"https://itin-dev.wanderlogstatic.com/freeImageMedium/{normalized}"
+    return None
+
+
+def extract_wanderlog_view_key(source_url: str) -> str | None:
+    path_parts = [part for part in urlsplit(source_url).path.split("/") if part]
+    if len(path_parts) < 2 or path_parts[0] != "view":
+        return None
+    return path_parts[1]
+
+
+def extract_html_title(page_html: str) -> str | None:
+    match = re.search(r"<title[^>]*>(.*?)</title>", page_html, re.IGNORECASE | re.DOTALL)
+    if not match:
+        return None
+    title = html_lib.unescape(match.group(1)).strip()
+    if title.endswith("– Wanderlog"):
+        title = title[: -len("– Wanderlog")].rstrip()
+    return title or None
+
+
+def extract_wanderlog_meta_description(page_html: str) -> str | None:
+    patterns = (
+        r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']*)["\']',
+        r'<meta[^>]+content=["\']([^"\']*)["\'][^>]+name=["\']description["\']',
+        r'<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']*)["\']',
+        r'<meta[^>]+content=["\']([^"\']*)["\'][^>]+property=["\']og:description["\']',
+    )
+    for pattern in patterns:
+        match = re.search(pattern, page_html, re.IGNORECASE)
+        if match:
+            description = html_lib.unescape(match.group(1)).strip()
+            if description:
+                return description
+    return None
+
+
 def scrape_google_list_url_with_retries(
     source: SourceConfig,
     *,
@@ -1966,6 +2297,38 @@ def scrape_google_list_url_with_retries(
         sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
         try:
             return scrape_google_list_url(source, headed=headed)
+        except RECOVERABLE_REFRESH_ERRORS as exc:
+            last_error = exc
+            if attempt >= attempts:
+                break
+
+            backoff_seconds = max(0.0, refresh_retry_backoff_seconds) * (2 ** (attempt - 1))
+            print(
+                f"Retrying {source.slug} after refresh failure "
+                f"({attempt}/{attempts - 1} retries used): {exc}"
+            )
+            if backoff_seconds > 0:
+                time.sleep(backoff_seconds)
+
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError(f"Refresh did not produce a result for {source.slug}.")
+
+
+def scrape_wanderlog_view_url_with_retries(
+    source: SourceConfig,
+    *,
+    refresh_retries: int,
+    refresh_retry_backoff_seconds: float,
+    refresh_startup_jitter_seconds: float,
+) -> RawSavedList:
+    attempts = max(1, refresh_retries + 1)
+    last_error: Exception | None = None
+
+    for attempt in range(1, attempts + 1):
+        sleep_for_refresh_startup_jitter(refresh_startup_jitter_seconds)
+        try:
+            return scrape_wanderlog_view_url(source)
         except RECOVERABLE_REFRESH_ERRORS as exc:
             last_error = exc
             if attempt >= attempts:
@@ -2350,6 +2713,17 @@ def place_override_for_ui_copy(slug: str, place_id: str, override: dict[str, Any
     return override
 
 
+def coerce_guide_place_photo_mode(value: Any) -> Literal["local_cache", "remote_url"]:
+    normalized = as_string(value)
+    if normalized is None:
+        return "local_cache"
+    if normalized not in {"local_cache", "remote_url"}:
+        raise ValueError(
+            f"Unsupported place_photo_mode {normalized!r}; expected 'local_cache' or 'remote_url'."
+        )
+    return normalized
+
+
 def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str, EnrichmentCacheEntry]) -> Guide:
     list_override = read_json(LIST_OVERRIDES_DIR / f"{slug}.json")
     place_override_map = read_json(PLACE_OVERRIDES_DIR / f"{slug}.json")
@@ -2357,6 +2731,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
     title = as_string(list_override.get("title")) or raw.title or slug.replace("-", " ").title()
     description = as_string(list_override.get("description")) or raw.description
     author = guide_author_for_ui(raw, list_override=list_override)
+    place_photo_mode = coerce_guide_place_photo_mode(list_override.get("place_photo_mode"))
     description = transform_guide_description_with_site_hook(
         description,
         slug=slug,
@@ -2385,8 +2760,15 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         override = place_override_for_ui_copy(slug, place_id, place_override_map.get(place_id, {}))
         enrichment_cache_entry = enrichment_cache.get(place_id)
         enrichment = coerce_enrichment_place(enrichment_cache_entry)
+        usable_enrichment_category = usable_enrichment_primary_category(
+            enrichment,
+            raw_place=place,
+        )
         manual_primary_category = as_string(override.get("primary_category"))
-        machine_primary_category = enrichment.primary_type_display_name or humanize_type_id(enrichment.primary_type)
+        machine_primary_category = (
+            usable_enrichment_category
+            or raw_place_primary_category(place)
+        )
         mapped_primary_category = apply_site_category_mappings(
             machine_primary_category,
             city_name=city_name,
@@ -2413,7 +2795,11 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         primary_category_localized = (
             None
             if manual_primary_category or category_mapping_replaces_tag
-            else enrichment.primary_type_display_name_localized
+            else usable_enrichment_primary_category_localized(
+                enrichment,
+                raw_place=place,
+                canonical_primary_category=usable_enrichment_category,
+            )
         )
         use_semantic_enrichment = google_maps_place_semantic_llm_enabled()
         use_semantic_descriptions = google_maps_place_semantic_descriptions_enabled()
@@ -2498,9 +2884,16 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         top_pick = top_pick_override if top_pick_override is not None else place.is_favorite
         manual_note = as_string(override.get("note"))
         note = manual_note or place.note
+        added_by = place_added_by_for_ui(place, override=override)
         enrichment_identity_compatible = enrichment_identity_is_compatible_with_raw(place, enrichment)
         enrichment_recommendation_copy = (
-            enrichment.description or enrichment.search_result_description
+            usable_enrichment_recommendation_copy(
+                enrichment.description or enrichment.search_result_description,
+                enrichment_place=enrichment,
+                raw_place=place,
+                city_name=city_name,
+                country_name=country_name,
+            )
             if enrichment_identity_compatible
             else None
         )
@@ -2550,6 +2943,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         status = (
             as_string(override.get("status"))
             or normalize_business_status(enrichment.business_status)
+            or normalize_business_status(place.business_status)
             or "active"
         )
         preferred_name = place.name
@@ -2581,8 +2975,12 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             google_id=place.google_id,
             google_place_id=enrichment.google_place_id,
             google_place_resource_name=enrichment.google_place_resource_name,
-            rating=enrichment.rating,
-            user_rating_count=enrichment.user_rating_count,
+            rating=enrichment.rating if enrichment.rating is not None else place.rating,
+            user_rating_count=(
+                enrichment.user_rating_count
+                if enrichment.user_rating_count is not None
+                else place.user_rating_count
+            ),
             primary_category=primary_category,
             primary_category_localized=primary_category_localized,
             marker_icon=marker_icon,
@@ -2596,11 +2994,14 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
             price_range=display_price_range_for_place(
                 enrichment,
                 country_name=country_name,
-            ),
+            )
+            or display_price_range_for_raw_place(place),
             neighborhood=neighborhood,
             note=note,
             why_recommended=why_recommended,
+            added_by=added_by,
             main_photo_path=None,
+            photo_url=cached_place_photo_url(enrichment_cache_entry) or place.photo_url,
             top_pick=top_pick,
             hidden=hidden,
             manual_rank=manual_rank,
@@ -2665,6 +3066,7 @@ def normalize_guide(slug: str, raw: RawSavedList, *, enrichment_cache: dict[str,
         title=title,
         description=description,
         author=author,
+        place_photo_mode=place_photo_mode,
         source_url=raw.source_url,
         list_id=raw.list_id,
         country_name=country_name or "Unknown",
@@ -2754,14 +3156,24 @@ def build_place_provenance(
             enrichment_cache_entry,
         )
     if normalized.rating is not None:
-        provenance.rating = google_places_field(normalized.rating, enrichment_cache_entry)
+        provenance.rating = (
+            google_places_field(normalized.rating, enrichment_cache_entry)
+            if enrichment.rating is not None
+            else google_list_field(normalized.rating, raw)
+        )
     if normalized.user_rating_count is not None:
-        provenance.user_rating_count = google_places_field(normalized.user_rating_count, enrichment_cache_entry)
+        provenance.user_rating_count = (
+            google_places_field(normalized.user_rating_count, enrichment_cache_entry)
+            if enrichment.user_rating_count is not None
+            else google_list_field(normalized.user_rating_count, raw)
+        )
     if primary_category:
         provenance.primary_category = (
             manual_place_field(primary_category)
             if manual_category
             else google_places_field(primary_category, enrichment_cache_entry)
+            if enrichment.primary_type_display_name or enrichment.primary_type
+            else google_list_field(primary_category, raw)
         )
     if primary_category_localized:
         provenance.primary_category_localized = google_places_field(primary_category_localized, enrichment_cache_entry)
@@ -2792,6 +3204,12 @@ def build_place_provenance(
             if manual_note
             else None
         )
+    if normalized.added_by:
+        provenance.added_by = (
+            manual_place_field(normalized.added_by)
+            if "added_by" in override
+            else google_list_field(normalized.added_by, raw)
+        )
     provenance.top_pick = (
         manual_place_field(normalized.top_pick)
         if top_pick_override is not None
@@ -2805,6 +3223,8 @@ def build_place_provenance(
         provenance.status = manual_place_field(status)
     elif enrichment.business_status:
         provenance.status = google_places_field(status, enrichment_cache_entry)
+    elif raw_place.business_status:
+        provenance.status = google_list_field(status, raw)
     return provenance
 
 
@@ -2837,6 +3257,7 @@ def build_tag_provenance(
         put_tag(tag, google_list_field(tag, raw), priority=10)
     for tag in derive_locality_tags(
         raw_place.address,
+        raw_place=raw_place,
         city_name=city_name,
         enrichment=enrichment,
         category=primary_category,
@@ -2851,6 +3272,8 @@ def build_tag_provenance(
         )
     for tag in derive_enrichment_type_tags(enrichment, category=primary_category):
         put_tag(tag, google_places_field(tag, enrichment_cache_entry), priority=20)
+    for tag in derive_raw_place_type_tags(raw_place, category=primary_category):
+        put_tag(tag, google_list_field(tag, raw), priority=15)
 
     return [ranked_fields[tag][1] for tag in tags if tag in ranked_fields]
 
@@ -3679,6 +4102,7 @@ def derive_place_tags(
     tags.update(
         derive_locality_tags(
             place.address,
+            raw_place=place,
             city_name=city_name,
             enrichment=enrichment,
             category=category,
@@ -3687,6 +4111,7 @@ def derive_place_tags(
     if category:
         tags.add(normalize_tag_slug(category))
     tags.update(derive_enrichment_type_tags(enrichment, category=category))
+    tags.update(derive_raw_place_type_tags(place, category=category))
     return sorted(tag for tag in tags if tag)
 
 
@@ -3711,6 +4136,7 @@ def derive_visible_place_tags(
 def derive_locality_tags(
     address: str | None,
     *,
+    raw_place: RawPlace,
     city_name: str | None,
     enrichment: EnrichmentPlace,
     category: str | None,
@@ -3724,7 +4150,11 @@ def derive_locality_tags(
     if not locality_tags:
         return []
 
-    has_specific_enrichment = bool(category or derive_enrichment_type_tags(enrichment, category=category))
+    has_specific_enrichment = bool(
+        category
+        or derive_enrichment_type_tags(enrichment, category=category)
+        or derive_raw_place_type_tags(raw_place, category=category)
+    )
     if has_specific_enrichment:
         return locality_tags[:1]
     return locality_tags[:2]
@@ -3737,6 +4167,96 @@ def derive_enrichment_type_tags(enrichment: EnrichmentPlace, *, category: str | 
         enrichment.types,
     )
     return [type_id.replace("_", "-") for type_id in type_ids]
+
+
+def derive_raw_place_type_tags(place: RawPlace, *, category: str | None = None) -> list[str]:
+    _primary_type, type_ids = normalized_enrichment_type_ids(
+        None,
+        category,
+        place.types,
+    )
+    return [type_id.replace("_", "-") for type_id in type_ids]
+
+
+def raw_place_primary_category(place: RawPlace) -> str | None:
+    raw_type_tags = derive_raw_place_type_tags(place)
+    if not raw_type_tags:
+        return None
+    if "lodging" in raw_type_tags:
+        return humanize_type_id("lodging")
+    return humanize_type_id(raw_type_tags[0].replace("-", "_"))
+
+
+RAW_PLACE_AMBIGUOUS_LOCATION_TYPE_TAGS = frozenset({"route", "premise", "political", "neighborhood"})
+
+
+def raw_place_has_ambiguous_location_types(place: RawPlace) -> bool:
+    raw_type_tags = {
+        normalized
+        for raw_type in place.types
+        if (normalized := slugify(raw_type.replace("_", "-")))
+    }
+    return bool(raw_type_tags & RAW_PLACE_AMBIGUOUS_LOCATION_TYPE_TAGS)
+
+
+def enrichment_category_looks_like_place_name(
+    label: str | None,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+) -> bool:
+    normalized_label = normalize_type_lookup_text(as_string(label))
+    if not normalized_label:
+        return False
+    candidate_names = {
+        normalized
+        for candidate in (enrichment_place.display_name, raw_place.name)
+        if (normalized := normalize_type_lookup_text(as_string(candidate)))
+    }
+    return normalized_label in candidate_names
+
+
+def usable_enrichment_primary_category(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+) -> str | None:
+    candidate = enrichment_place.primary_type_display_name or humanize_type_id(enrichment_place.primary_type)
+    if candidate is None:
+        return None
+    if enrichment_category_looks_like_place_name(
+        candidate,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+    ):
+        return None
+    if raw_place_has_ambiguous_location_types(raw_place):
+        enrichment_type_tags = {
+            normalized
+            for raw_type in enrichment_place.types
+            if (normalized := slugify(raw_type.replace("_", "-")))
+        }
+        if not enrichment_type_tags & RAW_PLACE_AMBIGUOUS_LOCATION_TYPE_TAGS:
+            return None
+    return candidate
+
+
+def usable_enrichment_primary_category_localized(
+    enrichment_place: EnrichmentPlace,
+    *,
+    raw_place: RawPlace,
+    canonical_primary_category: str | None,
+) -> str | None:
+    localized = enrichment_place.primary_type_display_name_localized
+    if localized is None or canonical_primary_category is None:
+        return None
+    if enrichment_category_looks_like_place_name(
+        localized,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+    ):
+        return None
+    return localized
 
 
 def normalize_enrichment_type_tag(value: str | None) -> str | None:
@@ -4033,7 +4553,9 @@ def type_alias_matches(label: str, alias: str) -> bool:
 
 
 @lru_cache(maxsize=None)
-def normalize_type_lookup_text(value: str) -> str:
+def normalize_type_lookup_text(value: str | None) -> str:
+    if not value:
+        return ""
     return re.sub(r"\s+", " ", value.replace("_", " ").replace("-", " ").lower()).strip()
 
 
@@ -4052,6 +4574,7 @@ def derive_marker_icon(
             enrichment.primary_type,
             enrichment.primary_type_display_name,
             *enrichment.types,
+            *place.types,
         ]
         if term
     ]
@@ -4098,6 +4621,7 @@ def derive_vibe_tags(
         enrichment.primary_type,
         enrichment.primary_type_display_name,
         *enrichment.types,
+        *place.types,
         *tags,
     ]
     category_slugs = {slugify(term.replace("_", "-")) for term in category_terms if term}
@@ -4453,7 +4977,7 @@ def infer_address_parts_localities(
         if (
             not candidate_key
             or candidate_key == city_key
-            or (candidate_equivalence_key in city_equivalence_keys)
+            or candidate_equivalence_key in city_equivalence_keys
             or is_subnational_locality(normalized_candidate)
         ):
             continue
@@ -4897,6 +5421,38 @@ def combine_recommendation_copy(*values: str | None) -> str | None:
     return "\n\n".join(parts) if parts else None
 
 
+def usable_enrichment_recommendation_copy(
+    value: Any,
+    *,
+    enrichment_place: EnrichmentPlace,
+    raw_place: RawPlace,
+    city_name: str | None,
+    country_name: str | None,
+) -> str | None:
+    description = sanitize_place_page_description(value)
+    if description is None:
+        return None
+    if not enrichment_identity_is_compatible_with_raw(raw_place, enrichment_place):
+        return None
+    if semantic_description_has_conflicting_location(
+        description,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        return None
+    if semantic_description_is_low_information(
+        description,
+        enrichment_place=enrichment_place,
+        raw_place=raw_place,
+        city_name=city_name,
+        country_name=country_name,
+    ):
+        return None
+    return description
+
+
 def coerce_list_author(value: Any) -> ListAuthor | None:
     if value is None:
         return None
@@ -4937,6 +5493,12 @@ def guide_author_for_ui(raw: RawSavedList, *, list_override: dict[str, Any]) -> 
     if "owner" in list_override:
         return coerce_list_author(list_override.get("owner"))
     return raw.owner
+
+
+def place_added_by_for_ui(place: RawPlace, *, override: dict[str, Any]) -> ListAuthor | None:
+    if "added_by" in override:
+        return coerce_list_author(override.get("added_by"))
+    return place.added_by
 
 
 def load_raw_saved_list(path: Path) -> RawSavedList | None:
@@ -5277,6 +5839,9 @@ def preserve_existing_raw_place(
     if names_compatible and not refreshed_place.is_favorite and existing_place.is_favorite:
         updates["is_favorite"] = True
         preserved_fields.append("is_favorite")
+    if names_compatible and refreshed_place.added_by is None and existing_place.added_by is not None:
+        updates["added_by"] = existing_place.added_by
+        preserved_fields.append("added_by")
 
     if not updates:
         return refreshed_place, preserved_fields
@@ -5381,7 +5946,7 @@ def preserve_existing_raw_saved_list(
 
 
 def raw_source_refresh_after(fetched_at: datetime, source: SourceConfig, *, source_signature: str) -> datetime:
-    if source.type != "google_list_url":
+    if source.type == "google_export_csv":
         return fetched_at + RAW_SOURCE_CACHE_TTL
     return fetched_at + RAW_SOURCE_CACHE_TTL + stable_timedelta_jitter(
         source_signature,
@@ -6695,6 +7260,10 @@ def populate_place_photos_for_guides(
     flat_index = build_place_photo_flat_index()
     if not refresh_photos:
         for guide in guides:
+            if guide.place_photo_mode == "remote_url":
+                for place in guide.places:
+                    place.main_photo_path = None
+                continue
             enrichment_cache = enrichment_caches.get(guide.slug, {})
             for place in guide.places:
                 photo_url = cached_place_photo_url(enrichment_cache.get(place.id))
@@ -6718,6 +7287,10 @@ def populate_place_photos_for_guides(
     reused_count = 0
     missing_photo_url_count = 0
     for guide in guides:
+        if guide.place_photo_mode == "remote_url":
+            for place in guide.places:
+                place.main_photo_path = None
+            continue
         enrichment_cache = enrichment_caches.get(guide.slug, {})
         for place in guide.places:
             photo_url = cached_place_photo_url(enrichment_cache.get(place.id))
@@ -9556,6 +10129,13 @@ def display_price_range_for_place(
     if not price_display_amount_is_allowed(source, display_price, target_currency=target_currency):
         return None
     return display_price
+
+
+def display_price_range_for_raw_place(place: RawPlace) -> str | None:
+    price_level = place.price_level
+    if price_level is None or price_level < 1:
+        return None
+    return "$" * min(price_level, 4)
 
 
 def select_place_display_price(enrichment_place: EnrichmentPlace) -> tuple[str, str] | None:

@@ -3,9 +3,12 @@ import { expect, test } from "@playwright/test";
 test("filters guides by country and renders global place search results", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator("[data-home-results-count]")).toHaveText("2 guides across 2 countries");
+  await expect(page.locator("[data-home-results-count]")).toHaveText("3 guides across 3 countries");
   await expect(page.locator('[data-guide-card][data-guide-slug="tokyo-japan"]')).toBeVisible();
   await expect(page.locator('[data-guide-card][data-guide-slug="taipei-taiwan"]')).toBeVisible();
+  await expect(
+    page.locator('[data-guide-card][data-guide-slug="hong-kong-wanderlog-example"]'),
+  ).toBeVisible();
 
   await page.locator('[data-country-filter][data-country="taiwan"]').click();
 
